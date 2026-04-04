@@ -32,24 +32,26 @@ const appendLinkPaths = appendLinks.map((l) => l.path as string);
   <v-app-bar class="navigation-bar" color="transparent" flat>
     <template #prepend>
       <v-list class="d-flex flex-row bg-transparent prepend-list">
-        <v-list-item
-          v-for="(link, index) in prependLinks"
-          :key="link.name"
-          :ref="(el) => captureEl(prependLinkEls, el, index)"
-        >
-          <navigation-link :icon="link.icon" :name="link.name" :path="link.path" />
+        <v-list-item v-for="(link, index) in prependLinks" :key="link.name">
+          <navigation-link
+            :ref="(el) => captureEl(prependLinkEls, el, index)"
+            :icon="link.icon"
+            :name="link.name"
+            :path="link.path"
+          />
         </v-list-item>
         <nav-indicator-ball :link-els="prependLinkEls" :link-paths="prependLinkPaths" />
       </v-list>
     </template>
     <template #append>
       <v-list class="d-flex flex-row bg-transparent append-list">
-        <v-list-item
-          v-for="(link, index) in appendLinks"
-          :key="link.name"
-          :ref="(el) => captureEl(appendLinkEls, el, index)"
-        >
-          <navigation-link :icon="link.icon" :name="link.name" :path="link.path" />
+        <v-list-item v-for="(link, index) in appendLinks" :key="link.name">
+          <navigation-link
+            :ref="(el) => captureEl(appendLinkEls, el, index)"
+            :icon="link.icon"
+            :name="link.name"
+            :path="link.path"
+          />
         </v-list-item>
         <nav-indicator-ball :link-els="appendLinkEls" :link-paths="appendLinkPaths" />
       </v-list>
