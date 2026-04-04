@@ -86,7 +86,9 @@ onMounted(() => {
 .indicator-bar {
   width: 100%;
   height: 5px;
+  border-radius: 3px;
   background: rgb(var(--v-theme-link));
+  box-shadow: 0 0 6px rgba(var(--v-theme-link), 0.5);
   &--squish {
     animation: nav-indicator-squish 380ms ease-in-out;
   }
@@ -98,15 +100,15 @@ onMounted(() => {
   }
 
   20% {
-    transform: scaleX(1.3) scaleY(0.75);
+    transform: scaleX(1.15) scaleY(0.8);
   }
 
   55% {
-    transform: scaleX(0.85) scaleY(1.2);
+    transform: scaleX(0.9) scaleY(1.15);
   }
 
   80% {
-    transform: scaleX(1.1) scaleY(0.92);
+    transform: scaleX(1.06) scaleY(0.95);
   }
 
   100% {
