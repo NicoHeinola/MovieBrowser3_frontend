@@ -1,13 +1,14 @@
 /**
- * plugins/vuetify.ts
+ * plugins/vuetify/index.ts
  *
- * Framework documentation: https://vuetifyjs.com`
+ * Framework documentation: https://vuetifyjs.com
  */
 
 // Composables
 import { createVuetify } from 'vuetify';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 
+import { MainTheme } from './MainTheme';
 import '@mdi/font/css/materialdesignicons.css';
 import 'vuetify/styles';
 
@@ -19,6 +20,9 @@ export default createVuetify({
     sets: { mdi },
   },
   theme: {
-    defaultTheme: 'system',
+    defaultTheme: 'MainTheme',
+    themes: {
+      MainTheme,
+    },
   },
 });
