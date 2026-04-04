@@ -19,6 +19,20 @@ applyTo: '**/*.vue'
   8. Other code (e.g., event listeners, side effects)
 - **Template section** should be at the end of the file.
 
+## Component Interfaces
+
+- **Never define TypeScript interfaces or types inside `.vue` files.**
+- Interfaces used by a component (e.g. props shapes, item types) must be placed in a separate `.ts` file within the same namespace folder as the component.
+- Name the file after what it represents (e.g. `navigationLinkItem.ts`, not `types.ts`).
+
+```
+components/
+  layouts/
+    top-navigation/
+      TopNavigation.vue
+      navigationLinkItem.ts   ✓ interface lives here, not in the .vue file
+```
+
 ## Example
 
 ```vue
