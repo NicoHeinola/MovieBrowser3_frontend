@@ -2,11 +2,11 @@
 import type { NavigationLinkItem } from './navigationLinkItem';
 import { ref } from 'vue';
 import NavigationLink from './NavigationLink.vue';
-import NavIndicatorBall from './NavIndicatorBall.vue';
+import NavIndicator from './NavIndicator.vue';
 
 const prependLinks: NavigationLinkItem[] = [
   { name: 'Home', path: '/', icon: 'mdi-home' },
-  { name: 'Shows', path: '/shows', icon: 'mdi-television-play' },
+  { name: 'Search', path: '/search', icon: 'mdi-magnify' },
   { name: 'Site Settings', path: '/settings', icon: 'mdi-cog' },
 ];
 
@@ -40,7 +40,7 @@ const appendLinkPaths = appendLinks.map((l) => l.path as string);
             :path="link.path"
           />
         </v-list-item>
-        <nav-indicator-ball :link-els="prependLinkEls" :link-paths="prependLinkPaths" />
+        <nav-indicator :link-els="prependLinkEls" :link-paths="prependLinkPaths" />
       </v-list>
     </template>
     <template #append>
@@ -53,7 +53,7 @@ const appendLinkPaths = appendLinks.map((l) => l.path as string);
             :path="link.path"
           />
         </v-list-item>
-        <nav-indicator-ball :link-els="appendLinkEls" :link-paths="appendLinkPaths" />
+        <nav-indicator :link-els="appendLinkEls" :link-paths="appendLinkPaths" />
       </v-list>
     </template>
   </v-app-bar>

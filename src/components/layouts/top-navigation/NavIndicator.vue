@@ -1,0 +1,116 @@
+<script lang="ts" setup>
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+
+const props = defineProps<{
+  linkEls: HTMLElement[];
+  linkPaths: string[];
+}>();
+
+const route = useRoute();
+const indicatorEl = ref<HTMLElement | null>(null);
+const left = ref(0);
+const width = ref(0);
+// Tracks whether the initial position has been set; CSS transitions are only enabled after this
+const initialized = ref(false);
+const isSquishing = ref(false);
+
+const activeIndex = computed(() => props.linkPaths.indexOf(route.path));
+
+// Measures the active link's position relative to the container and moves the indicator there.
+// On first call (animate=false), position is set instantly to avoid a transition from 0,0.
+const updatePosition = (animate: boolean) => {
+  const idx = activeIndex.value;
+  if (idx < 0 || !props.linkEls[idx] || !indicatorEl.value?.parentElement) return;
+
+  const containerRect = indicatorEl.value.parentElement.getBoundingClientRect();
+  const linkRect = props.linkEls[idx].getBoundingClientRect();
+
+  left.value = linkRect.left - containerRect.left;
+  width.value = linkRect.width;
+
+  if (!initialized.value) {
+    // Wait one tick so the position is applied before enabling transitions
+    nextTick(() => {
+      initialized.value = true;
+    });
+    return;
+  }
+
+  if (animate) {
+    // Reset the squish animation so it can re-trigger even if already playing
+    isSquishing.value = false;
+    nextTick(() => {
+      isSquishing.value = true;
+    });
+  }
+};
+
+watch(activeIndex, () => {
+  updatePosition(true);
+});
+
+onMounted(() => {
+  nextTick(() => {
+    updatePosition(false);
+  });
+});
+</script>
+
+<template>
+  <div
+    ref="indicatorEl"
+    class="nav-indicator"
+    :class="{ 'nav-indicator--animate': initialized }"
+    :style="{ left: `${left}px`, width: `${width}px`, opacity: initialized && activeIndex >= 0 ? 1 : 0 }"
+  >
+    <div class="indicator-bar" :class="{ 'indicator-bar--squish': isSquishing }" @animationend="isSquishing = false" />
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.nav-indicator {
+  position: absolute;
+  bottom: 8px;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+
+  &--animate {
+    transition:
+      left 380ms cubic-bezier(0.4, 0, 0.2, 1),
+      width 380ms cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 200ms ease;
+  }
+}
+
+.indicator-bar {
+  width: 100%;
+  height: 5px;
+  background: rgb(var(--v-theme-link));
+  &--squish {
+    animation: nav-indicator-squish 380ms ease-in-out;
+  }
+}
+
+@keyframes nav-indicator-squish {
+  0% {
+    transform: scale(1);
+  }
+
+  20% {
+    transform: scaleX(1.3) scaleY(0.75);
+  }
+
+  55% {
+    transform: scaleX(0.85) scaleY(1.2);
+  }
+
+  80% {
+    transform: scaleX(1.1) scaleY(0.92);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+</style>
