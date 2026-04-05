@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { onUnmounted, ref, watch } from 'vue';
+import type { YouTubePlayerInstance } from './youTubePlayerInstance';
+import type { YouTubeWindow } from './youTubeWindow';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = withDefaults(
   defineProps<{
@@ -24,40 +26,56 @@ const emit = defineEmits<{
   error: [];
 }>();
 
-const playerContainerRef = ref<HTMLDivElement | null>(null);
+const iframeRef = ref<HTMLIFrameElement | null>(null);
+const iframeId = `yt-player-${Math.random().toString(36).slice(2, 11)}`;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let ytPlayer: any = null;
+let ytPlayer: YouTubePlayerInstance | null = null;
+
+const playerSrc = computed(() => {
+  const params = new URLSearchParams({
+    autoplay: '0',
+    controls: props.controls ? '1' : '0',
+    disablekb: props.controls ? '0' : '1',
+    enablejsapi: '1',
+    iv_load_policy: '3',
+    modestbranding: '1',
+    mute: props.muted ? '1' : '0',
+    playsinline: '1',
+    rel: '0',
+  });
+
+  if (props.loop) {
+    params.set('loop', '1');
+    params.set('playlist', props.videoId);
+  }
+
+  if (typeof window !== 'undefined') {
+    params.set('origin', window.location.origin);
+  }
+
+  return `https://www.youtube.com/embed/${props.videoId}?${params.toString()}`;
+});
+
+const getYouTubeWindow = (): YouTubeWindow => window as YouTubeWindow;
 
 const createPlayer = () => {
-  const container = playerContainerRef.value;
-  if (!container) return;
+  if (!iframeRef.value) return;
+
+  const youtubeWindow = getYouTubeWindow();
+  if (!youtubeWindow.YT?.Player) return;
 
   ytPlayer?.destroy();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ytPlayer = new (window as any).YT.Player(container, {
-    videoId: props.videoId,
-    playerVars: {
-      autoplay: props.autoplay ? 1 : 0,
-      mute: props.muted ? 1 : 0,
-      controls: props.controls ? 1 : 0,
-      loop: props.loop ? 1 : 0,
-      playlist: props.videoId,
-      modestbranding: 1,
-      rel: 0,
-      iv_load_policy: 3,
-      disablekb: props.controls ? 0 : 1,
-    },
+  ytPlayer = new youtubeWindow.YT.Player(iframeId, {
     events: {
-      // Reload video in onReady so onError fires reliably on initial load
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onReady: (event: any) => {
+      onReady: (event) => {
         event.target.setVolume(props.volume);
+
         if (props.muted) {
           event.target.mute();
         } else {
           event.target.unMute();
         }
+
         if (props.autoplay) {
           event.target.loadVideoById(props.videoId);
         }
@@ -65,9 +83,10 @@ const createPlayer = () => {
       onError: () => {
         emit('error');
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      onStateChange: (event: any) => {
-        if (event.data === 1 /* YT.PlayerState.PLAYING */) {
+      onStateChange: (event) => {
+        const playingState = youtubeWindow.YT?.PlayerState?.PLAYING ?? 1;
+
+        if (event.data === playingState) {
           emit('playing');
         }
       },
@@ -76,18 +95,19 @@ const createPlayer = () => {
 };
 
 const initYTApi = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if ((window as any).YT?.Player) {
+  const youtubeWindow = getYouTubeWindow();
+
+  if (youtubeWindow.YT?.Player) {
     createPlayer();
     return;
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const prev = (window as any).onYouTubeIframeAPIReady;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (window as any).onYouTubeIframeAPIReady = () => {
-    prev?.();
+
+  const previousReady = youtubeWindow.onYouTubeIframeAPIReady;
+  youtubeWindow.onYouTubeIframeAPIReady = () => {
+    previousReady?.();
     createPlayer();
   };
+
   if (!document.querySelector('#yt-iframe-api')) {
     const tag = document.createElement('script');
     tag.id = 'yt-iframe-api';
@@ -95,10 +115,6 @@ const initYTApi = () => {
     document.head.append(tag);
   }
 };
-
-watch(playerContainerRef, (container) => {
-  if (container) initYTApi();
-});
 
 watch(
   () => props.muted,
@@ -122,6 +138,10 @@ watch(
   },
 );
 
+onMounted(() => {
+  initYTApi();
+});
+
 onUnmounted(() => {
   ytPlayer?.destroy();
   ytPlayer = null;
@@ -130,7 +150,15 @@ onUnmounted(() => {
 
 <template>
   <div class="player-root">
-    <div class="player-container" ref="playerContainerRef"></div>
+    <iframe
+      :src="playerSrc"
+      class="player-container"
+      frameborder="0"
+      title="Show preview video"
+      allowfullscreen
+      :id="iframeId"
+      ref="iframeRef"
+    ></iframe>
   </div>
 </template>
 

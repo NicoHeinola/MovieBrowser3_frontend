@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/Show';
 
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 
 import SelectedShowDrawer from '@/components/features/show/selected-show-drawer/SelectedShowDrawer.vue';
@@ -211,7 +211,8 @@ const latestShows = ref<Show[]>([
   },
 ]);
 
-const selectedBannerShow = ref<Show | null>(continueToWatchShows.value[0] ?? latestShows.value[0] ?? null);
+const selectedBannerShow = ref<Show | null>(null);
+const selectedShow = ref<Show | null>(selectedBannerShow.value);
 const isShowDrawerVisible = ref<boolean>(false);
 
 const { xxl, xlAndUp, lgAndUp } = useDisplay();
@@ -222,6 +223,15 @@ const continueWatchingCols = computed(() => {
   if (lgAndUp.value) return 3;
   return 1;
 });
+
+watch(
+  () => selectedBannerShow.value,
+  (newVal) => {
+    if (newVal) {
+      selectedShow.value = newVal;
+    }
+  },
+);
 </script>
 
 <template>
@@ -242,11 +252,11 @@ const continueWatchingCols = computed(() => {
       </v-col>
     </v-row>
   </show-banner>
-  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedBannerShow" />
-  <v-container class="pl-16" fluid>
+  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedShow" />
+  <v-container class="pl-16 pr-0" fluid>
     <h1>Latest shows</h1>
     <show-carousel
-      v-model:selected-show="selectedBannerShow"
+      v-model:selected-show="selectedShow"
       :shows="latestShows"
       class="pr-16"
       @click:show="isShowDrawerVisible = true"

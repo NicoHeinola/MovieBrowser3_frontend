@@ -21,7 +21,7 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
 
 <template>
   <v-card :height="props.height" :min-width="props.width" :width="props.width" class="show-card">
-    <v-img :src="props.show.card_image_url" class="h-100 w-100" cover></v-img>
+    <v-img :src="props.show.card_image_url" class="h-100 w-100" style="pointer-events: none" cover></v-img>
     <div class="card-shadow position-absolute bottom-0 left-0 w-100" style="height: 20%" />
     <div
       class="card-text-container position-absolute bottom-0 left-0 px-4 my-4 text-truncate"
