@@ -41,5 +41,14 @@ export default defineConfig(({ mode }) => {
     server: {
       port: env.APP_PORT ? Number(env.APP_PORT) : undefined,
     },
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      server: {
+        deps: {
+          inline: ['vuetify'],
+        },
+      },
+    },
   };
 });

@@ -3,15 +3,20 @@ import type { Show } from '@/interfaces/api/Show';
 import { computed } from 'vue';
 import { useDisplay } from 'vuetify';
 import ShowCard from '@/components/features/show/show-card/ShowCard.vue';
+import { parseCssNumeric } from '@/utils/css/parseCssNumeric';
 
 export interface ShowGridProps {
   shows: Show[];
   rows?: number;
   cols?: number;
+  cardWidth?: string;
+  cardHeight?: string;
 }
 
 const props = withDefaults(defineProps<ShowGridProps>(), {
   rows: 1,
+  cardWidth: '300px',
+  cardHeight: '400px',
 });
 
 const selectedShow = defineModel<Show | null>('selectedShow');
@@ -33,12 +38,13 @@ const showsToShow = computed(() => {
 
 const bannerCardContainerWidth = computed(() => {
   const basePadding = 40;
-  const baseCardSize = 300;
+  // Match cardWidth but as a number for calculation
+  const baseCardSize = parseCssNumeric(props.cardWidth, 300);
 
   if (effectiveCols.value > 1) {
     return (basePadding + baseCardSize) * effectiveCols.value - 30 + 'px';
   }
-  return '310px';
+  return baseCardSize + 10 + 'px';
 });
 </script>
 
@@ -53,10 +59,10 @@ const bannerCardContainerWidth = computed(() => {
     >
       <show-card
         v-for="show in showsToShow"
+        :height="cardHeight"
+        :min-width="cardWidth"
         :show="show"
-        height="400px"
-        min-width="300px"
-        width="300px"
+        :width="cardWidth"
         @click="console.log('Watching show')"
         @mouseenter="selectedShow = show"
         :key="show.id"
