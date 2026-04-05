@@ -29,8 +29,7 @@ const continueToWatchShows = ref<Show[]>([
   },
   {
     id: 3,
-    hero_image_url:
-      'https://assetsio.gnwcdn.com/ranma-1-2-anime-poster.jpg?width=1200&height=600&fit=crop&enable=upscale&auto=webp',
+    hero_image_url: 'https://i.pinimg.com/originals/1c/af/8c/1caf8cf64eb1b0d1c6b93f37f44c52b2.gif',
     card_image_url: 'https://images6.alphacoders.com/137/thumb-1920-1378928.png',
     titles: [
       {
@@ -95,6 +94,7 @@ const bannerCardContainerWidth = computed(() => {
             height="400px"
             min-width="300px"
             width="300px"
+            @click="console.log('Watchi show')"
             @mouseenter="selectedBannerShow = show"
             :key="show.id"
           />

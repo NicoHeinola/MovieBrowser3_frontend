@@ -20,7 +20,7 @@ const primaryTitle = computed(() => {
     <div class="card-shadow position-absolute bottom-0 left-0 w-100" style="height: 20%" />
     <div
       class="card-text-container position-absolute bottom-0 left-0 px-4 my-4 text-truncate"
-      style="cursor: default; max-width: 100%"
+      style="cursor: pointer; max-width: 100%"
     >
       <p
         class="card-title text-truncate text-grey-lighten-1 ma-0 font-weight-bold"
