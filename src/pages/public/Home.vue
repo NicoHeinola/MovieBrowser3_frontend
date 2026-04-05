@@ -2,7 +2,7 @@
 import type { Show } from '@/interfaces/api/Show';
 import { ref } from 'vue';
 import ShowBanner from '@/components/features/show/show-banner/ShowBanner.vue';
-import ShowCarousel from '@/components/features/show/show-carousel/ShowCarousel.vue';
+import ShowGrid from '@/components/features/show/show-grid/ShowGrid.vue';
 
 const continueToWatchShows = ref<Show[]>([
   {
@@ -62,7 +62,7 @@ const selectedBannerShow = ref<Show | null>(null);
   <show-banner :selected-show="selectedBannerShow">
     <div class="d-flex flex-column ga-4">
       <h1 class="text-h4 font-weight-bold">Continue Watching</h1>
-      <show-carousel v-model:selected-show="selectedBannerShow" :shows="continueToWatchShows" />
+      <show-grid v-model:selected-show="selectedBannerShow" :shows="continueToWatchShows" />
     </div>
   </show-banner>
 </template>
