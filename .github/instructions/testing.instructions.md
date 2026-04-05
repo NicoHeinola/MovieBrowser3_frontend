@@ -10,6 +10,12 @@ applyTo: 'src/**/__tests__/*.test.ts'
 - **Vitest**: used for unit and component tests.
 - **JSDOM**: used for terminal-based DOM testing.
 
+## When To Add Tests
+
+- Utility tests in `src/utils/` are expected by default.
+- Component tests are optional in this repository and should not be added by default.
+- Add component tests only when the user explicitly requests them or the task is specifically about test coverage.
+
 ## Organization
 
 - All tests must be located in a `__tests__` folder adjacent to the file being tested.

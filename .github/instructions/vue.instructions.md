@@ -60,6 +60,9 @@ components/
 
 - Keep styles `scoped` unless the component is intentionally providing global styling.
 - Prefer moving reusable visual tokens to shared styles or the Vuetify theme instead of hard-coding them per component.
+- Prefer existing Vuetify utility classes, component props, and built-in transitions before adding custom SCSS in Vue components.
+- For small one-off component adjustments, prefer inline styles over introducing a new `<style>` block.
+- Add a component `<style>` block only when the layout or styling is too specific or too complex to express cleanly with Vuetify utilities and inline styles.
 
 ## Example
 

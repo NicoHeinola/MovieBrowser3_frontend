@@ -79,8 +79,6 @@ watch([() => props.selectedShow, () => props.disableVideoPlayback], () => {
 }
 
 .banner-video-container {
-  overflow: hidden;
-
   :deep(iframe) {
     position: absolute;
     top: 50%;

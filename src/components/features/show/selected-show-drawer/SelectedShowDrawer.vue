@@ -2,6 +2,8 @@
 import type { Show } from '@/interfaces/api/Show';
 
 import { computed, ref, watch } from 'vue';
+import { useDisplay } from 'vuetify';
+import VolumeControl from '@/components/common/volume-control/VolumeControl.vue';
 import YouTubePlayer from '@/components/common/youtube-player/YouTubePlayer.vue';
 import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
@@ -16,9 +18,12 @@ const isShown = defineModel<boolean>('isShown', {
   default: false,
 });
 
+const { xlAndUp } = useDisplay();
+
 const isVideoPlaying = ref(false);
 const isVideoError = ref(false);
 const isMuted = ref(true);
+const volume = ref(20);
 
 const close = () => {
   isShown.value = false;
@@ -43,17 +48,16 @@ const activeVideoId = computed(() => videoId.value ?? 'drawer-video');
 watch([() => props.show, () => isShown.value], () => {
   isVideoPlaying.value = false;
   isVideoError.value = false;
-  isMuted.value = false;
 });
 </script>
 
 <template>
   <v-navigation-drawer
     v-model="isShown"
+    :width="xlAndUp ? 600 : 400"
     class="selected-show-drawer"
     location="right"
     style="height: 100vh !important; top: 0; z-index: 2000"
-    width="500"
     temporary
   >
     <div class="h-50 position-relative overflow-hidden w-100">
@@ -62,7 +66,7 @@ watch([() => props.show, () => isShown.value], () => {
           <you-tube-player
             :muted="isMuted"
             :video-id="activeVideoId"
-            :volume="20"
+            :volume="volume"
             @error="isVideoError = true"
             @playing="isVideoPlaying = true"
           />
@@ -80,17 +84,19 @@ watch([() => props.show, () => isShown.value], () => {
 
       <div class="image-shadow position-absolute w-100 h-100 top-0 left-0">
         <div class="d-flex align-end h-100 pa-6">
-          <h2>{{ displayTitle }}</h2>
+          <h1>{{ displayTitle }}</h1>
         </div>
       </div>
 
-      <v-btn
-        :icon="isMuted ? 'mdi-volume-off' : 'mdi-volume-high'"
-        class="position-absolute left-0 top-0 ma-4"
-        variant="text"
-        @click="isMuted = !isMuted"
-        v-if="canPlayVideo"
-      />
+      <v-fade-transition>
+        <volume-control
+          v-model:muted="isMuted"
+          v-model:volume="volume"
+          class="position-absolute left-0 top-0 ma-4"
+          v-if="isVideoPlaying"
+        />
+      </v-fade-transition>
+
       <v-btn class="position-absolute right-0 top-0 ma-4" icon="mdi-close" variant="text" @click="close" />
     </div>
   </v-navigation-drawer>
@@ -102,16 +108,12 @@ watch([() => props.show, () => isShown.value], () => {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 100%;
-    height: 100%;
+    width: 100vh;
+    height: 100vw;
     transform: translate(-50%, -50%);
 
-    @media (min-aspect-ratio: 16/9) {
-      height: 56.25vw;
-    }
-
     @media (max-aspect-ratio: 16/9) {
-      width: 177.78vh;
+      height: 100vh;
     }
   }
 }
