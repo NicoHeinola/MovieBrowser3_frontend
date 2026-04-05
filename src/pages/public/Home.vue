@@ -60,10 +60,12 @@ const selectedBannerShow = ref<Show | null>(null);
 
 <template>
   <show-banner :selected-show="selectedBannerShow">
-    <div class="d-flex flex-column gx-4">
-      <h1 class="text-h4 font-weight-bold">Continue Watching</h1>
-      <show-grid v-model:selected-show="selectedBannerShow" :shows="continueToWatchShows" />
-    </div>
+    <v-row class="align-center">
+      <v-col cols="12">
+        <h1 class="text-h4 font-weight-bold">Continue Watching</h1>
+        <show-grid v-model:selected-show="selectedBannerShow" :shows="continueToWatchShows" />
+      </v-col>
+    </v-row>
   </show-banner>
 </template>
 

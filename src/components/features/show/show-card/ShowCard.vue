@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { Show } from '@/interfaces/api/Show';
 import { computed } from 'vue';
-import { p } from 'vue-router/dist/options-BErt5RTe.cjs';
 
 const props = defineProps<{
   show: Show;

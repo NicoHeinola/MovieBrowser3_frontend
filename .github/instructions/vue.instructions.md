@@ -55,6 +55,31 @@ components/
       navigationLinkItem.ts   ✓ interface lives here, not in the .vue file
 ```
 
+## Layout
+
+- **Use `v-row` and `v-col` for layout structure** instead of manual CSS flex/grid classes like `d-flex`, `d-grid`, `ga-*`, etc.
+- Use `cols="12"` as the default full-width base; add responsive breakpoints (`lg`, `xl`, etc.) where needed.
+- Utility classes (`pa-*`, `px-*`, `ma-*`, `text-*`, `position-*`, etc.) are still acceptable for spacing and element-level styling.
+- Exceptions: `d-flex` and inline alignment classes are acceptable when used on small inline elements (e.g. navigation links, icon+label combos) or absolutely-positioned overlays where `v-row`/`v-col` semantics would be inappropriate.
+
+```vue
+<!-- correct -->
+<v-row>
+  <v-col cols="12">
+    <h1>Title</h1>
+  </v-col>
+  <v-col cols="12" lg="4">
+    <my-card />
+  </v-col>
+</v-row>
+
+<!-- incorrect -->
+<div class="d-flex flex-column ga-4">
+  <h1>Title</h1>
+  <my-card />
+</div>
+```
+
 ## Example
 
 ```vue
