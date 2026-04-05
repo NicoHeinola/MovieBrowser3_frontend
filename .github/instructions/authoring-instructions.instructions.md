@@ -1,5 +1,5 @@
 ---
-description: Rules for writing .instructions.md files and when to use instructions vs skills.
+description: Authoring rules for workspace .instructions.md files. Use when creating or editing file-specific instructions under .github/instructions.
 applyTo: '.github/instructions/**'
 ---
 
@@ -10,6 +10,8 @@ applyTo: '.github/instructions/**'
 - Instructions describe **file-specific rules** — structure, ordering, naming conventions, or patterns that apply directly to the files matched by `applyTo`.
 - An instruction file should only talk about the files it is applied to. Never reference other files, other instruction files, or concepts that live outside the matched scope.
 - Keep instructions narrow and concrete. One instruction file per concern (e.g. Vue file structure, TypeScript style, namespacing).
+- Use `description` as the discovery surface. Include plain-language trigger phrases such as "store files", "router files", or "Vue component structure".
+- Keep `applyTo` specific. Avoid `**` unless the rule truly applies everywhere.
 
 ## What Instructions Are NOT For
 

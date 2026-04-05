@@ -1,5 +1,5 @@
 ---
-description: Rules for writing SKILL.md files and when to use skills vs instructions.
+description: Authoring rules for project SKILL.md files. Use when creating or editing concept-driven skills under .github/skills.
 applyTo: '.github/skills/**'
 ---
 
@@ -10,6 +10,8 @@ applyTo: '.github/skills/**'
 - Skills encode **concept-driven** knowledge — patterns, workflows, and domain expertise that are not tied to a single file type or location.
 - Use a skill when the guidance spans multiple steps, multiple file types, or requires contextual reasoning rather than a fixed structural rule.
 - Skills can and should reference other files, folders, or concepts as needed.
+- Use `description` to state both the capability and the situations that should trigger the skill automatically.
+- Prefer short step-oriented sections over large paragraphs so the workflow is easy to follow in chat.
 
 ## When to Use an Instruction Instead
 

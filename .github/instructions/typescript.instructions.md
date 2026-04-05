@@ -1,6 +1,6 @@
 ---
-description: Instructions for TypeScript code style and conventions.
-applyTo: '**/*.ts'
+description: TypeScript source file rules for files in src. Use when editing utilities, router files, plugin files, interfaces, or stores.
+applyTo: 'src/**/*.ts'
 ---
 
 # TypeScript Code Style
@@ -32,3 +32,14 @@ export function getEnvString(key: string): string {
   // ...
 }
 ```
+
+## Imports and Types
+
+- Keep imports grouped with external packages first and internal aliases second.
+- Use `import type` for type-only imports.
+- Prefer narrow exported types and helper functions over large mixed-purpose files.
+
+## Namespace Fit
+
+- In namespaced source folders, each `.ts` file should have one clear responsibility that matches the file name.
+- Shared interfaces or helper types should live beside the code that owns them unless they are reused across namespaces.

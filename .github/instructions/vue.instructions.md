@@ -1,13 +1,14 @@
 ---
-description: Instructions for Vue.js code style and conventions.
-applyTo: '**/*.vue'
+description: Vue single-file component rules for files in src. Use when editing components or pages written as .vue files.
+applyTo: 'src/**/*.vue'
 ---
 
 # Vue File Structure and Ordering
 
 ## General Order
 
-- **Script section first, template section last**
+- **Use `<script setup lang="ts">` by default.**
+- **Script section first, template section last.**
 - **Order inside `<script setup>` or `<script>`:**
   1. Imports (external, then internal)
   2. Define props
@@ -55,30 +56,10 @@ components/
       navigationLinkItem.ts   ✓ interface lives here, not in the .vue file
 ```
 
-## Layout
+## Styling
 
-- **Use `v-row` and `v-col` for layout structure** instead of manual CSS flex/grid classes like `d-flex`, `d-grid`, `ga-*`, etc.
-- Use `cols="12"` as the default full-width base; add responsive breakpoints (`lg`, `xl`, etc.) where needed.
-- Utility classes (`pa-*`, `px-*`, `ma-*`, `text-*`, `position-*`, etc.) are still acceptable for spacing and element-level styling.
-- Exceptions: `d-flex` and inline alignment classes are acceptable when used on small inline elements (e.g. navigation links, icon+label combos) or absolutely-positioned overlays where `v-row`/`v-col` semantics would be inappropriate.
-
-```vue
-<!-- correct -->
-<v-row>
-  <v-col cols="12">
-    <h1>Title</h1>
-  </v-col>
-  <v-col cols="12" lg="4">
-    <my-card />
-  </v-col>
-</v-row>
-
-<!-- incorrect -->
-<div class="d-flex flex-column ga-4">
-  <h1>Title</h1>
-  <my-card />
-</div>
-```
+- Keep styles `scoped` unless the component is intentionally providing global styling.
+- Prefer moving reusable visual tokens to shared styles or the Vuetify theme instead of hard-coding them per component.
 
 ## Example
 

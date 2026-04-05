@@ -1,5 +1,5 @@
 ---
-description: Enforces that all files in src (components, utils, pages, plugins, etc.) must be namespaced under a folder. Each folder represents a single logical unit (component, feature, or closely related group of utilities). This ensures clear boundaries, maintainability, and prevents accidental coupling of unrelated code.
+description: Source tree namespacing rules for files under src. Use when creating folders, adding files, or reviewing whether a change belongs in an existing namespace.
 applyTo: |
   src/**
 ---
@@ -8,13 +8,27 @@ applyTo: |
 
 ## Namespacing Requirement
 
-- All files in `src/components`, `src/utils`, and similar directories **must be namespaced under a folder**.
-- Each folder represents **one logical unit** — this may be a single component, a single function, or a group of closely related functions that belong together (e.g. a set of env helpers).
-- Do **not** place multiple unrelated components or utility functions in the same folder.
-- Each utility file **must** contain only **one** exported function.
-- The folder name should reflect the logical unit (PascalCase for components, camelCase for utilities).
-- Utility function files should be named in `getX` format (e.g. `getEnvString.ts`, `formatDate.ts`).
-- Do **not** create an `index.ts` barrel file inside utility namespaces — import directly from the file.
+- New source files under `src/` should belong to a namespace folder that reflects one logical unit.
+- Do **not** place new implementation files directly under broad buckets such as `src/components`, `src/pages`, `src/utils`, or `src/plugins`.
+- Reuse an existing namespace when the new file clearly belongs to the same feature, component, page, or utility group.
+- Split work into a new namespace when the file would otherwise introduce an unrelated responsibility.
+
+## Folder and File Naming
+
+- Component and page folders should use the existing kebab-case folder style (for example `show-grid`, `top-navigation`, `home`).
+- Primary component files should use PascalCase names that match the concept exported by that namespace (for example `ShowGrid.vue`, `TopNavigation.vue`).
+- Utility and support `.ts` files should be named after the single function, type, or concept they contain.
+- Avoid generic names such as `types.ts`, `helpers.ts`, or `utils.ts` inside a namespace when a more specific name is possible.
+
+## Barrel Files
+
+- Use `index.ts` only when a namespace intentionally exposes a small public surface for external imports.
+- Do **not** add `index.ts` barrel files to utility namespaces; import utility files directly.
+
+## Utilities
+
+- Utility files should keep a single clear export responsibility.
+- Closely related utilities may share a namespace folder, such as `env/` or `youtube/`, but unrelated helpers should not.
 - Example structure:
 
 ```
