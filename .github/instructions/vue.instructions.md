@@ -21,9 +21,9 @@ applyTo: '**/*.vue'
 
 ## Component Interfaces
 
-- **Never define TypeScript interfaces or types inside `.vue` files.**
-- Interfaces used by a component (e.g. props shapes, item types) must be placed in a separate `.ts` file within the same namespace folder as the component.
-- Name the file after what it represents (e.g. `navigationLinkItem.ts`, not `types.ts`).
+- **Prefer placing TypeScript interfaces or types inside `.vue` files for simple, component-specific props.**
+- If the interface is large, complex, or reused by other components, move it to a separate `.ts` file within the same namespace folder.
+- If in a separate file, name the file after what it represents (e.g. `navigationLinkItem.ts`, not `types.ts`).
 
 ```
 components/
