@@ -10,11 +10,11 @@ import { createApp } from 'vue';
 // Plugins
 import { registerPlugins } from '@/plugins';
 
-// Styles
-import '@/styles/main.scss';
-
 // Components
 import App from './App.vue';
+
+// Styles
+import '@/styles/main.scss';
 
 const app = createApp(App);
 

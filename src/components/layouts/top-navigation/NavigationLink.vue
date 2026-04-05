@@ -9,7 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <router-link class="d-flex ga-2 align-center nav-link-wrapper" :to="props.path">
+  <router-link :to="props.path" class="d-flex ga-2 align-center nav-link-wrapper">
     <v-icon v-if="props.icon">
       {{ props.icon }}
     </v-icon>

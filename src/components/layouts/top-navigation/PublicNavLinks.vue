@@ -22,10 +22,10 @@ const captureEl = (els: HTMLElement[], el: unknown, index: number) => {
 <template>
   <v-list-item v-for="(link, index) in links" :key="link.name">
     <navigation-link
-      :ref="(el) => captureEl(linkEls, el, index)"
       :icon="link.icon"
       :name="link.name"
       :path="link.path"
+      :ref="(el) => captureEl(linkEls, el, index)"
     />
   </v-list-item>
   <nav-indicator :link-els="linkEls" :link-paths="linkPaths" />

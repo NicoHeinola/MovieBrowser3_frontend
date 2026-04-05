@@ -59,12 +59,12 @@ onMounted(() => {
 
 <template>
   <div
-    ref="indicatorEl"
-    class="nav-indicator"
     :class="{ 'nav-indicator--animate': initialized }"
     :style="{ left: `${left}px`, width: `${width}px`, opacity: initialized && activeIndex >= 0 ? 1 : 0 }"
+    class="nav-indicator"
+    ref="indicatorEl"
   >
-    <div class="indicator-bar" :class="{ 'indicator-bar--squish': isSquishing }" @animationend="isSquishing = false" />
+    <div :class="{ 'indicator-bar--squish': isSquishing }" class="indicator-bar" @animationend="isSquishing = false" />
   </div>
 </template>
 

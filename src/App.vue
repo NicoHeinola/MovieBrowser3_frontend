@@ -27,5 +27,7 @@ import { TopNavigation } from './components/layouts/top-navigation';
   mask-image: url('/backgrounds/bubbles.svg');
   mask-repeat: repeat;
   mask-size: 300px 300px;
+
+  pointer-events: none;
 }
 </style>

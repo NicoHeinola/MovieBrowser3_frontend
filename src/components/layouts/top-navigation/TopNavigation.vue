@@ -34,7 +34,7 @@ const isInControlPanel = computed(() => route.value?.fullPath.startsWith('/contr
               </v-menu>
             </v-avatar>
             <v-avatar>
-              <v-btn v-tooltip:bottom="'Toggle Control Panel'" icon :to="isInControlPanel ? '/' : '/control-panel'">
+              <v-btn :to="isInControlPanel ? '/' : '/control-panel'" icon v-tooltip:bottom="'Toggle Control Panel'">
                 <v-icon :color="isInControlPanel ? 'link' : ''"> mdi-key-variant </v-icon>
               </v-btn>
             </v-avatar>
