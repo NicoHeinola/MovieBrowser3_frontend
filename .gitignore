@@ -38,8 +38,3 @@ pnpm-debug.log*
 
 node_modules/
 
-public/videos/**/*
-!public/videos/**/
-!public/videos/**/README.md
-
-
