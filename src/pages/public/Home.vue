@@ -53,6 +53,54 @@ const continueToWatchShows = ref<Show[]>([
       },
     ],
   },
+  {
+    id: 4,
+    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    preview_url: null,
+    titles: [
+      {
+        title: 'Oppenheimer',
+        is_primary: true,
+      },
+    ],
+  },
+  {
+    id: 4,
+    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    preview_url: null,
+    titles: [
+      {
+        title: 'Oppenheimer',
+        is_primary: true,
+      },
+    ],
+  },
+  {
+    id: 4,
+    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    preview_url: null,
+    titles: [
+      {
+        title: 'Oppenheimer',
+        is_primary: true,
+      },
+    ],
+  },
+  {
+    id: 4,
+    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    preview_url: null,
+    titles: [
+      {
+        title: 'Oppenheimer',
+        is_primary: true,
+      },
+    ],
+  },
 ]);
 
 const selectedBannerShow = ref<Show | null>(null);
@@ -60,7 +108,7 @@ const selectedBannerShow = ref<Show | null>(null);
 
 <template>
   <show-banner :selected-show="selectedBannerShow">
-    <continue-watching-list :shows="continueToWatchShows" @update:selected-show="selectedBannerShow = $event" />
+    <continue-watching-list v-model:selected-show="selectedBannerShow" :shows="continueToWatchShows" />
   </show-banner>
 </template>
 
