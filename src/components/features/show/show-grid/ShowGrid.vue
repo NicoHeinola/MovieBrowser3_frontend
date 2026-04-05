@@ -14,8 +14,6 @@ const props = withDefaults(
   }>(),
   {
     rows: 1,
-    cardWidth: '300px',
-    cardHeight: '400px',
   },
 );
 
@@ -59,7 +57,6 @@ const bannerCardContainerWidth = computed(() => {
       <show-card
         v-for="show in showsToShow"
         :height="cardHeight"
-        :min-width="cardWidth"
         :show="show"
         :width="cardWidth"
         @click="emit('click:show', show)"

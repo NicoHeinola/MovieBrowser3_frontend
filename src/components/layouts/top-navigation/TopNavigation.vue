@@ -47,6 +47,6 @@ const isInControlPanel = computed(() => route.fullPath.startsWith('/control-pane
 
 <style lang="scss" scoped>
 .navigation-bar {
-  background: linear-gradient(to bottom, black, transparent);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.671), transparent);
 }
 </style>

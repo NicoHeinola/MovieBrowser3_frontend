@@ -38,8 +38,12 @@ const continueToWatchShows = ref<Show[]>([
     preview_url: null,
     titles: [
       {
-        title: 'Spider-Man: Into the Spider-Verse',
+        title: 'Spider-Man: Into the Spider-Verse Spider-Man: Into the Spider-Verse Spider-Man: Into the Spider-Verse',
         is_primary: true,
+      },
+      {
+        title: 'aweawe',
+        is_primary: false,
       },
     ],
   },
@@ -120,7 +124,7 @@ const continueWatchingCols = computed(() => {
 
 <template>
   <show-banner :selected-show="selectedBannerShow" style="margin-top: -70px">
-    <v-row class="align-center" style="max-width: 90%">
+    <v-row align="center" style="max-width: 90%">
       <v-col cols="12">
         <h1 class="text-h4 font-weight-bold">Continue Watching</h1>
         <show-grid
@@ -132,7 +136,7 @@ const continueWatchingCols = computed(() => {
       </v-col>
     </v-row>
   </show-banner>
-  <selected-show-drawer v-model="isShowDrawerVisible" :show="selectedBannerShow" />
+  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedBannerShow" />
 </template>
 
 <style lang="scss" scoped></style>

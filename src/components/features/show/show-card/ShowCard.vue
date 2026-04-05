@@ -2,19 +2,31 @@
 import type { Show } from '@/interfaces/api/Show';
 import { computed } from 'vue';
 
-const props = defineProps<{
-  show: Show;
-}>();
+import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
 
-const primaryTitle = computed(() => {
-  const primaryTitleObj = props.show.titles.find((title) => title.is_primary);
+const props = withDefaults(
+  defineProps<{
+    show: Show;
+    width?: string | number;
+    height?: string | number;
+  }>(),
+  {
+    width: '300px',
+    height: '400px',
+  },
+);
 
-  return primaryTitleObj ? primaryTitleObj.title : 'Untitled Show';
-});
+const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
 </script>
 
 <template>
-  <v-card class="show-card pa-0 bg-white">
+  <v-card
+    :height="props.height"
+    :min-width="props.width"
+    :width="props.width"
+    class="show-card pa-0 bg-white"
+    rounded="lg"
+  >
     <v-img :src="props.show.card_image_url" class="h-100 w-100" cover></v-img>
     <div class="card-shadow position-absolute bottom-0 left-0 w-100" style="height: 20%" />
     <div
