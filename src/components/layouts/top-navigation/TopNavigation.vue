@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { useRoute } from 'vuetify/lib/composables/router.mjs';
+import { useRoute } from 'vue-router';
 import ControlPanelNavLinks from './ControlPanelNavLinks.vue';
 import PublicNavLinks from './PublicNavLinks.vue';
 
 const route = useRoute();
 
-const isInControlPanel = computed(() => route.value?.fullPath.startsWith('/control-panel'));
+const isInControlPanel = computed(() => route.fullPath.startsWith('/control-panel'));
 </script>
 
 <template>
@@ -26,7 +26,7 @@ const isInControlPanel = computed(() => route.value?.fullPath.startsWith('/contr
                 <template #default>
                   <v-list>
                     <v-list-item prepend-icon="mdi-cog" to="/user-settings"> Profile </v-list-item>
-                    <v-list-item base-color="error" prepend-icon="mdi-arrow-left" @click="console.log('logout')">
+                    <v-list-item base-color="error" prepend-icon="mdi-arrow-left" @click="() => {}">
                       Logout
                     </v-list-item>
                   </v-list>

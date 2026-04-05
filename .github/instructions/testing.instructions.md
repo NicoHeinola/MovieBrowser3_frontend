@@ -15,6 +15,7 @@ applyTo: 'src/**/__tests__/*.test.ts'
 - All tests must be located in a `__tests__` folder adjacent to the file being tested.
 - **Each utility function must have its own test file** (one test file per function).
 - Test files should follow the naming convention: `[filename].test.ts`.
+- **Every utility file in `src/utils/` must have a corresponding test file.** When adding a new utility, always create its test file before considering the work done.
 
 Example:
 

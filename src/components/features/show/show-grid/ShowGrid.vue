@@ -63,7 +63,7 @@ const bannerCardContainerWidth = computed(() => {
         :min-width="cardWidth"
         :show="show"
         :width="cardWidth"
-        @click="console.log('Watching show')"
+        @click="() => {}"
         @mouseenter="selectedShow = show"
         :key="show.id"
       />

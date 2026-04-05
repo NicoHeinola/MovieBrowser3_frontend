@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { NavigationLinkItem } from './navigationLinkItem';
 import { ref } from 'vue';
+import { captureComponentEl } from '@/utils/vue/captureComponentEl';
 import NavigationLink from './NavigationLink.vue';
 import NavIndicator from './NavIndicator.vue';
 
@@ -11,12 +12,6 @@ const links: NavigationLinkItem[] = [
 
 const linkEls = ref<HTMLElement[]>([]);
 const linkPaths = links.map((l) => l.path as string);
-
-const captureEl = (els: HTMLElement[], el: unknown, index: number) => {
-  if (el) {
-    els[index] = ((el as { $el?: HTMLElement }).$el ?? el) as HTMLElement;
-  }
-};
 </script>
 
 <template>
@@ -25,7 +20,7 @@ const captureEl = (els: HTMLElement[], el: unknown, index: number) => {
       :icon="link.icon"
       :name="link.name"
       :path="link.path"
-      :ref="(el) => captureEl(linkEls, el, index)"
+      :ref="(el) => captureComponentEl(linkEls, el, index)"
     />
   </v-list-item>
   <nav-indicator :link-els="linkEls" :link-paths="linkPaths" />
