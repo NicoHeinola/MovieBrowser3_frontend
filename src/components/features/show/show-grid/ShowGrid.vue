@@ -23,12 +23,17 @@ const selectedShow = defineModel<Show | null>('selectedShow');
 
 const { xxl, xlAndUp, lgAndUp } = useDisplay();
 
-const effectiveCols = computed(() => {
+const requestedCols = computed(() => {
   if (props.cols) return props.cols;
   if (xxl.value) return 5;
   if (xlAndUp.value) return 4;
   if (lgAndUp.value) return 3;
   return 1;
+});
+
+const effectiveCols = computed(() => {
+  if (props.shows.length === 0) return 1;
+  return Math.min(requestedCols.value, props.shows.length);
 });
 
 const showsToShow = computed(() => {
