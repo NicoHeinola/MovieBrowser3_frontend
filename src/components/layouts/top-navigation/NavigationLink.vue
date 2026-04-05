@@ -9,34 +9,37 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="d-flex nav-link-wrapper">
-    <v-icon v-if="props.icon" class="me-2">{{ props.icon }}</v-icon>
-    <router-link class="d-flex align-center" :to="props.path">
+  <router-link class="d-flex ga-2 align-center nav-link-wrapper" :to="props.path">
+    <v-icon v-if="props.icon">
+      {{ props.icon }}
+    </v-icon>
+    <span>
       {{ props.name }}
-    </router-link>
-  </div>
+    </span>
+  </router-link>
 </template>
 
 <style lang="scss" scoped>
 .nav-link-wrapper {
   cursor: pointer;
 
-  :deep(.v-icon) {
-    transition: color 220ms ease;
-  }
-
-  a {
+  span {
     transition:
       color 220ms ease,
       text-shadow 220ms ease,
       transform 220ms ease;
   }
 
+  :deep(.v-icon) {
+    transition: color 220ms ease;
+  }
+
   &:hover {
-    a {
-      color: rgb(var(--v-theme-link));
-      text-decoration: none !important;
-      text-shadow: 0 0 8px rgba(var(--v-theme-link), 0.55);
+    color: rgb(var(--v-theme-link));
+    text-decoration: none !important;
+    text-shadow: 0 0 8px rgba(var(--v-theme-link), 0.55);
+
+    span {
       transform: translateY(-2px);
     }
 
