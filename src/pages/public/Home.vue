@@ -18,7 +18,7 @@ const continueToWatchShows = ref<Show[]>([
   },
   {
     id: 2,
-    hero_image_url: 'https://static0.srcdn.com/wordpress/wp-content/uploads/2023/01/nier-automata-anime-poster.jpg',
+    hero_image_url: 'https://i.pinimg.com/originals/35/91/d5/3591d5bf488030e56baf05d15e95a126.gif',
     card_image_url: 'https://static0.srcdn.com/wordpress/wp-content/uploads/2023/01/nier-automata-anime-poster.jpg',
     titles: [
       {
