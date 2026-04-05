@@ -37,3 +37,9 @@ pnpm-debug.log*
 *.d.ts
 
 node_modules/
+
+public/videos/**/*
+!public/videos/**/
+!public/videos/**/README.md
+
+

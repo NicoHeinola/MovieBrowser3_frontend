@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import type { Show } from '@/interfaces/api/Show';
 import { computed, ref } from 'vue';
-import ShowCard from '@/components/features/show/show-card/ShowCard.vue';
 import { useDisplay } from 'vuetify';
+import ShowCard from '@/components/features/show/show-card/ShowCard.vue';
 
 const continueToWatchShows = ref<Show[]>([
   {
@@ -22,14 +22,15 @@ const continueToWatchShows = ref<Show[]>([
     card_image_url: 'https://static0.srcdn.com/wordpress/wp-content/uploads/2023/01/nier-automata-anime-poster.jpg',
     titles: [
       {
-        title: 'Arcane',
+        title: 'Arcane ArcaneArcaneArcaneArcaneArcaneArcaneArcaneArcaneArcaneArcaneArcaneArcaneArcaneArcane',
         is_primary: true,
       },
     ],
   },
   {
     id: 3,
-    hero_image_url: 'https://images6.alphacoders.com/137/thumb-1920-1378928.png',
+    hero_image_url:
+      'https://assetsio.gnwcdn.com/ranma-1-2-anime-poster.jpg?width=1200&height=600&fit=crop&enable=upscale&auto=webp',
     card_image_url: 'https://images6.alphacoders.com/137/thumb-1920-1378928.png',
     titles: [
       {
@@ -51,6 +52,7 @@ const continueToWatchShows = ref<Show[]>([
   },
 ]);
 
+const bannerImageUrls = computed(() => continueToWatchShows.value.map((show) => show.hero_image_url));
 const selectedBannerShow = ref<Show | null>(null);
 
 const { xxl, xlAndUp, lgAndUp } = useDisplay();
@@ -69,23 +71,32 @@ const bannerCardContainerWidth = computed(() => {
 <template>
   <div class="position-absolute w-100" style="left: 50%; transform: translateX(-50%); top: 0">
     <div style="height: 70vh">
-      <v-img class="banner-image" height="100%" :src="selectedBannerShow?.hero_image_url" cover> </v-img>
+      <v-fade-transition>
+        <template v-for="bannerImageUrl in bannerImageUrls" :key="bannerImageUrl">
+          <v-img
+            :src="selectedBannerShow?.hero_image_url"
+            class="banner-image position-absolute top-0 left-0 w-100 h-100"
+            height="100%"
+            cover
+            v-if="selectedBannerShow?.hero_image_url === bannerImageUrl"
+          >
+          </v-img>
+        </template>
+      </v-fade-transition>
       <div class="position-absolute w-100 h-50 bottom-0 banner-gradient-background"></div>
     </div>
     <div class="position-absolute w-100 h-100 d-flex flex-column align-center justify-center top-0">
       <div :style="{ maxWidth: `min(${bannerCardContainerWidth}, 90%)` }">
         <h1>Continue Watching</h1>
-        <div class="d-flex align-center ga-10 w-100 pa-1 overflow-scroll">
+        <div class="d-flex align-center ga-10 w-100 pa-1 overflow-x-scroll">
           <show-card
             v-for="show in [...continueToWatchShows]"
-            :image-url="show.card_image_url"
             :show="show"
             height="400px"
             min-width="300px"
             width="300px"
-            :is-selected="selectedBannerShow?.id === show.id"
-            :key="show.id"
             @mouseenter="selectedBannerShow = show"
+            :key="show.id"
           />
         </div>
       </div>
