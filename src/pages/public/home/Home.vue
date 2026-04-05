@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { Show } from '@/interfaces/api/Show';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useDisplay } from 'vuetify';
+import SelectedShowDrawer from '@/components/features/show/selected-show-drawer/SelectedShowDrawer.vue';
 import ShowBanner from '@/components/features/show/show-banner/ShowBanner.vue';
 import ShowGrid from '@/components/features/show/show-grid/ShowGrid.vue';
 
@@ -53,20 +55,84 @@ const continueToWatchShows = ref<Show[]>([
       },
     ],
   },
+  {
+    id: 5,
+    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    preview_url: 'https://youtu.be/doesnotwork',
+    titles: [
+      {
+        title: 'Oppenheimer',
+        is_primary: true,
+      },
+    ],
+  },
+  {
+    id: 6,
+    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    preview_url: 'https://youtu.be/doesnotwork',
+    titles: [
+      {
+        title: 'Oppenheimer',
+        is_primary: true,
+      },
+    ],
+  },
+  {
+    id: 7,
+    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    preview_url: 'https://youtu.be/doesnotwork',
+    titles: [
+      {
+        title: 'Oppenheimer',
+        is_primary: true,
+      },
+    ],
+  },
+  {
+    id: 8,
+    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
+    preview_url: 'https://youtu.be/doesnotwork',
+    titles: [
+      {
+        title: 'Oppenheimer',
+        is_primary: true,
+      },
+    ],
+  },
 ]);
 
 const selectedBannerShow = ref<Show | null>(null);
+const isShowDrawerVisible = ref<boolean>(false);
+
+const { xxl, xlAndUp, lgAndUp } = useDisplay();
+
+const continueWatchingCols = computed(() => {
+  if (xxl.value) return 5;
+  if (xlAndUp.value) return 4;
+  if (lgAndUp.value) return 3;
+  return 1;
+});
 </script>
 
 <template>
-  <show-banner :selected-show="selectedBannerShow">
-    <v-row class="align-center">
+  <show-banner :selected-show="selectedBannerShow" style="margin-top: -70px">
+    <v-row class="align-center" style="max-width: 90%">
       <v-col cols="12">
         <h1 class="text-h4 font-weight-bold">Continue Watching</h1>
-        <show-grid v-model:selected-show="selectedBannerShow" :shows="continueToWatchShows" />
+        <show-grid
+          v-model:selected-show="selectedBannerShow"
+          :cols="continueWatchingCols"
+          :shows="continueToWatchShows"
+          @click:show="isShowDrawerVisible = true"
+        />
       </v-col>
     </v-row>
   </show-banner>
+  <selected-show-drawer v-model="isShowDrawerVisible" :show="selectedBannerShow" />
 </template>
 
 <style lang="scss" scoped></style>

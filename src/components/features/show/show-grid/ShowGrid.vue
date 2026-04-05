@@ -1,39 +1,33 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/Show';
 import { computed } from 'vue';
-import { useDisplay } from 'vuetify';
 import ShowCard from '@/components/features/show/show-card/ShowCard.vue';
 import { parseCssNumeric } from '@/utils/css/parseCssNumeric';
 
-export interface ShowGridProps {
-  shows: Show[];
-  rows?: number;
-  cols?: number;
-  cardWidth?: string;
-  cardHeight?: string;
-}
+const props = withDefaults(
+  defineProps<{
+    shows: Show[];
+    rows?: number;
+    cols?: number;
+    cardWidth?: string;
+    cardHeight?: string;
+  }>(),
+  {
+    rows: 1,
+    cardWidth: '300px',
+    cardHeight: '400px',
+  },
+);
 
-const props = withDefaults(defineProps<ShowGridProps>(), {
-  rows: 1,
-  cardWidth: '300px',
-  cardHeight: '400px',
-});
+const emit = defineEmits<{
+  (e: 'click:show', value: Show | null): void;
+}>();
 
 const selectedShow = defineModel<Show | null>('selectedShow');
 
-const { xxl, xlAndUp, lgAndUp } = useDisplay();
-
-const requestedCols = computed(() => {
-  if (props.cols) return props.cols;
-  if (xxl.value) return 5;
-  if (xlAndUp.value) return 4;
-  if (lgAndUp.value) return 3;
-  return 1;
-});
-
 const effectiveCols = computed(() => {
   if (props.shows.length === 0) return 1;
-  return Math.min(requestedCols.value, props.shows.length);
+  return Math.min(props.cols ?? 1, props.shows.length);
 });
 
 const showsToShow = computed(() => {
@@ -54,13 +48,13 @@ const bannerCardContainerWidth = computed(() => {
 </script>
 
 <template>
-  <div :style="{ maxWidth: `min(${bannerCardContainerWidth}, 90%)` }">
+  <div :style="{ maxWidth: `max(${bannerCardContainerWidth}, 90%)` }">
     <div
       :style="{
         display: 'grid',
         gridTemplateColumns: `repeat(${effectiveCols}, 1fr)`,
       }"
-      class="d-grid ga-10 w-100 pa-1"
+      class="d-grid ga-10 w-100 pa-1 overflow-auto align-center"
     >
       <show-card
         v-for="show in showsToShow"
@@ -68,7 +62,7 @@ const bannerCardContainerWidth = computed(() => {
         :min-width="cardWidth"
         :show="show"
         :width="cardWidth"
-        @click="() => {}"
+        @click="emit('click:show', show)"
         @mouseenter="selectedShow = show"
         :key="show.id"
       />

@@ -34,32 +34,30 @@ watch(
 </script>
 
 <template>
-  <div class="position-absolute w-100" style="left: 50%; transform: translateX(-50%); top: 0">
-    <div style="height: 70vh">
-      <v-fade-transition>
-        <div
-          class="banner-video-container position-absolute top-0 left-0 w-100 h-100 overflow-hidden"
-          style="pointer-events: none"
-          v-if="videoId && !isVideoError"
-          :key="videoId"
-        >
-          <you-tube-player :video-id="videoId" @error="isVideoError = true" @playing="isVideoPlaying = true" />
-        </div>
-      </v-fade-transition>
+  <div class="w-100 position-relative" style="height: 70vh">
+    <v-fade-transition>
+      <div
+        class="banner-video-container position-absolute top-0 left-0 w-100 h-100 overflow-hidden"
+        style="pointer-events: none"
+        v-if="videoId && !isVideoError"
+        :key="videoId"
+      >
+        <you-tube-player :video-id="videoId" @error="isVideoError = true" @playing="isVideoPlaying = true" />
+      </div>
+    </v-fade-transition>
 
-      <v-fade-transition>
-        <v-img
-          :src="props.selectedShow?.banner_url"
-          class="banner-image position-absolute top-0 left-0 w-100 h-100"
-          height="100%"
-          cover
-          v-if="(props.selectedShow?.banner_url && (!isVideoPlaying || isVideoError)) || !videoId"
-          :key="props.selectedShow?.banner_url ?? 'fallback'"
-        >
-        </v-img>
-      </v-fade-transition>
-      <div class="position-absolute w-100 h-50 bottom-0 banner-gradient-background"></div>
-    </div>
+    <v-fade-transition>
+      <v-img
+        :src="props.selectedShow?.banner_url"
+        class="banner-image position-absolute top-0 left-0 w-100 h-100"
+        height="100%"
+        cover
+        v-if="(props.selectedShow?.banner_url && (!isVideoPlaying || isVideoError)) || !videoId"
+        :key="props.selectedShow?.banner_url ?? 'fallback'"
+      >
+      </v-img>
+    </v-fade-transition>
+    <div class="position-absolute w-100 h-50 bottom-0 banner-gradient-background"></div>
     <div class="position-absolute w-100 h-100 d-flex flex-column align-center justify-center top-0">
       <slot />
     </div>

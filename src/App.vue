@@ -5,7 +5,7 @@ import { TopNavigation } from './components/layouts/top-navigation';
 <template>
   <v-app>
     <div class="background"></div>
-    <v-main>
+    <v-main class="z-10">
       <top-navigation />
       <router-view />
     </v-main>
