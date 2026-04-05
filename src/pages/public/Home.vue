@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import type { Show } from '@/interfaces/api/Show';
 import { ref } from 'vue';
-import ContinueWatchingList from '@/components/features/show/continue-watching-list/ContinueWatchingList.vue';
 import ShowBanner from '@/components/features/show/show-banner/ShowBanner.vue';
+import ShowCarousel from '@/components/features/show/show-carousel/ShowCarousel.vue';
 
 const continueToWatchShows = ref<Show[]>([
   {
@@ -60,7 +60,10 @@ const selectedBannerShow = ref<Show | null>(null);
 
 <template>
   <show-banner :selected-show="selectedBannerShow">
-    <continue-watching-list v-model:selected-show="selectedBannerShow" :shows="continueToWatchShows" />
+    <div class="d-flex flex-column ga-4">
+      <h1 class="text-h4 font-weight-bold">Continue Watching</h1>
+      <show-carousel v-model:selected-show="selectedBannerShow" :shows="continueToWatchShows" />
+    </div>
   </show-banner>
 </template>
 

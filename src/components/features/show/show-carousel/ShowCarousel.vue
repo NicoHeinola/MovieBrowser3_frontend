@@ -4,11 +4,11 @@ import { computed } from 'vue';
 import { useDisplay } from 'vuetify';
 import ShowCard from '@/components/features/show/show-card/ShowCard.vue';
 
-export interface ContinueWatchingListProps {
+export interface ShowCarouselProps {
   shows: Show[];
 }
 
-const props = defineProps<ContinueWatchingListProps>();
+const props = defineProps<ShowCarouselProps>();
 
 const selectedShow = defineModel<Show | null>('selectedShow');
 
@@ -34,7 +34,6 @@ const bannerCardContainerWidth = computed(() => {
 
 <template>
   <div :style="{ maxWidth: `min(${bannerCardContainerWidth}, 90%)` }">
-    <h1>Continue Watching</h1>
     <div class="d-flex align-center ga-10 w-100 pa-1">
       <show-card
         v-for="show in showsToShow"
