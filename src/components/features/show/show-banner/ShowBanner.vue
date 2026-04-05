@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/Show';
+
 import { computed, ref, watch } from 'vue';
+
 import YouTubePlayer from '@/components/common/youtube-player/YouTubePlayer.vue';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
 
 export interface ShowBannerProps {
   selectedShow: Show | null;
+  disableVideoPlayback?: boolean;
 }
 
-const props = defineProps<ShowBannerProps>();
+const props = withDefaults(defineProps<ShowBannerProps>(), {
+  disableVideoPlayback: false,
+});
 
 const isVideoPlaying = ref(false);
 const isVideoError = ref(false);
@@ -24,13 +29,13 @@ const videoId = computed(() => {
   return match ? match[1] : null;
 });
 
-watch(
-  () => props.selectedShow,
-  () => {
-    isVideoPlaying.value = false;
-    isVideoError.value = false;
-  },
-);
+const canPlayVideo = computed(() => Boolean(videoId.value) && !isVideoError.value && !props.disableVideoPlayback);
+const activeVideoId = computed(() => videoId.value ?? '');
+
+watch([() => props.selectedShow, () => props.disableVideoPlayback], () => {
+  isVideoPlaying.value = false;
+  isVideoError.value = false;
+});
 </script>
 
 <template>
@@ -39,10 +44,10 @@ watch(
       <div
         class="banner-video-container position-absolute top-0 left-0 w-100 h-100 overflow-hidden"
         style="pointer-events: none"
-        v-if="videoId && !isVideoError"
-        :key="videoId"
+        :key="activeVideoId"
+        v-if="canPlayVideo"
       >
-        <you-tube-player :video-id="videoId" @error="isVideoError = true" @playing="isVideoPlaying = true" />
+        <you-tube-player :video-id="activeVideoId" @error="isVideoError = true" @playing="isVideoPlaying = true" />
       </div>
     </v-fade-transition>
 
@@ -52,8 +57,8 @@ watch(
         class="banner-image position-absolute top-0 left-0 w-100 h-100"
         height="100%"
         cover
-        v-if="(props.selectedShow?.banner_url && (!isVideoPlaying || isVideoError)) || !videoId"
         :key="props.selectedShow?.banner_url ?? 'fallback'"
+        v-if="(props.selectedShow?.banner_url && (!canPlayVideo || !isVideoPlaying)) || !videoId"
       >
       </v-img>
     </v-fade-transition>

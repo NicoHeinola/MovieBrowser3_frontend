@@ -123,7 +123,11 @@ const continueWatchingCols = computed(() => {
 </script>
 
 <template>
-  <show-banner :selected-show="selectedBannerShow" style="margin-top: -70px">
+  <show-banner
+    :disable-video-playback="isShowDrawerVisible"
+    :selected-show="selectedBannerShow"
+    style="margin-top: -70px"
+  >
     <v-row align="center" style="max-width: 90%">
       <v-col cols="12">
         <h1 class="text-h4 font-weight-bold">Continue Watching</h1>

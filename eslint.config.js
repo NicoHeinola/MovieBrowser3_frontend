@@ -24,7 +24,6 @@ export default [
             'ATTR_STATIC', // normal
             'ATTR_SHORTHAND_BOOL', // boolean-prop
             'EVENTS', // @functions
-            'CONDITIONALS', // v-if
             'DEFINITION',
             'GLOBAL',
             'UNIQUE', // key, ref
@@ -32,6 +31,7 @@ export default [
             'RENDER_MODIFIERS',
             'OTHER_DIRECTIVES',
             'CONTENT',
+            'CONDITIONALS', // v-if, v-else, v-else-if
           ],
           alphabetical: true,
         },

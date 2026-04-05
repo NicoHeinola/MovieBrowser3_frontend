@@ -53,6 +53,11 @@ const createPlayer = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onReady: (event: any) => {
         event.target.setVolume(props.volume);
+        if (props.muted) {
+          event.target.mute();
+        } else {
+          event.target.unMute();
+        }
         if (props.autoplay) {
           event.target.loadVideoById(props.videoId);
         }
@@ -95,6 +100,28 @@ watch(playerContainerRef, (container) => {
   if (container) initYTApi();
 });
 
+watch(
+  () => props.muted,
+  (muted) => {
+    if (!ytPlayer) return;
+
+    if (muted) {
+      ytPlayer.mute();
+      return;
+    }
+
+    ytPlayer.unMute();
+  },
+);
+
+watch(
+  () => props.volume,
+  (volume) => {
+    if (!ytPlayer) return;
+    ytPlayer.setVolume(volume);
+  },
+);
+
 onUnmounted(() => {
   ytPlayer?.destroy();
   ytPlayer = null;
@@ -103,7 +130,7 @@ onUnmounted(() => {
 
 <template>
   <div class="player-root">
-    <div ref="playerContainerRef"></div>
+    <div class="player-container" ref="playerContainerRef"></div>
   </div>
 </template>
 
@@ -111,5 +138,10 @@ onUnmounted(() => {
 .player-root {
   position: absolute;
   inset: 0;
+}
+
+.player-container {
+  width: 100%;
+  height: 100%;
 }
 </style>
