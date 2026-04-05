@@ -20,13 +20,7 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
 </script>
 
 <template>
-  <v-card
-    :height="props.height"
-    :min-width="props.width"
-    :width="props.width"
-    class="show-card pa-0 bg-white"
-    rounded="lg"
-  >
+  <v-card :height="props.height" :min-width="props.width" :width="props.width" class="show-card">
     <v-img :src="props.show.card_image_url" class="h-100 w-100" cover></v-img>
     <div class="card-shadow position-absolute bottom-0 left-0 w-100" style="height: 20%" />
     <div
@@ -34,7 +28,7 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
       style="cursor: pointer; max-width: 100%"
     >
       <p
-        class="card-title text-truncate text-grey-lighten-1 ma-0 font-weight-bold"
+        class="card-title text-truncate text-grey-lighten-2 ma-0 font-weight-bold"
         style="text-shadow: 0 0 5px rgba(0, 0, 0, 0.7)"
       >
         {{ primaryTitle }}
@@ -58,7 +52,6 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
     :deep(.v-img) {
       cursor: pointer;
       transform: scale(1.05);
-      filter: brightness(70%);
     }
 
     .card-title {
@@ -71,7 +64,7 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
   }
 
   .card-shadow {
-    background: linear-gradient(to top, rgba(0, 0, 0, 1), transparent);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.829), transparent);
     opacity: 0.7;
     pointer-events: none;
   }

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 const props = defineProps<{
@@ -14,6 +14,7 @@ const width = ref(0);
 // Tracks whether the initial position has been set; CSS transitions are only enabled after this
 const initialized = ref(false);
 const isSquishing = ref(false);
+let resizeObserver: ResizeObserver | null = null;
 
 const activeIndex = computed(() => props.linkPaths.indexOf(route.path));
 
@@ -46,13 +47,57 @@ const updatePosition = (animate: boolean) => {
   }
 };
 
+const observeLayout = () => {
+  resizeObserver?.disconnect();
+
+  if (!indicatorEl.value?.parentElement) return;
+
+  resizeObserver = new ResizeObserver(() => {
+    updatePosition(false);
+  });
+
+  resizeObserver.observe(indicatorEl.value.parentElement);
+
+  const activeLinkEl = props.linkEls[activeIndex.value];
+
+  if (activeLinkEl) {
+    resizeObserver.observe(activeLinkEl);
+  }
+};
+
+const refreshPosition = (animate: boolean) => {
+  updatePosition(animate);
+  observeLayout();
+};
+
+const handleWindowResize = () => {
+  updatePosition(false);
+};
+
 watch(activeIndex, () => {
-  updatePosition(true);
+  nextTick(() => {
+    refreshPosition(true);
+  });
+});
+
+watch(
+  () => props.linkEls.length,
+  () => {
+    nextTick(() => {
+      refreshPosition(false);
+    });
+  },
+);
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleWindowResize);
+  resizeObserver?.disconnect();
 });
 
 onMounted(() => {
   nextTick(() => {
-    updatePosition(false);
+    refreshPosition(false);
+    window.addEventListener('resize', handleWindowResize);
   });
 });
 </script>

@@ -25,7 +25,7 @@ const selectedShow = defineModel<Show | null>('selectedShow');
 
 const effectiveCols = computed(() => {
   if (props.shows.length === 0) return 1;
-  return Math.min(props.cols ?? 1, props.shows.length);
+  return Math.min(props.cols ?? Infinity, props.shows.length);
 });
 
 const showsToShow = computed(() => {
@@ -46,23 +46,17 @@ const bannerCardContainerWidth = computed(() => {
 </script>
 
 <template>
-  <div :style="{ maxWidth: `max(${bannerCardContainerWidth}, 90%)` }">
-    <div
-      :style="{
-        display: 'grid',
-        gridTemplateColumns: `repeat(${effectiveCols}, 1fr)`,
-      }"
-      class="d-grid ga-10 w-100 pa-1 overflow-auto align-center"
-    >
-      <show-card
-        v-for="show in showsToShow"
-        :height="cardHeight"
-        :show="show"
-        :width="cardWidth"
-        @click="emit('click:show', show)"
-        @mouseenter="selectedShow = show"
-        :key="show.id"
-      />
-    </div>
+  <div :style="{ maxWidth: `max(${bannerCardContainerWidth}, 100%)` }">
+    <v-row class="w-100 ga-10">
+      <v-col v-for="show in showsToShow" cols="auto" :key="show.id">
+        <show-card
+          :height="cardHeight"
+          :show="show"
+          :width="cardWidth"
+          @click="emit('click:show', show)"
+          @mouseenter="selectedShow = show"
+        />
+      </v-col>
+    </v-row>
   </div>
 </template>
