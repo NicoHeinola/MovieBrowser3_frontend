@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/Show';
 import { computed, ref, watch } from 'vue';
+import YouTubePlayer from '@/components/common/youtube-player/YouTubePlayer.vue';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
 
 export interface ShowBannerProps {
@@ -9,17 +10,25 @@ export interface ShowBannerProps {
 
 const props = defineProps<ShowBannerProps>();
 
-const isVideoLoaded = ref(false);
+const isVideoPlaying = ref(false);
+const isVideoError = ref(false);
 
 const youtubeEmbedUrl = computed(() => {
   if (!props.selectedShow || !props.selectedShow.preview_url) return null;
   return getYouTubeEmbedUrl(props.selectedShow.preview_url);
 });
 
+const videoId = computed(() => {
+  if (!youtubeEmbedUrl.value) return null;
+  const match = youtubeEmbedUrl.value.match(/embed\/([^?]+)/);
+  return match ? match[1] : null;
+});
+
 watch(
   () => props.selectedShow,
   () => {
-    isVideoLoaded.value = false;
+    isVideoPlaying.value = false;
+    isVideoError.value = false;
   },
 );
 </script>
@@ -31,17 +40,10 @@ watch(
         <div
           class="banner-video-container position-absolute top-0 left-0 w-100 h-100 overflow-hidden"
           style="pointer-events: none"
-          v-if="youtubeEmbedUrl"
-          :key="youtubeEmbedUrl"
+          v-if="videoId && !isVideoError"
+          :key="videoId"
         >
-          <iframe
-            :src="youtubeEmbedUrl"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            class="banner-video-frame"
-            frameborder="0"
-            referrerpolicy="strict-origin-when-cross-origin"
-            @load="isVideoLoaded = true"
-          ></iframe>
+          <you-tube-player :video-id="videoId" @error="isVideoError = true" @playing="isVideoPlaying = true" />
         </div>
       </v-fade-transition>
 
@@ -51,7 +53,7 @@ watch(
           class="banner-image position-absolute top-0 left-0 w-100 h-100"
           height="100%"
           cover
-          v-if="(props.selectedShow?.banner_url && !isVideoLoaded) || !youtubeEmbedUrl"
+          v-if="(props.selectedShow?.banner_url && (!isVideoPlaying || isVideoError)) || !videoId"
           :key="props.selectedShow?.banner_url ?? 'fallback'"
         >
         </v-img>
@@ -76,7 +78,7 @@ watch(
 .banner-video-container {
   overflow: hidden;
 
-  .banner-video-frame {
+  :deep(iframe) {
     position: absolute;
     top: 50%;
     left: 50%;

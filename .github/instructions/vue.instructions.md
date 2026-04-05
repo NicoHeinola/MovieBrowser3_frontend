@@ -21,6 +21,16 @@ applyTo: '**/*.vue'
 
 ## Template Conventions
 
+- **Always use kebab-case for custom component names in templates**, not PascalCase.
+
+```vue
+<!-- correct -->
+<show-banner :selected-show="show" />
+
+<!-- incorrect -->
+<ShowBanner :selected-show="show" />
+```
+
 - **Never use `.value` for refs in templates.** Vue automatically unwraps refs in templates. Using `.value` will cause incorrect behavior or errors.
 
 ```vue
