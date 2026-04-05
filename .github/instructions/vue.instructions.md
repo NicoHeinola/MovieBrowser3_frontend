@@ -19,6 +19,18 @@ applyTo: '**/*.vue'
   8. Other code (e.g., event listeners, side effects)
 - **Template section** should be at the end of the file.
 
+## Template Conventions
+
+- **Never use `.value` for refs in templates.** Vue automatically unwraps refs in templates. Using `.value` will cause incorrect behavior or errors.
+
+```vue
+<!-- correct -->
+<div>{{ count }}</div>
+
+<!-- incorrect -->
+<div>{{ count.value }}</div>
+```
+
 ## Component Interfaces
 
 - **Prefer placing TypeScript interfaces or types inside `.vue` files for simple, component-specific props.**
@@ -52,9 +64,9 @@ const count = ref(0);
 const doubled = computed(() => count.value * 2);
 
 // 5. Functions
-function increment() {
+const increment = () => {
   count.value++;
-}
+};
 
 // 6. Watchers
 watch(count, (newVal) => {

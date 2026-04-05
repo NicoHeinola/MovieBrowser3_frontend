@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/Show';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
 
 export interface ShowBannerProps {
@@ -9,10 +9,19 @@ export interface ShowBannerProps {
 
 const props = defineProps<ShowBannerProps>();
 
+const isVideoLoaded = ref(false);
+
 const youtubeEmbedUrl = computed(() => {
   if (!props.selectedShow || !props.selectedShow.preview_url) return null;
   return getYouTubeEmbedUrl(props.selectedShow.preview_url);
 });
+
+watch(
+  () => props.selectedShow,
+  () => {
+    isVideoLoaded.value = false;
+  },
+);
 </script>
 
 <template>
@@ -31,18 +40,19 @@ const youtubeEmbedUrl = computed(() => {
             class="banner-video-frame"
             frameborder="0"
             referrerpolicy="strict-origin-when-cross-origin"
+            @load="isVideoLoaded = true"
           ></iframe>
         </div>
       </v-fade-transition>
 
       <v-fade-transition>
         <v-img
-          :src="props.selectedShow.banner_url"
+          :src="props.selectedShow?.banner_url"
           class="banner-image position-absolute top-0 left-0 w-100 h-100"
           height="100%"
           cover
-          v-if="!youtubeEmbedUrl && props.selectedShow?.banner_url"
-          :key="props.selectedShow.banner_url"
+          v-if="(props.selectedShow?.banner_url && !isVideoLoaded) || !youtubeEmbedUrl"
+          :key="props.selectedShow?.banner_url ?? 'fallback'"
         >
         </v-img>
       </v-fade-transition>

@@ -45,55 +45,7 @@ const continueToWatchShows = ref<Show[]>([
     id: 4,
     banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
     card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    preview_url: null,
-    titles: [
-      {
-        title: 'Oppenheimer',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 4,
-    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    preview_url: null,
-    titles: [
-      {
-        title: 'Oppenheimer',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 4,
-    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    preview_url: null,
-    titles: [
-      {
-        title: 'Oppenheimer',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 4,
-    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    preview_url: null,
-    titles: [
-      {
-        title: 'Oppenheimer',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 4,
-    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    preview_url: null,
+    preview_url: 'https://youtu.be/doesnotwork',
     titles: [
       {
         title: 'Oppenheimer',
