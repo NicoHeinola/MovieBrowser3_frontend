@@ -31,7 +31,7 @@ const shouldShowNavigation = computed(() => route.meta.hideNavigation !== true);
   background-color: map.get(settings.$grey, 'darken-4');
   opacity: 0.3;
 
-  mask-image: url('/backgrounds/bubbles.svg');
+  mask-image: url('/patterns/bubbles.svg');
   mask-repeat: repeat;
   mask-size: 300px 300px;
 
