@@ -1,2 +1,2 @@
 export { default as LoginForm } from './LoginForm.vue';
-export type { LoginRequest } from './loginRequest';
+export type { AuthLoginRequest as LoginRequest } from '@/interfaces/api/AuthLoginRequest';

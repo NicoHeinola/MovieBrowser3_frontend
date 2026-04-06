@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { LoginRequest } from './loginRequest';
+import type { AuthLoginRequest } from '@/interfaces/api/AuthLoginRequest';
 
 import { loginEmailRules, loginPasswordRules } from './loginFormRules';
 
-const request = defineModel<LoginRequest>('request', {
+const request = defineModel<AuthLoginRequest>('request', {
   default: () => ({
     email: '',
     password: '',

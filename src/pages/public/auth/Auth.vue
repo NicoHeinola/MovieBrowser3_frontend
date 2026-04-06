@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { LoginForm, type LoginRequest } from '@/components/features/auth/login-form';
@@ -10,6 +10,10 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const mode = ref<'login' | 'register'>('login');
+
+watch(mode, () => {
+  authStore.clearError();
+});
 
 const loginRequest = ref<LoginRequest>({
   email: '',
@@ -31,9 +35,12 @@ const submitLogin = async (): Promise<void> => {
     return;
   }
 
-  authStore.login(loginRequest.value.email);
-
-  await router.push('/');
+  try {
+    await authStore.login(loginRequest.value);
+    await router.push('/');
+  } catch {
+    // Store state exposes the message for the page to render.
+  }
 };
 
 const submitRegister = async (): Promise<void> => {
@@ -41,9 +48,12 @@ const submitRegister = async (): Promise<void> => {
     return;
   }
 
-  authStore.register(registerRequest.value.email);
-
-  await router.push('/');
+  try {
+    await authStore.register(registerRequest.value);
+    await router.push('/');
+  } catch {
+    // Store state exposes the message for the page to render.
+  }
 };
 </script>
 
@@ -104,14 +114,34 @@ const submitRegister = async (): Promise<void> => {
                 </template>
               </div>
 
+              <v-alert border="start" color="error" density="comfortable" variant="tonal" v-if="authStore.errorMessage">
+                {{ authStore.errorMessage }}
+              </v-alert>
+
               <template v-if="mode === 'login'">
                 <login-form v-model:is-valid="isLoginFormValid" v-model:request="loginRequest" />
-                <v-btn :disabled="!isLoginFormValid" color="primary" block @click="submitLogin"> Login </v-btn>
+                <v-btn
+                  :disabled="!isLoginFormValid || authStore.isSubmitting"
+                  :loading="authStore.isSubmitting"
+                  color="primary"
+                  block
+                  @click="submitLogin"
+                >
+                  Login
+                </v-btn>
               </template>
 
               <template v-else>
                 <register-form v-model:is-valid="isRegisterFormValid" v-model:request="registerRequest" />
-                <v-btn :disabled="!isRegisterFormValid" color="primary" block @click="submitRegister"> Register </v-btn>
+                <v-btn
+                  :disabled="!isRegisterFormValid || authStore.isSubmitting"
+                  :loading="authStore.isSubmitting"
+                  color="primary"
+                  block
+                  @click="submitRegister"
+                >
+                  Register
+                </v-btn>
               </template>
             </v-card-text>
           </v-card>

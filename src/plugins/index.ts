@@ -1,18 +1,28 @@
-// Types
 import type { App } from 'vue';
 import { createPinia } from 'pinia';
-/**
- * plugins/index.ts
- *
- * Automatically included in `./src/main.ts`
- */
-
+import { configureApiClientAuth } from '@/plugins/api/apiClient';
+import { useAuthStore } from '@/stores/auth/useAuthStore';
 import router from '../router';
-// Plugins
 import vuetify from './vuetify';
 
-export function registerPlugins (app: App) {
+export const registerPlugins = (app: App) => {
+  const pinia = createPinia();
+
   app.use(vuetify);
-  app.use(createPinia());
+  app.use(pinia);
+
+  const authStore = useAuthStore(pinia);
+
+  configureApiClientAuth({
+    getToken: () => authStore.token,
+    onUnauthorized: () => {
+      authStore.logout();
+
+      if (router.currentRoute.value.fullPath !== '/auth') {
+        void router.push('/auth');
+      }
+    },
+  });
+
   app.use(router);
-}
+};
