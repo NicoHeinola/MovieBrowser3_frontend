@@ -23,6 +23,8 @@ applyTo: |
 ## Barrel Files
 
 - Use `index.ts` only when a namespace intentionally exposes a small public surface for external imports.
+- Component namespaces under `src/components/common`, `src/components/features`, and `src/components/layouts` should expose a small `index.ts` barrel when they are consumed outside their own folder.
+- Keep those component barrels focused on the namespace's primary component and closely related public types only.
 - Do **not** add `index.ts` barrel files to utility namespaces; import utility files directly.
 
 ## Utilities

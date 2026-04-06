@@ -3,8 +3,8 @@ import type { Show } from '@/interfaces/api/Show';
 
 import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
-import VolumeControl from '@/components/common/volume-control/VolumeControl.vue';
-import YouTubePlayer from '@/components/common/youtube-player/YouTubePlayer.vue';
+import { VolumeControl } from '@/components/common/volume-control';
+import { YouTubePlayer } from '@/components/common/youtube-player';
 import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
 

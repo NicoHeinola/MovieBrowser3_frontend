@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/Show';
 
-import DragScrollContainer from '@/components/common/drag-scroll-container/DragScrollContainer.vue';
-import ShowCard from '@/components/features/show/show-card/ShowCard.vue';
+import { DragScrollContainer } from '@/components/common/drag-scroll-container';
+import { ShowCard } from '@/components/features/show/show-card';
 
 const props = withDefaults(
   defineProps<{

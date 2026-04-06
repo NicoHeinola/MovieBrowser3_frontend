@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/Show';
 import { computed } from 'vue';
-import ShowCard from '@/components/features/show/show-card/ShowCard.vue';
+import { ShowCard } from '@/components/features/show/show-card';
 import { parseCssNumeric } from '@/utils/css/parseCssNumeric';
 
 const props = withDefaults(

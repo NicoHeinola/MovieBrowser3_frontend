@@ -4,11 +4,11 @@ import type { Show } from '@/interfaces/api/Show';
 import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 
-import TitledSection from '@/components/common/titled-section/TitledSection.vue';
-import SelectedShowDrawer from '@/components/features/show/selected-show-drawer/SelectedShowDrawer.vue';
-import ShowBanner from '@/components/features/show/show-banner/ShowBanner.vue';
-import ShowCarousel from '@/components/features/show/show-carousel/ShowCarousel.vue';
-import ShowGrid from '@/components/features/show/show-grid/ShowGrid.vue';
+import { TitledSection } from '@/components/common/titled-section';
+import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
+import { ShowBanner } from '@/components/features/show/show-banner';
+import { ShowCarousel } from '@/components/features/show/show-carousel';
+import { ShowGrid } from '@/components/features/show/show-grid';
 
 const continueToWatchShows = ref<Show[]>([
   {

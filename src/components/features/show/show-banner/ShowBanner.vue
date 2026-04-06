@@ -3,7 +3,7 @@ import type { Show } from '@/interfaces/api/Show';
 
 import { computed, ref, watch } from 'vue';
 
-import YouTubePlayer from '@/components/common/youtube-player/YouTubePlayer.vue';
+import { YouTubePlayer } from '@/components/common/youtube-player';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
 
 export interface ShowBannerProps {
