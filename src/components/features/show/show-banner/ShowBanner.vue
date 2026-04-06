@@ -42,7 +42,7 @@ watch([() => props.selectedShow, () => props.disableVideoPlayback], () => {
   <div class="w-100 position-relative">
     <v-fade-transition>
       <div
-        class="banner-video-container position-absolute top-0 left-0 w-100 h-100 overflow-hidden"
+        class="banner-media-layer banner-video-container position-absolute top-0 left-0 w-100 h-100 overflow-hidden"
         style="pointer-events: none"
         :key="activeVideoId"
         v-if="canPlayVideo"
@@ -54,15 +54,16 @@ watch([() => props.selectedShow, () => props.disableVideoPlayback], () => {
     <v-fade-transition>
       <v-img
         :src="props.selectedShow?.banner_url"
-        class="banner-image position-absolute top-0 left-0 w-100 h-100"
+        class="banner-media-layer position-absolute top-0 left-0 w-100 h-100"
         height="100%"
+        style="filter: brightness(0.6)"
         cover
         :key="props.selectedShow?.banner_url ?? 'fallback'"
         v-if="(props.selectedShow?.banner_url && (!canPlayVideo || !isVideoPlaying)) || !videoId"
       >
       </v-img>
     </v-fade-transition>
-    <div class="position-absolute w-100 h-50 bottom-0 banner-gradient-background"></div>
+    <div class="position-absolute w-100 h-50 banner-gradient-background"></div>
     <div class="position-absolute w-100 h-100 d-flex flex-column align-center justify-center top-0">
       <slot />
     </div>
@@ -71,11 +72,19 @@ watch([() => props.selectedShow, () => props.disableVideoPlayback], () => {
 
 <style lang="scss" scoped>
 .banner-gradient-background {
-  background: linear-gradient(to top, #121212 1%, transparent) !important;
+  background: linear-gradient(to top, rgb(var(--v-theme-background), 0.9) 4%, transparent 100%) !important;
+  bottom: 4%;
 }
 
-.banner-image {
-  filter: brightness(0.6);
+.banner-media-layer {
+  mask-image: linear-gradient(
+    to top,
+    rgb(var(--v-theme-background), 0) calc(0%),
+    rgb(var(--v-theme-background), 0.1) calc(4%),
+    rgb(var(--v-theme-background), 1) calc(4%)
+  );
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
 }
 
 .banner-video-container {
