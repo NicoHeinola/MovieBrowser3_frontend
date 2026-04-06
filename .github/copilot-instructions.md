@@ -12,6 +12,7 @@
 - Prefer extending an existing feature, page, component, utility, or plugin namespace before creating a new top-level namespace.
 - Keep backend-facing API shapes in `src/interfaces/api` and preserve backend field names exactly unless a dedicated mapping layer is introduced.
 - Keep design tokens and theme-level color decisions in `src/plugins/vuetify` or shared styles, not scattered through component logic.
+- Short explanatory comments are acceptable for interaction-heavy or non-obvious logic, but keep them sparse and focused on why the code exists.
 - Prefer existing Vuetify utility classes, props, and built-in transitions before adding component-specific SCSS. For small one-off visual adjustments in Vue components, prefer inline styles over new scoped style blocks.
 - Do not add component tests by default. Utility tests under `src/utils/` remain expected, and component tests should be added only when the user explicitly asks for them or when the task is specifically test-focused.
 - Run the smallest relevant validation after changes, usually `npm run lint`, `npm test`, or a targeted type check.
