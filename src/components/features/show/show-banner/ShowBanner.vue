@@ -39,7 +39,7 @@ watch([() => props.selectedShow, () => props.disableVideoPlayback], () => {
 </script>
 
 <template>
-  <div class="w-100 position-relative" style="height: 70vh">
+  <div class="w-100 position-relative">
     <v-fade-transition>
       <div
         class="banner-video-container position-absolute top-0 left-0 w-100 h-100 overflow-hidden"
