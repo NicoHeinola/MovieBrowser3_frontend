@@ -8,12 +8,14 @@
 import { createVuetify } from 'vuetify';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 
+import { MainDefaults } from './MainDefaults';
 import { MainTheme } from './MainTheme';
 import '@mdi/font/css/materialdesignicons.css';
 import 'vuetify/styles';
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
+  defaults: MainDefaults,
   icons: {
     defaultSet: 'mdi',
     aliases,

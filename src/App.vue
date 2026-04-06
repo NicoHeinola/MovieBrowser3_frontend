@@ -1,12 +1,19 @@
 <script lang="ts" setup>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+
 import { TopNavigation } from './components/layouts/top-navigation';
+
+const route = useRoute();
+
+const shouldShowNavigation = computed(() => route.meta.hideNavigation !== true);
 </script>
 
 <template>
   <v-app>
     <div class="background"></div>
     <v-main class="z-10">
-      <top-navigation />
+      <top-navigation v-if="shouldShowNavigation" />
       <router-view />
     </v-main>
   </v-app>

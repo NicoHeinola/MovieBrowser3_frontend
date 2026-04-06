@@ -1,3 +1,10 @@
 .z-10 {
   z-index: 10;
 }
+
+.required {
+  .v-field-label::after {
+    content: ' *';
+    color: rgb(var(--v-theme-error));
+  }
+}

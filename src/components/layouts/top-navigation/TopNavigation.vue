@@ -1,12 +1,22 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+
+import { useAuthStore } from '@/stores/auth/useAuthStore';
+
 import ControlPanelNavLinks from './ControlPanelNavLinks.vue';
 import PublicNavLinks from './PublicNavLinks.vue';
 
 const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
 
 const isInControlPanel = computed(() => route.fullPath.startsWith('/control-panel'));
+
+const logout = async (): Promise<void> => {
+  authStore.logout();
+  await router.push('/auth');
+};
 </script>
 
 <template>
@@ -26,9 +36,7 @@ const isInControlPanel = computed(() => route.fullPath.startsWith('/control-pane
                 <template #default>
                   <v-list>
                     <v-list-item prepend-icon="mdi-cog" to="/user-settings"> Profile </v-list-item>
-                    <v-list-item base-color="error" prepend-icon="mdi-arrow-left" @click="() => {}">
-                      Logout
-                    </v-list-item>
+                    <v-list-item base-color="error" prepend-icon="mdi-arrow-left" @click="logout"> Logout </v-list-item>
                   </v-list>
                 </template>
               </v-menu>
