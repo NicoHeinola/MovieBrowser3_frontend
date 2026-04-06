@@ -75,11 +75,11 @@ watch([() => props.show, () => isShown.value], () => {
 
       <v-fade-transition>
         <v-img
-          :src="props.show?.banner_url || props.show?.card_image_url"
+          :src="props.show?.card_image_url || props.show?.banner_url"
           class="w-100 h-100"
           cover
           v-if="
-            ((props.show?.banner_url || props.show?.card_image_url) && (!canPlayVideo || !isVideoPlaying)) || !videoId
+            ((props.show?.card_image_url || props.show?.banner_url) && (!canPlayVideo || !isVideoPlaying)) || !videoId
           "
         />
       </v-fade-transition>
