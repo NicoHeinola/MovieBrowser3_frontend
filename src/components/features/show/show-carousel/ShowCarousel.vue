@@ -37,6 +37,7 @@ const onShowClick = (show: Show) => {
       :show="show"
       :width="cardWidth"
       class="rounded-0"
+      image-to-use="card"
       @click.stop="onShowClick(show)"
       :key="show.id"
     />

@@ -37,7 +37,8 @@ const continueToWatchShows = ref<Show[]>([
   },
   {
     id: 3,
-    banner_url: 'https://images6.alphacoders.com/137/thumb-1920-1378928.png',
+    banner_url:
+      'https://www.animelehti.fi/wp-content/uploads/2024/08/Netflix-julkaisi-englanniksi-tekstitetyn-trailerin-uudesta-Ranma-12-animesta.png',
     card_image_url: 'https://images6.alphacoders.com/137/thumb-1920-1378928.png',
     preview_url: null,
     titles: [
@@ -113,105 +114,6 @@ const continueToWatchShows = ref<Show[]>([
   },
 ]);
 
-const latestShows = ref<Show[]>([
-  {
-    id: 1,
-    banner_url: 'https://images6.alphacoders.com/128/1280527.jpg',
-    card_image_url: 'https://images6.alphacoders.com/128/1280527.jpg',
-    preview_url: 'https://www.youtube.com/watch?v=QczGoCmX-pI',
-    titles: [
-      {
-        title: 'Cyberpunk Edgerunners',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 2,
-    banner_url: 'https://static0.srcdn.com/wordpress/wp-content/uploads/2023/01/nier-automata-anime-poster.jpg',
-    card_image_url: 'https://static0.srcdn.com/wordpress/wp-content/uploads/2023/01/nier-automata-anime-poster.jpg',
-    preview_url: 'https://youtu.be/eIMZYgb85xg?si=BfqVQ3UBY4w6WAEP',
-    titles: [
-      {
-        title: 'Arcane',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 3,
-    banner_url: 'https://images6.alphacoders.com/137/thumb-1920-1378928.png',
-    card_image_url: 'https://images6.alphacoders.com/137/thumb-1920-1378928.png',
-    preview_url: null,
-    titles: [
-      {
-        title: 'Spider-Man: Into the Spider-Verse',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 4,
-    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    preview_url: 'https://youtu.be/doesnotwork',
-    titles: [
-      {
-        title: 'Oppenheimer',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 5,
-    banner_url: 'https://images6.alphacoders.com/128/1280527.jpg',
-    card_image_url: 'https://images6.alphacoders.com/128/1280527.jpg',
-    preview_url: 'https://www.youtube.com/watch?v=QczGoCmX-pI',
-    titles: [
-      {
-        title: 'Blue Eye Samurai',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 6,
-    banner_url: 'https://static0.srcdn.com/wordpress/wp-content/uploads/2023/01/nier-automata-anime-poster.jpg',
-    card_image_url: 'https://static0.srcdn.com/wordpress/wp-content/uploads/2023/01/nier-automata-anime-poster.jpg',
-    preview_url: 'https://youtu.be/eIMZYgb85xg?si=BfqVQ3UBY4w6WAEP',
-    titles: [
-      {
-        title: 'Frieren',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 7,
-    banner_url: 'https://images6.alphacoders.com/137/thumb-1920-1378928.png',
-    card_image_url: 'https://images6.alphacoders.com/137/thumb-1920-1378928.png',
-    preview_url: null,
-    titles: [
-      {
-        title: 'Dune: Part Two',
-        is_primary: true,
-      },
-    ],
-  },
-  {
-    id: 8,
-    banner_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    card_image_url: 'https://images2.alphacoders.com/121/thumb-1920-1210724.png',
-    preview_url: 'https://youtu.be/doesnotwork',
-    titles: [
-      {
-        title: 'The Creator',
-        is_primary: true,
-      },
-    ],
-  },
-]);
-
 const getShuffledShows = (shows: Show[]): Show[] => {
   const shuffledShows = [...shows];
 
@@ -226,22 +128,25 @@ const getShuffledShows = (shows: Show[]): Show[] => {
   return shuffledShows;
 };
 
-const isekaiShows = ref<Show[]>(getShuffledShows(latestShows.value));
+const latestShows = ref<Show[]>(getShuffledShows(continueToWatchShows.value));
 
-const romanceShows = ref<Show[]>(getShuffledShows(latestShows.value));
+const isekaiShows = ref<Show[]>(getShuffledShows(continueToWatchShows.value));
 
-const randomShows = ref<Show[]>(getShuffledShows(latestShows.value));
+const romanceShows = ref<Show[]>(getShuffledShows(continueToWatchShows.value));
 
-const selectedBannerShow = ref<Show | null>(null);
+const randomShows = ref<Show[]>(getShuffledShows(continueToWatchShows.value));
+
+const selectedBannerShow = ref<Show | null>(null); // Null on purpose
 const selectedShow = ref<Show | null>(selectedBannerShow.value);
 const isShowDrawerVisible = ref<boolean>(false);
 
-const { xxl, xlAndUp, lgAndUp } = useDisplay();
+const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
 
 const continueWatchingCols = computed(() => {
   if (xxl.value) return 5;
   if (xlAndUp.value) return 4;
   if (lgAndUp.value) return 3;
+  if (smAndUp.value) return 2;
   return 1;
 });
 
@@ -259,52 +164,81 @@ watch(
   <show-banner
     :disable-video-playback="isShowDrawerVisible"
     :selected-show="selectedBannerShow"
-    style="margin-top: -70px; height: 75vh"
+    style="margin-top: -70px; height: 73vh"
   >
     <v-row align="center" style="max-width: 90%">
       <v-col>
-        <titled-section icon="mdi-play" title="Continue Watching"> </titled-section>
-        <show-grid
-          v-model:selected-show="selectedBannerShow"
-          :cols="continueWatchingCols"
-          :shows="continueToWatchShows"
-          @click:show="isShowDrawerVisible = true"
-        />
+        <v-sheet
+          border="sm"
+          class="position-relative"
+          rounded="xl"
+          style="background: rgb(var(--v-theme-surface), 0.5); backdrop-filter: blur(10px) brightness(120%)"
+        >
+          <v-container class="pa-8">
+            <titled-section icon="mdi-play-circle" icon-color="warning" title="Continue Watching"> </titled-section>
+            <show-grid
+              v-model:selected-show="selectedBannerShow"
+              :cols="continueWatchingCols"
+              :shows="continueToWatchShows"
+              @click:show="isShowDrawerVisible = true"
+            />
+          </v-container>
+        </v-sheet>
       </v-col>
     </v-row>
   </show-banner>
   <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedShow" />
-  <v-container class="pl-16 pr-0" fluid>
+  <v-container class="pl-12 pr-0" fluid>
     <v-row gap="48">
-      <titled-section icon="mdi-clock-outline" icon-color="yellow" title="Latest">
+      <titled-section
+        icon="mdi-clock-outline"
+        icon-color="warning"
+        subtitle="Fresh arrivals and recently updated picks."
+        title="Latest"
+      >
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="latestShows"
-          class="pr-16"
+          class="pr-12"
           @click:show="isShowDrawerVisible = true"
         />
       </titled-section>
-      <titled-section icon="mdi-earth" icon-color="green" title="Isekai">
+      <titled-section
+        icon="mdi-earth"
+        icon-color="success"
+        subtitle="World-hopping stories with larger-than-life stakes."
+        title="Isekai"
+      >
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="isekaiShows"
-          class="pr-16"
+          class="pr-12"
           @click:show="isShowDrawerVisible = true"
         />
       </titled-section>
-      <titled-section icon="mdi-heart" icon-color="pink" title="Romance">
+      <titled-section
+        icon="mdi-heart"
+        icon-color="error"
+        subtitle="Softer pacing, sharper emotions, and character chemistry."
+        title="Romance"
+      >
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="romanceShows"
-          class="pr-16"
+          class="pr-12"
           @click:show="isShowDrawerVisible = true"
         />
       </titled-section>
-      <titled-section icon="mdi-help" title="Random">
+      <titled-section
+        icon="mdi-shuffle-variant"
+        icon-color="info"
+        subtitle="Unexpected picks when you want the catalog to surprise you."
+        title="Random"
+      >
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="randomShows"
-          class="pr-16"
+          class="pr-12"
           @click:show="isShowDrawerVisible = true"
         />
       </titled-section>

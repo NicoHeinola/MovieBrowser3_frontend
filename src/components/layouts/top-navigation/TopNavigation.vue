@@ -16,7 +16,7 @@ const isInControlPanel = computed(() => route.fullPath.startsWith('/control-pane
       <public-nav-links v-else />
       <v-list class="d-flex flex-row ga-6 bg-transparent position-absolute right-0 top-0">
         <v-list-item class="d-flex">
-          <div class="d-flex align-center ga-4 text-grey-darken-1">
+          <div class="d-flex align-center ga-4 text-grey-lighten-1">
             <span>Admin</span>
             <v-avatar>
               <v-menu>

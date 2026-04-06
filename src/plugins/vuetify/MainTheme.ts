@@ -3,10 +3,16 @@ import type { ThemeDefinition } from 'vuetify';
 export const MainTheme: ThemeDefinition = {
   dark: true,
   colors: {
-    primary: '#7C4DFF', // Vivid purple — spotlight glow
-    secondary: '#00BCD4', // Cyan — neon marquee sign
-    background: '#121212', // Deep theater black
-    surface: '#1E1E1E', // Slightly lifted dark — card/panel layer
-    link: '#4FC3F7', // Sky blue — active nav / hover link highlight
+    primary: '#8A6CFF',
+    secondary: '#59C8DA',
+    background: '#0F131B',
+    surface: '#171E2B',
+    'surface-bright': '#20293A',
+    'surface-muted': '#121824',
+    link: '#8EDCFF',
+    info: '#74D0FF',
+    success: '#65C89B',
+    warning: '#E7B657',
+    error: '#FF8A8A',
   },
 };

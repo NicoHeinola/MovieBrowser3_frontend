@@ -53,6 +53,7 @@ const bannerCardContainerWidth = computed(() => {
           :height="cardHeight"
           :show="show"
           :width="cardWidth"
+          image-to-use="card"
           @click="emit('click:show', show)"
           @mouseenter="selectedShow = show"
         />
