@@ -15,6 +15,7 @@ const containerEl = ref<HTMLDivElement | null>(null);
 const MOMENTUM_DECAY_PER_FRAME = 0.92;
 const MOMENTUM_MIN_VELOCITY = 0.02;
 const MOMENTUM_START_VELOCITY = 0.08;
+const MOMENTUM_VELOCITY_MAX_AGE = 50;
 const VELOCITY_SMOOTHING = 0.2;
 
 let activePointerId: number | null = null;
@@ -103,7 +104,7 @@ const startMomentum = () => {
   scheduleMomentum();
 };
 
-const endDrag = () => {
+const endDrag = (timestamp: number) => {
   const element = containerEl.value;
   const pointerId = activePointerId;
 
@@ -117,10 +118,18 @@ const endDrag = () => {
 
   activePointerId = null;
   isDragging = false;
-  lastPointerTime = 0;
+  const velocityAge = timestamp - lastPointerTime;
+
   lastPointerX = 0;
+  lastPointerTime = 0;
 
   if (!suppressClick) {
+    dragVelocity = 0;
+    return;
+  }
+
+  // Ignore stale velocity so a fast swipe does not keep gliding after the pointer has already paused.
+  if (velocityAge > MOMENTUM_VELOCITY_MAX_AGE) {
     dragVelocity = 0;
     return;
   }
@@ -192,7 +201,7 @@ const handlePointerUp = (event: PointerEvent) => {
     return;
   }
 
-  endDrag();
+  endDrag(event.timeStamp);
 };
 
 const handlePointerCancel = (event: PointerEvent) => {
@@ -201,7 +210,7 @@ const handlePointerCancel = (event: PointerEvent) => {
   }
 
   suppressClick = false;
-  endDrag();
+  endDrag(event.timeStamp);
 };
 
 const handleClickCapture = (event: MouseEvent) => {
