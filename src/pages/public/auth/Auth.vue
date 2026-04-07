@@ -39,7 +39,7 @@ const submitLogin = async (): Promise<void> => {
 
   try {
     await authStore.login(loginRequest.value);
-    showSuccessSnackbar('Logged in successfully.');
+    await showSuccessSnackbar('Logged in successfully.');
     await router.push('/');
   } catch {
     showErrorSnackbar(authStore.errorMessage ?? 'Login failed. Please try again.');
@@ -54,7 +54,7 @@ const submitRegister = async (): Promise<void> => {
 
   try {
     await authStore.register(registerRequest.value);
-    showSuccessSnackbar('Account created successfully.');
+    await showSuccessSnackbar('Account created successfully.');
     await router.push('/');
   } catch {
     showErrorSnackbar(authStore.errorMessage ?? 'Registration failed. Please try again.');

@@ -2,6 +2,7 @@
 import type { QueuedSnackbar } from './QueuedSnackbar';
 import type { SnackbarApi } from './SnackbarApi';
 import type { SnackbarColor } from './SnackbarColor';
+import type { SnackbarDismissReason } from './SnackbarDismissReason';
 import type { SnackbarOptions } from './SnackbarOptions';
 import type { SnackbarPresetOptions } from './SnackbarPresetOptions';
 import { provide, ref } from 'vue';
@@ -10,14 +11,17 @@ import { snackbarApiKey } from './snackbarApiKey';
 
 const snackbars = ref<QueuedSnackbar[]>([]);
 
-const showSnackbar = (options: SnackbarOptions): void => {
-  snackbars.value.push({
-    text: options.message,
-    color: options.color ?? 'success',
-    timeout: options.timeout ?? 3000,
-    location: options.location ?? 'bottom',
-    closable: options.closable ?? true,
-    variant: 'tonal',
+const showSnackbar = (options: SnackbarOptions): Promise<SnackbarDismissReason> => {
+  return new Promise((resolve) => {
+    snackbars.value.push({
+      text: options.message,
+      color: options.color ?? 'success',
+      timeout: options.timeout ?? 3000,
+      location: options.location ?? 'bottom',
+      closable: options.closable ?? true,
+      variant: 'tonal',
+      onDismiss: resolve,
+    });
   });
 };
 
@@ -26,8 +30,8 @@ const showPresetSnackbar = (
   presetTimeout: number,
   messageText: string,
   overrides?: SnackbarPresetOptions,
-): void => {
-  showSnackbar({
+): Promise<SnackbarDismissReason> => {
+  return showSnackbar({
     message: messageText,
     color: presetColor,
     timeout: overrides?.timeout ?? presetTimeout,
@@ -39,13 +43,13 @@ const showPresetSnackbar = (
 const snackbarApi: SnackbarApi = {
   showSnackbar,
   showSuccessSnackbar: (messageText, overrides) => {
-    showPresetSnackbar('success', 3000, messageText, overrides);
+    return showPresetSnackbar('success', 3000, messageText, overrides);
   },
   showErrorSnackbar: (messageText, overrides) => {
-    showPresetSnackbar('error', 5000, messageText, overrides);
+    return showPresetSnackbar('error', 5000, messageText, overrides);
   },
   showWarningSnackbar: (messageText, overrides) => {
-    showPresetSnackbar('warning', 4000, messageText, overrides);
+    return showPresetSnackbar('warning', 4000, messageText, overrides);
   },
 };
 
