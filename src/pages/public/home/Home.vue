@@ -42,7 +42,7 @@ const {
     </v-row>
   </show-banner>
   <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedShow" />
-  <v-container class="pl-12 pr-0" fluid>
+  <v-container class="pl-12 pr-0 overflow-visible" fluid>
     <v-row gap="48">
       <titled-section
         icon="mdi-clock-outline"
@@ -53,7 +53,8 @@ const {
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="latestShows"
-          class="pr-12"
+          :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
+          drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
         />
       </titled-section>
@@ -66,7 +67,8 @@ const {
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="isekaiShows"
-          class="pr-12"
+          :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
+          drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
         />
       </titled-section>
@@ -79,7 +81,8 @@ const {
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="romanceShows"
-          class="pr-12"
+          :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
+          drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
         />
       </titled-section>
@@ -92,7 +95,8 @@ const {
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="randomShows"
-          class="pr-12"
+          :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
+          drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
         />
       </titled-section>

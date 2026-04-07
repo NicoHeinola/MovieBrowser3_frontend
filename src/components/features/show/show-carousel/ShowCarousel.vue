@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/Show';
-
+import type { ClassValue, StyleValue } from 'vue';
 import { DragScrollContainer } from '@/components/common/drag-scroll-container';
 import { ShowCard } from '@/components/features/show/show-card';
 
@@ -9,6 +9,8 @@ const props = withDefaults(
     shows: Show[];
     cardWidth?: string | number;
     cardHeight?: string | number;
+    dragClass?: ClassValue;
+    dragStyle?: StyleValue;
   }>(),
   {
     cardWidth: '300px',
@@ -30,22 +32,28 @@ const onShowClick = (show: Show) => {
 </script>
 
 <template>
-  <drag-scroll-container class="shows-container d-flex overflow-auto w-100">
-    <show-card
-      v-for="show in [...props.shows, props.shows[0]]"
-      :height="cardHeight"
-      :show="show"
-      :width="cardWidth"
-      class="rounded-0"
-      image-to-use="card"
-      @click.stop="onShowClick(show)"
-      :key="show.id"
-    />
-  </drag-scroll-container>
+  <div class="w-100 overflow-visible">
+    <drag-scroll-container
+      :class="[props.dragClass, 'show-carousel-rail overflow-x-auto overflow-y-hidden d-flex w-100']"
+      :style="props.dragStyle"
+    >
+      <show-card
+        v-for="show in [...props.shows, props.shows[0]]"
+        :height="cardHeight"
+        :show="show"
+        :width="cardWidth"
+        class="rounded-0"
+        image-to-use="card"
+        @click.stop="onShowClick(show)"
+        :key="show.id"
+      />
+    </drag-scroll-container>
+  </div>
 </template>
 
-<style lang="scss" scoped>
-.shows-container {
-  width: 100%;
+<style scoped lang="scss">
+.show-carousel-rail {
+  padding-top: 64px;
+  margin-top: -64px;
 }
 </style>

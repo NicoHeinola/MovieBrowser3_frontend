@@ -55,10 +55,12 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
     transition:
       transform 0.3s ease-in-out,
       filter 0.3s ease-in-out;
+
+    transform: scale(1.14) translateY(0px);
   }
 
   &:hover {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-12px) scale(1.04);
     filter: brightness(105%);
     z-index: 100;
 
@@ -66,7 +68,7 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
 
     :deep(.v-img) {
       cursor: pointer;
-      transform: scale(1.03);
+      transform: scale(1.12) translateY(12px);
     }
 
     .card-title {
