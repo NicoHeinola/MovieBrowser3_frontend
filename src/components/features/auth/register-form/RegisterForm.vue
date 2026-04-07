@@ -9,7 +9,7 @@ const request = defineModel<RegisterRequest>('request', {
   default: () => ({
     username: '',
     password: '',
-    confirmPassword: '',
+    password_confirmed: '',
   }),
 });
 const isValid = defineModel<boolean>('isValid', {
@@ -45,7 +45,7 @@ const confirmPasswordRules = computed(() => getRegisterConfirmPasswordRules(requ
       </v-col>
       <v-col cols="12">
         <v-text-field
-          v-model="request.confirmPassword"
+          v-model="request.password_confirmed"
           :rules="confirmPasswordRules"
           autocomplete="new-password"
           class="required"

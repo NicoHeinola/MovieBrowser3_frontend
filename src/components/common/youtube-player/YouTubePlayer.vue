@@ -39,7 +39,6 @@ const playerSrc = computed(() => {
     enablejsapi: '1',
     iv_load_policy: '3',
     modestbranding: '1',
-    mute: props.muted ? '1' : '0',
     playsinline: '1',
     rel: '0',
   });

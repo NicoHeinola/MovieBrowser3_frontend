@@ -27,7 +27,7 @@ const isLoginFormValid = ref(false);
 const registerRequest = ref<RegisterRequest>({
   username: '',
   password: '',
-  confirmPassword: '',
+  password_confirmed: '',
 });
 
 const isRegisterFormValid = ref(false);
