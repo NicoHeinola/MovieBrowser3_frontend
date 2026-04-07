@@ -3,6 +3,8 @@ import type { RegisterRequest } from './registerRequest';
 
 import { computed } from 'vue';
 
+import { BaseForm } from '@/components/common/base-form';
+
 import { getRegisterConfirmPasswordRules, registerPasswordRules, registerUsernameRules } from './registerFormRules';
 
 const request = defineModel<RegisterRequest>('request', {
@@ -20,7 +22,7 @@ const confirmPasswordRules = computed(() => getRegisterConfirmPasswordRules(requ
 </script>
 
 <template>
-  <v-form v-model="isValid">
+  <base-form v-model:is-valid="isValid">
     <v-row>
       <v-col cols="12">
         <v-text-field
@@ -55,5 +57,5 @@ const confirmPasswordRules = computed(() => getRegisterConfirmPasswordRules(requ
         />
       </v-col>
     </v-row>
-  </v-form>
+  </base-form>
 </template>

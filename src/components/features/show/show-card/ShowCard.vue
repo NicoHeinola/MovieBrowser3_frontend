@@ -48,7 +48,8 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
 .show-card {
   transition:
     transform 0.3s ease-in-out,
-    border-color 0.3s ease-in-out;
+    border-color 0.3s ease-in-out,
+    filter 0.3s ease-in-out;
 
   :deep(.v-img) {
     transition:
@@ -57,9 +58,11 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
   }
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-8px) scale(1.02);
+    filter: brightness(105%);
+    z-index: 100;
 
-    border-color: rgb(var(--v-theme-surface-bright)) !important;
+    border-color: rgb(var(--v-theme-surface)) !important;
 
     :deep(.v-img) {
       cursor: pointer;

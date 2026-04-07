@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { AuthLoginRequest } from '@/interfaces/api/AuthLoginRequest';
 
+import { BaseForm } from '@/components/common/base-form';
+
 import { loginPasswordRules, loginUsernameRules } from './loginFormRules';
 
 const request = defineModel<AuthLoginRequest>('request', {
@@ -15,7 +17,7 @@ const isValid = defineModel<boolean>('isValid', {
 </script>
 
 <template>
-  <v-form v-model="isValid">
+  <base-form v-model:is-valid="isValid">
     <v-row>
       <v-col cols="12">
         <v-text-field
@@ -38,5 +40,5 @@ const isValid = defineModel<boolean>('isValid', {
         />
       </v-col>
     </v-row>
-  </v-form>
+  </base-form>
 </template>

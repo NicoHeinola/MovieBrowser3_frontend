@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { AuthLoginRequest } from '@/interfaces/api/AuthLoginRequest';
+
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { LoginForm, type LoginRequest } from '@/components/features/auth/login-form';
+import { LoginForm } from '@/components/features/auth/login-form';
 import { RegisterForm, type RegisterRequest } from '@/components/features/auth/register-form';
 import { useSnackbar } from '@/components/layouts/snackbar-provider';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
@@ -11,13 +13,16 @@ const authStore = useAuthStore();
 const router = useRouter();
 const { showErrorSnackbar, showSuccessSnackbar } = useSnackbar();
 
+const loginFormId = 'login-form';
+const registerFormId = 'register-form';
+
 const mode = ref<'login' | 'register'>('login');
 
 watch(mode, () => {
   authStore.clearError();
 });
 
-const loginRequest = ref<LoginRequest>({
+const loginRequest = ref<AuthLoginRequest>({
   username: '',
   password: '',
 });
@@ -105,26 +110,37 @@ const submitRegister = async (): Promise<void> => {
             </div>
 
             <template v-if="mode === 'login'">
-              <login-form v-model:is-valid="isLoginFormValid" v-model:request="loginRequest" />
+              <login-form
+                v-model:is-valid="isLoginFormValid"
+                v-model:request="loginRequest"
+                :form-id="loginFormId"
+                @submit="submitLogin"
+              />
               <v-btn
                 :disabled="!isLoginFormValid || authStore.isSubmitting"
+                :form="loginFormId"
                 :loading="authStore.isSubmitting"
                 color="primary"
+                type="submit"
                 block
-                @click="submitLogin"
               >
                 Login
               </v-btn>
             </template>
 
             <template v-else>
-              <register-form v-model:is-valid="isRegisterFormValid" v-model:request="registerRequest" />
+              <register-form
+                v-model:is-valid="isRegisterFormValid"
+                v-model:request="registerRequest"
+                :form-id="registerFormId"
+                @submit="submitRegister"
+              />
               <v-btn
                 :disabled="!isRegisterFormValid || authStore.isSubmitting"
+                :form="registerFormId"
                 :loading="authStore.isSubmitting"
                 color="primary"
-                block
-                @click="submitRegister"
+                type="submit"
               >
                 Register
               </v-btn>
