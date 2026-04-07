@@ -3,11 +3,11 @@ import type { RegisterRequest } from './registerRequest';
 
 import { computed } from 'vue';
 
-import { getRegisterConfirmPasswordRules, registerEmailRules, registerPasswordRules } from './registerFormRules';
+import { getRegisterConfirmPasswordRules, registerPasswordRules, registerUsernameRules } from './registerFormRules';
 
 const request = defineModel<RegisterRequest>('request', {
   default: () => ({
-    email: '',
+    username: '',
     password: '',
     confirmPassword: '',
   }),
@@ -24,12 +24,12 @@ const confirmPasswordRules = computed(() => getRegisterConfirmPasswordRules(requ
     <v-row>
       <v-col cols="12">
         <v-text-field
-          v-model="request.email"
-          :rules="registerEmailRules"
-          autocomplete="email"
+          v-model="request.username"
+          :rules="registerUsernameRules"
+          autocomplete="username"
           class="required"
-          label="Email"
-          prepend-inner-icon="mdi-email-outline"
+          label="Username"
+          prepend-inner-icon="mdi-account-outline"
         />
       </v-col>
       <v-col cols="12">

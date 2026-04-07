@@ -39,6 +39,12 @@ export function getEnvString(key: string): string {
 - Use `import type` for type-only imports.
 - Prefer narrow exported types and helper functions over large mixed-purpose files.
 
+## Export Surface
+
+- Outside `index.ts` barrel files, export one symbol per file.
+- If a file needs to expose multiple exported functions, interfaces, types, or constants, split them into sibling files named after the exported symbol.
+- Keep `index.ts` focused on re-exporting a namespace's small public surface.
+
 ## Namespace Fit
 
 - In namespaced source folders, each `.ts` file should have one clear responsibility that matches the file name.

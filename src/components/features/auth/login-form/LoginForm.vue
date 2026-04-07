@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { AuthLoginRequest } from '@/interfaces/api/AuthLoginRequest';
 
-import { loginEmailRules, loginPasswordRules } from './loginFormRules';
+import { loginPasswordRules, loginUsernameRules } from './loginFormRules';
 
 const request = defineModel<AuthLoginRequest>('request', {
   default: () => ({
-    email: '',
+    username: '',
     password: '',
   }),
 });
@@ -19,11 +19,12 @@ const isValid = defineModel<boolean>('isValid', {
     <v-row>
       <v-col cols="12">
         <v-text-field
-          v-model="request.email"
-          :rules="loginEmailRules"
+          v-model="request.username"
+          :rules="loginUsernameRules"
+          autocomplete="username"
           class="required"
-          label="Email"
-          prepend-inner-icon="mdi-email-outline"
+          label="Username"
+          prepend-inner-icon="mdi-account-outline"
         />
       </v-col>
       <v-col cols="12">

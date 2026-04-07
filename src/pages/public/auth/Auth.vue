@@ -18,14 +18,14 @@ watch(mode, () => {
 });
 
 const loginRequest = ref<LoginRequest>({
-  email: '',
+  username: '',
   password: '',
 });
 
 const isLoginFormValid = ref(false);
 
 const registerRequest = ref<RegisterRequest>({
-  email: '',
+  username: '',
   password: '',
   confirmPassword: '',
 });

@@ -1,4 +1,4 @@
 export interface AuthRegisterRequest {
-  email: string;
+  username: string;
   password: string;
 }
