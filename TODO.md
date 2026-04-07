@@ -4,11 +4,11 @@
 
 - Profile settings page
 
-- Login / Register first page when unauthorized
+[DONE] - Login / Register first page when unauthorized
 
-- Login functionality
+[DONE] - Login functionality
 
-- Register functionality
+[DONE] - Register functionality
 
 - Admin functionality
 
