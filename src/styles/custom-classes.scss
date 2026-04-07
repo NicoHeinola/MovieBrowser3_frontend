@@ -2,6 +2,11 @@
   z-index: 10;
 }
 
+.glass-panel {
+  background: rgb(var(--v-theme-surface), 0.5);
+  backdrop-filter: blur(10px);
+}
+
 .required {
   .v-field-label::after {
     content: ' *';

@@ -55,6 +55,6 @@ const logout = async (): Promise<void> => {
 
 <style lang="scss" scoped>
 .navigation-bar {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.671), transparent);
+  background: linear-gradient(to bottom, rgb(var(--v-theme-background), 0.67), transparent);
 }
 </style>

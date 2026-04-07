@@ -56,7 +56,6 @@ watch([() => props.selectedShow, () => props.disableVideoPlayback], () => {
         :src="props.selectedShow?.banner_url"
         class="banner-media-layer position-absolute top-0 left-0 w-100 h-100"
         height="100%"
-        style="filter: brightness(0.6)"
         cover
         :key="props.selectedShow?.banner_url ?? 'fallback'"
         v-if="(props.selectedShow?.banner_url && (!canPlayVideo || !isVideoPlaying)) || !videoId"
@@ -77,6 +76,7 @@ watch([() => props.selectedShow, () => props.disableVideoPlayback], () => {
 }
 
 .banner-media-layer {
+  filter: brightness(0.6);
   mask-image: linear-gradient(
     to top,
     rgb(var(--v-theme-background), 0) calc(0%),
@@ -95,7 +95,6 @@ watch([() => props.selectedShow, () => props.disableVideoPlayback], () => {
     width: 100vw;
     height: 100vh;
     transform: translate(-50%, -50%);
-    filter: brightness(0.6);
 
     @media (min-aspect-ratio: 16/9) {
       height: 56.25vw;

@@ -33,7 +33,7 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
     <div class="position-absolute bottom-0 left-0 px-4 my-4 text-truncate" style="cursor: pointer; max-width: 100%">
       <p
         class="card-title text-truncate text-grey-lighten-2 ma-0 font-weight-bold"
-        style="text-shadow: 0 0 5px rgba(0, 0, 0, 0.7)"
+        style="text-shadow: 0 0 5px rgb(var(--v-theme-background), 0.7)"
       >
         {{ primaryTitle }}
       </p>
@@ -59,7 +59,7 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
   &:hover {
     transform: translateY(-4px);
 
-    border-color: rgb(134, 134, 134) !important;
+    border-color: rgb(var(--v-theme-surface-bright)) !important;
 
     :deep(.v-img) {
       cursor: pointer;
@@ -76,7 +76,12 @@ const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
   }
 
   .card-shadow {
-    background: linear-gradient(to top, rgba(7, 9, 13, 0.96), rgba(7, 9, 13, 0.48) 48%, transparent 100%);
+    background: linear-gradient(
+      to top,
+      rgb(var(--v-theme-background), 0.96),
+      rgb(var(--v-theme-background), 0.48) 48%,
+      transparent 100%
+    );
     opacity: 0.7;
     pointer-events: none;
   }
