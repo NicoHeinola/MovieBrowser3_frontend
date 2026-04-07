@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { SnackbarProvider } from './components/layouts/snackbar-provider';
 import { TopNavigation } from './components/layouts/top-navigation';
 
 const route = useRoute();
@@ -19,10 +20,12 @@ const shouldShowNavigation = computed(() => isRouterReady.value && route.meta.hi
 <template>
   <v-app>
     <div class="background"></div>
-    <v-main class="z-10">
-      <top-navigation v-if="shouldShowNavigation" />
-      <router-view />
-    </v-main>
+    <snackbar-provider>
+      <v-main class="z-10">
+        <top-navigation v-if="shouldShowNavigation" />
+        <router-view />
+      </v-main>
+    </snackbar-provider>
   </v-app>
 </template>
 

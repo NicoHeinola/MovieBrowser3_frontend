@@ -4,10 +4,12 @@ import { useRouter } from 'vue-router';
 
 import { LoginForm, type LoginRequest } from '@/components/features/auth/login-form';
 import { RegisterForm, type RegisterRequest } from '@/components/features/auth/register-form';
+import { useSnackbar } from '@/components/layouts/snackbar-provider';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
 const authStore = useAuthStore();
 const router = useRouter();
+const { showErrorSnackbar, showSuccessSnackbar } = useSnackbar();
 
 const mode = ref<'login' | 'register'>('login');
 
@@ -37,9 +39,11 @@ const submitLogin = async (): Promise<void> => {
 
   try {
     await authStore.login(loginRequest.value);
+    showSuccessSnackbar('Logged in successfully.');
     await router.push('/');
   } catch {
-    // Store state exposes the message for the page to render.
+    showErrorSnackbar(authStore.errorMessage ?? 'Login failed. Please try again.');
+    authStore.clearError();
   }
 };
 
@@ -50,103 +54,84 @@ const submitRegister = async (): Promise<void> => {
 
   try {
     await authStore.register(registerRequest.value);
+    showSuccessSnackbar('Account created successfully.');
     await router.push('/');
   } catch {
-    // Store state exposes the message for the page to render.
+    showErrorSnackbar(authStore.errorMessage ?? 'Registration failed. Please try again.');
+    authStore.clearError();
   }
 };
 </script>
 
 <template>
-  <div class="position-relative" style="height: 100vh; width: 100vw">
+  <v-container
+    class="d-flex flex-lg-column flex-row align-center justify-center position-relative"
+    style="height: 100vh; z-index: 1"
+    fluid
+  >
     <div
-      aria-hidden="true"
-      style="
-        position: absolute;
-        inset: 0;
-        height: 100vh;
-        width: 100vw;
-        background-image: url('/backgrounds/movie-background.jpg');
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-      "
+      class="position-absolute w-100 h-100"
+      style="background-image: url('/backgrounds/movie-background.jpg'); background-size: cover"
     ></div>
-
-    <v-container
-      class="d-flex flex-lg-column flex-row align-center justify-center position-relative"
-      style="height: 100vh; z-index: 1"
-      fluid
-    >
-      <v-row align="center" gap="64" justify="center">
-        <v-col cols="12" lg="6">
-          <div class="d-flex flex-column align-start ga-4">
-            <v-chip color="secondary" variant="flat">MovieBrowser 3</v-chip>
-            <div>
-              <h1>Your movie library — at your fingertips.</h1>
-              <p class="text-medium-emphasis">
-                View trailers, watch shows, rate movies, and get personalized recommendations. All in one place.
-              </p>
-            </div>
+    <v-row align="center" class="position-relative" gap="64" justify="center">
+      <v-col cols="12" lg="6">
+        <div class="d-flex flex-column align-start ga-4">
+          <v-chip color="secondary" variant="flat">MovieBrowser 3</v-chip>
+          <div>
+            <h1>Your movie library — at your fingertips.</h1>
+            <p class="text-medium-emphasis">
+              View trailers, watch shows, rate movies, and get personalized recommendations. All in one place.
+            </p>
           </div>
-        </v-col>
-        <v-col cols="12" lg="5">
-          <v-card
-            border="sm"
-            color="rgba(var(--v-theme-surface), 0.88)"
-            rounded="xl"
-            style="backdrop-filter: blur(5px)"
-          >
-            <v-card-text class="pa-8 d-flex flex-column ga-6">
-              <v-btn-toggle v-model="mode" color="secondary" mandatory>
-                <v-btn value="login">Login</v-btn>
-                <v-btn value="register">Register</v-btn>
-              </v-btn-toggle>
+        </div>
+      </v-col>
+      <v-col cols="12" lg="5">
+        <v-card border="sm" color="rgba(var(--v-theme-surface), 0.88)" rounded="xl" style="backdrop-filter: blur(5px)">
+          <v-card-text class="pa-8 d-flex flex-column ga-6">
+            <v-btn-toggle v-model="mode" color="secondary" mandatory>
+              <v-btn value="login">Login</v-btn>
+              <v-btn value="register">Register</v-btn>
+            </v-btn-toggle>
 
-              <div style="width: 450px">
-                <template v-if="mode === 'login'">
-                  <h2>Welcome back</h2>
-                  <p class="text-medium-emphasis">Sign in to continue browsing your library and picks.</p>
-                </template>
-                <template v-else>
-                  <h2>Create your account</h2>
-                  <p class="text-medium-emphasis">Register to start building your movie library.</p>
-                </template>
-              </div>
-
-              <v-alert border="start" color="error" density="comfortable" variant="tonal" v-if="authStore.errorMessage">
-                {{ authStore.errorMessage }}
-              </v-alert>
-
+            <div style="width: 450px">
               <template v-if="mode === 'login'">
-                <login-form v-model:is-valid="isLoginFormValid" v-model:request="loginRequest" />
-                <v-btn
-                  :disabled="!isLoginFormValid || authStore.isSubmitting"
-                  :loading="authStore.isSubmitting"
-                  color="primary"
-                  block
-                  @click="submitLogin"
-                >
-                  Login
-                </v-btn>
+                <h2>Welcome back</h2>
+                <p class="text-medium-emphasis">Sign in to continue browsing your library and picks.</p>
               </template>
-
               <template v-else>
-                <register-form v-model:is-valid="isRegisterFormValid" v-model:request="registerRequest" />
-                <v-btn
-                  :disabled="!isRegisterFormValid || authStore.isSubmitting"
-                  :loading="authStore.isSubmitting"
-                  color="primary"
-                  block
-                  @click="submitRegister"
-                >
-                  Register
-                </v-btn>
+                <h2>Create your account</h2>
+                <p class="text-medium-emphasis">Register to start building your movie library.</p>
               </template>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
+            </div>
+
+            <template v-if="mode === 'login'">
+              <login-form v-model:is-valid="isLoginFormValid" v-model:request="loginRequest" />
+              <v-btn
+                :disabled="!isLoginFormValid || authStore.isSubmitting"
+                :loading="authStore.isSubmitting"
+                color="primary"
+                block
+                @click="submitLogin"
+              >
+                Login
+              </v-btn>
+            </template>
+
+            <template v-else>
+              <register-form v-model:is-valid="isRegisterFormValid" v-model:request="registerRequest" />
+              <v-btn
+                :disabled="!isRegisterFormValid || authStore.isSubmitting"
+                :loading="authStore.isSubmitting"
+                color="primary"
+                block
+                @click="submitRegister"
+              >
+                Register
+              </v-btn>
+            </template>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>

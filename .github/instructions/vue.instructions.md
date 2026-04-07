@@ -44,9 +44,10 @@ applyTo: 'src/**/*.vue'
 
 ## Component Interfaces
 
-- **Prefer placing TypeScript interfaces or types inside `.vue` files for simple, component-specific props.**
-- If the interface is large, complex, or reused by other components, move it to a separate `.ts` file within the same namespace folder.
-- If in a separate file, name the file after what it represents (e.g. `navigationLinkItem.ts`, not `types.ts`).
+- **Do not declare named TypeScript interfaces or types inside `.vue` files.**
+- Move component-local interfaces and named types into a separate `.ts` file within the same namespace folder, even when they are only used by that one component.
+- Small inline generic shapes are still acceptable directly in Vue macros when they are not introducing a reusable named type, for example `defineProps<{ foo: string }>()`.
+- Name the sibling `.ts` file after what it represents (e.g. `navigationLinkItem.ts`, not `types.ts`).
 
 ```
 components/
