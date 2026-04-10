@@ -3,6 +3,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 
 import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
+import { ExpandableText } from '@/components/common/expandable-text';
 import { SectionContainer } from '@/components/common/section-container';
 import { VolumeControl } from '@/components/common/volume-control';
 import { YouTubePlayer } from '@/components/common/youtube-player';
@@ -87,9 +88,7 @@ watch([() => props.show, () => isShown.value], () => {
         <section-container class="d-flex flex-column justify-end h-100">
           <h1>{{ getPrimaryShowTitle(props.show) }}</h1>
 
-          <p class="text-medium-emphasis">
-            {{ props.show?.description }}
-          </p>
+          <expandable-text :text="props.show?.description" class="text-medium-emphasis" />
         </section-container>
       </div>
 
