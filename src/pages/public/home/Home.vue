@@ -20,13 +20,13 @@ const randomShows = ref<Show[]>([]);
 
 const selectedBannerShow = ref<Show | null>(null);
 const selectedShow = ref<Show | null>(selectedBannerShow.value);
-const isShowDrawerVisible = ref(false);
+const isShowDrawerVisible = ref<boolean>(false);
 
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 
 const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
 
-const continueWatchingCols = computed(() => {
+const continueWatchingCols = computed<number>(() => {
   if (xxl.value) return 5;
   if (xlAndUp.value) return 4;
   if (lgAndUp.value) return 3;
@@ -89,9 +89,11 @@ onMounted(() => {
               :shows="latestShows"
               @click:show="isShowDrawerVisible = true"
             />
-            <v-col cols="12" v-if="latestShows.length === 0">
-              <v-alert type="info">No shows have been added yet.</v-alert>
-            </v-col>
+            <div class="d-flex" v-if="latestShows.length === 0">
+              <v-alert class="flex-0-0" type="info">
+                <p class="text-no-wrap">No shows have been added yet.</p>
+              </v-alert>
+            </div>
           </v-container>
         </v-sheet>
       </v-col>
@@ -113,9 +115,11 @@ onMounted(() => {
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
         />
-        <v-col cols="12" v-if="continueToWatchShows.length === 0">
-          <v-alert type="info">There are no shows in this category</v-alert>
-        </v-col>
+        <div class="d-flex" v-if="continueToWatchShows.length === 0">
+          <v-alert class="flex-0-0" type="info">
+            <p class="text-no-wrap">There are no shows in this category</p>
+          </v-alert>
+        </div>
       </titled-section>
       <titled-section
         icon="mdi-earth"
@@ -130,9 +134,11 @@ onMounted(() => {
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
         />
-        <v-col cols="12" v-if="isekaiShows.length === 0">
-          <v-alert type="info">There are no shows in this category</v-alert>
-        </v-col>
+        <div class="d-flex" v-if="isekaiShows.length === 0">
+          <v-alert class="flex-0-0" type="info">
+            <p class="text-no-wrap">There are no shows in this category</p>
+          </v-alert>
+        </div>
       </titled-section>
       <titled-section
         icon="mdi-heart"
@@ -147,9 +153,11 @@ onMounted(() => {
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
         />
-        <v-col cols="12" v-if="romanceShows.length === 0">
-          <v-alert type="info">There are no shows in this category</v-alert>
-        </v-col>
+        <div class="d-flex" v-if="romanceShows.length === 0">
+          <v-alert class="flex-0-0" type="info">
+            <p class="text-no-wrap">There are no shows in this category</p>
+          </v-alert>
+        </div>
       </titled-section>
       <titled-section
         icon="mdi-shuffle-variant"
@@ -164,9 +172,11 @@ onMounted(() => {
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
         />
-        <v-col cols="12" v-if="randomShows.length === 0">
-          <v-alert type="info">There are no shows in this category</v-alert>
-        </v-col>
+        <div class="d-flex" v-if="randomShows.length === 0">
+          <v-alert class="flex-0-0" type="info">
+            <p class="text-no-wrap">There are no shows in this category</p>
+          </v-alert>
+        </div>
       </titled-section>
     </v-row>
   </v-container>

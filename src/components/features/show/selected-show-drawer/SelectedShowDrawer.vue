@@ -20,30 +20,30 @@ const isShown = defineModel<boolean>('isShown', {
 
 const { xlAndUp } = useDisplay();
 
-const isVideoPlaying = ref(false);
-const isVideoError = ref(false);
-const isMuted = ref(true);
-const volume = ref(20);
+const isVideoPlaying = ref<boolean>(false);
+const isVideoError = ref<boolean>(false);
+const isMuted = ref<boolean>(true);
+const volume = ref<number>(20);
 
 const close = () => {
   isShown.value = false;
 };
 
-const displayTitle = computed(() => getPrimaryShowTitle(props.show));
+const displayTitle = computed<string>(() => getPrimaryShowTitle(props.show));
 
-const youtubeEmbedUrl = computed(() => {
+const youtubeEmbedUrl = computed<string | null>(() => {
   if (!props.show?.preview_url) return null;
   return getYouTubeEmbedUrl(props.show.preview_url);
 });
 
-const videoId = computed(() => {
+const videoId = computed<string | null>(() => {
   if (!youtubeEmbedUrl.value) return null;
   const match = youtubeEmbedUrl.value.match(/embed\/([^?]+)/);
   return match ? match[1] : null;
 });
 
-const canPlayVideo = computed(() => Boolean(isShown.value && videoId.value) && !isVideoError.value);
-const activeVideoId = computed(() => videoId.value ?? 'drawer-video');
+const canPlayVideo = computed<boolean>(() => Boolean(isShown.value && videoId.value) && !isVideoError.value);
+const activeVideoId = computed<string>(() => videoId.value ?? 'drawer-video');
 
 watch([() => props.show, () => isShown.value], () => {
   isVideoPlaying.value = false;

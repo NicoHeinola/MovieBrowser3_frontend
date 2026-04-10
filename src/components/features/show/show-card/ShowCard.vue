@@ -18,12 +18,12 @@ const props = withDefaults(
   },
 );
 
-const cardImage = computed(() => {
+const cardImage = computed<string | null>(() => {
   if (props.imageToUse === 'card') return props.show.card_image_url;
   return props.show.banner_url;
 });
 
-const primaryTitle = computed(() => getPrimaryShowTitle(props.show));
+const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
 </script>
 
 <template>

@@ -16,7 +16,7 @@ const dialog = useDialog();
 
 type LogoutConfirmDialogProps = Omit<ConfirmDialogProps, 'close' | 'modelValue'>;
 
-const isInControlPanel = computed(() => String(route.name ?? '').startsWith('control-panel-'));
+const isInControlPanel = computed<boolean>(() => String(route.name ?? '').startsWith('control-panel-'));
 
 const logout = async (): Promise<void> => {
   const isConfirmed = await dialog.showDialog<boolean, LogoutConfirmDialogProps>({

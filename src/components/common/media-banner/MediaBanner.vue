@@ -17,28 +17,28 @@ const props = withDefaults(
   },
 );
 
-const isVideoPlaying = ref(false);
-const isVideoError = ref(false);
+const isVideoPlaying = ref<boolean>(false);
+const isVideoError = ref<boolean>(false);
 
-const youtubeEmbedUrl = computed(() => {
+const youtubeEmbedUrl = computed<string | null>(() => {
   return getYouTubeEmbedUrl(props.videoSrc ?? undefined);
 });
 
-const videoId = computed(() => {
+const videoId = computed<string | null>(() => {
   if (!youtubeEmbedUrl.value) return null;
   const match = youtubeEmbedUrl.value.match(/embed\/([^?]+)/);
   return match ? match[1] : null;
 });
 
-const canPlayYouTubeVideo = computed(
+const canPlayYouTubeVideo = computed<boolean>(
   () => Boolean(videoId.value) && !isVideoError.value && !props.disableVideoPlayback,
 );
 
-const shouldShowImage = computed(
+const shouldShowImage = computed<boolean>(
   () => Boolean(props.imageSrc) && (!isVideoPlaying.value || !canPlayYouTubeVideo.value),
 );
 
-const activeVideoId = computed(() => videoId.value ?? '');
+const activeVideoId = computed<string>(() => videoId.value ?? '');
 
 watch([() => props.imageSrc, () => props.videoSrc, () => props.disableVideoPlayback], () => {
   isVideoPlaying.value = false;

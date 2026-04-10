@@ -31,7 +31,7 @@ const iframeId = `yt-player-${Math.random().toString(36).slice(2, 11)}`;
 
 let ytPlayer: YouTubePlayerInstance | null = null;
 
-const playerSrc = computed(() => {
+const playerSrc = computed<string>(() => {
   const params = new URLSearchParams({
     autoplay: '0',
     controls: props.controls ? '1' : '0',

@@ -23,7 +23,7 @@ const loginRequest = ref<AuthLoginRequest>({
   password: '',
 });
 
-const isLoginFormValid = ref(false);
+const isLoginFormValid = ref<boolean>(false);
 
 const registerRequest = ref<RegisterRequest>({
   username: '',
@@ -31,7 +31,7 @@ const registerRequest = ref<RegisterRequest>({
   password_confirmed: '',
 });
 
-const isRegisterFormValid = ref(false);
+const isRegisterFormValid = ref<boolean>(false);
 
 const submitLogin = async (): Promise<void> => {
   if (!isLoginFormValid.value) {

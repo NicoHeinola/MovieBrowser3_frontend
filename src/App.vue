@@ -8,14 +8,14 @@ import { TopNavigation } from './components/layouts/top-navigation';
 
 const route = useRoute();
 const router = useRouter();
-const isRouterReady = ref(false);
+const isRouterReady = ref<boolean>(false);
 
 onMounted(async () => {
   await router.isReady();
   isRouterReady.value = true;
 });
 
-const shouldShowNavigation = computed(() => isRouterReady.value && route.meta.hideNavigation !== true);
+const shouldShowNavigation = computed<boolean>(() => isRouterReady.value && route.meta.hideNavigation !== true);
 </script>
 
 <template>

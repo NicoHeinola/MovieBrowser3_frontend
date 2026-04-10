@@ -9,10 +9,10 @@ const volume = defineModel<number>('volume', {
   default: 20,
 });
 
-const isExpanded = ref(false);
-const lastAudibleVolume = ref(volume.value > 0 ? volume.value : 20);
+const isExpanded = ref<boolean>(false);
+const lastAudibleVolume = ref<number>(volume.value > 0 ? volume.value : 20);
 
-const volumeIcon = computed(() => {
+const volumeIcon = computed<string>(() => {
   if (muted.value || volume.value === 0) return 'mdi-volume-off';
   if (volume.value < 50) return 'mdi-volume-low';
   return 'mdi-volume-high';
