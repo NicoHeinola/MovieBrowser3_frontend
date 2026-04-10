@@ -45,7 +45,7 @@ const logout = async (): Promise<void> => {
       <v-list class="d-flex flex-row ga-6 bg-transparent position-absolute right-0 top-0">
         <v-list-item class="d-flex">
           <div class="d-flex align-center ga-4 text-grey-lighten-1">
-            <span>Admin</span>
+            <span>{{ authStore.user?.username }}</span>
             <v-avatar>
               <v-menu>
                 <template #activator="{ props }">
@@ -59,7 +59,7 @@ const logout = async (): Promise<void> => {
                 </template>
               </v-menu>
             </v-avatar>
-            <v-avatar>
+            <v-avatar v-if="authStore.isAdmin">
               <v-btn :to="isInControlPanel ? '/' : '/control-panel'" icon v-tooltip:bottom="'Toggle Control Panel'">
                 <v-icon :color="isInControlPanel ? 'link' : ''"> mdi-key-variant </v-icon>
               </v-btn>

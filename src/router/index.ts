@@ -30,6 +30,10 @@ router.beforeEach((to) => {
     return '/auth';
   }
 
+  if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    return '/';
+  }
+
   if (to.meta.guestOnly && authStore.isAuthenticated) {
     return '/';
   }
