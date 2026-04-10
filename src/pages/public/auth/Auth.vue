@@ -1,26 +1,24 @@
 <script setup lang="ts">
 import type { AuthLoginRequest } from '@/interfaces/api/AuthLoginRequest';
 
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { LoginForm } from '@/components/features/auth/login-form';
 import { RegisterForm, type RegisterRequest } from '@/components/features/auth/register-form';
-import { useSnackbar } from '@/components/layouts/snackbar-provider';
+import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
 const authStore = useAuthStore();
 const router = useRouter();
-const { showErrorSnackbar, showSuccessSnackbar } = useSnackbar();
+const { showSuccessSnackbar, showAPIErrorSnackbar } = useCommonSnackbar();
+
+const isSubmitting = ref<boolean>(false);
 
 const loginFormId = 'login-form';
 const registerFormId = 'register-form';
 
 const mode = ref<'login' | 'register'>('login');
-
-watch(mode, () => {
-  authStore.clearError();
-});
 
 const loginRequest = ref<AuthLoginRequest>({
   username: '',
@@ -42,13 +40,16 @@ const submitLogin = async (): Promise<void> => {
     return;
   }
 
+  isSubmitting.value = true;
+
   try {
     await authStore.login(loginRequest.value);
     showSuccessSnackbar('Logged in successfully.');
     router.push('/');
-  } catch {
-    showErrorSnackbar(authStore.errorMessage ?? 'Login failed. Please try again.');
-    authStore.clearError();
+  } catch (error: unknown) {
+    showAPIErrorSnackbar(error);
+  } finally {
+    isSubmitting.value = false;
   }
 };
 
@@ -57,13 +58,16 @@ const submitRegister = async (): Promise<void> => {
     return;
   }
 
+  isSubmitting.value = true;
+
   try {
     await authStore.register(registerRequest.value);
     showSuccessSnackbar('Account created successfully.');
     router.push('/');
-  } catch {
-    showErrorSnackbar(authStore.errorMessage ?? 'Registration failed. Please try again.');
-    authStore.clearError();
+  } catch (error: unknown) {
+    showAPIErrorSnackbar(error);
+  } finally {
+    isSubmitting.value = false;
   }
 };
 </script>
@@ -117,9 +121,9 @@ const submitRegister = async (): Promise<void> => {
                 @submit="submitLogin"
               />
               <v-btn
-                :disabled="!isLoginFormValid || authStore.isSubmitting"
+                :disabled="!isLoginFormValid || isSubmitting"
                 :form="loginFormId"
-                :loading="authStore.isSubmitting"
+                :loading="isSubmitting"
                 color="primary"
                 type="submit"
                 block
@@ -136,9 +140,9 @@ const submitRegister = async (): Promise<void> => {
                 @submit="submitRegister"
               />
               <v-btn
-                :disabled="!isRegisterFormValid || authStore.isSubmitting"
+                :disabled="!isRegisterFormValid || isSubmitting"
                 :form="registerFormId"
-                :loading="authStore.isSubmitting"
+                :loading="isSubmitting"
                 color="primary"
                 type="submit"
               >
