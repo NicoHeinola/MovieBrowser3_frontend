@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Show } from '@/interfaces/api/models/Show';
+import type { Show } from '@/interfaces/api/Show';
 import { computed } from 'vue';
 import { ShowCard } from '@/components/features/show/show-card';
 import { parseCssNumeric } from '@/utils/css/parseCssNumeric';
@@ -47,7 +47,7 @@ const bannerCardContainerWidth = computed(() => {
 
 <template>
   <div :style="{ maxWidth: `max(${bannerCardContainerWidth}, 100%)` }">
-    <v-row class="w-100 ga-10">
+    <v-row class="w-100 ga-8">
       <v-col v-for="show in showsToShow" cols="auto" :key="show.id">
         <show-card
           :height="cardHeight"

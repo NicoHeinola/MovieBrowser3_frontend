@@ -5,6 +5,8 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 
 import { MediaBanner } from '@/components/common/media-banner';
+import PageContainer from '@/components/common/page-container/PageContainer.vue';
+import SectionContainer from '@/components/common/section-container/SectionContainer.vue';
 import { TitledSection } from '@/components/common/titled-section';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowCarousel } from '@/components/features/show/show-carousel';
@@ -104,31 +106,29 @@ onMounted(() => {
     :disable-video-playback="isShowDrawerVisible"
     :image-src="bannerBackground"
     :video-src="bannerVideo"
-    style="margin-top: -70px; height: 73vh"
+    style="margin-top: -70px; height: 74.5vh"
   >
     <v-row align="center" style="max-width: 90%">
-      <v-col>
-        <v-sheet border="sm" class="position-relative glass-panel" rounded="xl">
-          <v-container class="pa-8">
-            <titled-section icon="mdi-clock-outline" icon-color="warning" title="Latest"> </titled-section>
-            <show-grid
-              v-model:selected-show="selectedBannerShow"
-              :cols="continueWatchingCols"
-              :shows="latestShows"
-              @click:show="isShowDrawerVisible = true"
-            />
-            <div class="d-flex" v-if="latestShows.length === 0">
-              <v-alert class="flex-0-0" type="info">
-                <p class="text-no-wrap">No shows have been added yet.</p>
-              </v-alert>
-            </div>
-          </v-container>
-        </v-sheet>
-      </v-col>
+      <v-sheet border="sm" class="position-relative glass-panel" rounded="xl">
+        <section-container>
+          <titled-section icon="mdi-clock-outline" icon-color="warning" title="Latest"> </titled-section>
+          <show-grid
+            v-model:selected-show="selectedBannerShow"
+            :cols="continueWatchingCols"
+            :shows="latestShows"
+            @click:show="isShowDrawerVisible = true"
+          />
+          <div class="d-flex" v-if="latestShows.length === 0">
+            <v-alert class="flex-0-0" type="info">
+              <p class="text-no-wrap">No shows have been added yet.</p>
+            </v-alert>
+          </div>
+        </section-container>
+      </v-sheet>
     </v-row>
   </media-banner>
   <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedShow" />
-  <v-container class="pb-12 pl-12 pr-0 overflow-visible" fluid>
+  <page-container class="pr-0 pt-0" fluid>
     <v-row gap="48">
       <titled-section
         icon="mdi-play-circle"
@@ -207,5 +207,5 @@ onMounted(() => {
         </div>
       </titled-section>
     </v-row>
-  </v-container>
+  </page-container>
 </template>

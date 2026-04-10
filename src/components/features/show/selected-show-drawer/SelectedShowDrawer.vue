@@ -3,6 +3,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 
 import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
+import { SectionContainer } from '@/components/common/section-container';
 import { VolumeControl } from '@/components/common/volume-control';
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
@@ -28,8 +29,6 @@ const volume = ref<number>(20);
 const close = () => {
   isShown.value = false;
 };
-
-const displayTitle = computed<string>(() => getPrimaryShowTitle(props.show));
 
 const youtubeEmbedUrl = computed<string | null>(() => {
   if (!props.show?.preview_url) return null;
@@ -85,9 +84,13 @@ watch([() => props.show, () => isShown.value], () => {
       </v-fade-transition>
 
       <div class="image-shadow position-absolute w-100 h-100 top-0 left-0">
-        <div class="d-flex align-end h-100 pa-6">
-          <h1>{{ displayTitle }}</h1>
-        </div>
+        <section-container class="d-flex flex-column justify-end h-100">
+          <h1>{{ getPrimaryShowTitle(props.show) }}</h1>
+
+          <p class="text-medium-emphasis">
+            {{ props.show?.description }}
+          </p>
+        </section-container>
       </div>
 
       <v-fade-transition>
@@ -101,12 +104,6 @@ watch([() => props.show, () => isShown.value], () => {
 
       <v-btn class="position-absolute right-0 top-0 ma-4" icon="mdi-close" variant="text" @click="close" />
     </div>
-
-    <v-container>
-      <p class="text-body-1 text-medium-emphasis">
-        {{ props.show?.description }}
-      </p>
-    </v-container>
   </v-navigation-drawer>
 </template>
 
