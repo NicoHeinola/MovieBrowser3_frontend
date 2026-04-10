@@ -13,12 +13,84 @@ applyTo: 'src/**/*.vue'
   1. Imports (external, then internal)
   2. Define props
   3. Define v-model bindings
-  4. Variables and computed properties
-  5. Functions (methods)
-  6. Watchers
-  7. Lifecycle hooks (onMounted, etc.)
-  8. Other code (e.g., event listeners, side effects)
+  4. Local refs and plain state
+  5. Composable calls and injected dependencies
+  6. Computed values
+  7. Functions (methods)
+  8. Watchers
+  9. Lifecycle hooks (onMounted, etc.)
+  10. Other code (e.g., event listeners, side effects)
 - **Template section** should be at the end of the file.
+
+## Good Script Order
+
+- Keep `ref(...)` declarations together before derived state.
+- Place composable results such as `useDisplay()`, `useRoute()`, `useRouter()`, or snackbar/dialog APIs after local refs so dependencies are visible before computed state.
+- Put `computed(...)` values after the refs and composables they depend on.
+- Declare async loaders, event handlers, and helper methods before `watch(...)` and `onMounted(...)`.
+- Keep `watch(...)` close to the state it synchronizes, but still below computed values and methods.
+- Keep `onMounted(...)` and other lifecycle hooks near the end of the script block.
+
+```vue
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
+import { useDisplay } from 'vuetify';
+
+import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+
+const shows = ref([]);
+const selectedShow = ref(null);
+
+const { showAPIErrorSnackbar } = useCommonSnackbar();
+const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
+
+const continueWatchingCols = computed(() => {
+  if (xxl.value) return 5;
+  if (xlAndUp.value) return 4;
+  if (lgAndUp.value) return 3;
+  if (smAndUp.value) return 2;
+  return 1;
+});
+
+const loadShows = async (): Promise<void> => {
+  try {
+    // ...
+  } catch (error: unknown) {
+    showAPIErrorSnackbar(error);
+  }
+};
+
+watch(selectedShow, () => {
+  // ...
+});
+
+onMounted(() => {
+  void loadShows();
+});
+</script>
+```
+
+```vue
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
+
+const loadShows = async (): Promise<void> => {
+  // Avoid putting methods before the state they depend on.
+};
+
+const shows = ref([]);
+
+watch(shows, () => {
+  // Avoid placing watchers before computed values and methods.
+});
+
+const totalShows = computed(() => shows.value.length);
+
+onMounted(() => {
+  void loadShows();
+});
+</script>
+```
 
 ## Template Conventions
 
@@ -79,26 +151,30 @@ defineProps<{ foo: string }>();
 // 3. v-model
 defineModel<string>('bar');
 
-// 4. Variables / Computed
+// 4. Local state
 const count = ref(0);
+
+// 5. Composables / injected dependencies
+
+// 6. Computed
 const doubled = computed(() => count.value * 2);
 
-// 5. Functions
+// 7. Functions
 const increment = () => {
   count.value++;
 };
 
-// 6. Watchers
+// 8. Watchers
 watch(count, (newVal) => {
   // ...
 });
 
-// 7. Lifecycle hooks
+// 9. Lifecycle hooks
 onMounted(() => {
   // ...
 });
 
-// 8. Other
+// 10. Other
 // ...
 </script>
 

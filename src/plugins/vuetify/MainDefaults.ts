@@ -27,4 +27,8 @@ export const MainDefaults = {
     variant: 'outlined',
     density: 'comfortable',
   },
+  VAlert: {
+    variant: 'tonal',
+    density: 'comfortable',
+  },
 };

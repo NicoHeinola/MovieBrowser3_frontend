@@ -38,7 +38,7 @@ const onShowClick = (show: Show) => {
       :style="props.dragStyle"
     >
       <show-card
-        v-for="show in [...props.shows, props.shows[0]]"
+        v-for="show in props.shows"
         :height="cardHeight"
         :show="show"
         :width="cardWidth"
