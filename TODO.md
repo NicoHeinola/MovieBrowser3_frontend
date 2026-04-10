@@ -27,3 +27,7 @@
 - Websites listing page
 
 - Season / episode logic to the side bar
+
+- Show links (e.g. "chronological watch order", "recommended watch order" or "related shows")
+
+- Show description
