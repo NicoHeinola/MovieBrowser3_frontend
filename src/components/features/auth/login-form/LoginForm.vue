@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AuthLoginRequest } from '@/interfaces/api/AuthLoginRequest';
+import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginRequest';
 
 import { BaseForm } from '@/components/common/base-form';
 

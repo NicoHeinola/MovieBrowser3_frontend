@@ -1,4 +1,4 @@
-import type { Show } from '@/interfaces/api/Show';
+import type { Show } from '@/interfaces/api/models/Show';
 
 export const homeMockShows: Show[] = [
   {

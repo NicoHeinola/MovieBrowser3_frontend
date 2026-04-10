@@ -1,6 +1,6 @@
-import type { AuthLoginRequest } from '@/interfaces/api/AuthLoginRequest';
-import type { AuthRegisterRequest } from '@/interfaces/api/AuthRegisterRequest';
-import type { AuthTokenResponse } from '@/interfaces/api/AuthTokenResponse';
+import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginRequest';
+import type { AuthRegisterRequest } from '@/interfaces/api/requests/AuthRegisterRequest';
+import type { AuthTokenResponse } from '@/interfaces/api/responses/AuthTokenResponse';
 
 import { apiClient } from '@/plugins/api/apiClient';
 

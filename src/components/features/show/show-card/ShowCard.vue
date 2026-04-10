@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Show } from '@/interfaces/api/Show';
+import type { Show } from '@/interfaces/api/models/Show';
 import { computed } from 'vue';
 
 import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Show } from '@/interfaces/api/Show';
+import type { Show } from '@/interfaces/api/models/Show';
 
 import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';

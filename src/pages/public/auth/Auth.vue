@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AuthLoginRequest } from '@/interfaces/api/AuthLoginRequest';
+import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginRequest';
 
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';

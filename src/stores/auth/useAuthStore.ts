@@ -1,5 +1,5 @@
-import type { AuthLoginRequest } from '@/interfaces/api/AuthLoginRequest';
-import type { AuthRegisterRequest } from '@/interfaces/api/AuthRegisterRequest';
+import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginRequest';
+import type { AuthRegisterRequest } from '@/interfaces/api/requests/AuthRegisterRequest';
 
 import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
@@ -9,6 +9,7 @@ import { authService } from './authService';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = useStorage<string | null>('auth.token', null);
+  const user = useStorage<User | null>('auth.user', null);
   const isAuthenticated = computed(() => Boolean(token.value));
 
   const setToken = (value: string | null): void => {

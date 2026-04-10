@@ -1,4 +1,4 @@
-import type { Show } from '@/interfaces/api/Show';
+import type { Show } from '@/interfaces/api/models/Show';
 
 export const getPrimaryShowTitle = (
   show: Pick<Show, 'titles'> | null | undefined,

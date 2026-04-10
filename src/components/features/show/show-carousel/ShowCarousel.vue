@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Show } from '@/interfaces/api/Show';
+import type { Show } from '@/interfaces/api/models/Show';
 import type { ClassValue, StyleValue } from 'vue';
 import { DragScrollContainer } from '@/components/common/drag-scroll-container';
 import { ShowCard } from '@/components/features/show/show-card';
