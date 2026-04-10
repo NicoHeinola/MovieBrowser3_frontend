@@ -14,6 +14,7 @@
 - Keep backend-facing API shapes in `src/interfaces/api` and preserve backend field names exactly unless a dedicated mapping layer is introduced.
 - Keep API-calling service modules in `src/services` and have stores or pages consume them rather than defining service wrappers inside those namespaces.
 - Keep design tokens and theme-level color decisions in `src/plugins/vuetify` or shared styles, not scattered through component logic.
+- Use Conventional Commits when drafting commit messages for this repository. Follow `type(scope): summary` with lowercase type and scope, and keep the summary short and imperative.
 - Run the smallest relevant validation after changes, usually `npm run lint`, `npm test`, or a targeted type check.
 - When a requested change affects repository conventions, structure, ownership boundaries, or workflow guidance, update the relevant customization files in the same change without waiting for a separate prompt.
 

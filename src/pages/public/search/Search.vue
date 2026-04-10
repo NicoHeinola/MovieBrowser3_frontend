@@ -1,0 +1,22 @@
+<script setup lang="ts"></script>
+
+<template>
+  <v-container class="fill-height" fluid>
+    <v-row align="center" class="fill-height" justify="center">
+      <v-col cols="12" lg="6" md="8" xl="5">
+        <v-card border="sm" rounded="xl">
+          <v-card-text class="pa-8 pa-md-10 d-flex flex-column ga-4">
+            <div>
+              <p class="text-overline text-medium-emphasis">Placeholder View</p>
+              <h1 class="text-h3">Search</h1>
+            </div>
+
+            <p class="text-body-1 text-medium-emphasis">
+              This page is routed and ready. Replace this content with your search experience when you're ready.
+            </p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>

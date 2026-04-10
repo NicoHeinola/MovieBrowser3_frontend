@@ -45,7 +45,7 @@ const submitLogin = async (): Promise<void> => {
   try {
     await authStore.login(loginRequest.value);
     showSuccessSnackbar('Logged in successfully.');
-    router.push('/');
+    router.push({ name: 'home' });
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {
@@ -63,7 +63,7 @@ const submitRegister = async (): Promise<void> => {
   try {
     await authStore.register(registerRequest.value);
     showSuccessSnackbar('Account created successfully.');
-    router.push('/');
+    router.push({ name: 'home' });
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {

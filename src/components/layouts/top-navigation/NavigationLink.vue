@@ -1,20 +1,18 @@
 <script lang="ts" setup>
-import type { RouteLocationAsPathGeneric, RouteLocationAsRelativeGeneric } from 'vue-router';
-
 const props = defineProps<{
-  name: string;
-  path: string | RouteLocationAsPathGeneric | RouteLocationAsRelativeGeneric;
+  label: string;
+  routeName: string;
   icon?: string;
 }>();
 </script>
 
 <template>
-  <router-link :to="props.path" class="d-flex ga-2 align-center nav-link-wrapper">
+  <router-link :to="{ name: props.routeName }" class="d-flex ga-2 align-center nav-link-wrapper">
     <v-icon v-if="props.icon">
       {{ props.icon }}
     </v-icon>
     <span>
-      {{ props.name }}
+      {{ props.label }}
     </span>
   </router-link>
 </template>

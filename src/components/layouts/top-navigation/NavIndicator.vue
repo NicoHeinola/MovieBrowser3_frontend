@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router';
 
 const props = defineProps<{
   linkEls: HTMLElement[];
-  linkPaths: string[];
+  linkRouteNames: string[];
 }>();
 
 const route = useRoute();
@@ -16,7 +16,8 @@ const initialized = ref(false);
 const isSquishing = ref(false);
 let resizeObserver: ResizeObserver | null = null;
 
-const activeIndex = computed(() => props.linkPaths.indexOf(route.path));
+const activeRouteName = computed(() => String(route.name ?? ''));
+const activeIndex = computed(() => props.linkRouteNames.indexOf(activeRouteName.value));
 
 // Measures the active link's position relative to the container and moves the indicator there.
 // On first call (animate=false), position is set instantly to avoid a transition from 0,0.

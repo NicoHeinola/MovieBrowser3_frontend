@@ -16,7 +16,7 @@ const dialog = useDialog();
 
 type LogoutConfirmDialogProps = Omit<ConfirmDialogProps, 'close' | 'modelValue'>;
 
-const isInControlPanel = computed(() => route.fullPath.startsWith('/control-panel'));
+const isInControlPanel = computed(() => String(route.name ?? '').startsWith('control-panel-'));
 
 const logout = async (): Promise<void> => {
   const isConfirmed = await dialog.showDialog<boolean, LogoutConfirmDialogProps>({
@@ -33,7 +33,7 @@ const logout = async (): Promise<void> => {
   }
 
   authStore.logout();
-  await router.push('/auth');
+  await router.push({ name: 'auth' });
 };
 </script>
 
@@ -53,14 +53,18 @@ const logout = async (): Promise<void> => {
                 </template>
                 <template #default>
                   <v-list>
-                    <v-list-item prepend-icon="mdi-cog" to="/user-settings"> Profile </v-list-item>
+                    <v-list-item :to="{ name: 'profile' }" prepend-icon="mdi-cog"> Profile </v-list-item>
                     <v-list-item base-color="error" prepend-icon="mdi-arrow-left" @click="logout"> Logout </v-list-item>
                   </v-list>
                 </template>
               </v-menu>
             </v-avatar>
             <v-avatar v-if="authStore.isAdmin">
-              <v-btn :to="isInControlPanel ? '/' : '/control-panel'" icon v-tooltip:bottom="'Toggle Control Panel'">
+              <v-btn
+                :to="{ name: isInControlPanel ? 'home' : 'control-panel-dashboard' }"
+                icon
+                v-tooltip:bottom="'Toggle Control Panel'"
+              >
                 <v-icon :color="isInControlPanel ? 'link' : ''"> mdi-key-variant </v-icon>
               </v-btn>
             </v-avatar>

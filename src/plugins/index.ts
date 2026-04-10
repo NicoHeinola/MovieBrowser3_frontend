@@ -18,8 +18,8 @@ export const registerPlugins = (app: App) => {
     onUnauthorized: () => {
       authStore.logout();
 
-      if (router.currentRoute.value.fullPath !== '/auth') {
-        void router.push('/auth');
+      if (router.currentRoute.value.name !== 'auth') {
+        void router.push({ name: 'auth' });
       }
     },
   });

@@ -14,11 +14,11 @@
     "type:check": "vue-tsc --build --force",
     "lint:check": "eslint",
     "lint:fix": "eslint --fix",
+    "format:fix": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage",
-    "format:fix": "prettier --write .",
-    "format:check": "prettier --check ."
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@fontsource/roboto": "^5.2.10",

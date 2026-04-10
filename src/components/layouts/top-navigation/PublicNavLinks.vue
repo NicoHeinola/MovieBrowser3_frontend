@@ -6,22 +6,22 @@ import NavigationLink from './NavigationLink.vue';
 import NavIndicator from './NavIndicator.vue';
 
 const links: NavigationLinkItem[] = [
-  { name: 'Home', path: '/', icon: 'mdi-home' },
-  { name: 'Search', path: '/search', icon: 'mdi-magnify' },
+  { label: 'Home', routeName: 'home', icon: 'mdi-home' },
+  { label: 'Search', routeName: 'search', icon: 'mdi-magnify' },
 ];
 
 const linkEls = ref<HTMLElement[]>([]);
-const linkPaths = links.map((l) => l.path as string);
+const linkRouteNames = links.map((link) => link.routeName);
 </script>
 
 <template>
-  <v-list-item v-for="(link, index) in links" :key="link.name">
+  <v-list-item v-for="(link, index) in links" :key="link.routeName">
     <navigation-link
       :icon="link.icon"
-      :name="link.name"
-      :path="link.path"
+      :label="link.label"
+      :route-name="link.routeName"
       :ref="(el) => captureComponentEl(linkEls, el, index)"
     />
   </v-list-item>
-  <nav-indicator :link-els="linkEls" :link-paths="linkPaths" />
+  <nav-indicator :link-els="linkEls" :link-route-names="linkRouteNames" />
 </template>
