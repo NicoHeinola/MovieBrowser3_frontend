@@ -101,6 +101,12 @@ watch([() => props.show, () => isShown.value], () => {
 
       <v-btn class="position-absolute right-0 top-0 ma-4" icon="mdi-close" variant="text" @click="close" />
     </div>
+
+    <v-container>
+      <p class="text-body-1 text-medium-emphasis">
+        {{ props.show?.description }}
+      </p>
+    </v-container>
   </v-navigation-drawer>
 </template>
 

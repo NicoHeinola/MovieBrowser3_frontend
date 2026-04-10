@@ -18,7 +18,7 @@ const props = withDefaults(
   },
 );
 
-const cardImage = computed<string | null>(() => {
+const cardImage = computed<string>(() => {
   if (props.imageToUse === 'card') return props.show.card_image_url;
   return props.show.banner_url;
 });

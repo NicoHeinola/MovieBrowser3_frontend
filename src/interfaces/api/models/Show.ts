@@ -5,5 +5,6 @@ export interface Show {
   banner_url: string; // More horizontal
   card_image_url: string; // More vertical
   preview_url: string | null;
+  description: string;
   titles: ShowTitle[];
 }
