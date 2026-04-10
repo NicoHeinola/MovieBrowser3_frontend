@@ -7,6 +7,10 @@
   backdrop-filter: blur(10px);
 }
 
+.transition-color-220 {
+  transition: color 220ms ease;
+}
+
 .required {
   .v-field-label::after {
     content: ' *';

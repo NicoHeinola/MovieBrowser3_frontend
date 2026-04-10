@@ -49,7 +49,11 @@ const logout = async (): Promise<void> => {
             <v-avatar>
               <v-menu>
                 <template #activator="{ props }">
-                  <v-btn icon="mdi-account" v-bind="props"> </v-btn>
+                  <v-btn icon v-bind="props">
+                    <v-icon :color="route.name === 'profile' ? 'link' : undefined" class="transition-color-220">
+                      mdi-account
+                    </v-icon>
+                  </v-btn>
                 </template>
                 <template #default>
                   <v-list>
@@ -65,7 +69,7 @@ const logout = async (): Promise<void> => {
                 icon
                 v-tooltip:bottom="'Toggle Control Panel'"
               >
-                <v-icon :color="isInControlPanel ? 'link' : ''"> mdi-key-variant </v-icon>
+                <v-icon :color="isInControlPanel ? 'link' : ''" class="transition-color-220"> mdi-key-variant </v-icon>
               </v-btn>
             </v-avatar>
           </div>
