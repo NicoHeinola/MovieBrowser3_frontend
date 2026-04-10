@@ -11,6 +11,7 @@ import { ShowCarousel } from '@/components/features/show/show-carousel';
 import { ShowGrid } from '@/components/features/show/show-grid';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { showService } from '@/services/show/showService';
+import { useSettingStore } from '@/stores/setting/useSettingStore';
 
 const continueToWatchShows = ref<Show[]>([]);
 const latestShows = ref<Show[]>([]);
@@ -22,6 +23,7 @@ const selectedBannerShow = ref<Show | null>(null);
 const selectedShow = ref<Show | null>(selectedBannerShow.value);
 const isShowDrawerVisible = ref<boolean>(false);
 
+const settingStore = useSettingStore();
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 
 const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
@@ -32,6 +34,32 @@ const continueWatchingCols = computed<number>(() => {
   if (lgAndUp.value) return 3;
   if (smAndUp.value) return 2;
   return 1;
+});
+
+const bannerVideo = computed<string | null>(() => {
+  if (selectedBannerShow.value?.preview_url) {
+    return selectedBannerShow.value.preview_url;
+  }
+
+  const defaultVideos = settingStore.bannerDefaultVideos;
+  if (defaultVideos.length > 0) {
+    return defaultVideos[Math.floor(Math.random() * defaultVideos.length)];
+  }
+
+  return null;
+});
+
+const bannerBackground = computed<string | null>(() => {
+  if (selectedBannerShow.value?.banner_url) {
+    return selectedBannerShow.value.banner_url;
+  }
+
+  const defaultBackgrounds = settingStore.bannerDefaultBackgrounds;
+  if (defaultBackgrounds.length > 0) {
+    return defaultBackgrounds[Math.floor(Math.random() * defaultBackgrounds.length)];
+  }
+
+  return null;
 });
 
 watch(
@@ -74,8 +102,8 @@ onMounted(() => {
 <template>
   <media-banner
     :disable-video-playback="isShowDrawerVisible"
-    :image-src="selectedBannerShow?.banner_url || null"
-    :video-src="selectedBannerShow?.preview_url || null"
+    :image-src="bannerBackground"
+    :video-src="bannerVideo"
     style="margin-top: -70px; height: 73vh"
   >
     <v-row align="center" style="max-width: 90%">
