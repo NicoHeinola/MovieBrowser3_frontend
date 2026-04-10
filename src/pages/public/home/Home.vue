@@ -100,7 +100,7 @@ onMounted(() => {
     </v-row>
   </media-banner>
   <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedShow" />
-  <v-container class="pl-12 pr-0 overflow-visible" fluid>
+  <v-container class="pb-12 pl-12 pr-0 overflow-visible" fluid>
     <v-row gap="48">
       <titled-section
         icon="mdi-play-circle"
