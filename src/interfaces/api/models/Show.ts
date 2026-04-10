@@ -1,4 +1,4 @@
-import type { ShowTitle } from '../ShowTitle';
+import type { ShowTitle } from './ShowTitle';
 
 export interface Show {
   id: number;

@@ -11,13 +11,13 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build --force",
-    "lint": "eslint",
+    "type:check": "vue-tsc --build --force",
+    "lint:check": "eslint",
     "lint:fix": "eslint --fix",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "format": "prettier --write .",
+    "format:fix": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "dependencies": {
