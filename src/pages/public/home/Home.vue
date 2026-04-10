@@ -15,11 +15,20 @@ import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { showService } from '@/services/show/showService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
+import { homepageSections } from './homepageSections';
+
 const continueToWatchShows = ref<Show[]>([]);
 const latestShows = ref<Show[]>([]);
 const isekaiShows = ref<Show[]>([]);
 const romanceShows = ref<Show[]>([]);
 const randomShows = ref<Show[]>([]);
+
+const showsMap = computed<Record<string, Show[]>>(() => ({
+  continueToWatchShows: continueToWatchShows.value,
+  isekaiShows: isekaiShows.value,
+  romanceShows: romanceShows.value,
+  randomShows: randomShows.value,
+}));
 
 const isLoadingShows = ref<boolean>(false);
 const selectedBannerShow = ref<Show | null>(null);
@@ -144,84 +153,23 @@ onMounted(() => {
   <page-container class="pr-0 pt-0" fluid>
     <v-row gap="48">
       <titled-section
-        icon="mdi-play-circle"
-        icon-color="warning"
-        subtitle="Pick up where you left off with your in-progress shows."
-        title="Continue Watching"
+        v-for="section in homepageSections"
+        :icon="section.icon"
+        :icon-color="section.iconColor"
+        :subtitle="section.subtitle"
+        :title="section.title"
+        :key="section.title"
       >
         <v-skeleton-loader type="image" v-if="isLoading" />
         <show-carousel
           v-model:selected-show="selectedShow"
-          :shows="continueToWatchShows"
+          :shows="showsMap[section.dataKey]"
           :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
           v-else
         />
-        <div class="d-flex" v-if="!isLoading && continueToWatchShows.length === 0">
-          <v-alert class="flex-0-0" type="info">
-            <p class="text-no-wrap">There are no shows in this category</p>
-          </v-alert>
-        </div>
-      </titled-section>
-      <titled-section
-        icon="mdi-earth"
-        icon-color="success"
-        subtitle="World-hopping stories with larger-than-life stakes."
-        title="Isekai"
-      >
-        <v-skeleton-loader type="image" v-if="isLoading" />
-        <show-carousel
-          v-model:selected-show="selectedShow"
-          :shows="isekaiShows"
-          :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
-          drag-class="pl-12 pr-12"
-          @click:show="isShowDrawerVisible = true"
-          v-else
-        />
-        <div class="d-flex" v-if="!isLoading && isekaiShows.length === 0">
-          <v-alert class="flex-0-0" type="info">
-            <p class="text-no-wrap">There are no shows in this category</p>
-          </v-alert>
-        </div>
-      </titled-section>
-      <titled-section
-        icon="mdi-heart"
-        icon-color="error"
-        subtitle="Softer pacing, sharper emotions, and character chemistry."
-        title="Romance"
-      >
-        <v-skeleton-loader type="image" v-if="isLoading" />
-        <show-carousel
-          v-model:selected-show="selectedShow"
-          :shows="romanceShows"
-          :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
-          drag-class="pl-12 pr-12"
-          @click:show="isShowDrawerVisible = true"
-          v-else
-        />
-        <div class="d-flex" v-if="!isLoading && romanceShows.length === 0">
-          <v-alert class="flex-0-0" type="info">
-            <p class="text-no-wrap">There are no shows in this category</p>
-          </v-alert>
-        </div>
-      </titled-section>
-      <titled-section
-        icon="mdi-shuffle-variant"
-        icon-color="info"
-        subtitle="Unexpected picks when you want the catalog to surprise you."
-        title="Random"
-      >
-        <v-skeleton-loader type="image" v-if="isLoading" />
-        <show-carousel
-          v-model:selected-show="selectedShow"
-          :shows="randomShows"
-          :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
-          drag-class="pl-12 pr-12"
-          @click:show="isShowDrawerVisible = true"
-          v-else
-        />
-        <div class="d-flex" v-if="!isLoading && randomShows.length === 0">
+        <div class="d-flex" v-if="!isLoading && showsMap[section.dataKey].length === 0">
           <v-alert class="flex-0-0" type="info">
             <p class="text-no-wrap">There are no shows in this category</p>
           </v-alert>
