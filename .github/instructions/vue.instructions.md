@@ -38,13 +38,13 @@ import { useDisplay } from 'vuetify';
 
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 
-const shows = ref([]);
-const selectedShow = ref(null);
+const shows = ref<Show[]>([]);
+const selectedShow = ref<Show | null>(null);
 
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
 
-const continueWatchingCols = computed(() => {
+const continueWatchingCols = computed<number>(() => {
   if (xxl.value) return 5;
   if (xlAndUp.value) return 4;
   if (lgAndUp.value) return 3;
@@ -78,13 +78,13 @@ const loadShows = async (): Promise<void> => {
   // Avoid putting methods before the state they depend on.
 };
 
-const shows = ref([]);
+const shows = ref<Show[]>([]);
 
 watch(shows, () => {
   // Avoid placing watchers before computed values and methods.
 });
 
-const totalShows = computed(() => shows.value.length);
+const totalShows = computed<number>(() => shows.value.length);
 
 onMounted(() => {
   void loadShows();

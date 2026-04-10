@@ -75,7 +75,7 @@ onMounted(() => {
   <media-banner
     :disable-video-playback="isShowDrawerVisible"
     :image-src="selectedBannerShow?.banner_url || null"
-    :video-src="selectedBannerShow?.preview_url || 'https://www.youtube.com/watch?v=QohH89Eu5iM'"
+    :video-src="selectedBannerShow?.preview_url || null"
     style="margin-top: -70px; height: 73vh"
   >
     <v-row align="center" style="max-width: 90%">

@@ -9,11 +9,45 @@ applyTo: 'src/stores/**/*.ts'
 
 - Keep one store per file or namespace entry point.
 - Name stores with the `useXStore` convention.
-- Type state, action inputs, and derived values explicitly.
+- Always use `const` arrow functions for actions and helpers instead of `function` declarations.
+- Type state, action inputs, and derived values explicitly (prefer `ref<T>(...)` and `computed<T>(() => ...)` syntax).
+
+### Example: Proper Store Structure
+
+```typescript
+export const useSettingStore = defineStore('setting', () => {
+  const settings = ref<Setting[]>([]);
+  const isLoading = ref<boolean>(false);
+
+  // Computed with explicit typing using generic syntax
+  const bannerDefaultVideos = computed<string[]>(() => {
+    return (settings.value.find((s) => s.key === 'banner_default_videos')?.value as string[]) || [];
+  });
+
+  // Action using const arrow function
+  const fetchSettings = async () => {
+    isLoading.value = true;
+    try {
+      settings.value = await settingService.getSettings();
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  return {
+    settings,
+    isLoading,
+    bannerDefaultVideos,
+    fetchSettings,
+  };
+});
+```
 
 ## Responsibilities
 
 - Put async fetching, persistence, and mutation logic in store actions.
+- Do not store error state or catch errors inside store actions; error handling belongs to the caller (e.g., component or page).
+- Track loading state (`isLoading`) inside the store to provide UI feedback across consumers.
 - Keep components focused on presentation and event wiring rather than duplicating store logic.
 - Do not hide backend contracts inside stores; import shared contracts from `src/interfaces/api`.
 - Import API-calling service wrappers from `src/services/<domain>/` instead of colocating them inside `src/stores` namespaces.

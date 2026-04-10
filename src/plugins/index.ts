@@ -2,6 +2,7 @@ import type { App } from 'vue';
 import { createPinia } from 'pinia';
 import { configureApiClientAuth } from '@/plugins/api/apiClient';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
+import { useSettingStore } from '@/stores/setting/useSettingStore';
 import router from '../router';
 import vuetify from './vuetify';
 
@@ -12,6 +13,7 @@ export const registerPlugins = (app: App) => {
   app.use(pinia);
 
   const authStore = useAuthStore(pinia);
+  const settingStore = useSettingStore(pinia);
 
   configureApiClientAuth({
     getToken: () => authStore.token,
@@ -23,6 +25,8 @@ export const registerPlugins = (app: App) => {
       }
     },
   });
+
+  void settingStore.fetchSettings();
 
   app.use(router);
 };

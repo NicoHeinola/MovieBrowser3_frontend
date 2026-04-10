@@ -17,8 +17,25 @@ applyTo: 'src/services/**/*.ts'
 - Keep one primary exported service per file.
 - Do not add `index.ts` barrels to service namespaces unless a deliberate public boundary is needed by multiple external consumers.
 
+### Example: Service Module
+
+```typescript
+// src/services/setting/settingService.ts
+import type { Setting } from '@/interfaces/api/models/Setting';
+import { apiClient } from '@/plugins/api/apiClient';
+
+export const settingService = {
+  // Use explicit return type, avoid unnecessary response wrappers
+  getSettings: async (): Promise<Setting[]> => {
+    const { data } = await apiClient.get<Setting[]>('/settings');
+    return data;
+  },
+};
+```
+
 ## Boundaries
 
 - Service files may depend on shared API clients, request and response interfaces, and closely related service-local helpers.
 - Do not move backend contract definitions into services; import them from `src/interfaces/api`.
 - Keep UI state, persistence decisions, and view-specific formatting in stores or components rather than in service modules.
+- Method names should be clear and domain-focused (e.g., `login` instead of `authPost`).

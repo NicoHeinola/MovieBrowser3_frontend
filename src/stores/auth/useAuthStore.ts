@@ -3,7 +3,7 @@ import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginReques
 import type { AuthRegisterRequest } from '@/interfaces/api/requests/AuthRegisterRequest';
 import { StorageSerializers, useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 import { authService } from '@/services/auth/authService';
 
@@ -12,16 +12,20 @@ export const useAuthStore = defineStore('auth', () => {
   const user = useStorage<User | null>('auth.user', null, undefined, {
     serializer: StorageSerializers.object,
   });
-
-  const isAuthenticated = computed(() => Boolean(token.value));
-
-  const isAdmin = computed(() => user.value?.is_admin ?? false);
+  const isLoading = ref<boolean>(false);
+  const isAuthenticated = computed<boolean>(() => Boolean(token.value));
+  const isAdmin = computed<boolean>(() => user.value?.is_admin ?? false);
 
   const login = async (request: AuthLoginRequest): Promise<void> => {
-    const response = await authService.login(request);
+    isLoading.value = true;
+    try {
+      const response = await authService.login(request);
 
-    token.value = response.token;
-    user.value = response.user;
+      token.value = response.token;
+      user.value = response.user;
+    } finally {
+      isLoading.value = false;
+    }
   };
 
   const logout = (): void => {
@@ -30,15 +34,21 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const register = async (request: AuthRegisterRequest): Promise<void> => {
-    const response = await authService.register(request);
+    isLoading.value = true;
+    try {
+      const response = await authService.register(request);
 
-    token.value = response.token;
-    user.value = response.user;
+      token.value = response.token;
+      user.value = response.user;
+    } finally {
+      isLoading.value = false;
+    }
   };
 
   return {
     isAuthenticated,
     isAdmin,
+    isLoading,
     login,
     logout,
     register,

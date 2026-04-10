@@ -17,9 +17,11 @@ const parse = (value: unknown): string => String(value);
 const parse = (value: any): string => String(value);
 ```
 
-## Function Declarations
+## Function and Variable Declarations
 
-- Always use `const` arrow functions instead of `function` declarations.
+- Always use `const` arrow functions instead of `function` declarations for all functions, methods, and actions (+ `async`).
+- Type state, variables, and derived values explicitly.
+- Use generic syntax for Vue-like primitives: `ref<T>(...)`, `computed<T>(() => ...)` or `reactive<T>({...})`.
 
 ```ts
 // correct
@@ -27,10 +29,16 @@ export const getEnvString = (key: string): string => {
   // ...
 };
 
+const isLoading = ref<boolean>(false);
+const totalCount = computed<number>(() => items.value.length);
+
 // incorrect
 export function getEnvString(key: string): string {
   // ...
 }
+
+const isLoading = ref(false);
+const totalCount = computed(() => items.value.length);
 ```
 
 ## Imports and Types

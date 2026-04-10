@@ -13,8 +13,6 @@ const authStore = useAuthStore();
 const router = useRouter();
 const { showSuccessSnackbar, showAPIErrorSnackbar } = useCommonSnackbar();
 
-const isSubmitting = ref<boolean>(false);
-
 const loginFormId = 'login-form';
 const registerFormId = 'register-form';
 
@@ -40,16 +38,12 @@ const submitLogin = async (): Promise<void> => {
     return;
   }
 
-  isSubmitting.value = true;
-
   try {
     await authStore.login(loginRequest.value);
     showSuccessSnackbar('Logged in successfully.');
-    router.push({ name: 'home' });
+    void router.push({ name: 'home' });
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
-  } finally {
-    isSubmitting.value = false;
   }
 };
 
@@ -58,16 +52,12 @@ const submitRegister = async (): Promise<void> => {
     return;
   }
 
-  isSubmitting.value = true;
-
   try {
     await authStore.register(registerRequest.value);
     showSuccessSnackbar('Account created successfully.');
-    router.push({ name: 'home' });
+    void router.push({ name: 'home' });
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
-  } finally {
-    isSubmitting.value = false;
   }
 };
 </script>
@@ -121,9 +111,9 @@ const submitRegister = async (): Promise<void> => {
                 :id="loginFormId"
               />
               <v-btn
-                :disabled="!isLoginFormValid || isSubmitting"
+                :disabled="!isLoginFormValid || authStore.isLoading"
                 :form="loginFormId"
-                :loading="isSubmitting"
+                :loading="authStore.isLoading"
                 color="primary"
                 type="submit"
                 block
@@ -140,9 +130,9 @@ const submitRegister = async (): Promise<void> => {
                 :id="registerFormId"
               />
               <v-btn
-                :disabled="!isRegisterFormValid || isSubmitting"
+                :disabled="!isRegisterFormValid || authStore.isLoading"
                 :form="registerFormId"
-                :loading="isSubmitting"
+                :loading="authStore.isLoading"
                 color="primary"
                 type="submit"
               >
