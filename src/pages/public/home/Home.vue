@@ -21,12 +21,15 @@ const isekaiShows = ref<Show[]>([]);
 const romanceShows = ref<Show[]>([]);
 const randomShows = ref<Show[]>([]);
 
+const isLoadingShows = ref<boolean>(false);
 const selectedBannerShow = ref<Show | null>(null);
 const selectedShow = ref<Show | null>(selectedBannerShow.value);
 const isShowDrawerVisible = ref<boolean>(false);
 
 const settingStore = useSettingStore();
 const { showAPIErrorSnackbar } = useCommonSnackbar();
+
+const isLoading = computed<boolean>(() => settingStore.isLoading || isLoadingShows.value);
 
 const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
 
@@ -74,6 +77,7 @@ watch(
 );
 
 const loadShows = async (): Promise<void> => {
+  isLoadingShows.value = true;
   try {
     const shows = await showService.list({
       sort: '-created_at',
@@ -93,6 +97,8 @@ const loadShows = async (): Promise<void> => {
     randomShows.value = [];
     selectedBannerShow.value = null;
     showAPIErrorSnackbar(error);
+  } finally {
+    isLoadingShows.value = false;
   }
 };
 
@@ -112,17 +118,24 @@ onMounted(() => {
       <v-sheet border="sm" class="position-relative glass-panel" rounded="xl">
         <section-container>
           <titled-section icon="mdi-clock-outline" icon-color="warning" title="Latest"> </titled-section>
-          <show-grid
-            v-model:selected-show="selectedBannerShow"
-            :cols="continueWatchingCols"
-            :shows="latestShows"
-            @click:show="isShowDrawerVisible = true"
-          />
-          <div class="d-flex" v-if="latestShows.length === 0">
-            <v-alert class="flex-0-0" type="info">
-              <p class="text-no-wrap">No shows have been added yet.</p>
-            </v-alert>
-          </div>
+          <template v-if="isLoading">
+            <div class="d-flex ga-8">
+              <v-skeleton-loader v-for="i in continueWatchingCols" type="image@2, article" width="300" :key="i" />
+            </div>
+          </template>
+          <template v-else>
+            <show-grid
+              v-model:selected-show="selectedBannerShow"
+              :cols="continueWatchingCols"
+              :shows="latestShows"
+              @click:show="isShowDrawerVisible = true"
+            ></show-grid>
+            <div class="d-flex" v-if="latestShows.length === 0">
+              <v-alert class="flex-0-0" type="info">
+                <p class="text-no-wrap">No shows have been added yet.</p>
+              </v-alert>
+            </div>
+          </template>
         </section-container>
       </v-sheet>
     </v-row>
@@ -136,14 +149,16 @@ onMounted(() => {
         subtitle="Pick up where you left off with your in-progress shows."
         title="Continue Watching"
       >
+        <v-skeleton-loader type="image" v-if="isLoading" />
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="continueToWatchShows"
           :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
+          v-else
         />
-        <div class="d-flex" v-if="continueToWatchShows.length === 0">
+        <div class="d-flex" v-if="!isLoading && continueToWatchShows.length === 0">
           <v-alert class="flex-0-0" type="info">
             <p class="text-no-wrap">There are no shows in this category</p>
           </v-alert>
@@ -155,14 +170,16 @@ onMounted(() => {
         subtitle="World-hopping stories with larger-than-life stakes."
         title="Isekai"
       >
+        <v-skeleton-loader type="image" v-if="isLoading" />
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="isekaiShows"
           :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
+          v-else
         />
-        <div class="d-flex" v-if="isekaiShows.length === 0">
+        <div class="d-flex" v-if="!isLoading && isekaiShows.length === 0">
           <v-alert class="flex-0-0" type="info">
             <p class="text-no-wrap">There are no shows in this category</p>
           </v-alert>
@@ -174,14 +191,16 @@ onMounted(() => {
         subtitle="Softer pacing, sharper emotions, and character chemistry."
         title="Romance"
       >
+        <v-skeleton-loader type="image" v-if="isLoading" />
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="romanceShows"
           :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
+          v-else
         />
-        <div class="d-flex" v-if="romanceShows.length === 0">
+        <div class="d-flex" v-if="!isLoading && romanceShows.length === 0">
           <v-alert class="flex-0-0" type="info">
             <p class="text-no-wrap">There are no shows in this category</p>
           </v-alert>
@@ -193,14 +212,16 @@ onMounted(() => {
         subtitle="Unexpected picks when you want the catalog to surprise you."
         title="Random"
       >
+        <v-skeleton-loader type="image" v-if="isLoading" />
         <show-carousel
           v-model:selected-show="selectedShow"
           :shows="randomShows"
           :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
+          v-else
         />
-        <div class="d-flex" v-if="randomShows.length === 0">
+        <div class="d-flex" v-if="!isLoading && randomShows.length === 0">
           <v-alert class="flex-0-0" type="info">
             <p class="text-no-wrap">There are no shows in this category</p>
           </v-alert>
