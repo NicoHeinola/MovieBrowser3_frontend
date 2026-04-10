@@ -4,9 +4,9 @@ import type { Show } from '@/interfaces/api/models/Show';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 
+import { MediaBanner } from '@/components/common/media-banner';
 import { TitledSection } from '@/components/common/titled-section';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
-import { ShowBanner } from '@/components/features/show/show-banner';
 import { ShowCarousel } from '@/components/features/show/show-carousel';
 import { ShowGrid } from '@/components/features/show/show-grid';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -72,9 +72,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <show-banner
+  <media-banner
     :disable-video-playback="isShowDrawerVisible"
-    :selected-show="selectedBannerShow"
+    :image-src="selectedBannerShow?.banner_url || null"
+    :video-src="selectedBannerShow?.preview_url || 'https://www.youtube.com/watch?v=QohH89Eu5iM'"
     style="margin-top: -70px; height: 73vh"
   >
     <v-row align="center" style="max-width: 90%">
@@ -95,7 +96,7 @@ onMounted(() => {
         </v-sheet>
       </v-col>
     </v-row>
-  </show-banner>
+  </media-banner>
   <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedShow" />
   <v-container class="pl-12 pr-0 overflow-visible" fluid>
     <v-row gap="48">

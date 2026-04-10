@@ -65,6 +65,19 @@ const createPlayer = () => {
 
   ytPlayer?.destroy();
   ytPlayer = new youtubeWindow.YT.Player(iframeId, {
+    playerVars: {
+      autoplay: props.autoplay ? 1 : 0,
+      controls: props.controls ? 1 : 0,
+      disablekb: props.controls ? 0 : 1,
+      enablejsapi: 1,
+      iv_load_policy: 3,
+      loop: props.loop ? 1 : 0,
+      origin: window.location.origin,
+      ...(props.loop ? { playlist: props.videoId } : {}),
+      playsinline: 1,
+      rel: 0,
+    },
+    videoId: props.videoId,
     events: {
       onReady: (event) => {
         event.target.setVolume(props.volume);
@@ -76,7 +89,7 @@ const createPlayer = () => {
         }
 
         if (props.autoplay) {
-          event.target.loadVideoById(props.videoId);
+          event.target.playVideo();
         }
       },
       onError: () => {
