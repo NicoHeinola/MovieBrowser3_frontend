@@ -11,12 +11,23 @@ applyTo: 'src/pages/**/*.vue'
 - Keep pages focused on assembling sections, wiring route concerns, and connecting page state to child components.
 - Do not let pages become the long-term home for reusable cards, banners, navigation blocks, or repeated feature markup.
 
-## Extraction Rules
+## File Boundaries
 
-- When page markup or behavior is reused or clearly reusable, move it into a namespaced component under `src/components`.
-- When page code starts coordinating async state, caching, or multi-component mutations, move that logic into a store.
+- Reusable sections belong in namespaced components under `src/components`; pages compose those sections rather than permanently hosting shared markup.
+- Multi-component async orchestration, caching, and long-lived mutations belong in stores under `src/stores` rather than in the page file.
 
 ## Boundaries
 
 - Route registration belongs in `src/router`, not inside page files.
 - Backend contracts belong in `src/interfaces/api`, not inline in page components unless the type is trivial and page-local.
+
+Example:
+
+```vue
+<template>
+  <v-container>
+    <show-banner />
+    <show-grid />
+  </v-container>
+</template>
+```

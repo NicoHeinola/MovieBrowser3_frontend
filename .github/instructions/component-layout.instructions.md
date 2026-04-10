@@ -1,5 +1,5 @@
 ---
-description: Layout and composition rules for Vue components and pages that render Vuetify UI. Use when editing .vue files under src/components or src/pages.
+description: Vuetify layout structure rules for Vue components and pages. Use when editing .vue files that render layout with Vuetify.
 applyTo: |
   src/components/**/*.vue
   src/pages/**/*.vue
@@ -18,7 +18,15 @@ applyTo: |
 - Native CSS grid or flex is acceptable when the component is rendering a specialized layout primitive, such as a card rail, overlay, or measured grid that Vuetify grid components do not model cleanly.
 - When using a native grid or flex container, keep the exception local and obvious in the component instead of mixing multiple layout systems across the same section.
 
-## Composition
+Example:
 
-- Keep page components focused on composition and data wiring.
-- Move reusable UI blocks into namespaced components instead of repeating markup across pages.
+```vue
+<v-row>
+  <v-col cols="12" md="8">
+    <show-banner />
+  </v-col>
+  <v-col cols="12" md="4">
+    <selected-show-drawer />
+  </v-col>
+</v-row>
+```

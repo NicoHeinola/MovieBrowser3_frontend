@@ -1,11 +1,13 @@
 ---
 name: feature-slice-development
-description: Build a frontend feature slice across pages, components, router, stores, interfaces, and tests. Use when a request spans multiple files or layers rather than a single isolated edit.
+description: Build a frontend feature slice across pages, components, router, stores, interfaces, and tests. Use when a request spans multiple layers and the implementation path still needs to be mapped.
 ---
 
 # Feature Slice Development
 
 Use this skill when the work touches more than one of the following: page composition, reusable components, routing, client state, API contracts, theming, or tests.
+
+Use a narrower skill only when the ownership is already clear and the task stays inside one workflow such as structure cleanup, store and API orchestration, or test writing.
 
 ## Workflow
 

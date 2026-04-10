@@ -7,6 +7,8 @@ description: Audit or refactor file ownership and namespace layout in this repos
 
 Use this skill when the task is about where code should live, not just what the code should do.
 
+This skill decides between namespaces and ownership boundaries. The matching instruction files still define what the chosen files and folders should look like.
+
 ## Workflow
 
 1. Identify the current namespace and its responsibility.

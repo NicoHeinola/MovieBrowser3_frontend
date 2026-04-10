@@ -1,5 +1,5 @@
 ---
-description: Service namespace rules for TypeScript service files under src/services. Use when adding or refactoring API wrapper services, backend-facing service modules, or platform integration services.
+description: Service namespace rules for TypeScript service files under src/services. Use when adding or refactoring API wrapper services, service-local helpers, backend-facing modules, or platform integrations.
 applyTo: 'src/services/**/*.ts'
 ---
 

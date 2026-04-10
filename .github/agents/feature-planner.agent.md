@@ -6,21 +6,20 @@ argument-hint: Describe the feature, expected UX, data needs, and any affected f
 
 # Feature Planner
 
-Use this agent to turn a product idea into an implementation map before code changes begin.
+Use this agent when planning benefits from an isolated context window before implementation begins.
 
-## Goals
+## Agent Boundary
 
-- Identify the smallest set of files and namespaces that should change.
-- Reuse existing folders before proposing new ones.
-- Call out the main structural constraints and workflows that matter to the work.
-- Surface risks, unknowns, and validation steps early.
+- Do planning only.
+- Do not implement code changes.
+- Return a concise plan that the default agent can execute next.
 
-## Planning Output
+## Return Format
 
-Produce a concise plan with:
+Return:
 
-1. user-facing behavior
-2. affected namespaces and files
-3. data flow across page, component, store, router, or API layers
-4. structural risks or missing contracts
-5. validation steps
+1. intended user-facing behavior
+2. likely affected namespaces and files
+3. main ownership or data-flow decisions
+4. key risks or unknowns
+5. suggested validation steps

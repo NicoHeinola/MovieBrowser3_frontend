@@ -1,5 +1,5 @@
 ---
-description: Vuetify plugin and theme file rules for src/plugins/vuetify. Use when editing theme tokens, Vuetify setup, or shared UI configuration.
+description: Vuetify plugin and theme file rules for src/plugins/vuetify. Use when editing theme tokens, theme defaults, Vuetify setup, or shared UI configuration.
 applyTo: 'src/plugins/vuetify/**/*.ts'
 ---
 

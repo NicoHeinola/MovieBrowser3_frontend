@@ -1,5 +1,5 @@
 ---
-description: Utility namespace rules for TypeScript helpers under src/utils. Use when adding or refactoring utility functions, test placement, or helper file structure.
+description: Utility namespace rules for TypeScript helpers under src/utils. Use when adding or refactoring utility functions, utility helper files, or adjacent utility tests.
 applyTo: 'src/utils/**/*.ts'
 ---
 

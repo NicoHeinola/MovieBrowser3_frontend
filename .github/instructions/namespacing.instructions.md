@@ -1,7 +1,16 @@
 ---
-description: Source tree namespacing rules for files under src. Use when creating folders, adding files, or reviewing whether a change belongs in an existing namespace.
+description: Source tree namespacing rules for namespaced files and folders under src. Use when creating a new namespace folder or deciding where a new source file should live.
 applyTo: |
-  src/**
+  src/components/**
+  src/composables/**
+  src/interfaces/**
+  src/pages/**
+  src/plugins/**
+  src/router/**
+  src/rules/**
+  src/services/**
+  src/stores/**
+  src/utils/**
 ---
 
 # Naming and Structure Rules
@@ -54,13 +63,3 @@ src/
     auth/
       authService.ts
 ```
-
-## Rationale
-
-- This structure enforces clear boundaries, improves maintainability, and prevents accidental coupling of unrelated code.
-- Grouping closely related utilities under one namespace (e.g. `env/`) avoids over-fragmentation while still keeping concerns separate.
-- It also simplifies imports and code navigation.
-
-## Enforcement
-
-- PRs that do not follow this structure should be updated before merging.

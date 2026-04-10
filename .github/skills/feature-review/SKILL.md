@@ -12,6 +12,13 @@ Use this skill when the main task is to evaluate an implementation or a set of r
 - Review the changed files first, then expand only as far as needed to understand the affected boundaries.
 - Treat local edits, staged changes, diffs, and in-progress feature work as valid audit inputs.
 - Focus on whether the current change set is safe to keep, merge, or build on.
+- Keep the audit centered on correctness, boundary coherence, contract drift, and testing gaps rather than broad style commentary.
+
+## Out Of Scope Unless The Diff Demands It
+
+- Full performance profiling.
+- Full accessibility audits.
+- Broad visual redesign feedback unrelated to the changed behavior.
 
 ## Review Order
 

@@ -1,5 +1,5 @@
 ---
-description: API interface rules for files in src/interfaces/api. Use when adding or changing backend-facing TypeScript interfaces.
+description: API contract file rules for src/interfaces/api. Use when adding or changing backend-facing request, response, or model interfaces.
 applyTo: 'src/interfaces/api/**/*.ts'
 ---
 

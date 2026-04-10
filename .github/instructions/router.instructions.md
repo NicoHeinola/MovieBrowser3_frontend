@@ -1,5 +1,5 @@
 ---
-description: Vue Router file rules for src/router. Use when adding routes, route records, lazy-loaded pages, or router configuration.
+description: Vue Router file structure rules for src/router. Use when adding route records, lazy-loaded pages, or router configuration.
 applyTo: 'src/router/**/*.ts'
 ---
 
@@ -10,6 +10,16 @@ applyTo: 'src/router/**/*.ts'
 - Keep route records minimal and declarative.
 - Prefer lazy-loaded page components with `() => import(...)` for routes.
 - Route components should point to leaf page components inside `src/pages/...` namespaces.
+
+Example:
+
+```ts
+{
+	path: '/auth/login',
+	name: 'login',
+	component: () => import('@/pages/public/auth/login/LoginPage.vue'),
+}
+```
 
 ## Structure
 

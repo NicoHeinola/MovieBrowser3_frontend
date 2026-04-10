@@ -7,6 +7,8 @@ description: Write or update Vitest-based tests for this repository. Use when ad
 
 Use this skill when testing work is part of the task or when a change increases behavioral risk.
 
+Utility coverage under `src/utils` is expected in this repository. Component tests are opt-in unless the task is explicitly about testing or the changed behavior is risky enough to justify component-level coverage.
+
 ## Workflow
 
 1. Identify the highest-risk logic or behavior introduced by the change.

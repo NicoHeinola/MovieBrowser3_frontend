@@ -1,27 +1,15 @@
 ---
-description: Guidelines for unit and component testing using Vitest and JSDOM, including organization and mocking patterns.
+description: Test file structure rules for Vitest and JSDOM suites under src. Use when editing files in __tests__ folders.
 applyTo: 'src/**/__tests__/*.test.ts'
 ---
 
-# Testing Guidelines
+# Test File Structure
 
-## Framework
+## Placement and Naming
 
-- **Vitest**: used for unit and component tests.
-- **JSDOM**: used for terminal-based DOM testing.
-
-## When To Add Tests
-
-- Utility tests in `src/utils/` are expected by default.
-- Component tests are optional in this repository and should not be added by default.
-- Add component tests only when the user explicitly requests them or the task is specifically about test coverage.
-
-## Organization
-
-- All tests must be located in a `__tests__` folder adjacent to the file being tested.
-- **Each utility function must have its own test file** (one test file per function).
-- Test files should follow the naming convention: `[filename].test.ts`.
-- **Every utility file in `src/utils/` must have a corresponding test file.** When adding a new utility, always create its test file before considering the work done.
+- Place each test file in a `__tests__` folder adjacent to the implementation namespace it verifies.
+- Name test files `[implementation-name].test.ts`.
+- Utility namespaces should keep one test file per utility implementation file.
 
 Example:
 
@@ -32,13 +20,13 @@ src/utils/css/
     parseCssNumeric.test.ts
 ```
 
-## Running Tests
+## Test Shape
 
-- `npm test`: Runs all tests once.
-- `npm run test:ui`: Opens the Vitest UI for interactive debugging.
-- `npm run test:coverage`: Generates a code coverage report.
+- Use Vitest APIs for assertions, stubs, and mocks.
+- Keep test setup local to the file unless the same helper is reused across multiple sibling tests.
+- Mock only the external edges needed to isolate the behavior under test.
 
-## Mocking
+## Environment Edges
 
-- Use `vi.stubGlobal` or `vi.mock` for external dependencies and environment variables.
-- Since we use `import.meta.env`, remember to mock `import` via `vi.stubGlobal('import', { meta: { env: { ... } } })` if necessary, though in this project we also use a mock wrapper pattern for env utilities.
+- DOM-oriented tests may rely on JSDOM.
+- When a test depends on `import.meta.env`, stub that edge explicitly in the test file instead of coupling the test to ambient process state.

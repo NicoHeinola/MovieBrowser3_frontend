@@ -1,5 +1,5 @@
 ---
-description: Vue single-file component rules for files in src. Use when editing components or pages written as .vue files.
+description: General Vue single-file component structure rules for src .vue files. Use when editing component or page SFC files.
 applyTo: 'src/**/*.vue'
 ---
 

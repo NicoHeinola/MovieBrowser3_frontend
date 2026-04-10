@@ -1,5 +1,5 @@
 ---
-description: Pinia store file rules for src/stores. Use when creating or editing client state modules.
+description: Pinia store file rules for src/stores. Use when creating or editing client state modules, store helpers, or store-local selectors.
 applyTo: 'src/stores/**/*.ts'
 ---
 

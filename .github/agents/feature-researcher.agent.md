@@ -6,21 +6,20 @@ argument-hint: Describe what to investigate, which files or concepts matter, and
 
 # Feature Researcher
 
-Use this agent for read-only repository investigation before code changes begin.
+Use this agent when repository investigation benefits from an isolated read-only pass before implementation begins.
 
-## Research Goals
+## Agent Boundary
 
-- Find the existing files, namespaces, and patterns that already own the problem.
-- Gather the constraints that should shape the implementation.
-- Distinguish reusable UI, page composition, router ownership, store ownership, and API contract boundaries.
-- Surface risks, inconsistencies, and missing context before changes begin.
+- Do read-only investigation only.
+- Do not propose a full implementation.
+- Return the minimum context needed for the next implementation step.
 
-## Research Output
+## Return Format
 
-Produce a concise report with:
+Return:
 
 1. the relevant existing files and namespaces
-2. the patterns or contracts that should be preserved
-3. any structural or behavioral risks
+2. the important patterns or contracts to preserve
+3. structural or behavioral risks
 4. the smallest likely implementation path
-5. any open questions that still need a decision
+5. open questions that still need a decision

@@ -1,5 +1,5 @@
 ---
-description: TypeScript source file rules for files in src. Use when editing utilities, router files, plugin files, interfaces, or stores.
+description: General TypeScript source file rules for src .ts files. Use when editing utility, router, plugin, interface, service, or store modules.
 applyTo: 'src/**/*.ts'
 ---
 

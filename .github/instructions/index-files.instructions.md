@@ -1,5 +1,5 @@
 ---
-description: Barrel file rules for src index.ts files. Use when creating or editing namespace entry points.
+description: Barrel file rules for src index.ts entry points. Use when creating or editing namespace barrels and public entry files.
 applyTo: 'src/**/index.ts'
 ---
 

@@ -14,11 +14,15 @@
 - Keep backend-facing API shapes in `src/interfaces/api` and preserve backend field names exactly unless a dedicated mapping layer is introduced.
 - Keep API-calling service modules in `src/services` and have stores or pages consume them rather than defining service wrappers inside those namespaces.
 - Keep design tokens and theme-level color decisions in `src/plugins/vuetify` or shared styles, not scattered through component logic.
-- Short explanatory comments are acceptable for interaction-heavy or non-obvious logic, but keep them sparse and focused on why the code exists.
-- Prefer existing Vuetify utility classes, props, and built-in transitions before adding component-specific SCSS. For small one-off visual adjustments in Vue components, prefer inline styles over new scoped style blocks.
-- Do not add component tests by default. Utility tests under `src/utils/` remain expected, and component tests should be added only when the user explicitly asks for them or when the task is specifically test-focused.
 - Run the smallest relevant validation after changes, usually `npm run lint`, `npm test`, or a targeted type check.
 - When a requested change affects repository conventions, structure, ownership boundaries, or workflow guidance, update the relevant customization files in the same change without waiting for a separate prompt.
+
+## Customization Roles
+
+- Use instructions for file and folder structure rules. They should describe what matching files should look like, where they should live, and what they may expose.
+- Use skills for reusable workflows or verbs such as building a feature slice, auditing structure, wiring store and API layers, or writing tests.
+- Use custom agents for large planning, research, or review tasks that benefit from an isolated context window and a concise returned result.
+- If guidance can be expressed as "files matching X should look like Y", keep it in an instruction instead of a skill or agent.
 
 ## Component Namespace Barrels
 
@@ -29,11 +33,11 @@
 
 ## Custom Agent Usage
 
-- Prefer the custom agents when the task naturally fits planning, research, or review instead of doing all of that context work in the default agent.
-- Use `feature-planner` when a feature spans multiple files or ownership decisions are still unclear.
-- Use `feature-researcher` when you need read-only investigation of repository structure, constraints, contracts, or ownership before deciding what to change.
-- Use `feature-reviewer` for code-review style checks focused on regressions, missing tests, and risky contracts.
-- Use the default agent for implementation work after planning or research is complete.
+- Prefer the custom agents only when the task benefits from delegation into a smaller context window.
+- Use `feature-planner` for isolated planning before implementation when a feature spans multiple files or ownership decisions are still unclear.
+- Use `feature-researcher` for isolated read-only investigation of repository structure, constraints, contracts, or ownership.
+- Use `feature-reviewer` for an isolated review pass that returns findings first.
+- Use the default agent for implementation work and let the relevant skills shape the workflow inside that implementation pass.
 
 ## Customization Guidance
 
