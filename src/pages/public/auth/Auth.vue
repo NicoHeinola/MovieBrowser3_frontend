@@ -117,8 +117,8 @@ const submitRegister = async (): Promise<void> => {
               <login-form
                 v-model:is-valid="isLoginFormValid"
                 v-model:request="loginRequest"
-                :form-id="loginFormId"
                 @submit="submitLogin"
+                :id="loginFormId"
               />
               <v-btn
                 :disabled="!isLoginFormValid || isSubmitting"
@@ -136,8 +136,8 @@ const submitRegister = async (): Promise<void> => {
               <register-form
                 v-model:is-valid="isRegisterFormValid"
                 v-model:request="registerRequest"
-                :form-id="registerFormId"
                 @submit="submitRegister"
+                :id="registerFormId"
               />
               <v-btn
                 :disabled="!isRegisterFormValid || isSubmitting"

@@ -9,8 +9,9 @@ applyTo: |
 ## Namespacing Requirement
 
 - New source files under `src/` should belong to a namespace folder that reflects one logical unit.
-- Do **not** place new implementation files directly under broad buckets such as `src/components`, `src/pages`, `src/utils`, or `src/plugins`.
+- Do **not** place new implementation files directly under broad buckets such as `src/components`, `src/pages`, `src/utils`, `src/plugins`, or `src/services`.
 - Reuse an existing namespace when the new file clearly belongs to the same feature, component, page, or utility group.
+- Reuse an existing service namespace under `src/services/<domain>/` for backend or platform-facing service wrappers.
 - Split work into a new namespace when the file would otherwise introduce an unrelated responsibility.
 
 ## Folder and File Naming
@@ -49,6 +50,9 @@ src/
     youtube/
       isYouTubeUrl.ts
       getYouTubeEmbedUrl.ts
+  services/
+    auth/
+      authService.ts
 ```
 
 ## Rationale

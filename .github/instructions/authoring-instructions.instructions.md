@@ -12,6 +12,7 @@ applyTo: '.github/instructions/**'
 - Keep instructions narrow and concrete. One instruction file per concern (e.g. Vue file structure, TypeScript style, namespacing).
 - Use `description` as the discovery surface. Include plain-language trigger phrases such as "store files", "router files", or "Vue component structure".
 - Keep `applyTo` specific. Avoid `**` unless the rule truly applies everywhere.
+- When repository conventions change, update every affected instruction file in the same change so customization guidance stays aligned with the codebase.
 
 ## What Instructions Are NOT For
 

@@ -16,6 +16,7 @@ applyTo: 'src/stores/**/*.ts'
 - Put async fetching, persistence, and mutation logic in store actions.
 - Keep components focused on presentation and event wiring rather than duplicating store logic.
 - Do not hide backend contracts inside stores; import shared contracts from `src/interfaces/api`.
+- Import API-calling service wrappers from `src/services/<domain>/` instead of colocating them inside `src/stores` namespaces.
 
 ## Growth Path
 

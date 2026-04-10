@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  formId: string;
+  id: string;
 }>();
 
 const isValid = defineModel<boolean>('isValid', {
@@ -17,7 +17,7 @@ const handleSubmit = (): void => {
 </script>
 
 <template>
-  <v-form v-model="isValid" @submit.prevent="handleSubmit" :id="props.formId">
+  <v-form v-model="isValid" @submit.prevent="handleSubmit" :id="props.id">
     <slot />
   </v-form>
 </template>

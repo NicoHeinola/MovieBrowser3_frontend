@@ -7,6 +7,10 @@ import { BaseForm } from '@/components/common/base-form';
 
 import { getRegisterConfirmPasswordRules, registerPasswordRules, registerUsernameRules } from './registerFormRules';
 
+const props = defineProps<{
+  id: string;
+}>();
+
 const request = defineModel<RegisterRequest>('request', {
   default: () => ({
     username: '',
@@ -22,7 +26,7 @@ const confirmPasswordRules = computed(() => getRegisterConfirmPasswordRules(requ
 </script>
 
 <template>
-  <base-form v-model:is-valid="isValid">
+  <base-form v-model:is-valid="isValid" :id="props.id">
     <v-row>
       <v-col cols="12">
         <v-text-field

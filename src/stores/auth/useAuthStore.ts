@@ -4,7 +4,8 @@ import type { AuthRegisterRequest } from '@/interfaces/api/requests/AuthRegister
 import { StorageSerializers, useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed } from 'vue';
-import { authService } from './authService';
+
+import { authService } from '@/services/auth/authService';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = useStorage<string | null>('auth.token', null);

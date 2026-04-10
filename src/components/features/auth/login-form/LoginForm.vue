@@ -5,6 +5,10 @@ import { BaseForm } from '@/components/common/base-form';
 
 import { loginPasswordRules, loginUsernameRules } from './loginFormRules';
 
+const props = defineProps<{
+  id: string;
+}>();
+
 const request = defineModel<AuthLoginRequest>('request', {
   default: () => ({
     username: '',
@@ -17,7 +21,7 @@ const isValid = defineModel<boolean>('isValid', {
 </script>
 
 <template>
-  <base-form v-model:is-valid="isValid">
+  <base-form v-model:is-valid="isValid" :id="props.id">
     <v-row>
       <v-col cols="12">
         <v-text-field
