@@ -37,9 +37,9 @@ const onPlayingVideo = (value: boolean, show: Show | null) => {
 </script>
 
 <template>
-  <div class="w-100 overflow-visible show-carousel-rail">
+  <div class="w-100 overflow-visible">
     <drag-scroll-container
-      :class="[props.dragClass, ' overflow-x-auto overflow-y-hidden d-flex w-100']"
+      :class="[props.dragClass, 'show-carousel-rail overflow-x-auto overflow-y-hidden d-flex w-100']"
       :style="props.dragStyle"
     >
       <show-card
