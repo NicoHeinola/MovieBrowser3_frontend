@@ -20,7 +20,7 @@ const shouldShowNavigation = computed<boolean>(() => isRouterReady.value && rout
 
 <template>
   <v-app>
-    <div class="background"></div>
+    <div class="pattern-background"></div>
     <snackbar-provider>
       <dialog-provider>
         <v-main class="z-10">
@@ -36,7 +36,7 @@ const shouldShowNavigation = computed<boolean>(() => isRouterReady.value && rout
 @use 'sass:map';
 @use '@/styles/settings' as settings;
 
-.background {
+.pattern-background {
   position: absolute;
   width: 100%;
   height: 100%;

@@ -7,8 +7,6 @@ export const MainTheme: ThemeDefinition = {
     secondary: '#59C8DA',
     background: '#0F131B',
     surface: '#171E2B',
-    'surface-bright': '#20293A',
-    'surface-muted': '#121824',
     link: '#8EDCFF',
     info: '#74D0FF',
     success: '#65C89B',
