@@ -12,10 +12,12 @@ const props = defineProps<{
     <v-row gap="12">
       <v-col class="z-10" cols="12">
         <div class="d-flex ga-4 align-center">
-          <v-sheet border="white sm" class="px-2 py-1" color="surface" rounded="lg">
-            <v-icon :color="props.iconColor" size="small" v-if="props.icon">{{ props.icon }}</v-icon>
+          <slot name="prepend" />
+          <v-sheet border="white sm" class="px-2 py-1" color="surface" rounded="lg" v-if="props.icon">
+            <v-icon :color="props.iconColor" size="small">{{ props.icon }}</v-icon>
           </v-sheet>
           <h1>{{ props.title }}</h1>
+          <slot name="append" />
         </div>
         <p class="text-body-medium text-medium-emphasis" v-if="props.subtitle">{{ props.subtitle }}</p>
       </v-col>

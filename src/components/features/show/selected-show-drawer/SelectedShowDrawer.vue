@@ -122,7 +122,13 @@ watch(isShown, (newVal) => {
         />
       </v-fade-transition>
 
-      <v-btn class="position-absolute right-0 top-0 ma-4" icon="mdi-close" variant="text" @click="close" />
+      <v-btn
+        class="position-absolute right-0 top-0 ma-4"
+        color="default"
+        icon="mdi-close"
+        variant="text"
+        @click="close"
+      />
     </div>
   </v-navigation-drawer>
 </template>

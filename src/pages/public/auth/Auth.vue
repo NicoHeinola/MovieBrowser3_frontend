@@ -111,12 +111,11 @@ const submitRegister = async (): Promise<void> => {
                 :id="loginFormId"
               />
               <v-btn
-                :disabled="!isLoginFormValid || authStore.isLoading"
+                :disabled="!isLoginFormValid"
                 :form="loginFormId"
                 :loading="authStore.isLoading"
                 color="primary"
                 type="submit"
-                block
               >
                 Login
               </v-btn>
@@ -130,7 +129,7 @@ const submitRegister = async (): Promise<void> => {
                 :id="registerFormId"
               />
               <v-btn
-                :disabled="!isRegisterFormValid || authStore.isLoading"
+                :disabled="!isRegisterFormValid"
                 :form="registerFormId"
                 :loading="authStore.isLoading"
                 color="primary"

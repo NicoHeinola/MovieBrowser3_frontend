@@ -49,7 +49,7 @@ const logout = async (): Promise<void> => {
             <v-avatar>
               <v-menu>
                 <template #activator="{ props }">
-                  <v-btn icon v-bind="props">
+                  <v-btn v-bind="props" color="default" icon>
                     <v-icon :color="route.name === 'profile' ? 'link' : undefined" class="transition-color-220">
                       mdi-account
                     </v-icon>

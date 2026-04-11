@@ -19,6 +19,10 @@ export const MainDefaults = {
     variant: 'outlined',
     density: 'comfortable',
   },
+  VBtn: {
+    color: 'primary',
+    variant: 'tonal',
+  },
   VBtnGroup: {
     variant: 'outlined',
     density: 'comfortable',
