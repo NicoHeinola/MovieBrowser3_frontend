@@ -10,7 +10,7 @@ const props = defineProps<{
 <template>
   <v-col cols="12">
     <v-row gap="12">
-      <v-col cols="12">
+      <v-col class="z-10" cols="12">
         <div class="d-flex ga-4 align-center">
           <v-sheet border="white sm" class="px-2 py-1" color="surface" rounded="lg">
             <v-icon :color="props.iconColor" size="small" v-if="props.icon">{{ props.icon }}</v-icon>
