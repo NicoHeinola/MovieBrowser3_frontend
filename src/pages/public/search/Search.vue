@@ -3,8 +3,8 @@ import { PageBackground } from '@/components/common/page-background';
 </script>
 
 <template>
+  <page-background />
   <v-container class="fill-height position-relative" fluid>
-    <page-background />
     <v-row align="center" class="fill-height position-relative" justify="center">
       <v-col cols="12" lg="6" md="8" xl="5">
         <v-card border="sm" rounded="xl">

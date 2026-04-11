@@ -11,7 +11,8 @@ const props = withDefaults(
 
 <template>
   <div
-    :class="['page-background position-absolute w-100 h-100', `page-background--${props.variant}`]"
+    :class="['page-background position-absolute', `page-background--${props.variant}`]"
+    style="padding-top: -64px; top: -64px; min-width: 100vw; height: calc(100% + 64px)"
     v-if="props.variant !== 'none'"
   ></div>
 </template>
