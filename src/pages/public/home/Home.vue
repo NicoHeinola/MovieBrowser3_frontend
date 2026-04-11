@@ -93,15 +93,6 @@ const onPlayingVideoUpdate = (isPlaying: boolean) => {
   }
 };
 
-watch(
-  () => selectedBannerShow.value,
-  (newVal) => {
-    if (newVal) {
-      selectedShow.value = newVal;
-    }
-  },
-);
-
 const loadShows = async (): Promise<void> => {
   isLoadingShows.value = true;
   try {
@@ -130,6 +121,15 @@ const loadShows = async (): Promise<void> => {
     isLoadingShows.value = false;
   }
 };
+
+watch(
+  () => selectedBannerShow.value,
+  (newVal) => {
+    if (newVal) {
+      selectedShow.value = newVal;
+    }
+  },
+);
 
 onMounted(() => {
   void loadShows();
