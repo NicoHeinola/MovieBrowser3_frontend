@@ -8,7 +8,7 @@ import { markRaw, onUnmounted, provide, ref } from 'vue';
 import { dialogApiKey } from './dialogApiKey';
 
 const dialogs = ref<ActiveDialog[]>([]);
-const defaultCloseDelay = 300;
+const defaultCloseDelay = 220;
 const pendingCloseTimeouts = new Set<number>();
 
 let nextDialogId = 0;

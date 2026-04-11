@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { ExpandableTextProps } from './expandableTextProps';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const props = withDefaults(defineProps<ExpandableTextProps>(), {
   maxChars: 150,
 });
 
-const isExpanded = ref(false);
+const isExpanded = defineModel<boolean>({
+  default: false,
+});
 
 const shouldTruncate = computed(() => {
   if (!props.text) return false;

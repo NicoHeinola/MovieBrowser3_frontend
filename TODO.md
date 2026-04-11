@@ -31,3 +31,5 @@
 - Show links (e.g. "chronological watch order", "recommended watch order" or "related shows")
 
 - Show description
+
+- Local caching so shows aren't fetched constantly

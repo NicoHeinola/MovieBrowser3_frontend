@@ -107,7 +107,7 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
       transform 0.3s ease-in-out,
       filter 0.3s ease-in-out;
 
-    transform: scale(1.14) translateY(0px);
+    transform: scale(1.18) translateY(0px);
   }
 
   &:hover {

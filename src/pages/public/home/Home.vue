@@ -105,15 +105,19 @@ watch(
 const loadShows = async (): Promise<void> => {
   isLoadingShows.value = true;
   try {
-    const shows = await showService.list({
-      sort: '-created_at',
-    });
+    const [continueToWatch, latest, isekai, romance, random] = await Promise.all([
+      showService.list({ sort: '-created_at', page: { size: 10 } }),
+      showService.list({ sort: '-created_at', page: {} }),
+      showService.list({ sort: '-created_at', page: {} }),
+      showService.list({ sort: '-created_at', page: {} }),
+      showService.list({ sort: 'random', page: {} }),
+    ]);
 
-    continueToWatchShows.value = shows;
-    latestShows.value = shows;
-    isekaiShows.value = shows;
-    romanceShows.value = shows;
-    randomShows.value = shows;
+    continueToWatchShows.value = continueToWatch.data;
+    latestShows.value = latest.data;
+    isekaiShows.value = isekai.data;
+    romanceShows.value = romance.data;
+    randomShows.value = random.data;
   } catch (error: unknown) {
     continueToWatchShows.value = [];
     latestShows.value = [];

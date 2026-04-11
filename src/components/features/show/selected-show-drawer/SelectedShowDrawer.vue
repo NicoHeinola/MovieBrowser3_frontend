@@ -20,6 +20,10 @@ const isShown = defineModel<boolean>('isShown', {
   default: false,
 });
 
+const hideTimeoutId = ref<number | null>(null);
+
+const isDescriptionExpanded = ref<boolean>(false);
+
 const { xlAndUp } = useDisplay();
 
 const isVideoPlaying = ref<boolean>(false);
@@ -48,6 +52,19 @@ const activeVideoId = computed<string>(() => videoId.value ?? 'drawer-video');
 watch([() => props.show, () => isShown.value], () => {
   isVideoPlaying.value = false;
   isVideoError.value = false;
+});
+
+watch(isShown, (newVal) => {
+  if (newVal) {
+    return;
+  }
+
+  // Wait until drawer closes
+  hideTimeoutId.value = setTimeout(() => {
+    isVideoPlaying.value = false;
+    isVideoError.value = false;
+    isDescriptionExpanded.value = false;
+  }, 220);
 });
 </script>
 
@@ -88,7 +105,11 @@ watch([() => props.show, () => isShown.value], () => {
         <section-container class="d-flex flex-column justify-end h-100">
           <h1>{{ getPrimaryShowTitle(props.show) }}</h1>
 
-          <expandable-text :text="props.show?.description" class="text-medium-emphasis" />
+          <expandable-text
+            v-model="isDescriptionExpanded"
+            :text="props.show?.description"
+            class="text-medium-emphasis"
+          />
         </section-container>
       </div>
 
