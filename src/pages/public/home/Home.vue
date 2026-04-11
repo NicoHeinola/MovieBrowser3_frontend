@@ -5,8 +5,9 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 
 import { MediaBanner } from '@/components/common/media-banner';
-import PageContainer from '@/components/common/page-container/PageContainer.vue';
-import SectionContainer from '@/components/common/section-container/SectionContainer.vue';
+import { PageBackground } from '@/components/common/page-background';
+import { PageContainer } from '@/components/common/page-container';
+import { SectionContainer } from '@/components/common/section-container';
 import { TitledSection } from '@/components/common/titled-section';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowCarousel } from '@/components/features/show/show-carousel';
@@ -137,68 +138,73 @@ onMounted(() => {
 </script>
 
 <template>
-  <media-banner
-    :disable-video-playback="isShowDrawerVisible || isPlayingCardVideo"
-    :image-src="bannerBackground"
-    :video-src="bannerVideo"
-    style="margin-top: -70px; height: 74.5vh"
-  >
-    <v-row align="center" style="max-width: 90%">
-      <v-sheet border="sm" class="position-relative glass-panel" rounded="xl">
-        <section-container>
-          <titled-section icon="mdi-clock-outline" icon-color="warning" title="Latest"> </titled-section>
-          <template v-if="isLoading">
-            <div class="d-flex ga-8">
-              <v-skeleton-loader v-for="i in continueWatchingCols" type="image@2, paragraph" width="300" :key="i" />
-            </div>
-          </template>
-          <template v-else>
-            <show-grid
-              :cols="continueWatchingCols"
-              :selected-show="selectedBannerShow"
-              :shows="latestShows.map((show) => ({ ...show, preview_url: null }))"
-              @click:show="isShowDrawerVisible = true"
-              @update:selected-show="
-                (show: Show | null) => (selectedBannerShow = latestShows.find((s) => s.id === show?.id) ?? null)
-              "
-            ></show-grid>
-            <div class="d-flex" v-if="latestShows.length === 0">
-              <v-alert class="flex-0-0" type="info">
-                <p class="text-no-wrap">No shows have been added yet.</p>
-              </v-alert>
-            </div>
-          </template>
-        </section-container>
-      </v-sheet>
-    </v-row>
-  </media-banner>
+  <div class="position-relative">
+    <page-background />
+    <media-banner
+      :disable-video-playback="isShowDrawerVisible || isPlayingCardVideo"
+      :image-src="bannerBackground"
+      :video-src="bannerVideo"
+      style="margin-top: -70px; height: 74.5vh"
+    >
+      <v-row align="center" style="max-width: 90%">
+        <v-sheet border="sm" class="position-relative glass-panel" rounded="xl">
+          <section-container>
+            <titled-section icon="mdi-clock-outline" icon-color="warning" title="Latest"> </titled-section>
+            <template v-if="isLoading">
+              <div class="d-flex ga-8">
+                <v-skeleton-loader v-for="i in continueWatchingCols" type="image@2, paragraph" width="300" :key="i" />
+              </div>
+            </template>
+            <template v-else>
+              <show-grid
+                :cols="continueWatchingCols"
+                :selected-show="selectedBannerShow"
+                :shows="latestShows.map((show) => ({ ...show, preview_url: null }))"
+                @click:show="isShowDrawerVisible = true"
+                @update:selected-show="
+                  (show: Show | null) => (selectedBannerShow = latestShows.find((s) => s.id === show?.id) ?? null)
+                "
+              ></show-grid>
+              <div class="d-flex" v-if="latestShows.length === 0">
+                <v-alert class="flex-0-0" type="info">
+                  <p class="text-no-wrap">No shows have been added yet.</p>
+                </v-alert>
+              </div>
+            </template>
+          </section-container>
+        </v-sheet>
+      </v-row>
+    </media-banner>
+
+    <page-container class="pr-0 pt-0" fluid>
+      <v-row gap="48">
+        <titled-section
+          v-for="section in homepageSections"
+          :icon="section.icon"
+          :icon-color="section.iconColor"
+          :subtitle="section.subtitle"
+          :title="section.title"
+          :key="section.title"
+        >
+          <v-skeleton-loader type="image" v-if="isLoading" />
+          <show-carousel
+            v-model:selected-show="selectedShow"
+            :shows="showsMap[section.dataKey]"
+            :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
+            drag-class="pl-12 pr-12"
+            @click:show="isShowDrawerVisible = true"
+            @playing-video="onPlayingVideoUpdate"
+            v-else
+          />
+          <div class="d-flex" v-if="!isLoading && showsMap[section.dataKey].length === 0">
+            <v-alert class="flex-0-0" type="info">
+              <p class="text-no-wrap">There are no shows in this category</p>
+            </v-alert>
+          </div>
+        </titled-section>
+      </v-row>
+    </page-container>
+  </div>
+
   <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedShow" />
-  <page-container class="pr-0 pt-0" fluid>
-    <v-row gap="48">
-      <titled-section
-        v-for="section in homepageSections"
-        :icon="section.icon"
-        :icon-color="section.iconColor"
-        :subtitle="section.subtitle"
-        :title="section.title"
-        :key="section.title"
-      >
-        <v-skeleton-loader type="image" v-if="isLoading" />
-        <show-carousel
-          v-model:selected-show="selectedShow"
-          :shows="showsMap[section.dataKey]"
-          :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
-          drag-class="pl-12 pr-12"
-          @click:show="isShowDrawerVisible = true"
-          @playing-video="onPlayingVideoUpdate"
-          v-else
-        />
-        <div class="d-flex" v-if="!isLoading && showsMap[section.dataKey].length === 0">
-          <v-alert class="flex-0-0" type="info">
-            <p class="text-no-wrap">There are no shows in this category</p>
-          </v-alert>
-        </div>
-      </titled-section>
-    </v-row>
-  </page-container>
 </template>

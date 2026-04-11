@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
 
+import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { TitledSection } from '@/components/common/titled-section';
 import { AddDefaultBackgroundDialog } from '@/components/features/setting/add-default-background-dialog';
@@ -89,8 +90,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <page-container class="fill-height">
-    <v-row>
+  <page-container class="fill-height position-relative">
+    <page-background />
+    <v-row class="position-relative">
       <v-col cols="12" lg="6">
         <titled-section
           subtitle="These take priority over the backgrounds and will be randomly played on the home page banner."
@@ -110,7 +112,7 @@ onMounted(() => {
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn :loading="settingStore.isLoading" icon="mdi-plus" @click="void openAddVideoDialog()"></v-btn>
+              <v-btn :loading="settingStore.isLoading" icon="mdi-plus" @click="void openAddVideoDialog()" />
             </div>
           </template>
         </titled-section>
@@ -135,7 +137,7 @@ onMounted(() => {
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn :loading="settingStore.isLoading" icon="mdi-plus" @click="void openAddBackgroundDialog()"></v-btn>
+              <v-btn :loading="settingStore.isLoading" icon="mdi-plus" @click="void openAddBackgroundDialog()" />
             </div>
           </template>
         </titled-section>

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -20,7 +20,6 @@ const shouldShowNavigation = computed<boolean>(() => isRouterReady.value && rout
 
 <template>
   <v-app>
-    <div class="pattern-background"></div>
     <snackbar-provider>
       <dialog-provider>
         <v-main class="z-10">
@@ -31,23 +30,3 @@ const shouldShowNavigation = computed<boolean>(() => isRouterReady.value && rout
     </snackbar-provider>
   </v-app>
 </template>
-
-<style lang="scss" scoped>
-@use 'sass:map';
-@use '@/styles/settings' as settings;
-
-.pattern-background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-
-  background-color: map.get(settings.$grey, 'darken-4');
-  opacity: 0.3;
-
-  mask-image: url('/patterns/bubbles.svg');
-  mask-repeat: repeat;
-  mask-size: 300px 300px;
-
-  pointer-events: none;
-}
-</style>
