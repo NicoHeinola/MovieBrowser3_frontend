@@ -53,8 +53,8 @@ const continueWatchingCols = computed<number>(() => {
 });
 
 const bannerVideo = computed<string | null>(() => {
-  if (selectedBannerShow.value?.preview_url) {
-    return selectedBannerShow.value.preview_url;
+  if (selectedBannerShow.value) {
+    return selectedBannerShow.value?.preview_url;
   }
 
   const defaultVideos = settingStore.bannerDefaultVideos;
