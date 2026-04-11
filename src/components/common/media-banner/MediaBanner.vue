@@ -70,7 +70,10 @@ watch([() => props.imageSrc, () => props.videoSrc, () => props.disableVideoPlayb
       ></v-img>
     </v-fade-transition>
 
-    <div class="position-absolute w-100 h-50 banner-gradient-background"></div>
+    <div
+      class="position-absolute w-100 h-50 banner-gradient-background"
+      v-if="shouldShowImage || canPlayYouTubeVideo"
+    ></div>
     <div class="position-absolute w-100 h-100 d-flex flex-column align-center justify-center top-0">
       <slot />
     </div>
