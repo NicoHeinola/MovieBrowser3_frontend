@@ -51,7 +51,7 @@ watch(items, (nextItems) => {
 </script>
 
 <template>
-  <v-skeleton-loader type="card" v-if="settingStore.isLoading" />
+  <v-skeleton-loader type="card" width="390" v-if="settingStore.isLoading" />
 
   <v-alert type="info" border v-else-if="items.length === 0"> No videos available. </v-alert>
 
