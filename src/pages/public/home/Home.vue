@@ -32,8 +32,10 @@ const showsMap = computed<Record<string, Show[]>>(() => ({
 
 const isLoadingShows = ref<boolean>(false);
 const selectedBannerShow = ref<Show | null>(null);
-const selectedShow = ref<Show | null>(selectedBannerShow.value);
+const selectedShow = ref<Show | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
+const isPlayingCardVideo = ref<boolean>(false);
+let bannerResumeTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const settingStore = useSettingStore();
 const { showAPIErrorSnackbar } = useCommonSnackbar();
@@ -76,6 +78,21 @@ const bannerBackground = computed<string | null>(() => {
   return null;
 });
 
+const onPlayingVideoUpdate = (isPlaying: boolean) => {
+  if (bannerResumeTimeout) {
+    clearTimeout(bannerResumeTimeout);
+    bannerResumeTimeout = null;
+  }
+
+  if (isPlaying) {
+    isPlayingCardVideo.value = true;
+  } else {
+    bannerResumeTimeout = setTimeout(() => {
+      isPlayingCardVideo.value = false;
+    }, 700);
+  }
+};
+
 watch(
   () => selectedBannerShow.value,
   (newVal) => {
@@ -97,7 +114,6 @@ const loadShows = async (): Promise<void> => {
     isekaiShows.value = shows;
     romanceShows.value = shows;
     randomShows.value = shows;
-    selectedBannerShow.value = shows[0] ?? null;
   } catch (error: unknown) {
     continueToWatchShows.value = [];
     latestShows.value = [];
@@ -118,7 +134,7 @@ onMounted(() => {
 
 <template>
   <media-banner
-    :disable-video-playback="isShowDrawerVisible"
+    :disable-video-playback="isShowDrawerVisible || isPlayingCardVideo"
     :image-src="bannerBackground"
     :video-src="bannerVideo"
     style="margin-top: -70px; height: 74.5vh"
@@ -134,10 +150,13 @@ onMounted(() => {
           </template>
           <template v-else>
             <show-grid
-              v-model:selected-show="selectedBannerShow"
               :cols="continueWatchingCols"
-              :shows="latestShows"
+              :selected-show="selectedBannerShow"
+              :shows="latestShows.map((show) => ({ ...show, preview_url: null }))"
               @click:show="isShowDrawerVisible = true"
+              @update:selected-show="
+                (show: Show) => (selectedBannerShow = latestShows.find((s) => s.id === show.id) ?? null)
+              "
             ></show-grid>
             <div class="d-flex" v-if="latestShows.length === 0">
               <v-alert class="flex-0-0" type="info">
@@ -167,6 +186,7 @@ onMounted(() => {
           :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
+          @playing-video="onPlayingVideoUpdate"
           v-else
         />
         <div class="d-flex" v-if="!isLoading && showsMap[section.dataKey].length === 0">

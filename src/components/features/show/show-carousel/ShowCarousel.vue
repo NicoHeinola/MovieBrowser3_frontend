@@ -20,6 +20,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: 'click:show', value: Show | null): void;
+  (e: 'playing-video', value: boolean, show: Show | null): void;
 }>();
 
 const selectedShow = defineModel<Show | null>('selectedShow');
@@ -28,6 +29,10 @@ const onShowClick = (show: Show) => {
   selectedShow.value = show;
 
   emit('click:show', show);
+};
+
+const onPlayingVideo = (value: boolean, show: Show | null) => {
+  emit('playing-video', value, show);
 };
 </script>
 
@@ -45,6 +50,7 @@ const onShowClick = (show: Show) => {
         class="rounded-0"
         image-to-use="card"
         @click.stop="onShowClick(show)"
+        @playing-video="(value: boolean) => onPlayingVideo(value, show)"
         :key="show.id"
       />
     </drag-scroll-container>

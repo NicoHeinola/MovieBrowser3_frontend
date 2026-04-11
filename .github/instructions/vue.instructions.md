@@ -94,13 +94,14 @@ onMounted(() => {
 
 ## Template Conventions
 
-- **Always use kebab-case for custom component names in templates**, not PascalCase.
+- **Always use kebab-case for custom component names in templates**, not PascalCase or camelCase.
 
 ```vue
 <!-- correct -->
 <show-banner :selected-show="show" />
 
 <!-- incorrect -->
+<showBanner :selected-show="show" />
 <ShowBanner :selected-show="show" />
 ```
 

@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import type { Show } from '@/interfaces/api/models/Show';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
+import YouTubePlayer from '@/components/common/youtube-player/YouTubePlayer.vue';
 import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
+import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 
 const props = withDefaults(
   defineProps<{
@@ -18,17 +20,66 @@ const props = withDefaults(
   },
 );
 
+const emit = defineEmits<{
+  (e: 'playing-video', value: boolean): void;
+}>();
+
+const isHovered = ref(false);
+const showVideo = ref(false);
+let hoverTimeout: ReturnType<typeof setTimeout> | null = null;
+
 const cardImage = computed<string>(() => {
   if (props.imageToUse === 'card') return props.show.card_image_url;
   return props.show.banner_url;
 });
 
+const videoId = computed<string | null>(() => {
+  if (!showVideo.value) return null;
+  return getYouTubeVideoId(props.show.preview_url ?? undefined);
+});
+
+const onMouseEnter = () => {
+  isHovered.value = true;
+
+  if (!props.show.preview_url) return;
+
+  hoverTimeout = setTimeout(() => {
+    showVideo.value = true;
+    emit('playing-video', true);
+  }, 700);
+};
+
+const onMouseLeave = () => {
+  isHovered.value = false;
+
+  if (hoverTimeout) {
+    clearTimeout(hoverTimeout);
+    hoverTimeout = null;
+  }
+
+  if (showVideo.value) {
+    showVideo.value = false;
+    emit('playing-video', false);
+  }
+};
+
 const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
 </script>
 
 <template>
-  <v-card :height="props.height" :min-width="props.width" :width="props.width" border="sm" class="show-card">
-    <v-img :src="cardImage" class="h-100 w-100" style="pointer-events: none" cover></v-img>
+  <v-card
+    :height="props.height"
+    :min-width="props.width"
+    :width="props.width"
+    border="sm"
+    class="show-card"
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
+  >
+    <v-img :src="cardImage" class="h-100 w-100" style="pointer-events: none" cover v-if="!videoId"></v-img>
+    <div class="h-100 w-100" style="pointer-events: none; overflow: hidden" v-else>
+      <you-tube-player :video-id="videoId" class="h-100 w-100" style="transform: scale(1.2)" />
+    </div>
     <div class="card-shadow position-absolute bottom-0 left-0 w-100" style="height: 20%" />
     <div class="position-absolute bottom-0 left-0 px-4 my-4 text-truncate" style="cursor: pointer; max-width: 100%">
       <p
