@@ -48,6 +48,7 @@ export const useSettingStore = defineStore('setting', () => {
 - Put async fetching, persistence, and mutation logic in store actions.
 - Do not store error state or catch errors inside store actions; error handling belongs to the caller (e.g., component or page).
 - Track loading state (`isLoading`) inside the store to provide UI feedback across consumers.
+- Have consumers render store loading state with Vuetify built-in `loading` props or `v-skeleton-loader` only.
 - Keep components focused on presentation and event wiring rather than duplicating store logic.
 - Do not hide backend contracts inside stores; import shared contracts from `src/interfaces/api`.
 - Import API-calling service wrappers from `src/services/<domain>/` instead of colocating them inside `src/stores` namespaces.

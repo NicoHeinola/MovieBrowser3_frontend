@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Show } from '@/interfaces/api/Show';
+import type { Show } from '@/interfaces/api/models/Show';
 import { computed } from 'vue';
 import { ShowCard } from '@/components/features/show/show-card';
 import { parseCssNumeric } from '@/utils/css/parseCssNumeric';
@@ -21,7 +21,9 @@ const emit = defineEmits<{
   (e: 'click:show', value: Show | null): void;
 }>();
 
-const selectedShow = defineModel<Show | null>('selectedShow');
+const selectedShow = defineModel<Show | null>('selectedShow', {
+  default: null,
+});
 
 const effectiveCols = computed(() => {
   if (props.shows.length === 0) return 1;

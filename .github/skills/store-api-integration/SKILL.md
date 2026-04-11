@@ -42,3 +42,4 @@ Use it when you still need to decide whether data should stay page-local, move i
 - Store ownership is clear.
 - Components remain presentational where possible.
 - Null and loading states were considered.
+- Loading UI uses Vuetify built-in `loading` props or `v-skeleton-loader` only.

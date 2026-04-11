@@ -21,6 +21,11 @@ applyTo: 'src/pages/**/*.vue'
 - Route registration belongs in `src/router`, not inside page files.
 - Backend contracts belong in `src/interfaces/api`, not inline in page components unless the type is trivial and page-local.
 
+## Loading States
+
+- Pages should pass loading state into child sections and render it with Vuetify built-in `loading` props or `v-skeleton-loader`.
+- Do not build page-level custom loaders, ad hoc empty-shell placeholders, or bespoke spinner layouts.
+
 Example:
 
 ```vue

@@ -17,3 +17,11 @@
     color: rgb(var(--v-theme-error));
   }
 }
+
+.link {
+  color: rgb(var(--v-theme-link));
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

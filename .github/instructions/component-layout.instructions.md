@@ -18,6 +18,11 @@ applyTo: |
 - Native CSS grid or flex is acceptable when the component is rendering a specialized layout primitive, such as a card rail, overlay, or measured grid that Vuetify grid components do not model cleanly.
 - When using a native grid or flex container, keep the exception local and obvious in the component instead of mixing multiple layout systems across the same section.
 
+## Loading Layout
+
+- When a layout section is waiting on async data, keep the intended Vuetify layout structure in place and render loading with built-in `loading` props or `v-skeleton-loader`.
+- Do not add custom loading wrappers, custom overlay sections, or bespoke spinner rows for routine loading states.
+
 Example:
 
 ```vue

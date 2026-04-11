@@ -4,8 +4,9 @@ import { onMounted } from 'vue';
 import { PageContainer } from '@/components/common/page-container';
 import { TitledSection } from '@/components/common/titled-section';
 import { AddDefaultBackgroundDialog } from '@/components/features/setting/add-default-background-dialog';
-import { DefaultBackgroundsTable } from '@/components/features/setting/default-backgrounds-table';
-import { DefaultVideosTable } from '@/components/features/setting/default-videos-table';
+import { AddDefaultVideoDialog } from '@/components/features/setting/add-default-video-dialog';
+import { DefaultBackgroundGallery } from '@/components/features/setting/default-background-gallery';
+import { DefaultVideoGallery } from '@/components/features/setting/default-video-gallery';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -33,15 +34,30 @@ const handleDeleteBackground = async (url: string): Promise<void> => {
   }
 };
 
+const handleDeleteVideo = async (url: string): Promise<void> => {
+  try {
+    await settingStore.removeBannerDefaultVideo(url);
+    showSuccessSnackbar('Video removed.');
+  } catch (error: unknown) {
+    showAPIErrorSnackbar(error);
+  }
+};
+
 const openAddBackgroundDialog = async (): Promise<void> => {
   await dialog.showDialog({
     component: AddDefaultBackgroundDialog,
   });
 };
 
+const openAddVideoDialog = async (): Promise<void> => {
+  await dialog.showDialog({
+    component: AddDefaultVideoDialog,
+  });
+};
+
 const confirmDeleteBackground = async (url: string): Promise<void> => {
   const isConfirmed = await confirm({
-    message: `Remove this default background?\n\n${url}`,
+    message: `Remove this default banner background?\n\n${url}`,
     confirmText: 'Delete',
     confirmColor: 'error',
   });
@@ -53,6 +69,20 @@ const confirmDeleteBackground = async (url: string): Promise<void> => {
   await handleDeleteBackground(url);
 };
 
+const confirmDeleteVideo = async (url: string): Promise<void> => {
+  const isConfirmed = await confirm({
+    message: `Remove this default banner video?\n\n${url}`,
+    confirmText: 'Delete',
+    confirmColor: 'error',
+  });
+
+  if (!isConfirmed) {
+    return;
+  }
+
+  await handleDeleteVideo(url);
+};
+
 onMounted(() => {
   void loadSettings();
 });
@@ -61,32 +91,51 @@ onMounted(() => {
 <template>
   <page-container class="fill-height">
     <v-row>
-      <v-col cols="12" md="6">
-        <titled-section title="Default Banner Videos">
-          <default-videos-table hide-default-footer />
+      <v-col cols="12" lg="6">
+        <titled-section
+          subtitle="These take priority over the backgrounds and will be randomly played on the home page banner."
+          title="Default Banner Videos"
+        >
+          <default-video-gallery>
+            <template #actions="{ url }">
+              <v-btn
+                color="error"
+                icon="mdi-trash-can"
+                size="small"
+                variant="tonal"
+                @click="void confirmDeleteVideo(url)"
+              />
+            </template>
+          </default-video-gallery>
+
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn icon="mdi-plus" disabled></v-btn>
+              <v-btn :loading="settingStore.isLoading" icon="mdi-plus" @click="void openAddVideoDialog()"></v-btn>
             </div>
           </template>
         </titled-section>
       </v-col>
-      <v-col cols="12" md="6">
-        <titled-section title="Default Banner Backgrounds">
-          <default-backgrounds-table hide-default-footer>
+
+      <v-col cols="12" lg="6">
+        <titled-section
+          subtitle="These are randomly showed on the home page when there is no video available."
+          title="Default Banner Backgrounds"
+        >
+          <default-background-gallery>
             <template #actions="{ url }">
               <v-btn
                 color="error"
-                icon="mdi-delete"
+                icon="mdi-trash-can"
                 size="small"
-                variant="text"
+                variant="tonal"
                 @click="void confirmDeleteBackground(url)"
               />
             </template>
-          </default-backgrounds-table>
+          </default-background-gallery>
+
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn icon="mdi-plus" @click="void openAddBackgroundDialog()"></v-btn>
+              <v-btn :loading="settingStore.isLoading" icon="mdi-plus" @click="void openAddBackgroundDialog()"></v-btn>
             </div>
           </template>
         </titled-section>

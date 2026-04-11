@@ -159,7 +159,7 @@ onMounted(() => {
               :shows="latestShows.map((show) => ({ ...show, preview_url: null }))"
               @click:show="isShowDrawerVisible = true"
               @update:selected-show="
-                (show: Show) => (selectedBannerShow = latestShows.find((s) => s.id === show.id) ?? null)
+                (show: Show | null) => (selectedBannerShow = latestShows.find((s) => s.id === show?.id) ?? null)
               "
             ></show-grid>
             <div class="d-flex" v-if="latestShows.length === 0">

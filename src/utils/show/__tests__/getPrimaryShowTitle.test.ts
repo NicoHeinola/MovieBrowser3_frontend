@@ -1,4 +1,4 @@
-import type { Show } from '@/interfaces/api/Show';
+import type { Show } from '@/interfaces/api/models/Show';
 import { describe, expect, it } from 'vitest';
 
 import { getPrimaryShowTitle } from '../getPrimaryShowTitle';

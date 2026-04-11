@@ -18,6 +18,30 @@ describe('useSettingStore', () => {
     vi.resetAllMocks();
   });
 
+  it('refreshes banner videos from the backend after adding a trimmed URL', async () => {
+    const settingStore = useSettingStore();
+    const refreshedSettings = {
+      banner_default_videos: {
+        key: 'banner_default_videos',
+        value: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
+        type: 'json',
+        updated_at: null,
+      },
+    };
+
+    vi.mocked(settingService.updateSetting).mockResolvedValue();
+    vi.mocked(settingService.getSettings).mockResolvedValue(refreshedSettings);
+
+    await settingStore.addBannerDefaultVideo(' https://www.youtube.com/watch?v=dQw4w9WgXcQ ');
+
+    expect(settingStore.bannerDefaultVideos).toEqual(['https://www.youtube.com/watch?v=dQw4w9WgXcQ']);
+    expect(settingStore.settings).toEqual(refreshedSettings);
+    expect(settingService.updateSetting).toHaveBeenCalledWith('banner_default_videos', {
+      value: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
+    });
+    expect(settingService.getSettings).toHaveBeenCalledTimes(1);
+  });
+
   it('refreshes banner backgrounds from the backend after adding a trimmed URL', async () => {
     const settingStore = useSettingStore();
     const refreshedSettings = {
@@ -78,6 +102,39 @@ describe('useSettingStore', () => {
     expect(settingService.getSettings).toHaveBeenCalledTimes(1);
   });
 
+  it('removes a banner video URL before refreshing settings', async () => {
+    const settingStore = useSettingStore();
+    const refreshedSettings = {
+      banner_default_videos: {
+        key: 'banner_default_videos',
+        value: ['https://www.youtube.com/watch?v=oHg5SJYRHA0'],
+        type: 'json',
+        updated_at: null,
+      },
+    };
+
+    vi.mocked(settingService.updateSetting).mockResolvedValue();
+    vi.mocked(settingService.getSettings).mockResolvedValue(refreshedSettings);
+
+    settingStore.settings = {
+      banner_default_videos: {
+        key: 'banner_default_videos',
+        value: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://www.youtube.com/watch?v=oHg5SJYRHA0'],
+        type: 'json',
+        updated_at: null,
+      },
+    };
+
+    await settingStore.removeBannerDefaultVideo(' https://www.youtube.com/watch?v=dQw4w9WgXcQ ');
+
+    expect(settingStore.bannerDefaultVideos).toEqual(['https://www.youtube.com/watch?v=oHg5SJYRHA0']);
+    expect(settingStore.settings).toEqual(refreshedSettings);
+    expect(settingService.updateSetting).toHaveBeenCalledWith('banner_default_videos', {
+      value: ['https://www.youtube.com/watch?v=oHg5SJYRHA0'],
+    });
+    expect(settingService.getSettings).toHaveBeenCalledTimes(1);
+  });
+
   it('removes a banner background URL before refreshing settings', async () => {
     const settingStore = useSettingStore();
     const refreshedSettings = {
@@ -124,6 +181,24 @@ describe('useSettingStore', () => {
     };
 
     await settingStore.removeBannerDefaultBackground('https://images.example.com/background-2.jpg');
+
+    expect(settingService.updateSetting).not.toHaveBeenCalled();
+    expect(settingService.getSettings).not.toHaveBeenCalled();
+  });
+
+  it('skips update when removing a video that is not present', async () => {
+    const settingStore = useSettingStore();
+
+    settingStore.settings = {
+      banner_default_videos: {
+        key: 'banner_default_videos',
+        value: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
+        type: 'json',
+        updated_at: null,
+      },
+    };
+
+    await settingStore.removeBannerDefaultVideo('https://www.youtube.com/watch?v=oHg5SJYRHA0');
 
     expect(settingService.updateSetting).not.toHaveBeenCalled();
     expect(settingService.getSettings).not.toHaveBeenCalled();

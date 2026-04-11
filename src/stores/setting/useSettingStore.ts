@@ -8,22 +8,22 @@ export const useSettingStore = defineStore('setting', () => {
   const settings = ref<SettingsResponse>({});
   const isLoading = ref<boolean>(false);
 
-  const getSettingValue = <T = unknown>(key: string): T => {
+  const getSettingValue = <T>(key: string, fallbackValue: T): T => {
     const settingValue = settings.value[key]?.value;
 
     if (settingValue === undefined) {
-      throw new Error(`Setting with key "${key}" not found`);
+      return fallbackValue;
     }
 
     return settingValue as T;
   };
 
   const bannerDefaultVideos = computed<string[]>(() => {
-    return getSettingValue<string[]>('banner_default_videos');
+    return getSettingValue<string[]>('banner_default_videos', []);
   });
 
   const bannerDefaultBackgrounds = computed<string[]>(() => {
-    return getSettingValue<string[]>('banner_default_backgrounds');
+    return getSettingValue<string[]>('banner_default_backgrounds', []);
   });
 
   const fetchSettings = async (): Promise<void> => {
@@ -35,41 +35,57 @@ export const useSettingStore = defineStore('setting', () => {
     }
   };
 
-  const addBannerDefaultBackground = async (url: string): Promise<void> => {
-    const trimmedUrl = url.trim();
-
-    if (trimmedUrl === '') {
-      return;
-    }
-
-    const backgrounds = getSettingValue<string[]>('banner_default_backgrounds');
-
-    await settingService.updateSetting('banner_default_backgrounds', {
-      value: [...backgrounds, trimmedUrl],
+  const updateSettingArray = async (key: string, values: string[]): Promise<void> => {
+    await settingService.updateSetting(key, {
+      value: values,
     });
 
     await fetchSettings();
   };
 
+  const addSettingArrayItem = async (key: string, value: string): Promise<void> => {
+    const trimmedValue = value.trim();
+
+    if (trimmedValue === '') {
+      return;
+    }
+
+    const values = getSetting<string[]>(key) ?? [];
+
+    await updateSettingArray(key, [...values, trimmedValue]);
+  };
+
+  const removeSettingArrayItem = async (key: string, value: string): Promise<void> => {
+    const trimmedValue = value.trim();
+
+    if (trimmedValue === '') {
+      return;
+    }
+
+    const values = getSetting<string[]>(key) ?? [];
+    const nextValues = values.filter((existingValue: string) => existingValue !== trimmedValue);
+
+    if (nextValues.length === values.length) {
+      return;
+    }
+
+    await updateSettingArray(key, nextValues);
+  };
+
+  const addBannerDefaultBackground = async (url: string): Promise<void> => {
+    await addSettingArrayItem('banner_default_backgrounds', url);
+  };
+
   const removeBannerDefaultBackground = async (url: string): Promise<void> => {
-    const trimmedUrl = url.trim();
+    await removeSettingArrayItem('banner_default_backgrounds', url);
+  };
 
-    if (trimmedUrl === '') {
-      return;
-    }
+  const addBannerDefaultVideo = async (url: string): Promise<void> => {
+    await addSettingArrayItem('banner_default_videos', url);
+  };
 
-    const backgrounds = getSettingValue<string[]>('banner_default_backgrounds');
-    const nextBackgrounds = backgrounds.filter((backgroundUrl: string) => backgroundUrl !== trimmedUrl);
-
-    if (nextBackgrounds.length === backgrounds.length) {
-      return;
-    }
-
-    await settingService.updateSetting('banner_default_backgrounds', {
-      value: nextBackgrounds,
-    });
-
-    await fetchSettings();
+  const removeBannerDefaultVideo = async (url: string): Promise<void> => {
+    await removeSettingArrayItem('banner_default_videos', url);
   };
 
   const getSetting = <T = unknown>(key: string): T | undefined => {
@@ -81,7 +97,9 @@ export const useSettingStore = defineStore('setting', () => {
     isLoading,
     bannerDefaultVideos,
     bannerDefaultBackgrounds,
+    addBannerDefaultVideo,
     addBannerDefaultBackground,
+    removeBannerDefaultVideo,
     removeBannerDefaultBackground,
     fetchSettings,
     getSetting,
