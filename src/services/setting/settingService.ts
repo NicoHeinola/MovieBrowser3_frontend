@@ -1,10 +1,18 @@
 import type { SettingsResponse } from '@/interfaces/api/models/SettingsResponse';
+import type { UpdateSettingRequest } from '@/interfaces/api/requests/UpdateSettingRequest';
 
 import { apiClient } from '@/plugins/api/apiClient';
 
+const getSettings = async (): Promise<SettingsResponse> => {
+  const { data } = await apiClient.get<SettingsResponse>('/settings');
+  return data;
+};
+
+const updateSetting = async <T>(key: string, request: UpdateSettingRequest<T>): Promise<void> => {
+  await apiClient.patch(`/settings/${key}`, request);
+};
+
 export const settingService = {
-  getSettings: async (): Promise<SettingsResponse> => {
-    const { data } = await apiClient.get<SettingsResponse>('/settings');
-    return data;
-  },
+  getSettings,
+  updateSetting,
 };

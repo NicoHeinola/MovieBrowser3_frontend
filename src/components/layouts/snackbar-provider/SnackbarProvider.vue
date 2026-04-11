@@ -33,5 +33,9 @@ provide(snackbarApiKey, snackbarApi);
 <template>
   <slot />
 
-  <v-snackbar-queue v-model="snackbars" :total-visible="3" closable />
+  <v-snackbar-queue v-model="snackbars" :total-visible="3" closable>
+    <template #actions="{ props }: any">
+      <v-btn color="default" v-bind="props"> Close </v-btn>
+    </template>
+  </v-snackbar-queue>
 </template>

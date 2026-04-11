@@ -12,7 +12,9 @@ const props = withDefaults(defineProps<ConfirmDialogProps>(), {
 
 <template>
   <base-dialog :model-value="props.modelValue">
-    {{ props.message }}
+    <p class="text-pre-wrap">
+      {{ props.message }}
+    </p>
 
     <template #actions>
       <v-row class="ga-2" justify="end">

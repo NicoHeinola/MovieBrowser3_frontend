@@ -149,7 +149,7 @@ onMounted(() => {
           <titled-section icon="mdi-clock-outline" icon-color="warning" title="Latest"> </titled-section>
           <template v-if="isLoading">
             <div class="d-flex ga-8">
-              <v-skeleton-loader v-for="i in continueWatchingCols" type="image@2, article" width="300" :key="i" />
+              <v-skeleton-loader v-for="i in continueWatchingCols" type="image@2, paragraph" width="300" :key="i" />
             </div>
           </template>
           <template v-else>

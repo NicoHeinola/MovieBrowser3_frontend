@@ -115,6 +115,68 @@ onMounted(() => {
 <div>{{ count.value }}</div>
 ```
 
+## Form Wrappers
+
+- When a feature form component uses `BaseForm` as its root node, do not add a local `submit` emit just to forward the event.
+- Let the submit listener pass through to the root `BaseForm`, and let submit buttons target the form via the form `id` and native `type="submit"`.
+- Only declare a component `submit` emit when the wrapper is intentionally transforming payloads or exposing a different event contract than the root form.
+
+```vue
+<script setup lang="ts">
+import { BaseForm } from '@/components/common/base-form';
+
+const props = defineProps<{
+  id: string;
+}>();
+
+const isValid = defineModel<boolean>('isValid', {
+  default: false,
+});
+</script>
+
+<template>
+  <base-form v-model:is-valid="isValid" :id="props.id">
+    <slot />
+  </base-form>
+</template>
+```
+
+```vue
+<script setup lang="ts">
+import { BaseForm } from '@/components/common/base-form';
+
+const props = defineProps<{
+  id: string;
+}>();
+
+const isValid = defineModel<boolean>('isValid', {
+  default: false,
+});
+
+const emit = defineEmits<{
+  submit: [];
+}>();
+
+const handleSubmit = (): void => {
+  emit('submit');
+};
+</script>
+
+<template>
+  <base-form v-model:is-valid="isValid" @submit="handleSubmit" :id="props.id">
+    <slot />
+  </base-form>
+</template>
+```
+
+```vue
+<template>
+  <default-background-form v-model:is-valid="isValid" v-model:request="request" :id="formId" @submit="handleSubmit" />
+
+  <v-btn :disabled="!isValid" :form="formId" color="primary" type="submit"> Save </v-btn>
+</template>
+```
+
 ## Component Interfaces
 
 - **Do not declare named TypeScript interfaces or types inside `.vue` files.**

@@ -2,8 +2,7 @@
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { ConfirmDialog, type ConfirmDialogProps } from '@/components/common/confirm-dialog';
-import { useDialog } from '@/components/layouts/dialog-provider';
+import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
 import ControlPanelNavLinks from './ControlPanelNavLinks.vue';
@@ -12,20 +11,15 @@ import PublicNavLinks from './PublicNavLinks.vue';
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
-const dialog = useDialog();
-
-type LogoutConfirmDialogProps = Omit<ConfirmDialogProps, 'close' | 'modelValue'>;
+const { confirm } = useConfirmDialog();
 
 const isInControlPanel = computed<boolean>(() => String(route.name ?? '').startsWith('control-panel-'));
 
 const logout = async (): Promise<void> => {
-  const isConfirmed = await dialog.showDialog<boolean, LogoutConfirmDialogProps>({
-    component: ConfirmDialog,
-    props: {
-      message: 'Log out of your account?',
-      confirmText: 'Logout',
-      confirmColor: 'error',
-    },
+  const isConfirmed = await confirm({
+    message: 'Log out of your account?',
+    confirmText: 'Logout',
+    confirmColor: 'error',
   });
 
   if (!isConfirmed) {

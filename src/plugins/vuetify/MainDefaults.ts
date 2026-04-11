@@ -35,4 +35,7 @@ export const MainDefaults = {
     variant: 'tonal',
     density: 'comfortable',
   },
+  VDataTable: {
+    class: 'elevation-2 rounded-md',
+  },
 };
