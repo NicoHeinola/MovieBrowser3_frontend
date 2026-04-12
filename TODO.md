@@ -22,7 +22,7 @@
 
 - Add a show
 
-- Site settings
+[DONE] - Site settings
 
 - Websites listing page
 
