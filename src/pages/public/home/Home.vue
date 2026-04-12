@@ -160,7 +160,7 @@ onMounted(() => {
     :disable-video-playback="isShowDrawerVisible || isPlayingCardVideo"
     :image-src="bannerBackground"
     :video-src="bannerVideo"
-    style="margin-top: -70px; height: 74.5vh"
+    style="margin-top: -70px; height: 77vh"
   >
     <v-row align="center" style="max-width: 90%">
       <v-sheet border="sm" class="position-relative glass-panel" rounded="xl">
