@@ -35,30 +35,27 @@ const props = withDefaults(
 </template>
 
 <style lang="scss" scoped>
-@use 'sass:map';
-@use '@/styles/settings' as settings;
-
 .page-pattern-background {
   pointer-events: none;
 
   &--bubbles {
     background: linear-gradient(
       180deg,
-      map.get(settings.$grey, 'darken-4') 0,
-      map.get(settings.$grey, 'darken-3') 4000px
+      rgba(var(--v-theme-pattern-start), 0.25) 0,
+      rgba(var(--v-theme-pattern-end), 0.2) 2000px
     );
-    opacity: 0.3;
+    opacity: 0.15;
 
     mask-image: url('/patterns/bubbles.svg');
     mask-repeat: repeat;
-    mask-size: 300px 300px;
+    mask-size: 900px 900px;
   }
 
   &--jigsaw {
     background: linear-gradient(
       180deg,
-      map.get(settings.$grey, 'darken-4') 0,
-      map.get(settings.$grey, 'darken-3') 2000px
+      rgba(var(--v-theme-pattern-end), 0.2) 0,
+      rgba(var(--v-theme-pattern-start), 0.15) 2000px
     );
     opacity: 0.3;
 

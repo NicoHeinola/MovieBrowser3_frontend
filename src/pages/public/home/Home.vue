@@ -144,7 +144,16 @@ onMounted(() => {
         'linear-gradient(180deg, rgb(var(--v-theme-background)) 77vh, rgb(var(--v-theme-background-lighten-1)) 2000px)',
     }"
     :pattern-style="{
-      clipPath: 'inset(77vh 0 0 0)',
+      clipPath: 'inset(71vh 0 0 0)',
+      background: [
+        'linear-gradient(180deg,',
+        'rgba(var(--v-theme-pattern-start), 0) 71vh,',
+        'rgba(var(--v-theme-pattern-start), 0.1) 80vh,',
+        'rgba(var(--v-theme-pattern-start), 0.25) 85vh,',
+        'rgba(var(--v-theme-pattern-start), 0.2) 90vh,',
+        'rgba(var(--v-theme-pattern-end), 0.2) 100%)',
+      ].join(' '),
+      opacity: '0.4',
     }"
   />
   <media-banner
@@ -203,6 +212,7 @@ onMounted(() => {
           @playing-video="onPlayingVideoUpdate"
           v-else
         />
+
         <div class="d-flex" v-if="!isLoading && showsMap[section.dataKey].length === 0">
           <v-alert class="flex-0-0" type="info">
             <p class="text-no-wrap">There are no shows in this category</p>

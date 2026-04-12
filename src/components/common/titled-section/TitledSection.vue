@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <v-col cols="12">
+  <v-col class="position-relative" cols="12">
     <v-row gap="12">
       <v-col class="z-10" cols="12">
         <div class="d-flex ga-4 align-center">

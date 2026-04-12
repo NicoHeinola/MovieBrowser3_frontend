@@ -70,10 +70,6 @@ watch([() => props.imageSrc, () => props.videoSrc, () => props.disableVideoPlayb
       ></v-img>
     </v-fade-transition>
 
-    <div
-      class="position-absolute w-100 h-50 banner-gradient-background"
-      v-if="shouldShowImage || canPlayYouTubeVideo"
-    ></div>
     <div class="position-absolute w-100 h-100 d-flex flex-column align-center justify-center top-0">
       <slot />
     </div>
@@ -81,18 +77,13 @@ watch([() => props.imageSrc, () => props.videoSrc, () => props.disableVideoPlayb
 </template>
 
 <style lang="scss" scoped>
-.banner-gradient-background {
-  background: linear-gradient(to top, rgb(var(--v-theme-background), 0.9) 4%, transparent 100%) !important;
-  bottom: 4%;
-}
-
 .banner-media-layer {
   filter: brightness(0.6);
   mask-image: linear-gradient(
     to top,
     rgb(var(--v-theme-background), 0) calc(0%),
-    rgb(var(--v-theme-background), 0.1) calc(4%),
-    rgb(var(--v-theme-background), 1) calc(4%)
+    rgb(var(--v-theme-background), 0.1) calc(12%),
+    rgb(var(--v-theme-background), 1) calc(100%)
   );
   mask-repeat: no-repeat;
   mask-size: 100% 100%;
