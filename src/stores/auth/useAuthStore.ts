@@ -1,6 +1,7 @@
 import type { User } from '@/interfaces/api/models/User';
 import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginRequest';
 import type { AuthRegisterRequest } from '@/interfaces/api/requests/AuthRegisterRequest';
+import type { UpdateUserRequest } from '@/interfaces/api/requests/UpdateUserRequest';
 import { StorageSerializers, useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
@@ -45,6 +46,19 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  const updateUser = async (request: UpdateUserRequest): Promise<void> => {
+    if (!user.value) {
+      return;
+    }
+
+    isLoading.value = true;
+    try {
+      user.value = await authService.updateUser(user.value.id, request);
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     isAuthenticated,
     isAdmin,
@@ -52,6 +66,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     register,
+    updateUser,
     token,
     user,
   };

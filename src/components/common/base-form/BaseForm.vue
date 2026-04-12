@@ -17,7 +17,7 @@ const handleSubmit = (): void => {
 </script>
 
 <template>
-  <v-form v-model="isValid" @submit.prevent="handleSubmit" :id="props.id">
+  <v-form v-model="isValid" validate-on="blur" @submit.prevent="handleSubmit" :id="props.id">
     <slot />
   </v-form>
 </template>
