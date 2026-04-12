@@ -121,8 +121,11 @@ watch(
 <template>
   <page-background
     :background-style="{
-      background:
-        'linear-gradient(180deg, rgb(var(--v-theme-background)) 74.5vh, rgb(var(--v-theme-background-lighten-1)) 2000px)',
+      background: [
+        'linear-gradient(180deg,',
+        'rgb(var(--v-theme-background)) 74.5vh,',
+        'rgb(var(--v-theme-background-lighten-1)) 2000px)',
+      ].join(' '),
     }"
     :pattern-style="{
       clipPath: 'inset(71vh 0 0 0)',
