@@ -14,7 +14,7 @@ const props = defineProps<{
 const request = defineModel<ChangePasswordFormRequest>('request', {
   default: () => ({
     password: '',
-    password_confirmed: '',
+    password_confirmation: '',
   }),
 });
 
@@ -40,7 +40,7 @@ const confirmPasswordRules = computed(() => getChangePasswordConfirmRules(reques
       </v-col>
       <v-col cols="12">
         <v-text-field
-          v-model="request.password_confirmed"
+          v-model="request.password_confirmation"
           :rules="confirmPasswordRules"
           class="required"
           label="Confirm new password"

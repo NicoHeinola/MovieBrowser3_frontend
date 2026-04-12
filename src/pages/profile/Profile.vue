@@ -26,7 +26,7 @@ const isUsernameFormValid = ref<boolean>(false);
 
 const passwordRequest = ref<ChangePasswordFormRequest>({
   password: '',
-  password_confirmed: '',
+  password_confirmation: '',
 });
 const isPasswordFormValid = ref<boolean>(false);
 
@@ -51,10 +51,10 @@ const submitPassword = async (): Promise<void> => {
   try {
     await authStore.updateUser({
       password: passwordRequest.value.password,
-      password_confirmed: passwordRequest.value.password_confirmed,
+      password_confirmation: passwordRequest.value.password_confirmation,
     });
     showSuccessSnackbar('Password updated successfully.');
-    passwordRequest.value = { password: '', password_confirmed: '' };
+    passwordRequest.value = { password: '', password_confirmation: '' };
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   }

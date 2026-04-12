@@ -1,4 +1,4 @@
 export interface ChangePasswordFormRequest {
   password: string;
-  password_confirmed: string;
+  password_confirmation: string;
 }

@@ -53,12 +53,12 @@ describe('useAuthStore', () => {
       const updated = createUser({ updated_at: '2026-04-12T00:00:00Z' });
       vi.mocked(authService.updateUser).mockResolvedValue(updated);
 
-      await authStore.updateUser({ password: 'newpass', password_confirmed: 'newpass' });
+      await authStore.updateUser({ password: 'newpass', password_confirmation: 'newpass' });
 
       expect(authStore.user).toEqual(updated);
       expect(authService.updateUser).toHaveBeenCalledWith(1, {
         password: 'newpass',
-        password_confirmed: 'newpass',
+        password_confirmation: 'newpass',
       });
     });
 

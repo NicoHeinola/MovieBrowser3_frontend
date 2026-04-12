@@ -28,7 +28,7 @@ const isLoginFormValid = ref<boolean>(false);
 const registerRequest = ref<RegisterRequest>({
   username: '',
   password: '',
-  password_confirmed: '',
+  password_confirmation: '',
 });
 
 const isRegisterFormValid = ref<boolean>(false);
