@@ -4,4 +4,5 @@ export interface HomepageSection {
   icon: string;
   iconColor: string;
   dataKey: 'continueToWatchShows' | 'isekaiShows' | 'romanceShows' | 'randomShows';
+  lazyLoad?: boolean;
 }

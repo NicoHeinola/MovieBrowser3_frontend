@@ -7,6 +7,7 @@ export const homepageSections: HomepageSection[] = [
     icon: 'mdi-play-circle',
     iconColor: 'warning',
     dataKey: 'continueToWatchShows',
+    lazyLoad: false,
   },
   {
     title: 'Isekai',
@@ -14,6 +15,7 @@ export const homepageSections: HomepageSection[] = [
     icon: 'mdi-earth',
     iconColor: 'success',
     dataKey: 'isekaiShows',
+    lazyLoad: false,
   },
   {
     title: 'Romance',
@@ -21,6 +23,7 @@ export const homepageSections: HomepageSection[] = [
     icon: 'mdi-heart',
     iconColor: 'error',
     dataKey: 'romanceShows',
+    lazyLoad: true,
   },
   {
     title: 'Random',
@@ -28,5 +31,6 @@ export const homepageSections: HomepageSection[] = [
     icon: 'mdi-shuffle-variant',
     iconColor: 'info',
     dataKey: 'randomShows',
+    lazyLoad: true,
   },
 ];

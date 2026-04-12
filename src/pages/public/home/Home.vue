@@ -4,6 +4,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 
 import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
+import { VCol, VLazy, VRow } from 'vuetify/components';
 import { MediaBanner } from '@/components/common/media-banner';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
@@ -175,31 +176,34 @@ watch(
 
   <page-container class="pr-0 pt-0" fluid>
     <v-row gap="48">
-      <titled-section
-        v-for="section in homepageSections"
-        :icon="section.icon"
-        :icon-color="section.iconColor"
-        :subtitle="section.subtitle"
-        :title="section.title"
-        :key="section.title"
-      >
-        <v-skeleton-loader type="image" v-if="isLoading" />
-        <show-carousel
-          v-model:selected-show="selectedShow"
-          :shows="showMap[section.dataKey]"
-          :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
-          drag-class="pl-12 pr-12"
-          @click:show="isShowDrawerVisible = true"
-          @playing-video="onPlayingVideoUpdate"
-          v-else
-        />
+      <v-col v-for="section in homepageSections" cols="12" :key="section.title">
+        <component :is="section.lazyLoad ? VLazy : 'div'">
+          <titled-section
+            :icon="section.icon"
+            :icon-color="section.iconColor"
+            :subtitle="section.subtitle"
+            :title="section.title"
+          >
+            <v-skeleton-loader type="image" v-if="isLoading" />
 
-        <div class="d-flex" v-if="!isLoading && showMap[section.dataKey].length === 0">
-          <v-alert class="flex-0-0" type="info">
-            <p class="text-no-wrap">There are no shows in this category</p>
-          </v-alert>
-        </div>
-      </titled-section>
+            <show-carousel
+              v-model:selected-show="selectedShow"
+              :shows="showMap[section.dataKey]"
+              :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
+              drag-class="pl-12 pr-12"
+              @click:show="isShowDrawerVisible = true"
+              @playing-video="onPlayingVideoUpdate"
+              v-else
+            />
+
+            <div class="d-flex" v-if="!isLoading && showMap[section.dataKey].length === 0">
+              <v-alert class="flex-0-0" type="info">
+                <p class="text-no-wrap">There are no shows in this category</p>
+              </v-alert>
+            </div>
+          </titled-section>
+        </component>
+      </v-col>
     </v-row>
   </page-container>
 
