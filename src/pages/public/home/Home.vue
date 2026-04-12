@@ -110,9 +110,9 @@ const onPlayingVideoUpdate = (isPlaying: boolean) => {
 
 watch(
   () => selectedBannerShow.value,
-  (newVal) => {
-    if (newVal) {
-      selectedShow.value = newVal;
+  () => {
+    if (!!selectedBannerShow.value) {
+      selectedShow.value = selectedBannerShow.value;
     }
   },
 );
