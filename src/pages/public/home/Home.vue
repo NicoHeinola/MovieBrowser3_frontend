@@ -138,7 +138,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <page-background />
+  <page-background
+    :background-style="{
+      background:
+        'linear-gradient(180deg, rgb(var(--v-theme-background)) 77vh, rgb(var(--v-theme-background-lighten-1)) 2000px)',
+    }"
+    :pattern-style="{
+      clipPath: 'inset(77vh 0 0 0)',
+    }"
+  />
   <media-banner
     :disable-video-playback="isShowDrawerVisible || isPlayingCardVideo"
     :image-src="bannerBackground"

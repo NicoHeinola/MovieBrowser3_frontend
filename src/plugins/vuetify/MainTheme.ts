@@ -6,6 +6,7 @@ export const MainTheme: ThemeDefinition = {
     primary: '#8A6CFF',
     secondary: '#59C8DA',
     background: '#0F131B',
+    'background-lighten-1': '#171E2B',
     surface: '#171E2B',
     link: '#8EDCFF',
     info: '#74D0FF',
