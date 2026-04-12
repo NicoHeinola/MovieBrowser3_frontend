@@ -76,10 +76,12 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
   >
-    <v-img :src="cardImage" class="h-100 w-100" style="pointer-events: none" cover v-if="!videoId"></v-img>
-    <div class="h-100 w-100" style="pointer-events: none; overflow: hidden" v-else>
-      <you-tube-player :video-id="videoId" class="h-100 w-100" style="transform: scale(1.2)" />
-    </div>
+    <v-lazy>
+      <v-img :src="cardImage" class="h-100 w-100" style="pointer-events: none" cover v-if="!videoId"></v-img>
+      <div class="h-100 w-100" style="pointer-events: none; overflow: hidden" v-else>
+        <you-tube-player :video-id="videoId" class="h-100 w-100" style="transform: scale(1.2)" />
+      </div>
+    </v-lazy>
     <div class="card-shadow position-absolute bottom-0 left-0 w-100" style="height: 20%" />
     <div class="position-absolute bottom-0 left-0 px-4 my-4 text-truncate" style="cursor: pointer; max-width: 100%">
       <p
@@ -88,9 +90,6 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
       >
         {{ primaryTitle }}
       </p>
-      <v-tooltip activator="parent" location="bottom">
-        {{ primaryTitle }}
-      </v-tooltip>
     </div>
   </v-card>
 </template>

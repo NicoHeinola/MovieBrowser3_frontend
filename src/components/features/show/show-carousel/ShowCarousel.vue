@@ -38,22 +38,24 @@ const onPlayingVideo = (value: boolean, show: Show | null) => {
 
 <template>
   <div class="w-100 overflow-visible">
-    <drag-scroll-container
-      :class="[props.dragClass, 'show-carousel-rail overflow-x-auto overflow-y-hidden d-flex w-100']"
-      :style="props.dragStyle"
-    >
-      <show-card
-        v-for="show in props.shows"
-        :height="cardHeight"
-        :show="show"
-        :width="cardWidth"
-        image-to-use="card"
-        style="border-radius: 0"
-        @click.stop="onShowClick(show)"
-        @playing-video="(value: boolean) => onPlayingVideo(value, show)"
-        :key="show.id"
-      />
-    </drag-scroll-container>
+    <v-lazy>
+      <drag-scroll-container
+        :class="[props.dragClass, 'show-carousel-rail overflow-x-auto overflow-y-hidden d-flex w-100']"
+        :style="props.dragStyle"
+      >
+        <show-card
+          v-for="show in props.shows"
+          :height="cardHeight"
+          :show="show"
+          :width="cardWidth"
+          image-to-use="card"
+          style="border-radius: 0"
+          @click.stop="onShowClick(show)"
+          @playing-video="(value: boolean) => onPlayingVideo(value, show)"
+          :key="show.id"
+        />
+      </drag-scroll-container>
+    </v-lazy>
   </div>
 </template>
 
