@@ -2,6 +2,8 @@ import type { SettingsResponse } from '@/interfaces/api/models/SettingsResponse'
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
+import { SettingQueryKey } from '@/enums/query/settingQueryKey';
+import { queryClient } from '@/plugins/query';
 import { settingService } from '@/services/setting/settingService';
 
 export const useSettingStore = defineStore('setting', () => {
@@ -29,7 +31,10 @@ export const useSettingStore = defineStore('setting', () => {
   const fetchSettings = async (): Promise<void> => {
     isLoading.value = true;
     try {
-      settings.value = await settingService.getSettings();
+      settings.value = await queryClient.ensureQueryData({
+        queryKey: [SettingQueryKey.Settings],
+        queryFn: settingService.getSettings,
+      });
     } finally {
       isLoading.value = false;
     }
@@ -40,6 +45,7 @@ export const useSettingStore = defineStore('setting', () => {
       value: values,
     });
 
+    await queryClient.resetQueries({ queryKey: [SettingQueryKey.Settings] });
     await fetchSettings();
   };
 

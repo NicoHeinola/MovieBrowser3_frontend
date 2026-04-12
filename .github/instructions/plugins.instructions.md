@@ -22,12 +22,19 @@ applyTo: 'src/plugins/**/*.ts'
 - Do not move page markup, component rendering, or feature-specific state into plugin files.
 - Keep plugin files focused on application setup, configured instances, and integration boundaries.
 
+## TanStack Query
+
+- Expose the shared `QueryClient` from `src/plugins/query/index.ts` and register it via `VueQueryPlugin` in `registerPlugins`.
+- Configure `defaultOptions` (e.g. `staleTime`, `retry`) centrally in the plugin file, not per call-site.
+- Import `queryClient` in the plugin entry when explicit cache access is needed outside a component tree.
+
 Example:
 
 ```ts
 export const registerPlugins = (app: App) => {
   app.use(vuetify);
   app.use(pinia);
+  app.use(VueQueryPlugin, { queryClient });
   app.use(router);
 };
 ```

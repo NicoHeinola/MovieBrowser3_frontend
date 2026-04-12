@@ -15,6 +15,7 @@ applyTo: 'src/pages/**/*.vue'
 
 - Reusable sections belong in namespaced components under `src/components`; pages compose those sections rather than permanently hosting shared markup.
 - Multi-component async orchestration, caching, and long-lived mutations belong in stores under `src/stores` rather than in the page file.
+- Page-local read-only server state may use `useAPIQuery` directly in the page instead of a store when the data is not shared across routes.
 
 ## Boundaries
 

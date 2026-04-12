@@ -22,6 +22,7 @@ Use a narrower skill only when the ownership is already clear and the task stays
 - Page composition belongs in `src/pages/...`.
 - Reusable UI belongs in `src/components/...`.
 - Client state belongs in `src/stores/...`.
+- Shared enums and query keys belong in `src/enums/...`.
 - Backend-facing contracts belong in `src/interfaces/api/...`.
 - Shared theme decisions belong in `src/plugins/vuetify/...`.
 

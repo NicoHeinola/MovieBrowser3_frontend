@@ -22,6 +22,13 @@ applyTo: 'src/composables/**/*.ts'
 - Add sibling helper files only when the composable grows enough to need named support types or extracted helpers.
 - Do not add catch-all files such as `helpers.ts` or `types.ts` when a more specific sibling name is possible.
 
+## TanStack Query Composables
+
+- Use `useAPIQuery` from `src/composables/api/` as the shared `useQuery` wrapper; it adds centralized error handling via the snackbar provider.
+- Call `useAPIQuery` directly in pages and components with inline query options; do not create per-domain query composables unless the same query configuration is reused across multiple call sites.
+- Import query keys from `src/enums/query/` to keep key strings consistent across queries and cache invalidation.
+- Return the full query result object rather than cherry-picking; let callers destructure what they need.
+
 Example:
 
 ```ts

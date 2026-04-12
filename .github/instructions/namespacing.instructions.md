@@ -3,6 +3,7 @@ description: Source tree namespacing rules for namespaced files and folders unde
 applyTo: |
   src/components/**
   src/composables/**
+  src/enums/**
   src/interfaces/**
   src/pages/**
   src/plugins/**
@@ -36,6 +37,12 @@ applyTo: |
 - Component namespaces under `src/components/common`, `src/components/features`, and `src/components/layouts` should expose a small `index.ts` barrel when they are consumed outside their own folder.
 - Keep those component barrels focused on the namespace's primary component and closely related public types only.
 - Do **not** add `index.ts` barrel files to utility namespaces; import utility files directly.
+
+## Enums
+
+- Keep shared enum files inside a namespaced folder under `src/enums` that reflects the concern they support.
+- Name each enum file after the single enum it exports, such as `settingQueryKey.ts`.
+- Do not add `index.ts` barrels to enum namespaces.
 
 ## Utilities
 

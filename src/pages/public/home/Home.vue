@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import type { HomeShowsResponse } from './HomeShowsResponse';
 import type { Show } from '@/interfaces/api/models/Show';
 
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
-
 import { MediaBanner } from '@/components/common/media-banner';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
@@ -12,26 +12,12 @@ import { TitledSection } from '@/components/common/titled-section';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowCarousel } from '@/components/features/show/show-carousel';
 import { ShowGrid } from '@/components/features/show/show-grid';
-import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { useAPIQuery } from '@/composables/api/useAPIQuery';
+import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
-
 import { homepageSections } from './homepageSections';
 
-const continueToWatchShows = ref<Show[]>([]);
-const latestShows = ref<Show[]>([]);
-const isekaiShows = ref<Show[]>([]);
-const romanceShows = ref<Show[]>([]);
-const randomShows = ref<Show[]>([]);
-
-const showsMap = computed<Record<string, Show[]>>(() => ({
-  continueToWatchShows: continueToWatchShows.value,
-  isekaiShows: isekaiShows.value,
-  romanceShows: romanceShows.value,
-  randomShows: randomShows.value,
-}));
-
-const isLoadingShows = ref<boolean>(false);
 const selectedBannerShow = ref<Show | null>(null);
 const selectedShow = ref<Show | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
@@ -39,9 +25,6 @@ const isPlayingCardVideo = ref<boolean>(false);
 let bannerResumeTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const settingStore = useSettingStore();
-const { showAPIErrorSnackbar } = useCommonSnackbar();
-
-const isLoading = computed<boolean>(() => settingStore.isLoading || isLoadingShows.value);
 
 const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
 
@@ -52,6 +35,36 @@ const bannerMaxCols = computed<number>(() => {
   if (smAndUp.value) return 2;
   return 1;
 });
+
+const showsQuery = useAPIQuery<HomeShowsResponse>({
+  queryKey: [ShowQueryKey.HomeShows, bannerMaxCols],
+  queryFn: async () => {
+    const [latest, continueToWatch, isekai, romance, random] = await Promise.all([
+      showService.list({ sort: '-created_at', page: { size: bannerMaxCols.value } }),
+      showService.list({ sort: '-created_at', page: { size: 20 } }),
+      showService.list({ sort: '-created_at', page: { size: 20 } }),
+      showService.list({ sort: '-created_at', page: { size: 20 } }),
+      showService.list({ sort: 'random', page: { size: 20 } }),
+    ]);
+
+    return {
+      latestShows: latest.data,
+      continueToWatchShows: continueToWatch.data,
+      isekaiShows: isekai.data,
+      romanceShows: romance.data,
+      randomShows: random.data,
+    };
+  },
+});
+
+const showMap = computed<Record<string, Show[]>>(() => ({
+  continueToWatchShows: showsQuery.data.value?.continueToWatchShows ?? [],
+  isekaiShows: showsQuery.data.value?.isekaiShows ?? [],
+  romanceShows: showsQuery.data.value?.romanceShows ?? [],
+  randomShows: showsQuery.data.value?.randomShows ?? [],
+}));
+
+const isLoading = computed<boolean>(() => settingStore.isLoading || showsQuery.isLoading.value);
 
 const bannerVideo = computed<string | null>(() => {
   if (selectedBannerShow.value) {
@@ -94,35 +107,6 @@ const onPlayingVideoUpdate = (isPlaying: boolean) => {
   }
 };
 
-const loadShows = async (): Promise<void> => {
-  isLoadingShows.value = true;
-  try {
-    const [continueToWatch, latest, isekai, romance, random] = await Promise.all([
-      showService.list({ sort: '-created_at', page: { size: 10 } }),
-      showService.list({ sort: '-created_at', page: { size: bannerMaxCols.value } }),
-      showService.list({ sort: '-created_at', page: {} }),
-      showService.list({ sort: '-created_at', page: {} }),
-      showService.list({ sort: 'random', page: {} }),
-    ]);
-
-    continueToWatchShows.value = continueToWatch.data;
-    latestShows.value = latest.data;
-    isekaiShows.value = isekai.data;
-    romanceShows.value = romance.data;
-    randomShows.value = random.data;
-  } catch (error: unknown) {
-    continueToWatchShows.value = [];
-    latestShows.value = [];
-    isekaiShows.value = [];
-    romanceShows.value = [];
-    randomShows.value = [];
-    selectedBannerShow.value = null;
-    showAPIErrorSnackbar(error);
-  } finally {
-    isLoadingShows.value = false;
-  }
-};
-
 watch(
   () => selectedBannerShow.value,
   (newVal) => {
@@ -131,10 +115,6 @@ watch(
     }
   },
 );
-
-onMounted(() => {
-  void loadShows();
-});
 </script>
 
 <template>
@@ -175,13 +155,14 @@ onMounted(() => {
             <show-grid
               :cols="bannerMaxCols"
               :selected-show="selectedBannerShow"
-              :shows="latestShows.map((show) => ({ ...show, preview_url: null }))"
+              :shows="showsQuery.data.value?.latestShows.map((show: Show) => ({ ...show, preview_url: null })) ?? []"
               @click:show="isShowDrawerVisible = true"
               @update:selected-show="
-                (show: Show | null) => (selectedBannerShow = latestShows.find((s) => s.id === show?.id) ?? null)
+                (show: Show | null) =>
+                  (selectedBannerShow = showsQuery.data.value?.latestShows.find((s: Show) => s.id === show?.id) ?? null)
               "
             ></show-grid>
-            <div class="d-flex" v-if="latestShows.length === 0">
+            <div class="d-flex" v-if="showsQuery.data.value?.latestShows.length === 0">
               <v-alert class="flex-0-0" type="info">
                 <p class="text-no-wrap">No shows have been added yet.</p>
               </v-alert>
@@ -205,7 +186,7 @@ onMounted(() => {
         <v-skeleton-loader type="image" v-if="isLoading" />
         <show-carousel
           v-model:selected-show="selectedShow"
-          :shows="showsMap[section.dataKey]"
+          :shows="showMap[section.dataKey]"
           :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
           drag-class="pl-12 pr-12"
           @click:show="isShowDrawerVisible = true"
@@ -213,7 +194,7 @@ onMounted(() => {
           v-else
         />
 
-        <div class="d-flex" v-if="!isLoading && showsMap[section.dataKey].length === 0">
+        <div class="d-flex" v-if="!isLoading && showMap[section.dataKey].length === 0">
           <v-alert class="flex-0-0" type="info">
             <p class="text-no-wrap">There are no shows in this category</p>
           </v-alert>

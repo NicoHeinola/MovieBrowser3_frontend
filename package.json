@@ -23,6 +23,7 @@
   "dependencies": {
     "@fontsource/roboto": "^5.2.10",
     "@mdi/font": "7.4.47",
+    "@tanstack/vue-query": "^5.99.0",
     "@vueuse/core": "^14.2.1",
     "axios": "^1.15.0",
     "pinia": "^3.0.4",

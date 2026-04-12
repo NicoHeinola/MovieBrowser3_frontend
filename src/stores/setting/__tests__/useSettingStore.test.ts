@@ -12,6 +12,13 @@ vi.mock('@/services/setting/settingService', () => ({
   },
 }));
 
+vi.mock('@/plugins/query', () => ({
+  queryClient: {
+    ensureQueryData: vi.fn((opts: { queryFn: () => unknown }) => opts.queryFn()),
+    resetQueries: vi.fn(),
+  },
+}));
+
 describe('useSettingStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia());

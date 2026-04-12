@@ -6,7 +6,7 @@
 - Use `npm` for project commands and validation.
 - Keep source changes inside `src/` namespaced folders instead of dropping new files into broad top-level buckets.
 - Keep backend and platform-facing service wrappers in `src/services/<domain>/` namespaces instead of colocating them under stores, components, or pages.
-- Preserve the current stack choices: Vue Router for routing, Pinia for client state, Vuetify for UI, Vitest for tests.
+- Preserve the current stack choices: Vue Router for routing, Pinia for client state, TanStack Vue Query for server-state caching, Vuetify for UI, Vitest for tests.
 
 ## Working Rules
 

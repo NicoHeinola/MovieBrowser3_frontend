@@ -26,7 +26,7 @@ Use it when you still need to decide whether data should stay page-local, move i
 
 ## When Not To Add A Store
 
-- The fetch is page-local, short-lived, and not reused.
+- The fetch is page-local, short-lived, and not reused — use `useAPIQuery` directly in the page instead.
 - The feature only needs trivial request state inside one component tree.
 - Introducing a store would add ceremony without shared ownership or lifecycle value.
 
