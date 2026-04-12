@@ -45,7 +45,7 @@ const isLoading = computed<boolean>(() => settingStore.isLoading || isLoadingSho
 
 const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
 
-const continueWatchingCols = computed<number>(() => {
+const bannerMaxCols = computed<number>(() => {
   if (xxl.value) return 5;
   if (xlAndUp.value) return 4;
   if (lgAndUp.value) return 3;
@@ -99,7 +99,7 @@ const loadShows = async (): Promise<void> => {
   try {
     const [continueToWatch, latest, isekai, romance, random] = await Promise.all([
       showService.list({ sort: '-created_at', page: { size: 10 } }),
-      showService.list({ sort: '-created_at', page: {} }),
+      showService.list({ sort: '-created_at', page: { size: bannerMaxCols.value } }),
       showService.list({ sort: '-created_at', page: {} }),
       showService.list({ sort: '-created_at', page: {} }),
       showService.list({ sort: 'random', page: {} }),
@@ -168,12 +168,12 @@ onMounted(() => {
           <titled-section icon="mdi-clock-outline" icon-color="warning" title="Latest"> </titled-section>
           <template v-if="isLoading">
             <div class="d-flex ga-8">
-              <v-skeleton-loader v-for="i in continueWatchingCols" type="image@2, paragraph" width="300" :key="i" />
+              <v-skeleton-loader v-for="i in bannerMaxCols" type="image@2, paragraph" width="300" :key="i" />
             </div>
           </template>
           <template v-else>
             <show-grid
-              :cols="continueWatchingCols"
+              :cols="bannerMaxCols"
               :selected-show="selectedBannerShow"
               :shows="latestShows.map((show) => ({ ...show, preview_url: null }))"
               @click:show="isShowDrawerVisible = true"
