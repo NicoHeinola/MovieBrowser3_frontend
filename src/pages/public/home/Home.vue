@@ -121,7 +121,7 @@ watch(
   <page-background
     :background-style="{
       background:
-        'linear-gradient(180deg, rgb(var(--v-theme-background)) 77vh, rgb(var(--v-theme-background-lighten-1)) 2000px)',
+        'linear-gradient(180deg, rgb(var(--v-theme-background)) 74.5vh, rgb(var(--v-theme-background-lighten-1)) 2000px)',
     }"
     :pattern-style="{
       clipPath: 'inset(71vh 0 0 0)',
@@ -140,7 +140,7 @@ watch(
     :disable-video-playback="isShowDrawerVisible || isPlayingCardVideo"
     :image-src="bannerBackground"
     :video-src="bannerVideo"
-    style="margin-top: -70px; height: 77vh"
+    style="margin-top: -70px; height: 74.5vh"
   >
     <v-row align="center" style="max-width: 90%">
       <v-sheet border="sm" class="position-relative glass-panel" rounded="xl">
