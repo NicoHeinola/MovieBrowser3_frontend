@@ -17,10 +17,9 @@ const MOMENTUM_MIN_VELOCITY = 0.02;
 const MOMENTUM_START_VELOCITY = 0.08;
 const MOMENTUM_VELOCITY_MAX_AGE = 50;
 const VELOCITY_SMOOTHING = 0.2;
+const OVERSCROLL_FRICTION = 0.4;
 
 let activePointerId: number | null = null;
-let dragStartX = 0;
-let dragStartScrollLeft = 0;
 let lastPointerX = 0;
 let lastPointerTime = 0;
 let dragVelocity = 0;
@@ -28,6 +27,7 @@ let isDragging = false;
 let suppressClick = false;
 let momentumFrameId: number | null = null;
 let momentumTimestamp = 0;
+const overscrollOffset = ref(0);
 
 const stopMomentum = () => {
   if (momentumFrameId !== null) {
@@ -40,11 +40,6 @@ const stopMomentum = () => {
   suppressClick = false;
 };
 
-const scheduleMomentum = () => {
-  momentumFrameId = requestAnimationFrame(runMomentum);
-};
-
-// Decay the release velocity over time so the rail glides and then settles.
 const runMomentum = (timestamp: number) => {
   const element = containerEl.value;
 
@@ -53,18 +48,16 @@ const runMomentum = (timestamp: number) => {
     return;
   }
 
-  // The first frame only establishes a clean time baseline after release.
   if (momentumTimestamp === 0) {
     momentumTimestamp = timestamp;
-    scheduleMomentum();
+    momentumFrameId = requestAnimationFrame(runMomentum);
     return;
   }
 
   const deltaTime = timestamp - momentumTimestamp;
 
-  // Ignore invalid frame timing so one bad tick does not distort the glide distance.
   if (deltaTime <= 0) {
-    scheduleMomentum();
+    momentumFrameId = requestAnimationFrame(runMomentum);
     return;
   }
 
@@ -81,27 +74,14 @@ const runMomentum = (timestamp: number) => {
   const clampedScrollLeft = Math.min(maxScrollLeft, Math.max(0, nextScrollLeft));
 
   element.scrollLeft = clampedScrollLeft;
-
-  const decay = Math.pow(MOMENTUM_DECAY_PER_FRAME, deltaTime / 16.67);
-
-  dragVelocity *= decay;
+  dragVelocity *= Math.pow(MOMENTUM_DECAY_PER_FRAME, deltaTime / 16.67);
 
   if (Math.abs(dragVelocity) < MOMENTUM_MIN_VELOCITY || clampedScrollLeft !== nextScrollLeft) {
     stopMomentum();
     return;
   }
 
-  scheduleMomentum();
-};
-
-const startMomentum = () => {
-  if (Math.abs(dragVelocity) < MOMENTUM_START_VELOCITY) {
-    return;
-  }
-
-  // Reset the frame baseline so momentum starts from the release moment.
-  momentumTimestamp = 0;
-  scheduleMomentum();
+  momentumFrameId = requestAnimationFrame(runMomentum);
 };
 
 const endDrag = (timestamp: number) => {
@@ -118,23 +98,22 @@ const endDrag = (timestamp: number) => {
 
   activePointerId = null;
   isDragging = false;
+  overscrollOffset.value = 0;
+
   const velocityAge = timestamp - lastPointerTime;
 
   lastPointerX = 0;
   lastPointerTime = 0;
 
-  if (!suppressClick) {
+  if (!suppressClick || velocityAge > MOMENTUM_VELOCITY_MAX_AGE) {
     dragVelocity = 0;
     return;
   }
 
-  // Ignore stale velocity so a fast swipe does not keep gliding after the pointer has already paused.
-  if (velocityAge > MOMENTUM_VELOCITY_MAX_AGE) {
-    dragVelocity = 0;
-    return;
+  if (Math.abs(dragVelocity) >= MOMENTUM_START_VELOCITY) {
+    momentumTimestamp = 0;
+    momentumFrameId = requestAnimationFrame(runMomentum);
   }
-
-  startMomentum();
 };
 
 const handlePointerDown = (event: PointerEvent) => {
@@ -151,8 +130,6 @@ const handlePointerDown = (event: PointerEvent) => {
   stopMomentum();
 
   activePointerId = event.pointerId;
-  dragStartX = event.clientX;
-  dragStartScrollLeft = element.scrollLeft;
   lastPointerX = event.clientX;
   lastPointerTime = event.timeStamp;
   isDragging = false;
@@ -166,11 +143,9 @@ const handlePointerMove = (event: PointerEvent) => {
     return;
   }
 
-  const deltaX = event.clientX - dragStartX;
+  const moveDelta = event.clientX - lastPointerX;
 
-  if (!isDragging && Math.abs(deltaX) <= props.dragThreshold) {
-    lastPointerX = event.clientX;
-    lastPointerTime = event.timeStamp;
+  if (!isDragging && Math.abs(moveDelta) <= props.dragThreshold) {
     return;
   }
 
@@ -180,13 +155,31 @@ const handlePointerMove = (event: PointerEvent) => {
     element.setPointerCapture(event.pointerId);
   }
 
-  element.scrollLeft = dragStartScrollLeft - deltaX;
+  const maxScrollLeft = element.scrollWidth - element.clientWidth;
+  const currentScrollLeft = element.scrollLeft;
+  const atBoundary = (currentScrollLeft <= 0 && moveDelta > 0) || (currentScrollLeft >= maxScrollLeft && moveDelta < 0);
+
+  if (overscrollOffset.value !== 0 || atBoundary) {
+    const goingDeeper =
+      overscrollOffset.value === 0 ||
+      (moveDelta < 0 && overscrollOffset.value > 0) ||
+      (moveDelta > 0 && overscrollOffset.value < 0);
+
+    const friction = goingDeeper ? OVERSCROLL_FRICTION : 1;
+    const newOverscroll = overscrollOffset.value - moveDelta * friction;
+    const crossedZero =
+      overscrollOffset.value !== 0 &&
+      ((overscrollOffset.value > 0 && newOverscroll <= 0) || (overscrollOffset.value < 0 && newOverscroll >= 0));
+
+    overscrollOffset.value = crossedZero ? 0 : newOverscroll;
+  } else {
+    element.scrollLeft -= moveDelta;
+  }
 
   const deltaTime = event.timeStamp - lastPointerTime;
 
   if (deltaTime > 0) {
-    // Smooth pointer samples a bit so one noisy move event does not spike momentum.
-    const nextVelocity = -(event.clientX - lastPointerX) / deltaTime;
+    const nextVelocity = -moveDelta / deltaTime;
 
     dragVelocity =
       dragVelocity === 0 ? nextVelocity : dragVelocity + (nextVelocity - dragVelocity) * VELOCITY_SMOOTHING;
@@ -218,7 +211,6 @@ const handleClickCapture = (event: MouseEvent) => {
     return;
   }
 
-  // Keep clicks blocked until drag momentum fully stops.
   event.preventDefault();
   event.stopPropagation();
 
@@ -234,7 +226,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="drag-scroll-container"
+    :class="['drag-scroll-container', { 'is-dragging': isDragging }]"
+    :style="{ transform: `translateX(${-overscrollOffset}px)` }"
     @click.capture="handleClickCapture"
     @pointercancel="handlePointerCancel"
     @pointerdown="handlePointerDown"
@@ -249,6 +242,12 @@ onBeforeUnmount(() => {
 <style lang="scss" scoped>
 .drag-scroll-container {
   scrollbar-width: none;
+  touch-action: pan-y;
+  transition: transform 0.2s ease;
   user-select: none;
+
+  &.is-dragging {
+    transition: none;
+  }
 }
 </style>
