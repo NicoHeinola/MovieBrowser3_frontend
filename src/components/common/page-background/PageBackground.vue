@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CSSProperties } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 const props = withDefaults(
   defineProps<{
@@ -11,25 +12,41 @@ const props = withDefaults(
     variant: 'bubbles',
   },
 );
+
+const PARALLAX_SPEED = 0.75;
+
+const scrollY = ref(0);
+
+const parallaxStyle = computed<CSSProperties>(() => ({
+  transform: `translate3d(0, ${scrollY.value * (1 - PARALLAX_SPEED)}px, 0)`,
+}));
+
+const onScroll = (): void => {
+  scrollY.value = window.scrollY;
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', onScroll, { passive: true });
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScroll);
+});
 </script>
 
 <template>
-  <div>
+  <div
+    class="position-absolute overflow-hidden"
+    style="top: -64px; min-width: 100vw; height: calc(100% + 64px); pointer-events: none"
+    v-if="props.variant !== 'none'"
+  >
     <div
-      :class="['page-background position-absolute']"
-      :style="[
-        { paddingTop: '-64px', top: '-64px', minWidth: '100vw', height: 'calc(100% + 64px)' },
-        props.backgroundStyle,
-      ]"
-      v-if="props.variant !== 'none'"
+      :style="[{ top: '0', minWidth: '100vw', height: '200%' }, parallaxStyle, props.backgroundStyle]"
+      class="page-background position-absolute"
     />
     <div
       :class="['page-pattern-background position-absolute', `page-pattern-background--${props.variant}`]"
-      :style="[
-        { paddingTop: '-64px', top: '-64px', minWidth: '100vw', height: 'calc(100% + 64px)' },
-        props.patternStyle,
-      ]"
-      v-if="props.variant !== 'none'"
+      :style="[{ top: '0', minWidth: '100vw', height: '200%' }, parallaxStyle, props.patternStyle]"
     />
   </div>
 </template>

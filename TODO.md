@@ -35,3 +35,5 @@
 - Local caching so shows aren't fetched constantly
 
 - Quick search
+
+- Own page for show for easy bookmarking
