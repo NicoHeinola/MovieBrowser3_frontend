@@ -19,6 +19,9 @@ const { showSuccessSnackbar, showAPIErrorSnackbar } = useCommonSnackbar();
 const usernameFormId = 'username-form';
 const passwordFormId = 'change-password-form';
 
+const isUsernameLoading = ref<boolean>(false);
+const isPasswordLoading = ref<boolean>(false);
+
 const usernameRequest = ref<UsernameFormRequest>({
   username: authStore.user?.username ?? '',
 });
@@ -35,11 +38,14 @@ const submitUsername = async (): Promise<void> => {
     return;
   }
 
+  isUsernameLoading.value = true;
   try {
     await authStore.updateUser({ username: usernameRequest.value.username });
     showSuccessSnackbar('Username updated successfully.');
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
+  } finally {
+    isUsernameLoading.value = false;
   }
 };
 
@@ -48,6 +54,7 @@ const submitPassword = async (): Promise<void> => {
     return;
   }
 
+  isPasswordLoading.value = true;
   try {
     await authStore.updateUser({
       password: passwordRequest.value.password,
@@ -57,6 +64,8 @@ const submitPassword = async (): Promise<void> => {
     passwordRequest.value = { password: '', password_confirmation: '' };
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
+  } finally {
+    isPasswordLoading.value = false;
   }
 };
 </script>
@@ -79,7 +88,7 @@ const submitPassword = async (): Promise<void> => {
               <v-btn
                 :disabled="!isPasswordFormValid"
                 :form="passwordFormId"
-                :loading="authStore.isLoading"
+                :loading="isPasswordLoading"
                 color="primary"
                 type="submit"
               >
@@ -103,7 +112,7 @@ const submitPassword = async (): Promise<void> => {
               <v-btn
                 :disabled="!isUsernameFormValid"
                 :form="usernameFormId"
-                :loading="authStore.isLoading"
+                :loading="isUsernameLoading"
                 color="primary"
                 type="submit"
               >
