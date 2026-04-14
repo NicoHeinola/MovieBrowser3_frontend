@@ -56,7 +56,7 @@ const showsQuery = useAPIQuery<HomeShowsResponse>({
       randomShows: random.data,
     };
   },
-  initialData: {
+  placeholderData: {
     latestShows: [],
     continueToWatchShows: [],
     isekaiShows: [],
@@ -72,7 +72,7 @@ const showMap = computed<Record<string, Show[]>>(() => ({
   randomShows: showsQuery.data.value?.randomShows ?? [],
 }));
 
-const isLoading = computed<boolean>(() => settingStore.isLoading || showsQuery.isLoading.value);
+const isLoading = computed<boolean>(() => settingStore.isLoading || showsQuery.isFetching.value);
 
 const bannerVideo = computed<string | null>(() => {
   if (selectedBannerShow.value) {
