@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+import { getEnvNumber } from '@/utils/env/getEnvNumber';
 import { getEnvString } from '@/utils/env/getEnvString';
 
 export interface ApiClientAuthOptions {
@@ -8,7 +9,7 @@ export interface ApiClientAuthOptions {
 }
 
 const apiBaseUrl = getEnvString('VITE_API_URL');
-const requestTimeoutMs = 30_000;
+const requestTimeoutMs = getEnvNumber('VITE_API_TIMEOUT_MS');
 
 let authOptions: ApiClientAuthOptions | null = null;
 

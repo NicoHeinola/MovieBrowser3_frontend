@@ -33,3 +33,5 @@
 - Show description
 
 - Local caching so shows aren't fetched constantly
+
+- Quick search

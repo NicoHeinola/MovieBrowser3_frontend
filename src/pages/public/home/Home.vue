@@ -56,6 +56,13 @@ const showsQuery = useAPIQuery<HomeShowsResponse>({
       randomShows: random.data,
     };
   },
+  initialData: {
+    latestShows: [],
+    continueToWatchShows: [],
+    isekaiShows: [],
+    romanceShows: [],
+    randomShows: [],
+  },
 });
 
 const showMap = computed<Record<string, Show[]>>(() => ({
