@@ -173,7 +173,7 @@ watch(
                   (selectedBannerShow = showsQuery.data.value?.latestShows.find((s: Show) => s.id === show?.id) ?? null)
               "
             ></show-grid>
-            <div class="d-flex" v-if="showsQuery.data.value?.latestShows.length === 0">
+            <div class="d-flex" v-if="(showsQuery.data.value?.latestShows?.length ?? 0) === 0">
               <v-alert class="flex-0-0" type="info">
                 <p class="text-no-wrap">No shows have been added yet.</p>
               </v-alert>
