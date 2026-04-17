@@ -91,7 +91,7 @@ onMounted(() => {
 
 <template>
   <page-background />
-  <page-container class="fill-height position-relative">
+  <page-container>
     <v-row class="position-relative">
       <v-col cols="12" lg="6">
         <titled-section

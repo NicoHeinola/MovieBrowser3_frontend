@@ -4,8 +4,8 @@ import { PageBackground } from '@/components/common/page-background';
 
 <template>
   <page-background />
-  <v-container class="fill-height position-relative" fluid>
-    <v-row align="center" class="fill-height position-relative" justify="center">
+  <v-container fluid>
+    <v-row align="center" justify="center">
       <v-col cols="12" lg="6" md="8" xl="5">
         <v-card border="sm" rounded="xl">
           <v-card-text class="pa-8 pa-md-10 d-flex flex-column ga-4">

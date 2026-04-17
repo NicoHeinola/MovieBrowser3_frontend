@@ -1,6 +1,6 @@
 export interface ApiQueryParams {
   sort?: string;
-  filter?: string;
+  filter?: Record<string, string>;
   page: {
     number?: number;
     size?: number;

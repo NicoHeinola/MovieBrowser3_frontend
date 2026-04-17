@@ -5,7 +5,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <v-container :class="['pa-12', props.class]" fluid>
+  <v-container :class="['pa-12', 'position-relative', props.class]" fluid>
     <slot />
   </v-container>
 </template>
