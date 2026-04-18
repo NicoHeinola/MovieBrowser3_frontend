@@ -1,4 +1,4 @@
-export const MainDefaults = {
+export const ComponentDefaults = {
   VInput: {
     hideDetails: 'auto',
     variant: 'outlined',

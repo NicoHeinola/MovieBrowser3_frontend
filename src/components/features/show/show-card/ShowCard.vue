@@ -114,7 +114,7 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
     filter: brightness(105%);
     z-index: 100;
 
-    border-color: rgb(var(--v-theme-surface)) !important;
+    border-color: rgb(var(--v-theme-primary)) !important;
 
     :deep(.v-img) {
       cursor: pointer;
