@@ -3,21 +3,25 @@ export const ComponentDefaults = {
     hideDetails: 'auto',
     variant: 'outlined',
     density: 'compact',
+    color: 'primary',
   },
   VTextField: {
     hideDetails: 'auto',
     variant: 'outlined',
     density: 'compact',
+    color: 'primary',
   },
   VTextarea: {
     hideDetails: 'auto',
     variant: 'outlined',
     density: 'compact',
+    color: 'primary',
   },
   VSelect: {
     hideDetails: 'auto',
     variant: 'outlined',
     density: 'compact',
+    color: 'primary',
   },
   VBtn: {
     color: 'primary',
@@ -26,10 +30,12 @@ export const ComponentDefaults = {
   VBtnGroup: {
     variant: 'outlined',
     density: 'compact',
+    color: 'primary',
   },
   VBtnToggle: {
     variant: 'outlined',
     density: 'compact',
+    color: 'primary',
   },
   VAlert: {
     variant: 'tonal',

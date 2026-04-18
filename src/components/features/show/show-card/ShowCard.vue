@@ -84,10 +84,7 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
     </v-lazy>
     <div class="card-shadow position-absolute bottom-0 left-0 w-100" style="height: 20%" />
     <div class="position-absolute bottom-0 left-0 px-4 my-4 text-truncate" style="cursor: pointer; max-width: 100%">
-      <p
-        class="card-title text-truncate text-grey-lighten-2 ma-0 font-weight-bold"
-        style="text-shadow: 0 0 5px rgb(var(--v-theme-background), 0.7)"
-      >
+      <p class="card-title text-truncate text-grey-lighten-2 ma-0 font-weight-bold" style="text-shadow: 0 0 5px black">
         {{ primaryTitle }}
       </p>
     </div>
@@ -114,7 +111,7 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
     filter: brightness(105%);
     z-index: 100;
 
-    border-color: rgb(var(--v-theme-primary)) !important;
+    border-color: rgb(var(--v-theme-secondary)) !important;
 
     :deep(.v-img) {
       cursor: pointer;
@@ -122,7 +119,7 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
     }
 
     .card-title {
-      color: white !important;
+      color: rgb(var(--v-theme-secondary));
     }
   }
 

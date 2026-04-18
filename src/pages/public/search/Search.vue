@@ -62,8 +62,8 @@ watch(searchInput, (value) => {
     </v-row>
 
     <v-row v-if="isLoading">
-      <v-col v-for="i in 8" cols="auto" :key="i">
-        <v-skeleton-loader type="image" width="300" />
+      <v-col v-for="i in 16" cols="auto" :key="i">
+        <v-skeleton-loader type="image" width="287" />
       </v-col>
     </v-row>
 

@@ -3,8 +3,8 @@ import type { ThemeDefinition } from 'vuetify';
 export const MainTheme: ThemeDefinition = {
   dark: true,
   colors: {
-    primary: '#8A6CFF',
-    secondary: '#59C8DA',
+    primary: '#f8d125',
+    secondary: '#ff6c6c',
     background: '#0F131B',
     'background-lighten-1': '#171E2B',
     surface: '#171E2B',
