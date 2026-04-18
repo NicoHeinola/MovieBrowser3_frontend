@@ -38,4 +38,7 @@ export const MainDefaults = {
   VDataTable: {
     class: 'elevation-2 rounded-md',
   },
+  VPagination: {
+    rounded: 'circle',
+  },
 };
