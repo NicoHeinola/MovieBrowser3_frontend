@@ -22,7 +22,6 @@ export const ComponentDefaults = {
   VBtn: {
     color: 'primary',
     variant: 'tonal',
-    density: 'compact',
   },
   VBtnGroup: {
     variant: 'outlined',
