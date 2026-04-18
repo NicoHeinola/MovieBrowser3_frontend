@@ -76,7 +76,7 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
   >
-    <v-lazy>
+    <v-lazy class="h-100">
       <v-img :src="cardImage" class="h-100 w-100" style="pointer-events: none" cover v-if="!videoId"></v-img>
       <div class="h-100 w-100" style="pointer-events: none; overflow: hidden" v-else>
         <you-tube-player :video-id="videoId" class="h-100 w-100" style="transform: scale(1.2)" />

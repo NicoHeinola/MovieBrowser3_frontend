@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import type { PaginationMeta } from '@/interfaces/api/models/PaginationMeta';
 import type { Show } from '@/interfaces/api/models/Show';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
-import { computed, onMounted, ref, watch } from 'vue';
-import { useDisplay } from 'vuetify';
+import { computed, ref, watch } from 'vue';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
-import { ShowCard } from '@/components/features/show/show-card';
 import { ShowGrid } from '@/components/features/show/show-grid';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
@@ -19,45 +16,21 @@ const page = ref<number>(1);
 const selectedShow = ref<Show | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
 
-const meta = ref<PaginationMeta>({
-  current_page: 1,
-  last_page: 1,
-  per_page: 24,
-  total: 0,
-});
-
-const searchQuery = useAPIQuery<Partial<PaginatedResponse<Show>>>({
+const searchQuery = useAPIQuery<PaginatedResponse<Show>>({
   queryKey: [ShowQueryKey.SearchShows, searchTerm, page],
   queryFn: async () => {
-    try {
-      const data = await showService.list({
-        filter: searchTerm.value ? { search: searchTerm.value } : undefined,
-        sort: '-created_at',
-        page: { number: page.value, size: 24 },
-      });
-
-      meta.value = data.meta;
-
-      return data;
-    } catch (error) {
-      meta.value = {
-        current_page: 1,
-        last_page: 1,
-        per_page: 24,
-        total: 0,
-      };
-
-      throw error;
-    }
+    return await showService.list({
+      filter: searchTerm.value ? { search: searchTerm.value } : undefined,
+      sort: '-created_at',
+      page: { number: page.value, size: 30 },
+    });
   },
-  placeholderData: {
-    data: [],
-  },
+  placeholderData: (previousData) => previousData,
 });
 
 const shows = computed<Show[]>(() => searchQuery.data.value?.data ?? []);
-const totalPages = computed<number>(() => meta.value.last_page);
-const totalResults = computed<number>(() => meta.value.total);
+const totalPages = computed<number>(() => searchQuery.data.value?.meta.last_page ?? 1);
+const totalResults = computed<number>(() => searchQuery.data.value?.meta.total ?? 0);
 const isLoading = computed<boolean>(() => searchQuery.isFetching.value);
 
 const selectShow = (show: Show | null) => {
@@ -102,11 +75,12 @@ watch(searchInput, (value) => {
       </v-row>
 
       <v-row justify="center" v-if="shows.length > 0">
-        <v-col cols="12">
+        <v-col class="d-flex justify-center" cols="12">
           <show-grid
-            :cols="isLoading ? 6 : 8"
             :shows="shows"
-            card-height="500"
+            card-height="190"
+            card-width="280"
+            class="d-flex justify-center flex-1-1"
             @click:show="selectShow"
             v-if="shows.length > 0"
           />
