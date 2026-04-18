@@ -2,38 +2,39 @@ export const MainDefaults = {
   VInput: {
     hideDetails: 'auto',
     variant: 'outlined',
-    density: 'comfortable',
+    density: 'compact',
   },
   VTextField: {
     hideDetails: 'auto',
     variant: 'outlined',
-    density: 'comfortable',
+    density: 'compact',
   },
   VTextarea: {
     hideDetails: 'auto',
     variant: 'outlined',
-    density: 'comfortable',
+    density: 'compact',
   },
   VSelect: {
     hideDetails: 'auto',
     variant: 'outlined',
-    density: 'comfortable',
+    density: 'compact',
   },
   VBtn: {
     color: 'primary',
     variant: 'tonal',
+    density: 'compact',
   },
   VBtnGroup: {
     variant: 'outlined',
-    density: 'comfortable',
+    density: 'compact',
   },
   VBtnToggle: {
     variant: 'outlined',
-    density: 'comfortable',
+    density: 'compact',
   },
   VAlert: {
     variant: 'tonal',
-    density: 'comfortable',
+    density: 'compact',
   },
   VDataTable: {
     class: 'elevation-2 rounded-md',

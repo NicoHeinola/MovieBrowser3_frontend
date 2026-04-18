@@ -49,7 +49,7 @@ watch(searchInput, (value) => {
 
   <page-container class="mb-12">
     <v-row justify="center">
-      <v-col cols="12" lg="8" md="10" xl="6">
+      <v-col class="d-flex ga-2 align-center" cols="12" lg="8" md="10" xl="6">
         <v-text-field
           v-model="searchInput"
           placeholder="Search shows..."
