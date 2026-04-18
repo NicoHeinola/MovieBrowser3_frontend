@@ -116,6 +116,7 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
     :deep(.v-img) {
       cursor: pointer;
       transform: scale(1.12) translateY(12px);
+      filter: contrast(120%) brightness(90%);
     }
 
     .card-title {
