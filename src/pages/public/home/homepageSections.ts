@@ -10,6 +10,14 @@ export const homepageSections: HomepageSection[] = [
     lazyLoad: false,
   },
   {
+    title: 'Random',
+    subtitle: 'Unexpected picks when you want the catalog to surprise you.',
+    icon: 'mdi-shuffle-variant',
+    iconColor: 'info',
+    dataKey: 'randomShows',
+    lazyLoad: true,
+  },
+  {
     title: 'Isekai',
     subtitle: 'World-hopping stories with larger-than-life stakes.',
     icon: 'mdi-earth',
@@ -23,14 +31,6 @@ export const homepageSections: HomepageSection[] = [
     icon: 'mdi-heart',
     iconColor: 'error',
     dataKey: 'romanceShows',
-    lazyLoad: true,
-  },
-  {
-    title: 'Random',
-    subtitle: 'Unexpected picks when you want the catalog to surprise you.',
-    icon: 'mdi-shuffle-variant',
-    iconColor: 'info',
-    dataKey: 'randomShows',
     lazyLoad: true,
   },
 ];
