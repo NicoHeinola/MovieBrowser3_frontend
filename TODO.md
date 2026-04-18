@@ -1,8 +1,10 @@
-- Search page for shows
+[DONE] - Search page for shows
+
+- Filters for search page
 
 [DONE] - Per-genre show listings to home page
 
-- Profile settings page
+[DONE] - Profile settings page
 
 [DONE] - Login / Register first page when unauthorized
 
@@ -30,10 +32,14 @@
 
 - Show links (e.g. "chronological watch order", "recommended watch order" or "related shows")
 
-- Show description
+[DONE] - Show description
 
-- Local caching so shows aren't fetched constantly
+[DONE] - Local caching so shows aren't fetched constantly
 
 - Quick search
 
 - Own page for show for easy bookmarking
+
+- Show quick buttons
+
+- Show categories
