@@ -103,7 +103,7 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
       transform 0.3s ease-in-out,
       filter 0.3s ease-in-out;
 
-    transform: scale(1.18) translateY(0px);
+    transform: scale(1.22) translateY(0px);
   }
 
   &:hover {
@@ -115,7 +115,7 @@ const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
 
     :deep(.v-img) {
       cursor: pointer;
-      transform: scale(1.12) translateY(12px);
+      transform: scale(1.14) translateY(12px);
       filter: contrast(120%) brightness(90%);
     }
 
