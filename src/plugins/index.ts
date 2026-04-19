@@ -3,6 +3,7 @@ import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
 
 import { configureApiClientAuth } from '@/plugins/api/apiClient';
+import { i18n } from '@/plugins/i18n';
 import { queryClient } from '@/plugins/query';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
@@ -15,6 +16,7 @@ export const registerPlugins = (app: App) => {
 
   app.use(vuetify);
   app.use(pinia);
+  app.use(i18n);
   app.use(VueQueryPlugin, { queryClient });
 
   const authStore = useAuthStore(pinia);

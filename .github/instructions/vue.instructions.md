@@ -180,8 +180,8 @@ const handleSubmit = (): void => {
 ## Component Interfaces
 
 - **Do not declare named TypeScript interfaces or types inside `.vue` files.**
-- Move component-local interfaces and named types into a separate `.ts` file within the same namespace folder, even when they are only used by that one component.
-- Small inline generic shapes are still acceptable directly in Vue macros when they are not introducing a reusable named type, for example `defineProps<{ foo: string }>()`.
+- For small single-use prop or emit shapes, prefer inline Vue macro generics directly in the `.vue` file, for example `defineProps<{ foo: string }>()`.
+- Extract a named sibling `.ts` type only when the shape is reused across files or is large enough that the inline macro becomes hard to read.
 - Name the sibling `.ts` file after what it represents (e.g. `navigationLinkItem.ts`, not `types.ts`).
 
 ```
@@ -189,7 +189,7 @@ components/
   layouts/
     top-navigation/
       TopNavigation.vue
-      navigationLinkItem.ts   ✓ interface lives here, not in the .vue file
+      navigationLinkItem.ts   ✓ reused or substantial named type lives here
 ```
 
 ## Styling

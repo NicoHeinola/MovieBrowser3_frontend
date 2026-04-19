@@ -1,0 +1,12 @@
+{
+    "showEntry": {
+        "select": {
+            "label": "Watch order"
+        },
+        "type": {
+            "movie": "Movie",
+            "season": "Season",
+            "tv_special": "TV Special"
+        }
+    }
+}

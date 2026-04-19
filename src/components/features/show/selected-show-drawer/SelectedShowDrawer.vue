@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
-
+import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 import { ExpandableText } from '@/components/common/expandable-text';
 import { SectionContainer } from '@/components/common/section-container';
 import { VolumeControl } from '@/components/common/volume-control';
 import { YouTubePlayer } from '@/components/common/youtube-player';
+import { ShowEntrySelect } from '@/components/features/show/show-entry-select';
 import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
 
-export interface SelectedShowDrawerProps {
+const props = defineProps<{
   show: Show | null;
-}
-
-const props = defineProps<SelectedShowDrawerProps>();
+}>();
 
 const isShown = defineModel<boolean>('isShown', {
   default: false,
 });
+const selectedEntry = ref<ShowEntry | null>(null);
 
 const hideTimeoutId = ref<number | null>(null);
 
@@ -50,6 +50,7 @@ const canPlayVideo = computed<boolean>(() => Boolean(isShown.value && videoId.va
 const activeVideoId = computed<string>(() => videoId.value ?? 'drawer-video');
 
 watch([() => props.show, () => isShown.value], () => {
+  selectedEntry.value = null;
   isVideoPlaying.value = false;
   isVideoError.value = false;
 });
@@ -130,6 +131,14 @@ watch(isShown, (newVal) => {
         @click="close"
       />
     </div>
+
+    <section-container class="pt-0">
+      <v-row>
+        <v-col>
+          <show-entry-select v-model="selectedEntry" :entries="show?.entries" />
+        </v-col>
+      </v-row>
+    </section-container>
   </v-navigation-drawer>
 </template>
 
