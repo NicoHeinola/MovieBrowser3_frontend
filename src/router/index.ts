@@ -7,63 +7,63 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'authenticated-home',
       meta: {
         requiresAuth: true,
       },
-      component: () => import('@/pages/public/home/Home.vue'),
+      component: () => import('@/pages/authenticated/home/Home.vue'),
     },
     {
       path: '/auth',
-      name: 'auth',
+      name: 'guest-auth',
       meta: {
         guestOnly: true,
         hideNavigation: true,
       },
-      component: () => import('@/pages/public/auth/Auth.vue'),
+      component: () => import('@/pages/guest/auth/Auth.vue'),
     },
     {
       path: '/profile',
-      name: 'profile',
+      name: 'authenticated-profile',
       meta: {
         requiresAuth: true,
       },
-      component: () => import('@/pages/profile/Profile.vue'),
+      component: () => import('@/pages/authenticated/profile/Profile.vue'),
     },
     {
       path: '/search',
-      name: 'search',
+      name: 'authenticated-search',
       meta: {
         requiresAuth: true,
       },
-      component: () => import('@/pages/public/search/Search.vue'),
+      component: () => import('@/pages/authenticated/search/Search.vue'),
     },
     {
-      path: '/control-panel',
-      name: 'control-panel-dashboard',
+      path: '/admin',
+      name: 'admin-dashboard',
       meta: {
         requiresAuth: true,
         requiresAdmin: true,
       },
-      component: () => import('@/pages/control-panel/dashboard/Dashboard.vue'),
+      component: () => import('@/pages/admin/dashboard/Dashboard.vue'),
     },
     {
-      path: '/control-panel/shows',
-      name: 'control-panel-shows',
+      path: '/admin/shows',
+      name: 'admin-shows',
       meta: {
         requiresAuth: true,
         requiresAdmin: true,
       },
-      component: () => import('@/pages/control-panel/shows/Shows.vue'),
+      component: () => import('@/pages/admin/shows/Shows.vue'),
     },
     {
-      path: '/control-panel/settings',
-      name: 'control-panel-settings',
+      path: '/admin/settings',
+      name: 'admin-settings',
       meta: {
         requiresAuth: true,
         requiresAdmin: true,
       },
-      component: () => import('@/pages/control-panel/settings/Settings.vue'),
+      component: () => import('@/pages/admin/settings/Settings.vue'),
     },
   ],
 });
@@ -72,15 +72,15 @@ router.beforeEach((to) => {
   const authStore = useAuthStore();
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    return { name: 'auth' };
+    return { name: 'guest-auth' };
   }
 
   if (to.meta.requiresAdmin && !authStore.isAdmin) {
-    return { name: 'home' };
+    return { name: 'authenticated-home' };
   }
 
   if (to.meta.guestOnly && authStore.isAuthenticated) {
-    return { name: 'home' };
+    return { name: 'authenticated-home' };
   }
 
   return true;

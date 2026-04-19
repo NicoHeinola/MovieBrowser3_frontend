@@ -1,5 +1,5 @@
-import type { SettingsResponse } from '@/interfaces/api/models/SettingsResponse';
 import type { UpdateSettingRequest } from '@/interfaces/api/requests/UpdateSettingRequest';
+import type { SettingsResponse } from '@/interfaces/api/responses/SettingsResponse';
 
 import { apiClient } from '@/plugins/api/apiClient';
 

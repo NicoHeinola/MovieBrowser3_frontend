@@ -1,4 +1,4 @@
-import type { SettingsResponse } from '@/interfaces/api/models/SettingsResponse';
+import type { SettingsResponse } from '@/interfaces/api/responses/SettingsResponse';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 

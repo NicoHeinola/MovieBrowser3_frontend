@@ -2,7 +2,7 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import { computed, ref } from 'vue';
 
-import YouTubePlayer from '@/components/common/youtube-player/YouTubePlayer.vue';
+import { YouTubePlayer } from '@/components/common/youtube-player';
 import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 

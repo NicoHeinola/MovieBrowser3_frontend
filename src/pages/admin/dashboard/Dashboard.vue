@@ -11,11 +11,11 @@ import { PageBackground } from '@/components/common/page-background';
           <v-card-text class="pa-8 pa-md-10 d-flex flex-column ga-4">
             <div>
               <p class="text-overline text-medium-emphasis">Placeholder View</p>
-              <h1 class="text-h3">Control Panel Dashboard</h1>
+              <h1 class="text-h3">Admin Dashboard</h1>
             </div>
 
             <p class="text-body-1 text-medium-emphasis">
-              This page is routed and ready. Replace this content with your control panel dashboard when you're ready.
+              This page is routed and ready. Replace this content with your real admin dashboard when you're ready.
             </p>
           </v-card-text>
         </v-card>

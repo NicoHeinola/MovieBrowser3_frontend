@@ -1,10 +1,12 @@
 import type { App } from 'vue';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
+
 import { configureApiClientAuth } from '@/plugins/api/apiClient';
 import { queryClient } from '@/plugins/query';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
+
 import router from '../router';
 import vuetify from './vuetify';
 
@@ -23,8 +25,8 @@ export const registerPlugins = (app: App) => {
     onUnauthorized: () => {
       authStore.logout();
 
-      if (router.currentRoute.value.name !== 'auth') {
-        void router.push({ name: 'auth' });
+      if (router.currentRoute.value.name !== 'guest-auth') {
+        void router.push({ name: 'guest-auth' });
       }
     },
   });

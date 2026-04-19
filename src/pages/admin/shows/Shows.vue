@@ -12,7 +12,7 @@ import { PageContainer } from '@/components/common/page-container';
           <v-card-text class="pa-8 pa-md-10 d-flex flex-column ga-4">
             <div>
               <p class="text-overline text-medium-emphasis">Show Management</p>
-              <h1 class="text-h3">Control Panel Shows</h1>
+              <h1 class="text-h3">Admin Shows</h1>
             </div>
 
             <p class="text-body-1 text-medium-emphasis">
