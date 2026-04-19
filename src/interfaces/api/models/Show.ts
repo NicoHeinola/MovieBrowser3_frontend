@@ -1,3 +1,5 @@
+import type { ShowEntry } from './ShowEntry';
+import type { ShowLink } from './ShowLink';
 import type { ShowTitle } from './ShowTitle';
 
 export interface Show {
@@ -7,4 +9,7 @@ export interface Show {
   preview_url: string | null;
   description: string;
   titles: ShowTitle[];
+  entries?: ShowEntry[];
+  outgoingLinks?: ShowLink[];
+  incomingLinks?: ShowLink[];
 }
