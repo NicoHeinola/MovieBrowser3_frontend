@@ -6,10 +6,9 @@ const props = withDefaults(
   defineProps<{
     color?: string;
     size?: 'x-small' | 'small' | 'default' | 'large' | 'x-large';
-    type: ShowEntryType;
+    type?: ShowEntryType;
   }>(),
   {
-    color: 'primary',
     size: 'small',
   },
 );
@@ -19,6 +18,6 @@ const { t } = useI18n();
 
 <template>
   <v-chip :color="props.color" :size="props.size">
-    {{ t(`showEntry.type.${props.type}`) }}
+    {{ props.type ? t(`showEntry.type.${props.type}`) : 'No type' }}
   </v-chip>
 </template>

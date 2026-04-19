@@ -8,6 +8,7 @@ import { SectionContainer } from '@/components/common/section-container';
 import { VolumeControl } from '@/components/common/volume-control';
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { ShowEntrySelect } from '@/components/features/show/show-entry-select';
+import { getEpisodeName } from '@/utils/show/getEpisodeName';
 import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
 
@@ -134,8 +135,22 @@ watch(isShown, (newVal) => {
 
     <section-container class="pt-0">
       <v-row>
-        <v-col>
-          <show-entry-select v-model="selectedEntry" :entries="show?.entries" />
+        <v-col class="d-flex ga-6 align-center" cols="12">
+          <show-entry-select v-model="selectedEntry" :entries="show?.entries" clearable />
+          <v-btn :disabled="!selectedEntry" append-icon="mdi-play"> Watch Season </v-btn>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col v-for="episode in selectedEntry?.episodes" cols="12" :key="episode.id">
+          <v-btn append-icon="mdi-play" class="max-width-button w-100 justify-start">
+            <template #prepend>
+              <span class="text-medium-emphasis text-body-small">{{ episode.sequence_number }}</span>
+            </template>
+            <span class="text-truncate d-flex text-start flex-column">
+              {{ getEpisodeName(episode) }}
+            </span>
+            <v-spacer />
+          </v-btn>
         </v-col>
       </v-row>
     </section-container>

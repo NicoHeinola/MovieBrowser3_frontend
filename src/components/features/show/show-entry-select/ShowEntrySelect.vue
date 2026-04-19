@@ -50,11 +50,8 @@ watch(availableEntries, (nextEntries) => {
       </v-list-item>
     </template>
 
-    <template #selection="{ item }">
-      <div class="d-flex align-center ga-2">
-        <span>{{ item.name }}</span>
-        <show-entry-type-chip :type="item.type" />
-      </div>
+    <template #append-inner v-if="selectedEntry">
+      <show-entry-type-chip :type="selectedEntry?.type" color="primary" />
     </template>
   </v-select>
 </template>
