@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
+import { watchDebounced } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
@@ -15,6 +16,7 @@ const searchTerm = ref<string>('');
 const page = ref<number>(1);
 const selectedShow = ref<Show | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
+const isSearchPending = ref<boolean>(false);
 
 const searchQuery = useAPIQuery<PaginatedResponse<Show>>({
   queryKey: [ShowQueryKey.SearchShows, searchTerm, page],
@@ -22,7 +24,7 @@ const searchQuery = useAPIQuery<PaginatedResponse<Show>>({
     return await showService.list({
       filter: searchTerm.value ? { search: searchTerm.value } : undefined,
       sort: '-created_at',
-      page: { number: page.value, size: 30 },
+      page: { number: page.value, size: 32 },
     });
   },
   placeholderData: (previousData) => previousData,
@@ -31,7 +33,7 @@ const searchQuery = useAPIQuery<PaginatedResponse<Show>>({
 const shows = computed<Show[]>(() => searchQuery.data.value?.data ?? []);
 const totalPages = computed<number>(() => searchQuery.data.value?.meta.last_page ?? 1);
 const totalResults = computed<number>(() => searchQuery.data.value?.meta.total ?? 0);
-const isLoading = computed<boolean>(() => searchQuery.isFetching.value);
+const isLoading = computed<boolean>(() => isSearchPending.value || searchQuery.isFetching.value);
 
 const selectShow = (show: Show | null) => {
   selectedShow.value = show;
@@ -39,9 +41,20 @@ const selectShow = (show: Show | null) => {
 };
 
 watch(searchInput, (value) => {
-  searchTerm.value = value.trim();
-  page.value = 1;
+  isSearchPending.value = value.trim() !== searchTerm.value;
 });
+
+watchDebounced(
+  searchInput,
+  (value) => {
+    searchTerm.value = value.trim();
+    page.value = 1;
+    isSearchPending.value = false;
+  },
+  {
+    debounce: 300,
+  },
+);
 </script>
 
 <template>
