@@ -6,9 +6,11 @@ import type { ApiQueryParams } from '@/interfaces/api/requests/ApiQueryParams';
 import type { CreateEpisodeRequest } from '@/interfaces/api/requests/CreateEpisodeRequest';
 import type { CreateShowEntryRequest } from '@/interfaces/api/requests/CreateShowEntryRequest';
 import type { CreateShowLinkRequest } from '@/interfaces/api/requests/CreateShowLinkRequest';
+import type { CreateShowRequest } from '@/interfaces/api/requests/CreateShowRequest';
 import type { UpdateEpisodeRequest } from '@/interfaces/api/requests/UpdateEpisodeRequest';
 import type { UpdateShowEntryRequest } from '@/interfaces/api/requests/UpdateShowEntryRequest';
 import type { UpdateShowLinkRequest } from '@/interfaces/api/requests/UpdateShowLinkRequest';
+import type { UpdateShowRequest } from '@/interfaces/api/requests/UpdateShowRequest';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 
 import { apiClient } from '@/plugins/api/apiClient';
@@ -17,6 +19,24 @@ const list = async (query: ApiQueryParams): Promise<PaginatedResponse<Show>> => 
   const response = await apiClient.get<PaginatedResponse<Show>>('shows', {
     params: query,
   });
+
+  return response.data;
+};
+
+const get = async (showId: number): Promise<Show> => {
+  const response = await apiClient.get<Show>(`shows/${showId}`);
+
+  return response.data;
+};
+
+const create = async (request: CreateShowRequest): Promise<Show> => {
+  const response = await apiClient.post<Show>('shows', request);
+
+  return response.data;
+};
+
+const update = async (showId: number, request: UpdateShowRequest): Promise<Show> => {
+  const response = await apiClient.patch<Show>(`shows/${showId}`, request);
 
   return response.data;
 };
@@ -107,6 +127,9 @@ const deleteLink = async (linkId: number): Promise<void> => {
 
 export const showService = {
   list,
+  get,
+  create,
+  update,
   listEntries,
   getEntry,
   createEntry,

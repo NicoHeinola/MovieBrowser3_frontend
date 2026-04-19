@@ -13,12 +13,14 @@
 - Prefer extending an existing feature, page, component, utility, or plugin namespace before creating a new top-level namespace.
 - Keep backend-facing API shapes in `src/interfaces/api` and preserve backend field names exactly unless a dedicated mapping layer is introduced.
 - Keep API-calling service modules in `src/services` and have stores or pages consume them rather than defining service wrappers inside those namespaces.
+- Keep each backend resource or independently versioned endpoint family in its own service concept. For sub-resources with dedicated CRUD endpoints, add a sibling service file instead of growing the parent service into a catch-all module.
 - Keep design tokens and theme-level color decisions in `src/plugins/vuetify` or shared styles, not scattered through component logic.
 - For loading states in the UI, use Vuetify built-in `loading` props when the component supports them, or `v-skeleton-loader` when a placeholder is needed. Do not build any other loading treatment.
 - Use the dialog provider system for application dialogs. Open dialogs with `useDialog().showDialog(...)` and keep dialog components compatible with `src/components/layouts/dialog-provider`; do not mount feature dialogs inline in pages or other templates.
 - Use Conventional Commits when drafting commit messages for this repository. Follow `type(scope): summary` with lowercase type and scope, and keep the summary short and imperative.
 - Run the smallest relevant validation after changes, usually `npm run lint`, `npm test`, or a targeted type check.
 - When a requested change affects repository conventions, structure, ownership boundaries, or workflow guidance, update the relevant customization files in the same change without waiting for a separate prompt.
+- Treat service ownership changes as customization changes: whenever a backend endpoint family moves, splits, or gains a new service concept, update the affected instruction files in the same change.
 
 ## Customization Roles
 

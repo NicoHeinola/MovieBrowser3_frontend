@@ -6,9 +6,11 @@ import type { ApiQueryParams } from '@/interfaces/api/requests/ApiQueryParams';
 import type { CreateEpisodeRequest } from '@/interfaces/api/requests/CreateEpisodeRequest';
 import type { CreateShowEntryRequest } from '@/interfaces/api/requests/CreateShowEntryRequest';
 import type { CreateShowLinkRequest } from '@/interfaces/api/requests/CreateShowLinkRequest';
+import type { CreateShowRequest } from '@/interfaces/api/requests/CreateShowRequest';
 import type { UpdateEpisodeRequest } from '@/interfaces/api/requests/UpdateEpisodeRequest';
 import type { UpdateShowEntryRequest } from '@/interfaces/api/requests/UpdateShowEntryRequest';
 import type { UpdateShowLinkRequest } from '@/interfaces/api/requests/UpdateShowLinkRequest';
+import type { UpdateShowRequest } from '@/interfaces/api/requests/UpdateShowRequest';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -23,12 +25,26 @@ vi.mock('@/plugins/api/apiClient', () => ({
   apiClient: {
     get: vi.fn(),
     post: vi.fn(),
+    patch: vi.fn(),
     put: vi.fn(),
     delete: vi.fn(),
   },
 }));
 
 const createResponse = <T>(data: T): { data: T } => ({ data });
+
+const createShow = (overrides: Partial<Show> = {}): Show => ({
+  id: 1,
+  banner_url: 'banner.jpg',
+  card_image_url: 'card.jpg',
+  preview_url: null,
+  description: 'A show',
+  titles: [],
+  entries: [],
+  outgoingLinks: [],
+  incomingLinks: [],
+  ...overrides,
+});
 
 describe('showService', () => {
   beforeEach(() => {
@@ -47,19 +63,7 @@ describe('showService', () => {
       },
     };
     const response: PaginatedResponse<Show> = {
-      data: [
-        {
-          id: 1,
-          banner_url: 'banner.jpg',
-          card_image_url: 'card.jpg',
-          preview_url: null,
-          description: 'A show',
-          titles: [{ title: 'Mobile Suit Gundam', is_primary: true }],
-          entries: [],
-          outgoingLinks: [],
-          incomingLinks: [],
-        },
-      ],
+      data: [createShow()],
       meta: {
         current_page: 2,
         last_page: 4,
@@ -76,6 +80,52 @@ describe('showService', () => {
     expect(apiClient.get).toHaveBeenCalledWith('shows', {
       params: query,
     });
+  });
+
+  it('gets, creates, and updates shows without nested title payloads', async () => {
+    const show: Show = createShow({
+      id: 8,
+      preview_url: 'https://youtu.be/example',
+      description: 'A classic mecha series.',
+    });
+    const createRequest: CreateShowRequest = {
+      banner_url: 'banner.jpg',
+      card_image_url: 'card.jpg',
+      preview_url: 'https://youtu.be/example',
+      description: 'A classic mecha series.',
+    };
+    const updateRequest: UpdateShowRequest = {
+      preview_url: null,
+      description: 'An updated description.',
+    };
+
+    vi.mocked(apiClient.get).mockResolvedValueOnce(createResponse(show));
+    vi.mocked(apiClient.post).mockResolvedValueOnce(createResponse(show));
+    vi.mocked(apiClient.patch).mockResolvedValueOnce(createResponse(show));
+
+    await expect(showService.get(8)).resolves.toEqual(show);
+    await expect(showService.create(createRequest)).resolves.toEqual(show);
+    await expect(showService.update(8, updateRequest)).resolves.toEqual(show);
+
+    expect(apiClient.get).toHaveBeenCalledWith('shows/8');
+    expect(apiClient.post).toHaveBeenCalledWith(
+      'shows',
+      expect.objectContaining({
+        banner_url: createRequest.banner_url,
+        card_image_url: createRequest.card_image_url,
+        preview_url: createRequest.preview_url,
+        description: createRequest.description,
+      }),
+    );
+    expect(apiClient.post).toHaveBeenCalledWith('shows', expect.not.objectContaining({ titles: expect.anything() }));
+    expect(apiClient.patch).toHaveBeenCalledWith(
+      'shows/8',
+      expect.objectContaining({
+        preview_url: updateRequest.preview_url,
+        description: updateRequest.description,
+      }),
+    );
+    expect(apiClient.patch).toHaveBeenCalledWith('shows/8', expect.not.objectContaining({ titles: expect.anything() }));
   });
 
   it('lists and gets show entries', async () => {
