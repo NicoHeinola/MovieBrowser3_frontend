@@ -3,6 +3,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 import { watchDebounced } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
+import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
@@ -108,17 +109,7 @@ watchDebounced(
     </template>
   </page-container>
 
-  <div class="position-fixed bottom-0 left-0 w-100 mb-6" style="z-index: 100">
-    <v-slide-y-reverse-transition>
-      <v-row justify="center" no-gutters v-if="totalPages > 1">
-        <v-col cols="12" lg="5" md="4" xl="3">
-          <v-sheet class="glass-panel" elevation="2" rounded="xl" border>
-            <v-pagination v-model="page" :length="totalPages" density="comfortable" variant="text" />
-          </v-sheet>
-        </v-col>
-      </v-row>
-    </v-slide-y-reverse-transition>
-  </div>
+  <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
 
   <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedShow" />
 </template>
