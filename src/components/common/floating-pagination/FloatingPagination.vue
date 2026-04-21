@@ -9,7 +9,7 @@ const page = defineModel<number>('page', {
 </script>
 
 <template>
-  <div class="position-fixed bottom-0 left-0 w-100" style="z-index: 100">
+  <div class="position-fixed bottom-0 w-100" style="z-index: 100">
     <v-slide-y-reverse-transition>
       <v-row justify="center" no-gutters v-if="length > 1">
         <v-col cols="12" lg="5" md="4" xl="3">

@@ -3,6 +3,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 import { watchDebounced } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
+import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
@@ -106,4 +107,5 @@ watchDebounced(
   </page-container>
 
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
+  <floating-action-button class="z-100" icon="mdi-plus" @click="editShow(null)" />
 </template>
