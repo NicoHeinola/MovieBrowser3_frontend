@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ShowGeneralFormData } from './ShowGeneralFormData';
 import type { DialogComponentProps } from '@/components/layouts/dialog-provider';
+import type { Show } from '@/interfaces/api/models/Show';
 import { ref } from 'vue';
 import { BaseDialog } from '@/components/common/base-dialog';
 import BaseForm from '@/components/common/base-form/BaseForm.vue';
@@ -8,7 +8,7 @@ import ShowGeneralTab from './ShowGeneralTab.vue';
 
 const props = defineProps<DialogComponentProps>();
 
-const show = defineModel<ShowGeneralFormData | null>('show', { required: true });
+const show = defineModel<Show | null>('show', { required: true });
 const isFormValid = ref<boolean>(false);
 
 const isDialogVisible = defineModel<boolean>({ required: true });
