@@ -5,6 +5,7 @@ import { ref } from 'vue';
 import { BaseDialog } from '@/components/common/base-dialog';
 import BaseForm from '@/components/common/base-form/BaseForm.vue';
 import ShowGeneralTab from './ShowGeneralTab.vue';
+import ShowUiTab from './ShowUiTab.vue';
 
 const props = defineProps<DialogComponentProps>();
 
@@ -25,6 +26,7 @@ const selectedTab = ref<string[]>(['general']);
       <div class="d-flex ga-5 h-100">
         <v-list v-model:selected="selectedTab" class="position-sticky" color="primary" min-width="100px" mandatory>
           <v-list-item title="General" value="general" />
+          <v-list-item title="UI" value="ui" />
           <v-list-item title="Entries" value="entries" />
           <v-list-item title="Links" value="links" />
         </v-list>
@@ -33,6 +35,9 @@ const selectedTab = ref<string[]>(['general']);
           <v-tabs-window :model-value="selectedTab[0]" class="flex-1-1">
             <v-tabs-window-item class="pa-1" value="general">
               <show-general-tab v-model:show="show" />
+            </v-tabs-window-item>
+            <v-tabs-window-item class="pa-1" value="ui">
+              <show-ui-tab v-model:show="show" />
             </v-tabs-window-item>
             <v-tabs-window-item class="pa-1" value="entries">
               <v-sheet class="pa-5" color="orange">Two</v-sheet>

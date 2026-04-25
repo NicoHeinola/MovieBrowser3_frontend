@@ -1,7 +1,5 @@
 import type { ShowGeneralFormData } from './ShowGeneralFormData';
 import { requiredRule } from '@/rules/requiredRule';
-import { urlRule } from '@/rules/urlRule';
-import { isYouTubeUrl } from '@/utils/youtube/isYouTubeUrl';
 
 export const getRules = (formData: ShowGeneralFormData | null) => {
   return {
@@ -24,12 +22,6 @@ export const getRules = (formData: ShowGeneralFormData | null) => {
       return true;
     },
 
-    bannerUrl: [(value: string) => !value || urlRule(value)],
-    cardImageUrl: [(value: string) => !value || urlRule(value)],
-    previewUrl: [
-      (value: string) => !value || urlRule(value),
-      (value: string) => !value || isYouTubeUrl(value) || 'Must be a valid YouTube URL',
-    ],
     description: [],
   };
 };
