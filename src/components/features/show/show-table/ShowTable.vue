@@ -9,7 +9,7 @@ import { computed, ref, useSlots, watch } from 'vue';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
-import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
+import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 
 const props = withDefaults(
   defineProps<{
@@ -100,7 +100,7 @@ const items = computed<
   return (showsQuery.data.value?.data ?? []).map((show: Show) => ({
     id: show.id,
     image: show.card_image_url,
-    title: getPrimaryShowTitle(show),
+    title: getPrimaryTitle(show),
     hasPreview: !!show.preview_url,
     show,
   }));

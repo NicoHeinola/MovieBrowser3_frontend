@@ -3,7 +3,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 import { computed, ref } from 'vue';
 
 import { YouTubePlayer } from '@/components/common/youtube-player';
-import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
+import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 
 const props = withDefaults(
@@ -63,7 +63,7 @@ const onMouseLeave = () => {
   }
 };
 
-const primaryTitle = computed<string>(() => getPrimaryShowTitle(props.show));
+const primaryTitle = computed<string>(() => getPrimaryTitle(props.show));
 </script>
 
 <template>

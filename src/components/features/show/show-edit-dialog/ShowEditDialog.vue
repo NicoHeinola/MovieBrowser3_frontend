@@ -23,7 +23,7 @@ const selectedTab = ref<string[]>(['general']);
 
     <template #default>
       <div class="d-flex ga-5 h-100">
-        <v-list v-model:selected="selectedTab" class="position-sticky" color="secondary" min-width="100px" mandatory>
+        <v-list v-model:selected="selectedTab" class="position-sticky" color="primary" min-width="100px" mandatory>
           <v-list-item title="General" value="general" />
           <v-list-item title="Entries" value="entries" />
           <v-list-item title="Links" value="links" />

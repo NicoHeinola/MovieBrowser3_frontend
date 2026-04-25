@@ -9,7 +9,7 @@ import { VolumeControl } from '@/components/common/volume-control';
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { ShowEntrySelect } from '@/components/features/show/show-entry-select';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
-import { getPrimaryShowTitle } from '@/utils/show/getPrimaryShowTitle';
+import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
 
 const props = defineProps<{
@@ -105,7 +105,7 @@ watch(isShown, (newVal) => {
 
       <div class="image-shadow position-absolute w-100 h-100 top-0 left-0">
         <section-container class="d-flex flex-column justify-end h-100">
-          <h1>{{ getPrimaryShowTitle(props.show) }}</h1>
+          <h1>{{ getPrimaryTitle(props.show) }}</h1>
 
           <expandable-text
             v-model="isDescriptionExpanded"

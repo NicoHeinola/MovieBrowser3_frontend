@@ -2,6 +2,7 @@
 import type { ShowGeneralFormData } from './ShowGeneralFormData';
 import { computed } from 'vue';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
+import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getRules } from './showGeneralFormRules';
 
 const show = defineModel<ShowGeneralFormData | null>('show', { required: true });
@@ -23,14 +24,17 @@ const getShowTitleRoundedClass = (index: number) => {
 };
 
 const removeTitle = async (index: number) => {
-  const isConfirmed = await confirm({
-    message: 'Are you sure you want to remove this title?',
-    confirmColor: 'error',
-    confirmText: 'Remove',
-  });
+  const hasTitleTitle = !!show.value?.titles[index].title;
+  if (hasTitleTitle) {
+    const isConfirmed = await confirm({
+      message: 'Are you sure you want to remove this title?',
+      confirmColor: 'error',
+      confirmText: 'Remove',
+    });
 
-  if (!isConfirmed) {
-    return;
+    if (!isConfirmed) {
+      return;
+    }
   }
 
   const wasPrimary = show.value?.titles[index].is_primary;
@@ -55,6 +59,29 @@ const setPrimaryTitle = (index: number) => {
 const addTitle = () => {
   show.value?.titles.push({ title: '', is_primary: false });
 };
+
+const googleSearch = (searchTerm: string, options: { isImageSearch?: boolean; size?: 'm' | 'l' } = {}) => {
+  const { isImageSearch = false, size } = options;
+  const baseUrl = 'https://www.google.com/search';
+  const params = new URLSearchParams({ q: searchTerm });
+
+  if (isImageSearch) {
+    params.set('tbm', 'isch');
+
+    if (size) {
+      params.set('tbs', `isz:${size}`);
+    }
+  }
+
+  window.open(`${baseUrl}?${params.toString()}`, '_blank');
+};
+
+const youTubeSearch = (searchTerm: string) => {
+  const baseUrl = 'https://www.youtube.com/results';
+  const params = new URLSearchParams({ search_query: searchTerm });
+
+  window.open(`${baseUrl}?${params.toString()}`, '_blank');
+};
 </script>
 
 <template>
@@ -62,6 +89,7 @@ const addTitle = () => {
     <v-col v-for="(title, index) in show?.titles" cols="12" :key="index">
       <v-text-field
         v-model="show!.titles[index].title"
+        :class="{ required: index === 0 }"
         :label="index === 0 ? 'Show title' : undefined"
         :rounded="getShowTitleRoundedClass(index)"
         :rules="[...rules.title, (value: string) => rules.titles(value, index)]"
@@ -87,6 +115,63 @@ const addTitle = () => {
     </v-col>
     <v-col cols="12">
       <v-btn size="small" variant="text" @click="addTitle"> Add another title </v-btn>
+    </v-col>
+  </v-row>
+
+  <v-row>
+    <v-col cols="12">
+      <v-textarea v-model="show!.description" :rules="rules.description" label="Description">
+        <template #append>
+          <v-btn
+            icon="mdi-auto-fix"
+            size="small"
+            @click="googleSearch('Short description for show: ' + getPrimaryTitle(show))"
+            v-tooltip:bottom="'Autofill search'"
+          />
+        </template>
+      </v-textarea>
+    </v-col>
+  </v-row>
+
+  <v-row>
+    <v-col cols="12">
+      <v-text-field v-model="show!.banner_url" :rules="rules.bannerUrl" label="Banner URL">
+        <template #append>
+          <v-btn
+            icon="mdi-auto-fix"
+            size="small"
+            @click="googleSearch('Wallpaper ' + getPrimaryTitle(show) + ' show', { isImageSearch: true, size: 'l' })"
+            v-tooltip:bottom="'Autofill search'"
+          />
+        </template>
+      </v-text-field>
+    </v-col>
+  </v-row>
+
+  <v-row>
+    <v-col cols="12" md="6">
+      <v-text-field v-model="show!.card_image_url" :rules="rules.cardImageUrl" label="Card Image URL">
+        <template #append>
+          <v-btn
+            icon="mdi-auto-fix"
+            size="small"
+            @click="googleSearch('Cover image ' + getPrimaryTitle(show), { isImageSearch: true })"
+            v-tooltip:bottom="'Autofill search'"
+          />
+        </template>
+      </v-text-field>
+    </v-col>
+    <v-col cols="12" md="6">
+      <v-text-field v-model="show!.preview_url" :rules="rules.previewUrl" label="Preview URL (YouTube)">
+        <template #append>
+          <v-btn
+            icon="mdi-auto-fix"
+            size="small"
+            @click="youTubeSearch(getPrimaryTitle(show) + ' trailer')"
+            v-tooltip:bottom="'Autofill search'"
+          />
+        </template>
+      </v-text-field>
     </v-col>
   </v-row>
 </template>
