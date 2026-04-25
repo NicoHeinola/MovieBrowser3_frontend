@@ -30,13 +30,13 @@ const selectedTab = ref<string[]>(['general']);
         <v-divider vertical />
         <div class="w-100 h-100 overflow-scroll" style="max-height: 50vh">
           <v-tabs-window :model-value="selectedTab[0]" class="flex-1-1">
-            <v-tabs-window-item value="general">
+            <v-tabs-window-item class="pa-1" value="general">
               <show-general-tab v-model:is-valid="isGeneralFormValid" v-model:show="show" />
             </v-tabs-window-item>
-            <v-tabs-window-item value="entries">
+            <v-tabs-window-item class="pa-1" value="entries">
               <v-sheet class="pa-5" color="orange">Two</v-sheet>
             </v-tabs-window-item>
-            <v-tabs-window-item value="links">
+            <v-tabs-window-item class="pa-1" value="links">
               <v-sheet class="pa-5" color="brown">Three</v-sheet>
             </v-tabs-window-item>
           </v-tabs-window>

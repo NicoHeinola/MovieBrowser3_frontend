@@ -13,6 +13,7 @@ import { useDialog } from '@/components/layouts/dialog-provider';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
+import { deepClone } from '@/utils/clone/deepClone';
 
 const searchInput = ref<string>('');
 const searchTerm = ref<string>('');
@@ -42,7 +43,7 @@ const editShow = (show: Show | null) => {
   void dialog.showDialog({
     component: ShowEditDialog,
     props: {
-      show,
+      show: show ? deepClone(show) : null,
     },
   });
 };
