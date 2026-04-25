@@ -140,7 +140,7 @@ const youTubeSearch = (searchTerm: string) => {
   <v-row>
     <v-col cols="12">
       <v-card :image="show!.banner_url" border="sm">
-        <v-card-text class="d-flex align-center justify-center" style="height: 150px">
+        <v-card-text class="d-flex align-center justify-center" style="height: 235px">
           <div class="d-flex flex-column align-center text-medium-emphasis" v-if="!show?.banner_url">
             <v-icon icon="mdi-image-off-outline" size="32" />
             <span class="text-caption">No banner image</span>
@@ -170,7 +170,7 @@ const youTubeSearch = (searchTerm: string) => {
   <v-row>
     <v-col cols="12" md="6">
       <v-card :image="show!.card_image_url" border="sm">
-        <v-card-text class="d-flex align-center justify-center" style="height: 150px">
+        <v-card-text class="d-flex align-center justify-center" style="height: 235px">
           <div class="d-flex flex-column align-center text-medium-emphasis" v-if="!show?.card_image_url">
             <v-icon icon="mdi-image-off-outline" size="32" />
             <span class="text-caption">No card image</span>
@@ -196,7 +196,7 @@ const youTubeSearch = (searchTerm: string) => {
     </v-col>
     <v-col cols="12" md="6">
       <v-card border="sm">
-        <v-card-text class="position-relative d-flex align-center justify-center pa-0" style="height: 150px">
+        <v-card-text class="position-relative d-flex align-center justify-center pa-0" style="height: 235px">
           <div class="d-flex flex-column align-center text-medium-emphasis" v-if="!youTubeVideoId">
             <v-icon icon="mdi-youtube" size="32" />
             <span class="text-caption">No preview video</span>
