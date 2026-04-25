@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { RegisterRequest } from './registerRequest';
 
-import { computed } from 'vue';
-
 import { BaseForm } from '@/components/common/base-form';
 
 import { getRules } from './registerFormRules';

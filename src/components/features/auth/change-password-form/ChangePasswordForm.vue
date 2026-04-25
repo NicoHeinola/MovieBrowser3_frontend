@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { ChangePasswordFormRequest } from './changePasswordFormRequest';
 
-import { computed } from 'vue';
-
 import { BaseForm } from '@/components/common/base-form';
 
 import { getRules } from './changePasswordFormRules';
