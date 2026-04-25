@@ -7,7 +7,9 @@ import { FloatingActionButton } from '@/components/common/floating-action-button
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
+import { ShowEditDialog } from '@/components/features/show/show-edit-dialog';
 import { ShowGrid } from '@/components/features/show/show-grid';
+import { useDialog } from '@/components/layouts/dialog-provider';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
@@ -34,8 +36,15 @@ const totalPages = computed<number>(() => searchQuery.data.value?.meta.last_page
 const totalResults = computed<number>(() => searchQuery.data.value?.meta.total ?? 0);
 const isLoading = computed<boolean>(() => isSearchPending.value || searchQuery.isFetching.value);
 
+const dialog = useDialog();
+
 const editShow = (show: Show | null) => {
-  console.log('Edit show:', show);
+  void dialog.showDialog({
+    component: ShowEditDialog,
+    props: {
+      show,
+    },
+  });
 };
 
 watch(searchInput, (value) => {

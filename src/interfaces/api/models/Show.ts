@@ -10,6 +10,6 @@ export interface Show {
   description: string;
   titles: ShowTitle[];
   entries?: ShowEntry[];
-  outgoingLinks?: ShowLink[];
-  incomingLinks?: ShowLink[];
+  outgoingLinks?: ShowLink[]; // Links where this show is the source (i.e. outgoing links)
+  incomingLinks?: ShowLink[]; // Links where this show is the target (i.e. incoming links)
 }

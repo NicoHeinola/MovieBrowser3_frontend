@@ -8,5 +8,15 @@
             "season": "Season",
             "tv_special": "TV Special"
         }
+    },
+    "showLink": {
+        "type": {
+            "sequel": "Sequel",
+            "prequel": "Prequel",
+            "tv_special": "TV Special",
+            "suggested_next": "Suggested Next",
+            "suggested_previous": "Suggested Previous",
+            "spin_off": "Spin-off"
+        }
     }
 }
