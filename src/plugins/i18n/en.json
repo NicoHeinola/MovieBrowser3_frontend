@@ -1,22 +1,22 @@
 {
-    "showEntry": {
-        "select": {
-            "label": "Watch order"
-        },
-        "type": {
-            "movie": "Movie",
-            "season": "Season",
-            "tv_special": "TV Special"
-        }
+  "showEntry": {
+    "select": {
+      "label": "Watch order"
     },
-    "showLink": {
-        "type": {
-            "sequel": "Sequel",
-            "prequel": "Prequel",
-            "tv_special": "TV Special",
-            "suggested_next": "Suggested Next",
-            "suggested_previous": "Suggested Previous",
-            "spin_off": "Spin-off"
-        }
+    "type": {
+      "movie": "Movie",
+      "season": "Season",
+      "tv_special": "TV Special"
     }
+  },
+  "showLink": {
+    "type": {
+      "sequel": "Sequel",
+      "prequel": "Prequel",
+      "tv_special": "TV Special",
+      "suggested_next": "Suggested Next",
+      "suggested_previous": "Suggested Previous",
+      "spin_off": "Spin-off"
+    }
+  }
 }

@@ -5,7 +5,7 @@ import { computed } from 'vue';
 
 import { BaseForm } from '@/components/common/base-form';
 
-import { getRegisterConfirmPasswordRules, registerPasswordRules, registerUsernameRules } from './registerFormRules';
+import { getRules } from './registerFormRules';
 
 const props = defineProps<{
   id: string;
@@ -22,7 +22,7 @@ const isValid = defineModel<boolean>('isValid', {
   default: false,
 });
 
-const confirmPasswordRules = computed(() => getRegisterConfirmPasswordRules(request.value.password));
+const rules = getRules(request.value.password);
 </script>
 
 <template>
@@ -31,7 +31,7 @@ const confirmPasswordRules = computed(() => getRegisterConfirmPasswordRules(requ
       <v-col cols="12">
         <v-text-field
           v-model="request.username"
-          :rules="registerUsernameRules"
+          :rules="rules.username"
           autocomplete="username"
           class="required"
           label="Username"
@@ -41,7 +41,7 @@ const confirmPasswordRules = computed(() => getRegisterConfirmPasswordRules(requ
       <v-col cols="12">
         <v-text-field
           v-model="request.password"
-          :rules="registerPasswordRules"
+          :rules="rules.password"
           autocomplete="new-password"
           class="required"
           label="Password"
@@ -52,7 +52,7 @@ const confirmPasswordRules = computed(() => getRegisterConfirmPasswordRules(requ
       <v-col cols="12">
         <v-text-field
           v-model="request.password_confirmation"
-          :rules="confirmPasswordRules"
+          :rules="rules.confirmPassword"
           autocomplete="new-password"
           class="required"
           label="Confirm password"

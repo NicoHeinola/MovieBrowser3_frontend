@@ -8,7 +8,7 @@ import { BaseForm } from '@/components/common/base-form';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
-import { defaultBackgroundUrlRules } from './defaultBackgroundUrlRules';
+import { getRules } from './defaultBackgroundUrlRules';
 
 const props = defineProps<DialogComponentProps>();
 
@@ -20,6 +20,8 @@ const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const settingStore = useSettingStore();
 
 const formId = 'add-default-background-form';
+
+const rules = getRules();
 
 const handleClose = (): void => {
   if (isSaving.value) {
@@ -61,7 +63,7 @@ const handleSubmit = async (): Promise<void> => {
             <v-text-field
               v-model="url"
               :disabled="isSaving"
-              :rules="defaultBackgroundUrlRules"
+              :rules="rules.url"
               class="required"
               label="Background image URL"
               prepend-inner-icon="mdi-image-outline"

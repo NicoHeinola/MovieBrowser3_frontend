@@ -1,12 +1,9 @@
-import type { StringRule } from '@/rules/stringRule';
-
 import { requiredRule } from '@/rules/requiredRule';
 
-export const registerUsernameRules: StringRule[] = [requiredRule];
-
-export const registerPasswordRules: StringRule[] = [requiredRule];
-
-export const getRegisterConfirmPasswordRules = (password: string): StringRule[] => [
-  requiredRule,
-  (value: string) => value === password || 'Passwords must match',
-];
+export const getRules = (password?: string) => {
+  return {
+    username: [requiredRule],
+    password: [requiredRule],
+    confirmPassword: [requiredRule, (value: string) => value === password || 'Passwords must match'],
+  };
+};

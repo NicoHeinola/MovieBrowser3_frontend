@@ -3,7 +3,7 @@ import type { UsernameFormRequest } from './usernameFormRequest';
 
 import { BaseForm } from '@/components/common/base-form';
 
-import { usernameFormRules } from './usernameFormRules';
+import { getRules } from './usernameFormRules';
 
 const props = defineProps<{
   id: string;
@@ -18,6 +18,8 @@ const request = defineModel<UsernameFormRequest>('request', {
 const isValid = defineModel<boolean>('isValid', {
   default: false,
 });
+
+const rules = getRules();
 </script>
 
 <template>
@@ -26,7 +28,7 @@ const isValid = defineModel<boolean>('isValid', {
       <v-col cols="12">
         <v-text-field
           v-model="request.username"
-          :rules="usernameFormRules"
+          :rules="rules.username"
           autocomplete="username"
           class="required"
           label="Username"

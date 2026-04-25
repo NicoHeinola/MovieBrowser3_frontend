@@ -1,0 +1,92 @@
+<script setup lang="ts">
+import type { ShowGeneralFormData } from './ShowGeneralFormData';
+import { computed } from 'vue';
+import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
+import { getRules } from './showGeneralFormRules';
+
+const show = defineModel<ShowGeneralFormData | null>('show', { required: true });
+
+const rules = computed(() => getRules(show.value));
+
+const { confirm } = useConfirmDialog();
+
+const getShowTitleRoundedClass = (index: number) => {
+  if (index === 0) {
+    return 'b-0';
+  }
+
+  if (index === (show.value?.titles.length || 1) - 1) {
+    return 't-0';
+  }
+
+  return '0';
+};
+
+const removeTitle = async (index: number) => {
+  const isConfirmed = await confirm({
+    message: 'Are you sure you want to remove this title?',
+    confirmColor: 'error',
+    confirmText: 'Remove',
+  });
+
+  if (!isConfirmed) {
+    return;
+  }
+
+  const wasPrimary = show.value?.titles[index].is_primary;
+
+  show.value?.titles.splice(index, 1);
+
+  if (wasPrimary) {
+    setPrimaryTitle(0);
+  }
+};
+
+const setPrimaryTitle = (index: number) => {
+  if (!show.value) {
+    return;
+  }
+
+  for (const [i, title] of show.value.titles.entries()) {
+    title.is_primary = i === index;
+  }
+};
+
+const addTitle = () => {
+  show.value?.titles.push({ title: '', is_primary: false });
+};
+</script>
+
+<template>
+  <v-row gap="0">
+    <v-col v-for="(title, index) in show?.titles" cols="12" :key="index">
+      <v-text-field
+        v-model="show!.titles[index].title"
+        :label="index === 0 ? 'Show title' : undefined"
+        :rounded="getShowTitleRoundedClass(index)"
+        :rules="[...rules.title, (value: string) => rules.titles(value, index)]"
+        :style="{ marginTop: index === 0 ? undefined : '-1px' }"
+      >
+        <template #append>
+          <div class="d-flex ga-2">
+            <v-btn
+              :icon="title.is_primary ? 'mdi-star' : 'mdi-star-outline'"
+              size="x-small"
+              @click="setPrimaryTitle(index)"
+            ></v-btn>
+            <v-btn
+              :disabled="show!.titles.length === 1"
+              color="error"
+              icon="mdi-trash-can"
+              size="x-small"
+              @click="removeTitle(index)"
+            ></v-btn>
+          </div>
+        </template>
+      </v-text-field>
+    </v-col>
+    <v-col cols="12">
+      <v-btn size="small" variant="text" @click="addTitle"> Add another title </v-btn>
+    </v-col>
+  </v-row>
+</template>

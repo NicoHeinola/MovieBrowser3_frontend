@@ -5,7 +5,7 @@ import { computed } from 'vue';
 
 import { BaseForm } from '@/components/common/base-form';
 
-import { changePasswordRules, getChangePasswordConfirmRules } from './changePasswordFormRules';
+import { getRules } from './changePasswordFormRules';
 
 const props = defineProps<{
   id: string;
@@ -22,7 +22,7 @@ const isValid = defineModel<boolean>('isValid', {
   default: false,
 });
 
-const confirmPasswordRules = computed(() => getChangePasswordConfirmRules(request.value.password));
+const rules = getRules(request.value.password);
 </script>
 
 <template>
@@ -31,7 +31,7 @@ const confirmPasswordRules = computed(() => getChangePasswordConfirmRules(reques
       <v-col cols="12">
         <v-text-field
           v-model="request.password"
-          :rules="changePasswordRules"
+          :rules="rules.password"
           class="required"
           label="New password"
           prepend-inner-icon="mdi-lock-outline"
@@ -41,7 +41,7 @@ const confirmPasswordRules = computed(() => getChangePasswordConfirmRules(reques
       <v-col cols="12">
         <v-text-field
           v-model="request.password_confirmation"
-          :rules="confirmPasswordRules"
+          :rules="rules.confirmPassword"
           class="required"
           label="Confirm new password"
           prepend-inner-icon="mdi-shield-lock-outline"

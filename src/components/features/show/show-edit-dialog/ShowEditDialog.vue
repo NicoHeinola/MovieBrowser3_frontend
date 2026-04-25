@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import type { ShowGeneralFormData } from './ShowGeneralFormData';
 import type { DialogComponentProps } from '@/components/layouts/dialog-provider';
-import type { Show } from '@/interfaces/api/models/Show';
 import { ref } from 'vue';
 import { BaseDialog } from '@/components/common/base-dialog';
+import BaseForm from '@/components/common/base-form/BaseForm.vue';
 import ShowGeneralTab from './ShowGeneralTab.vue';
 
 const props = defineProps<DialogComponentProps>();
 
-const show = defineModel<Show | null>('show', { required: true });
-const isGeneralFormValid = ref<boolean>(false);
+const show = defineModel<ShowGeneralFormData | null>('show', { required: true });
+const isFormValid = ref<boolean>(false);
 
 const isDialogVisible = defineModel<boolean>({ required: true });
 const selectedTab = ref<string[]>(['general']);
@@ -28,10 +29,10 @@ const selectedTab = ref<string[]>(['general']);
           <v-list-item title="Links" value="links" />
         </v-list>
         <v-divider vertical />
-        <div class="w-100 h-100 overflow-scroll" style="max-height: 50vh">
+        <base-form v-model="isFormValid" class="w-100 h-100 overflow-scroll" style="max-height: 50vh" id="show-form">
           <v-tabs-window :model-value="selectedTab[0]" class="flex-1-1">
             <v-tabs-window-item class="pa-1" value="general">
-              <show-general-tab v-model:is-valid="isGeneralFormValid" v-model:show="show" />
+              <show-general-tab v-model:show="show" />
             </v-tabs-window-item>
             <v-tabs-window-item class="pa-1" value="entries">
               <v-sheet class="pa-5" color="orange">Two</v-sheet>
@@ -40,7 +41,7 @@ const selectedTab = ref<string[]>(['general']);
               <v-sheet class="pa-5" color="brown">Three</v-sheet>
             </v-tabs-window-item>
           </v-tabs-window>
-        </div>
+        </base-form>
       </div>
     </template>
 

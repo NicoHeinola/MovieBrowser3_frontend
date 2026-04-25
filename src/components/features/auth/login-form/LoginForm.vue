@@ -3,7 +3,7 @@ import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginReques
 
 import { BaseForm } from '@/components/common/base-form';
 
-import { loginPasswordRules, loginUsernameRules } from './loginFormRules';
+import { getRules } from './loginFormRules';
 
 const props = defineProps<{
   id: string;
@@ -18,6 +18,8 @@ const request = defineModel<AuthLoginRequest>('request', {
 const isValid = defineModel<boolean>('isValid', {
   default: false,
 });
+
+const rules = getRules();
 </script>
 
 <template>
@@ -26,7 +28,7 @@ const isValid = defineModel<boolean>('isValid', {
       <v-col cols="12">
         <v-text-field
           v-model="request.username"
-          :rules="loginUsernameRules"
+          :rules="rules.username"
           autocomplete="username"
           class="required"
           label="Username"
@@ -36,7 +38,7 @@ const isValid = defineModel<boolean>('isValid', {
       <v-col cols="12">
         <v-text-field
           v-model="request.password"
-          :rules="loginPasswordRules"
+          :rules="rules.password"
           class="required"
           label="Password"
           prepend-inner-icon="mdi-lock-outline"
