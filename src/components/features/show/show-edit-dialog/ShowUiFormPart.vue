@@ -6,7 +6,7 @@ import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 import { getRules } from './showUiFormRules';
 
-const show = defineModel<ShowUiFormData | null>('show', { required: true });
+const show = defineModel<ShowUiFormData>('show', { required: true });
 
 const rules = computed(() => getRules(show.value));
 

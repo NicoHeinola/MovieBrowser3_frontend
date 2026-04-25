@@ -5,7 +5,7 @@ import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getRules } from './showGeneralFormRules';
 
-const show = defineModel<ShowGeneralFormData | null>('show', { required: true });
+const show = defineModel<ShowGeneralFormData>('show', { required: true });
 
 const rules = computed(() => getRules(show.value));
 

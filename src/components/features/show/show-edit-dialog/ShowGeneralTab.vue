@@ -2,7 +2,7 @@
 import type { ShowGeneralFormData } from './ShowGeneralFormData';
 import ShowGeneralFormPart from './ShowGeneralFormPart.vue';
 
-const show = defineModel<ShowGeneralFormData | null>('show', { required: true });
+const show = defineModel<ShowGeneralFormData>('show', { required: true });
 </script>
 
 <template>

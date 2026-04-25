@@ -9,7 +9,7 @@ import ShowUiTab from './ShowUiTab.vue';
 
 const props = defineProps<DialogComponentProps>();
 
-const show = defineModel<Show | null>('show', { required: true });
+const show = defineModel<Show>('show', { required: true });
 const isFormValid = ref<boolean>(false);
 
 const isDialogVisible = defineModel<boolean>({ required: true });

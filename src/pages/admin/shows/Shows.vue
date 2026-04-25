@@ -43,7 +43,11 @@ const editShow = (show: Show | null) => {
   void dialog.showDialog({
     component: ShowEditDialog,
     props: {
-      show: show ? deepClone(show) : null,
+      show: show
+        ? deepClone(show)
+        : {
+            titles: [{ title: '', is_primary: true }],
+          },
     },
   });
 };

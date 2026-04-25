@@ -2,7 +2,7 @@
 import type { ShowUiFormData } from './ShowUiFormData';
 import ShowUiFormPart from './ShowUiFormPart.vue';
 
-const show = defineModel<ShowUiFormData | null>('show', { required: true });
+const show = defineModel<ShowUiFormData>('show', { required: true });
 </script>
 
 <template>
