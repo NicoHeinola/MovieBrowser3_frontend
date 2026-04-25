@@ -31,6 +31,13 @@ applyTo: |
 - Utility and support `.ts` files should be named after the single function, type, or concept they contain.
 - Avoid generic names such as `types.ts`, `helpers.ts`, or `utils.ts` inside a namespace when a more specific name is possible.
 
+## Private Sub-Components
+
+- A component namespace folder may contain private sibling `.vue` files that exist solely to support the primary component (for example, dialog-specific tab panels or form sections).
+- These siblings do not need their own namespace folder and should not be exported from the namespace `index.ts`.
+- Import them directly by relative path from within the same namespace folder.
+- If a sibling grows large enough to be reused outside the namespace, extract it into its own namespace at that point.
+
 ## Barrel Files
 
 - Use `index.ts` only when a namespace intentionally exposes a small public surface for external imports.

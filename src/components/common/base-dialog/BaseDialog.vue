@@ -20,7 +20,7 @@ const hasTitleSlot = computed(() => !!slots.title);
       </v-toolbar-title>
     </v-toolbar>
     <v-card :rounded="hasTitleSlot ? 'b-lg t-0' : 'b-lg'" elevation="0">
-      <v-card-text class="pa-5">
+      <v-card-text class="pa-5 overflow-scroll">
         <slot />
       </v-card-text>
       <v-card-actions class="position-relative">
