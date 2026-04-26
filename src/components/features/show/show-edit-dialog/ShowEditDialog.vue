@@ -4,6 +4,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 import { ref } from 'vue';
 import { BaseDialog } from '@/components/common/base-dialog';
 import BaseForm from '@/components/common/base-form/BaseForm.vue';
+import ShowEntriesTab from './ShowEntriesTab.vue';
 import ShowGeneralTab from './ShowGeneralTab.vue';
 import ShowUiTab from './ShowUiTab.vue';
 
@@ -40,7 +41,7 @@ const selectedTab = ref<string[]>(['general']);
               <show-ui-tab v-model:show="show" />
             </v-tabs-window-item>
             <v-tabs-window-item class="pa-1" value="entries">
-              <v-sheet class="pa-5" color="orange">Two</v-sheet>
+              <show-entries-tab v-model:show="show" />
             </v-tabs-window-item>
             <v-tabs-window-item class="pa-1" value="links">
               <v-sheet class="pa-5" color="brown">Three</v-sheet>
