@@ -4,13 +4,16 @@ import type { IDragEvent } from '@vue-dnd-kit/core';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { useTemplateRef } from 'vue';
 import SortableItem from '@/components/common/sortable-item';
+import { useDialog } from '@/components/layouts/dialog-provider';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
+import { ShowEntryEditDialog } from './show-entry-edit-dialog';
 
 const show = defineModel<ShowEntriesFormData>('show', { required: true });
 
 const zoneRef = useTemplateRef<HTMLElement>('zone');
 
+const dialog = useDialog();
 const { confirm } = useConfirmDialog();
 
 /**
@@ -55,6 +58,27 @@ const addEntry = (): void => {
   });
 };
 
+const editEntry = async (index: number): Promise<void> => {
+  const entry = show.value.entries?.[index];
+  if (!entry) {
+    return;
+  }
+
+  const updatedEntry = await dialog.showDialog<ShowEntryFormData, { entry: ShowEntryFormData }>({
+    component: ShowEntryEditDialog,
+    props: {
+      entry,
+    },
+  });
+
+  if (!updatedEntry || !show.value.entries) {
+    return;
+  }
+
+  show.value.entries[index] = updatedEntry;
+  syncEntrySortOrder();
+};
+
 makeDroppable(
   zoneRef,
   {
@@ -86,19 +110,15 @@ makeDroppable(
             class="d-flex position-relative ga-2"
             :key="entry.id ?? `new-entry-${entry.sort_order}`"
           >
-            <v-btn class="max-width-button justify-start flex-1-1" @click.stop>
+            <v-btn class="max-width-button justify-start flex-1-1" @click.stop="editEntry(i)">
               <template #prepend>
-                <v-icon class="handle cursor-grab" icon="mdi-drag-vertical" />
+                <v-icon class="handle cursor-grab" icon="mdi-drag-vertical" @click.stop />
               </template>
-              <span class="text-truncate d-flex text-start flex-column">
+              <span class="text-truncate">
                 {{ entry.name }}
               </span>
               <v-spacer />
-              <template #append>
-                <div class="d-flex align-center ga-2 flex-nowrap">
-                  <span class="text-no-wrap">{{ entry.episodes?.length ?? 0 }} Episodes</span>
-                </div>
-              </template>
+              <span class="text-no-wrap">{{ entry.episodes?.length ?? 0 }} Episodes</span>
             </v-btn>
             <v-btn
               :disabled="(show.entries?.length ?? 0) === 1"

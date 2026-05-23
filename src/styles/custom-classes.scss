@@ -32,6 +32,9 @@
 
 .max-width-button {
   .v-btn__content {
-    width: 100%;
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    justify-content: space-between;
   }
 }

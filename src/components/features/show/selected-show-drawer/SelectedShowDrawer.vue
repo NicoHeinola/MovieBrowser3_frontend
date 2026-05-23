@@ -146,7 +146,7 @@ watch(isShown, (newVal) => {
             <template #prepend>
               <span class="text-medium-emphasis text-body-small">{{ episode.sequence_number }}</span>
             </template>
-            <span class="text-truncate d-flex text-start flex-column">
+            <span class="text-truncate">
               {{ getEpisodeName(episode) }}
             </span>
             <v-spacer />
