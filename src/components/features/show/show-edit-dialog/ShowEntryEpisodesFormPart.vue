@@ -2,21 +2,22 @@
 import type { EpisodeFormData, ShowEntryFormData } from './ShowEntriesFormData';
 import type { IDragEvent } from '@vue-dnd-kit/core';
 import { makeDroppable } from '@vue-dnd-kit/core';
-import { computed, useTemplateRef } from 'vue';
+import { ref, useTemplateRef } from 'vue';
+
 import SortableItem from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
-import { getRules } from './showEntriesFormRules';
+
+import ShowEpisodeExpansionPanel from './ShowEpisodeExpansionPanel.vue';
 
 const entry = defineModel<ShowEntryFormData>('entry', { required: true });
 
 const episodeZoneRef = useTemplateRef<HTMLElement>('episodeZone');
+const expandedEpisodes = ref<EpisodeFormData[]>([]);
 
 const { confirm } = useConfirmDialog();
 
 const unsavedEpisodeRenderKey = Symbol('unsavedEpisodeRenderKey');
 const episodeDragGroup = `show-episode-${crypto.randomUUID()}`;
-
-const rules = computed(() => getRules({ entries: [entry.value] }));
 
 const syncEpisodeSequenceNumbers = (): void => {
   for (const [index, episode] of (entry.value.episodes ?? []).entries()) {
@@ -36,14 +37,26 @@ const getEpisodeRenderKey = (episode: EpisodeFormData): string | symbol => {
   return localEpisode[unsavedEpisodeRenderKey];
 };
 
+const setEpisodeExpanded = (episode: EpisodeFormData, isExpanded: boolean): void => {
+  if (isExpanded) {
+    expandedEpisodes.value = [...new Set([...expandedEpisodes.value, episode])];
+    return;
+  }
+
+  expandedEpisodes.value = expandedEpisodes.value.filter((expandedEpisode) => expandedEpisode !== episode);
+};
+
 const addEpisode = (): void => {
   const episodes = (entry.value.episodes ??= []);
 
-  episodes.push({
+  const nextEpisode: EpisodeFormData = {
     name: '',
     filename: '',
     sequence_number: episodes.length,
-  });
+  };
+
+  episodes.push(nextEpisode);
+  setEpisodeExpanded(nextEpisode, true);
 };
 
 const removeEpisode = async (index: number): Promise<void> => {
@@ -58,7 +71,13 @@ const removeEpisode = async (index: number): Promise<void> => {
     return;
   }
 
+  const removedEpisode = entry.value.episodes?.[index];
   entry.value.episodes?.splice(index, 1);
+
+  if (removedEpisode) {
+    setEpisodeExpanded(removedEpisode, false);
+  }
+
   syncEpisodeSequenceNumbers();
 };
 
@@ -85,35 +104,20 @@ makeDroppable(
 <template>
   <v-row gap="0">
     <v-col cols="12">
-      <div class="d-flex ga-3 flex-column overflow-scroll justify-start" ref="episodeZone">
+      <div class="d-flex ga-2 flex-column overflow-scroll justify-start" ref="episodeZone">
         <transition-group name="task">
           <sortable-item
             v-for="(episode, index) in entry.episodes"
             :drag-options="{ dragHandle: '.handle', groups: [episodeDragGroup] }"
             :drag-payload="() => [index, entry.episodes!]"
-            class="d-flex position-relative ga-2"
+            class="d-flex ga-2"
             :key="getEpisodeRenderKey(episode)"
           >
-            <v-sheet class="flex-1-1 pa-2 rounded-lg" border>
-              <div class="d-flex ga-2 align-center mb-2">
-                <v-icon class="handle cursor-grab" icon="mdi-drag-vertical" @click.stop />
-                <span class="text-caption text-medium-emphasis">Episode {{ index + 1 }}</span>
-              </div>
-
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-text-field v-model="entry.episodes![index].name" :rules="rules.episodeName" label="Episode name" />
-                </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="entry.episodes![index].filename"
-                    :rules="rules.episodeFilename"
-                    label="Filename"
-                  />
-                </v-col>
-              </v-row>
-            </v-sheet>
-
+            <show-episode-expansion-panel
+              v-model:episode="entry.episodes![index]"
+              :expanded="expandedEpisodes.includes(episode)"
+              @update:expanded="setEpisodeExpanded(episode, $event)"
+            />
             <v-btn color="error" icon="mdi-trash-can" size="x-small" @click.stop="removeEpisode(index)" />
           </sortable-item>
         </transition-group>
