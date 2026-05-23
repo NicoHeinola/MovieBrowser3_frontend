@@ -13,14 +13,6 @@ const panelModelValue = computed<string[]>(() => {
   return expanded.value ? ['episode'] : [];
 });
 
-const episodeTitle = computed<string>(() => {
-  return episode.value.name || 'Untitled episode';
-});
-
-const episodeMeta = computed<string>(() => {
-  return episode.value.filename || 'No filename';
-});
-
 const updatePanelModelValue = (value: string[]): void => {
   expanded.value = value.includes('episode');
 };
@@ -35,17 +27,14 @@ const updatePanelModelValue = (value: string[]): void => {
   >
     <v-expansion-panel class="rounded-lg border" value="episode">
       <template #title>
-        <div class="d-flex align-center ga-2 flex-1-1-100 overflow-hidden" style="min-width: 0">
-          <v-icon class="handle cursor-grab text-medium-emphasis flex-shrink-0" icon="mdi-drag-vertical" @click.stop />
-          <div class="font-weight-medium text-truncate" style="flex: 1 1 auto; min-width: 0">
-            {{ episodeTitle }}
-          </div>
-          <div
-            class="text-medium-emphasis text-caption text-truncate"
-            style="flex: 0 1 40%; min-width: 0; white-space: nowrap"
-          >
-            {{ episodeMeta }}
-          </div>
+        <div class="d-flex align-center ga-2 flex-1-1-100 overflow-hidden">
+          <v-icon class="handle cursor-grab text-medium-emphasis" icon="mdi-drag-vertical" @click.stop />
+          <span class="font-weight-medium text-truncate" style="flex: 1 1 auto; min-width: 0">
+            {{ episode.name }}
+          </span>
+          <span class="text-medium-emphasis text-caption text-truncate" style="max-width: 40%; min-width: 0">
+            {{ episode.filename }}
+          </span>
         </div>
       </template>
 

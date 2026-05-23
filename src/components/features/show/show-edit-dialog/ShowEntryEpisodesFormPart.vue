@@ -50,7 +50,7 @@ const addEpisode = (): void => {
   const episodes = (entry.value.episodes ??= []);
 
   const nextEpisode: EpisodeFormData = {
-    name: '',
+    name: 'Untitled',
     filename: '',
     sequence_number: episodes.length,
   };
@@ -116,17 +116,24 @@ makeDroppable(
             <show-episode-expansion-panel
               v-model:episode="entry.episodes![index]"
               :expanded="expandedEpisodes.includes(episode)"
-              style="min-width: 0"
+              class="overflow-hidden"
+              style="flex: 1 1 auto; min-width: 0"
               @update:expanded="setEpisodeExpanded(episode, $event)"
             />
-            <v-btn color="error" icon="mdi-trash-can" size="x-small" @click.stop="removeEpisode(index)" />
+            <v-btn
+              class="flex-shrink-0"
+              color="error"
+              icon="mdi-trash-can"
+              size="x-small"
+              @click.stop="removeEpisode(index)"
+            />
           </sortable-item>
         </transition-group>
       </div>
     </v-col>
 
     <v-col cols="12">
-      <v-btn size="small" variant="text" @click="addEpisode"> Add episode </v-btn>
+      <v-btn size="small" variant="text" @click="addEpisode"> Add another episode </v-btn>
     </v-col>
   </v-row>
 </template>
