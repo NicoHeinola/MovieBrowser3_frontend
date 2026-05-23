@@ -5,6 +5,7 @@ import { makeDroppable } from '@vue-dnd-kit/core';
 import { useTemplateRef } from 'vue';
 import SortableItem from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
+import { ShowEntryType } from '@/enums/show/ShowEntryType';
 
 const show = defineModel<ShowEntriesFormData>('show', { required: true });
 
@@ -24,6 +25,10 @@ const syncEntrySortOrder = (): void => {
 };
 
 const removeEntry = async (index: number): Promise<void> => {
+  if ((show.value.entries?.length ?? 0) <= 1) {
+    return;
+  }
+
   const entryName = show.value.entries?.[index]?.name?.trim() || 'this entry';
   const isConfirmed = await confirm({
     message: `Are you sure you want to remove "${entryName}"?`,
@@ -37,6 +42,17 @@ const removeEntry = async (index: number): Promise<void> => {
 
   show.value.entries?.splice(index, 1);
   syncEntrySortOrder();
+};
+
+const addEntry = (): void => {
+  const entries = (show.value.entries ??= []);
+
+  entries.push({
+    type: ShowEntryType.Season,
+    name: `Untitled`,
+    sort_order: entries.length,
+    episodes: [],
+  });
 };
 
 makeDroppable(
@@ -59,33 +75,46 @@ makeDroppable(
 </script>
 
 <template>
-  <div class="d-flex ga-2 flex-column overflow-scroll justify-start" ref="zone">
-    <transition-group name="task">
-      <sortable-item
-        v-for="(entry, i) in show.entries"
-        :drag-options="{ dragHandle: '.handle' }"
-        :drag-payload="() => [i, show.entries!]"
-        class="d-flex position-relative ga-2"
-        :key="entry.id!"
-      >
-        <v-btn class="max-width-button justify-start flex-1-1" @click.stop>
-          <template #prepend>
-            <v-icon class="handle cursor-grab" icon="mdi-drag-vertical" />
-          </template>
-          <span class="text-truncate d-flex text-start flex-column">
-            {{ entry.name }}
-          </span>
-          <v-spacer />
-          <template #append>
-            <div class="d-flex align-center ga-2 flex-nowrap">
-              <span class="text-no-wrap">{{ entry.episodes?.length ?? 0 }} Episodes</span>
-            </div>
-          </template>
-        </v-btn>
-        <v-btn color="error" icon="mdi-trash-can" size="x-small" @click.stop="removeEntry(i)" />
-      </sortable-item>
-    </transition-group>
-  </div>
+  <v-row gap="0">
+    <v-col cols="12">
+      <div class="d-flex ga-2 flex-column overflow-scroll justify-start" ref="zone">
+        <transition-group name="task">
+          <sortable-item
+            v-for="(entry, i) in show.entries"
+            :drag-options="{ dragHandle: '.handle' }"
+            :drag-payload="() => [i, show.entries!]"
+            class="d-flex position-relative ga-2"
+            :key="entry.id ?? `new-entry-${entry.sort_order}`"
+          >
+            <v-btn class="max-width-button justify-start flex-1-1" @click.stop>
+              <template #prepend>
+                <v-icon class="handle cursor-grab" icon="mdi-drag-vertical" />
+              </template>
+              <span class="text-truncate d-flex text-start flex-column">
+                {{ entry.name }}
+              </span>
+              <v-spacer />
+              <template #append>
+                <div class="d-flex align-center ga-2 flex-nowrap">
+                  <span class="text-no-wrap">{{ entry.episodes?.length ?? 0 }} Episodes</span>
+                </div>
+              </template>
+            </v-btn>
+            <v-btn
+              :disabled="(show.entries?.length ?? 0) === 1"
+              color="error"
+              icon="mdi-trash-can"
+              size="x-small"
+              @click.stop="removeEntry(i)"
+            />
+          </sortable-item>
+        </transition-group>
+      </div>
+    </v-col>
+    <v-col cols="12">
+      <v-btn size="small" variant="text" @click="addEntry"> Add another entry </v-btn>
+    </v-col>
+  </v-row>
 </template>
 
 <style scoped>
