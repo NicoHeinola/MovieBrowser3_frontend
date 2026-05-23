@@ -116,6 +116,7 @@ makeDroppable(
             <show-episode-expansion-panel
               v-model:episode="entry.episodes![index]"
               :expanded="expandedEpisodes.includes(episode)"
+              style="min-width: 0"
               @update:expanded="setEpisodeExpanded(episode, $event)"
             />
             <v-btn color="error" icon="mdi-trash-can" size="x-small" @click.stop="removeEpisode(index)" />

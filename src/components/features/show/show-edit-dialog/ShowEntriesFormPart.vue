@@ -124,6 +124,7 @@ makeDroppable(
             <show-entry-expansion-panel
               v-model:entry="show.entries![i]"
               :expanded="expandedEntries.includes(entry)"
+              style="min-width: 0"
               @update:expanded="setEntryExpanded(entry, $event)"
             />
             <v-btn
