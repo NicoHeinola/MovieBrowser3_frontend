@@ -38,6 +38,7 @@ export const settingService = {
 
 - Service files may depend on shared API clients, request and response interfaces, and closely related service-local helpers.
 - Do not move backend contract definitions into services; import them from `src/interfaces/api`.
+- Return backend fetch payloads as received. Do not normalize paginated responses into keyed maps, flatten wrapper objects, or reshape data for one consumer inside a service.
 - Keep UI state, persistence decisions, and view-specific formatting in stores or components rather than in service modules.
 - Method names should be clear and domain-focused (e.g., `login` instead of `authPost`).
 - Avoid catch-all resource services that accumulate unrelated endpoint groups. If two endpoint groups can evolve independently, give them separate service concepts even when they live in the same namespace folder.

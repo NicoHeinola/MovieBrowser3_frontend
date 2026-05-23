@@ -1,4 +1,4 @@
-import type { SettingsResponse } from '@/interfaces/api/responses/SettingsResponse';
+import type { Setting } from '@/interfaces/api/models/Setting';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
@@ -6,8 +6,22 @@ import { SettingQueryKey } from '@/enums/query/settingQueryKey';
 import { queryClient } from '@/plugins/query';
 import { settingService } from '@/services/setting/settingService';
 
+type SettingsState = Record<string, Setting>;
+
+/**
+ * Normalize the paginated settings response into a keyed lookup object for easier access in the store and components.
+ * @param response The raw paginated settings response from the backend.
+ * @returns A normalized settings state object keyed by setting keys.
+ */
+const normalizeSettings = (response: Awaited<ReturnType<typeof settingService.getSettings>>): SettingsState => {
+  return response.data.reduce<SettingsState>((settingsByKey: SettingsState, setting: Setting) => {
+    settingsByKey[setting.key] = setting;
+    return settingsByKey;
+  }, {});
+};
+
 export const useSettingStore = defineStore('setting', () => {
-  const settings = ref<SettingsResponse>({});
+  const settings = ref<SettingsState>({});
   const isLoading = ref<boolean>(false);
 
   const getSettingValue = <T>(key: string, fallbackValue: T): T => {
@@ -31,10 +45,12 @@ export const useSettingStore = defineStore('setting', () => {
   const fetchSettings = async (): Promise<void> => {
     isLoading.value = true;
     try {
-      settings.value = await queryClient.ensureQueryData({
+      const response = await queryClient.ensureQueryData({
         queryKey: [SettingQueryKey.Settings],
         queryFn: settingService.getSettings,
       });
+
+      settings.value = normalizeSettings(response);
     } finally {
       isLoading.value = false;
     }

@@ -9,6 +9,7 @@ applyTo: 'src/interfaces/api/**/*.ts'
 
 - These files represent backend contracts, so preserve backend field names exactly as they are received (e.g., use `updated_at`, not `updatedAt`).
 - Do not camelCase API fields in interface definitions unless a separate mapping layer converts the payload.
+- Do not repurpose API contract files for frontend-normalized lookup shapes such as keyed `Record`s; keep those mapped shapes outside `src/interfaces/api`, and prefer local aliases when they are small and only used in one place.
 
 ## File Shape
 

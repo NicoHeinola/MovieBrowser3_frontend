@@ -12,7 +12,9 @@
 
 - Prefer extending an existing feature, page, component, utility, or plugin namespace before creating a new top-level namespace.
 - Keep backend-facing API shapes in `src/interfaces/api` and preserve backend field names exactly unless a dedicated mapping layer is introduced.
+- When adapting a backend contract into a small consumer shape such as a keyed lookup `Record`, keep that mapped type local to the service or consumer unless it is reused broadly; do not create one-line support files for simple aliases.
 - Keep API-calling service modules in `src/services` and have stores or pages consume them rather than defining service wrappers inside those namespaces.
+- Keep service fetch methods returning backend payloads as-is. Put UI-facing normalization, keyed lookup maps, and other consumer-specific reshaping in stores, composables, or pages.
 - Keep each backend resource or independently versioned endpoint family in its own service concept. For sub-resources with dedicated CRUD endpoints, add a sibling service file instead of growing the parent service into a catch-all module.
 - Keep design tokens and theme-level color decisions in `src/plugins/vuetify` or shared styles, not scattered through component logic.
 - For loading states in the UI, use Vuetify built-in `loading` props when the component supports them, or `v-skeleton-loader` when a placeholder is needed. Do not build any other loading treatment.

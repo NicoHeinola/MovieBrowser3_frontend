@@ -18,7 +18,8 @@
     "check:format": "prettier --check .",
     "check": "run-s check:types check:lint check:format",
     "fix": "run-s fix:lint fix:format",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage"
   },
