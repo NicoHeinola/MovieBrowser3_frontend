@@ -200,6 +200,7 @@ components/
 - For async loading UI, use a Vuetify component's built-in `loading` prop when available; otherwise use `v-skeleton-loader`.
 - Do not introduce any other loading treatment in Vue components or pages, including custom spinner components, custom shimmer markup, standalone progress indicators, or bespoke overlays.
 - Prefer existing Vuetify utility classes, component props, and built-in transitions before adding custom SCSS in Vue components.
+- Do not add local `<style>` blocks or named CSS classes in Vue files unless Vuetify props, existing utility classes, and inline `style` or `:style` bindings cannot express the requirement cleanly.
 - For simple decorative or layout helpers such as page backgrounds and overlays, prefer standalone sibling components inside a `position-relative` container rather than slot wrappers that also own page content.
 - Avoid introducing custom CSS classes for one-off backgrounds, overlays, positioning, sizing, or z-index management in Vue files. Prefer Vuetify utility classes and inline `style` or `:style` bindings first.
 - Reusable visual helper components may use a small local class or modifier when that keeps decorative styling clearer than a large inline style object.

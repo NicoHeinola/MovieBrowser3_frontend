@@ -19,3 +19,4 @@ applyTo: 'src/plugins/vuetify/**/*.ts'
 
 - Reserve this namespace for application-wide Vuetify setup and shared theme configuration.
 - Component-specific styling belongs in the component namespace unless it is becoming a shared design token.
+- Keep shared component density, variants, and recurring visual defaults in `ComponentDefaults.ts` instead of repeating local Vuetify props across feature components.

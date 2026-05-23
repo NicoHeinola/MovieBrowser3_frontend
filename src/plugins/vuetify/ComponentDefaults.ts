@@ -23,6 +23,10 @@ export const ComponentDefaults = {
     density: 'compact',
     color: 'primary',
   },
+  VTabs: {
+    density: 'compact',
+    color: 'primary',
+  },
   VBtn: {
     color: 'primary',
     variant: 'tonal',

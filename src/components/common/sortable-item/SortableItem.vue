@@ -36,7 +36,7 @@ const { isDragging } = makeDraggable(
 </script>
 
 <template>
-  <div :style="{ opacity: isDragging ? 0 : 1 }" ref="el">
+  <div :style="{ opacity: isDragging ? 0 : 1 }" tabindex="-1" @keydown.stop @keyup.stop ref="el">
     <slot />
   </div>
 </template>

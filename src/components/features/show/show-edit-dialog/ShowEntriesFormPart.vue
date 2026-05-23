@@ -2,19 +2,20 @@
 import type { ShowEntriesFormData, ShowEntryFormData } from './ShowEntriesFormData';
 import type { IDragEvent } from '@vue-dnd-kit/core';
 import { makeDroppable } from '@vue-dnd-kit/core';
-import { useTemplateRef } from 'vue';
+import { ref, useTemplateRef } from 'vue';
 import SortableItem from '@/components/common/sortable-item';
-import { useDialog } from '@/components/layouts/dialog-provider';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
-import { ShowEntryEditDialog } from './show-entry-edit-dialog';
+import ShowEntryExpansionPanel from './ShowEntryExpansionPanel.vue';
 
 const show = defineModel<ShowEntriesFormData>('show', { required: true });
 
 const zoneRef = useTemplateRef<HTMLElement>('zone');
+const expandedEntries = ref<ShowEntryFormData[]>([]);
 
-const dialog = useDialog();
 const { confirm } = useConfirmDialog();
+
+const unsavedEntryRenderKey = Symbol('unsavedEntryRenderKey');
 
 /**
  * Keep persisted `sort_order` aligned with current visual list order.
@@ -27,12 +28,33 @@ const syncEntrySortOrder = (): void => {
   }
 };
 
+const getEntryRenderKey = (entry: ShowEntryFormData): string | symbol => {
+  if (entry.id != null) {
+    return `entry-${entry.id}`;
+  }
+
+  const localEntry = entry as ShowEntryFormData & { [unsavedEntryRenderKey]?: symbol };
+
+  localEntry[unsavedEntryRenderKey] ??= Symbol('entry');
+
+  return localEntry[unsavedEntryRenderKey];
+};
+
+const setEntryExpanded = (entry: ShowEntryFormData, isExpanded: boolean): void => {
+  if (isExpanded) {
+    expandedEntries.value = [...new Set([...expandedEntries.value, entry])];
+    return;
+  }
+
+  expandedEntries.value = expandedEntries.value.filter((expandedEntry) => expandedEntry !== entry);
+};
+
 const removeEntry = async (index: number): Promise<void> => {
   if ((show.value.entries?.length ?? 0) <= 1) {
     return;
   }
 
-  const entryName = show.value.entries?.[index]?.name?.trim() || 'this entry';
+  const entryName = show.value.entries?.[index]?.name;
   const isConfirmed = await confirm({
     message: `Are you sure you want to remove "${entryName}"?`,
     confirmColor: 'error',
@@ -43,45 +65,34 @@ const removeEntry = async (index: number): Promise<void> => {
     return;
   }
 
+  const removedEntry = show.value.entries?.[index];
   show.value.entries?.splice(index, 1);
+
+  if (removedEntry) {
+    setEntryExpanded(removedEntry, false);
+  }
+
   syncEntrySortOrder();
 };
 
 const addEntry = (): void => {
   const entries = (show.value.entries ??= []);
 
-  entries.push({
+  const nextEntry: ShowEntryFormData = {
     type: ShowEntryType.Season,
     name: `Untitled`,
     sort_order: entries.length,
     episodes: [],
-  });
-};
+  };
 
-const editEntry = async (index: number): Promise<void> => {
-  const entry = show.value.entries?.[index];
-  if (!entry) {
-    return;
-  }
-
-  const updatedEntry = await dialog.showDialog<ShowEntryFormData, { entry: ShowEntryFormData }>({
-    component: ShowEntryEditDialog,
-    props: {
-      entry,
-    },
-  });
-
-  if (!updatedEntry || !show.value.entries) {
-    return;
-  }
-
-  show.value.entries[index] = updatedEntry;
-  syncEntrySortOrder();
+  entries.push(nextEntry);
+  setEntryExpanded(nextEntry, true);
 };
 
 makeDroppable(
   zoneRef,
   {
+    groups: ['show-entry'],
     events: {
       onDrop(e: IDragEvent) {
         const suggestedSort = e.helpers.suggestSort('vertical');
@@ -105,21 +116,16 @@ makeDroppable(
         <transition-group name="task">
           <sortable-item
             v-for="(entry, i) in show.entries"
-            :drag-options="{ dragHandle: '.handle' }"
+            :drag-options="{ dragHandle: '.handle', groups: ['show-entry'] }"
             :drag-payload="() => [i, show.entries!]"
-            class="d-flex position-relative ga-2"
-            :key="entry.id ?? `new-entry-${entry.sort_order}`"
+            class="d-flex ga-2"
+            :key="getEntryRenderKey(entry)"
           >
-            <v-btn class="max-width-button justify-start flex-1-1" @click.stop="editEntry(i)">
-              <template #prepend>
-                <v-icon class="handle cursor-grab" icon="mdi-drag-vertical" @click.stop />
-              </template>
-              <span class="text-truncate">
-                {{ entry.name }}
-              </span>
-              <v-spacer />
-              <span class="text-no-wrap">{{ entry.episodes?.length ?? 0 }} Episodes</span>
-            </v-btn>
+            <show-entry-expansion-panel
+              v-model:entry="show.entries![i]"
+              :expanded="expandedEntries.includes(entry)"
+              @update:expanded="setEntryExpanded(entry, $event)"
+            />
             <v-btn
               :disabled="(show.entries?.length ?? 0) === 1"
               color="error"

@@ -18,6 +18,8 @@
 - Keep service fetch methods returning backend payloads as-is. Put UI-facing normalization, keyed lookup maps, and other consumer-specific reshaping in stores, composables, or pages.
 - Keep each backend resource or independently versioned endpoint family in its own service concept. For sub-resources with dedicated CRUD endpoints, add a sibling service file instead of growing the parent service into a catch-all module.
 - Keep design tokens and theme-level color decisions in `src/plugins/vuetify` or shared styles, not scattered through component logic.
+- In Vue files, avoid local `<style>` blocks and named CSS classes unless Vuetify props, existing utility classes, and inline style bindings cannot express the requirement cleanly.
+- Keep recurring Vuetify component density and similar shared visual defaults in `src/plugins/vuetify/ComponentDefaults.ts` instead of repeating local `density` props in feature components.
 - For loading states in the UI, use Vuetify built-in `loading` props when the component supports them, or `v-skeleton-loader` when a placeholder is needed. Do not build any other loading treatment.
 - Use the dialog provider system for application dialogs. Open dialogs with `useDialog().showDialog(...)` and keep dialog components compatible with `src/components/layouts/dialog-provider`; do not mount feature dialogs inline in pages or other templates.
 - Use Conventional Commits when drafting commit messages for this repository. Follow `type(scope): summary` with lowercase type and scope, and keep the summary short and imperative.

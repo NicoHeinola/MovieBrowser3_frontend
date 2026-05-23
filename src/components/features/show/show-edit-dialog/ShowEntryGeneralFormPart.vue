@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ShowEntryFormData } from '../ShowEntriesFormData';
+import type { ShowEntryFormData } from './ShowEntriesFormData';
 import { computed } from 'vue';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
-import { getRules } from '../showEntriesFormRules';
+import { getRules } from './showEntriesFormRules';
 
 const entry = defineModel<ShowEntryFormData>('entry', { required: true });
 
