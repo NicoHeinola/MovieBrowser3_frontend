@@ -195,6 +195,7 @@ components/
 ## Styling
 
 - Keep styles `scoped` unless the component is intentionally providing global styling.
+- When adding source-code comments in `.vue` files, use proper JSDoc block comments (`/** ... */`) instead of `//` comments. JSDoc should describe purpose and include `@param` and `@returns` tags when applicable.
 - Prefer moving reusable visual tokens to shared styles or the Vuetify theme instead of hard-coding them per component.
 - For async loading UI, use a Vuetify component's built-in `loading` prop when available; otherwise use `v-skeleton-loader`.
 - Do not introduce any other loading treatment in Vue components or pages, including custom spinner components, custom shimmer markup, standalone progress indicators, or bespoke overlays.

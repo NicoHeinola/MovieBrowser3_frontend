@@ -4,10 +4,40 @@ import type { IDragEvent } from '@vue-dnd-kit/core';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { useTemplateRef } from 'vue';
 import SortableItem from '@/components/common/sortable-item';
+import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 
 const show = defineModel<ShowEntriesFormData>('show', { required: true });
 
 const zoneRef = useTemplateRef<HTMLElement>('zone');
+
+const { confirm } = useConfirmDialog();
+
+/**
+ * Keep persisted `sort_order` aligned with current visual list order.
+ *
+ * @returns Nothing.
+ */
+const syncEntrySortOrder = (): void => {
+  for (const [index, entry] of (show.value.entries ?? []).entries()) {
+    entry.sort_order = index;
+  }
+};
+
+const removeEntry = async (index: number): Promise<void> => {
+  const entryName = show.value.entries?.[index]?.name?.trim() || 'this entry';
+  const isConfirmed = await confirm({
+    message: `Are you sure you want to remove "${entryName}"?`,
+    confirmColor: 'error',
+    confirmText: 'Remove',
+  });
+
+  if (!isConfirmed) {
+    return;
+  }
+
+  show.value.entries?.splice(index, 1);
+  syncEntrySortOrder();
+};
 
 makeDroppable(
   zoneRef,
@@ -20,11 +50,7 @@ makeDroppable(
         }
 
         show.value.entries = suggestedSort.sourceItems as ShowEntryFormData[];
-
-        // Update sort values to match new order
-        for (const [index, entry] of show.value.entries.entries()) {
-          entry.sort_order = index;
-        }
+        syncEntrySortOrder();
       },
     },
   },
@@ -39,9 +65,10 @@ makeDroppable(
         v-for="(entry, i) in show.entries"
         :drag-options="{ dragHandle: '.handle' }"
         :drag-payload="() => [i, show.entries!]"
+        class="d-flex position-relative ga-2"
         :key="entry.id!"
       >
-        <v-btn class="max-width-button justify-start w-100" @click.stop>
+        <v-btn class="max-width-button justify-start flex-1-1" @click.stop>
           <template #prepend>
             <v-icon class="handle cursor-grab" icon="mdi-drag-vertical" />
           </template>
@@ -50,9 +77,12 @@ makeDroppable(
           </span>
           <v-spacer />
           <template #append>
-            <p class="text-no-wrap">{{ entry.episodes?.length ?? 0 }} Episodes</p>
+            <div class="d-flex align-center ga-2 flex-nowrap">
+              <span class="text-no-wrap">{{ entry.episodes?.length ?? 0 }} Episodes</span>
+            </div>
           </template>
         </v-btn>
+        <v-btn color="error" icon="mdi-trash-can" size="x-small" @click.stop="removeEntry(i)" />
       </sortable-item>
     </transition-group>
   </div>

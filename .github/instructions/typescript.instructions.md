@@ -47,6 +47,11 @@ const totalCount = computed(() => items.value.length);
 - Use `import type` for type-only imports.
 - Prefer narrow exported types and helper functions over large mixed-purpose files.
 
+## Comments
+
+- When adding source-code comments in `.ts` files, use proper JSDoc block comments (`/** ... */`) instead of `//` comments.
+- JSDoc should describe purpose and include `@param` tags for each parameter plus an `@returns` tag when the function returns a value or explicitly returns `void`.
+
 ## Export Surface
 
 - Outside `index.ts` barrel files, export one symbol per file.

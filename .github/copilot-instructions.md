@@ -11,6 +11,7 @@
 ## Working Rules
 
 - Prefer extending an existing feature, page, component, utility, or plugin namespace before creating a new top-level namespace.
+- When adding source-code comments, use proper JSDoc block comments (`/** ... */`) instead of `//` comments. JSDoc should describe purpose and include `@param` and `@returns` tags when applicable.
 - Keep backend-facing API shapes in `src/interfaces/api` and preserve backend field names exactly unless a dedicated mapping layer is introduced.
 - When adapting a backend contract into a small consumer shape such as a keyed lookup `Record`, keep that mapped type local to the service or consumer unless it is reused broadly; do not create one-line support files for simple aliases.
 - Keep API-calling service modules in `src/services` and have stores or pages consume them rather than defining service wrappers inside those namespaces.
@@ -51,3 +52,12 @@
 - `.github/copilot-instructions.md` is the canonical workspace-wide guidance file for this repository.
 - Keep instructions, skills, and agents concise. Do not add large cross-file reference lists when the customization system can load the relevant guidance automatically.
 - Treat customization maintenance as part of the implementation whenever repository conventions or structure change; update the affected instruction, skill, or agent files before finishing the task.
+
+## Response Style
+
+- Prefer terse, high-signal responses by default. Drop filler, hedging, and repeated framing.
+- Lead with the technical conclusion or next action. Keep explanations compact unless the user explicitly asks for depth.
+- Use short sentences or fragments when they preserve clarity. Keep technical accuracy, validation details, and risk callouts intact.
+- For implementation updates, state what changed, what was validated, and any remaining blocker. Do not pad with reassurance or narration.
+- Preserve repository-specific requirements that need explicit wording, including file links, validation results, assumptions, and next steps.
+- If the user asks for normal or detailed mode, follow that request for the rest of the conversation or until they change it.
