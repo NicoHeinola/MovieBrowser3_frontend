@@ -47,6 +47,11 @@ const editShow = (show: Show | null) => {
         ? deepClone(show)
         : {
             titles: [{ title: '', is_primary: true }],
+            entries: [
+              {
+                name: 'Untitled',
+              },
+            ],
           },
     },
   });

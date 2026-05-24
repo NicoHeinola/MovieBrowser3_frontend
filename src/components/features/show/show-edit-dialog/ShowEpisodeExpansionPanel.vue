@@ -41,11 +41,11 @@ const updatePanelModelValue = (value: string[]): void => {
       <template #text>
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="episode.name" :rules="rules.episodeName" label="Episode name" />
+            <v-text-field v-model="episode.name" :rules="rules.episodeName" class="required" label="Episode name" />
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-text-field v-model="episode.filename" :rules="rules.episodeFilename" label="Filename" />
+            <v-text-field v-model="episode.filename" :rules="rules.episodeFilename" class="required" label="Filename" />
           </v-col>
         </v-row>
       </template>

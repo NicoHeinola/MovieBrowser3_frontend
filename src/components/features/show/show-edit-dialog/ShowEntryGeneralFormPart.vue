@@ -18,13 +18,14 @@ const entryTypeOptions = [
 <template>
   <v-row>
     <v-col cols="12">
-      <v-text-field v-model="entry.name" :rules="rules.name" label="Entry name" />
+      <v-text-field v-model="entry.name" :rules="rules.name" class="required" label="Entry name" />
     </v-col>
     <v-col cols="12">
       <v-select
         v-model="entry.type"
         :items="entryTypeOptions"
         :rules="rules.type"
+        class="required"
         item-title="title"
         item-value="value"
         label="Entry type"
