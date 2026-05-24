@@ -11,7 +11,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
       },
-      component: () => import('@/pages/authenticated/home/Home.vue'),
+      component: () => import('@/pages/authenticated/home/HomeView.vue'),
     },
     {
       path: '/auth',
@@ -20,7 +20,7 @@ const router = createRouter({
         guestOnly: true,
         hideNavigation: true,
       },
-      component: () => import('@/pages/guest/auth/Auth.vue'),
+      component: () => import('@/pages/guest/auth/AuthView.vue'),
     },
     {
       path: '/profile',
@@ -28,7 +28,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
       },
-      component: () => import('@/pages/authenticated/profile/Profile.vue'),
+      component: () => import('@/pages/authenticated/profile/ProfileView.vue'),
     },
     {
       path: '/search',
@@ -36,7 +36,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
       },
-      component: () => import('@/pages/authenticated/search/Search.vue'),
+      component: () => import('@/pages/authenticated/search/SearchView.vue'),
     },
     {
       path: '/admin',
@@ -45,7 +45,7 @@ const router = createRouter({
         requiresAuth: true,
         requiresAdmin: true,
       },
-      component: () => import('@/pages/admin/dashboard/Dashboard.vue'),
+      component: () => import('@/pages/admin/dashboard/DashboardView.vue'),
     },
     {
       path: '/admin/shows',
@@ -54,7 +54,7 @@ const router = createRouter({
         requiresAuth: true,
         requiresAdmin: true,
       },
-      component: () => import('@/pages/admin/shows/Shows.vue'),
+      component: () => import('@/pages/admin/shows/ShowsView.vue'),
     },
     {
       path: '/admin/settings',
@@ -63,7 +63,7 @@ const router = createRouter({
         requiresAuth: true,
         requiresAdmin: true,
       },
-      component: () => import('@/pages/admin/settings/Settings.vue'),
+      component: () => import('@/pages/admin/settings/SettingsView.vue'),
     },
   ],
 });
