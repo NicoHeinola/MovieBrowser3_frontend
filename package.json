@@ -16,7 +16,7 @@
     "fix:lint": "eslint --fix",
     "fix:format": "prettier --write .",
     "check:format": "prettier --check .",
-    "check": "run-s check:types check:lint check:format",
+    "check": "run-s check:types check:lint check:format test",
     "fix": "run-s fix:lint fix:format",
     "test": "vitest run",
     "test:watch": "vitest",
