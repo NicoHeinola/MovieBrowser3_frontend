@@ -107,7 +107,7 @@ const googleSearch = (searchTerm: string) => {
         <template #append>
           <v-btn
             icon="mdi-auto-fix"
-            size="small"
+            size="x-small"
             @click="googleSearch('Short description for show: ' + getPrimaryTitle(show))"
             v-tooltip:bottom="'Autofill search'"
           />
