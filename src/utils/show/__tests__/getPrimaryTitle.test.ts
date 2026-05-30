@@ -26,6 +26,7 @@ describe('getPrimaryTitle', () => {
 
   it('falls back to the provided label when the source is missing or has no titles', () => {
     expect(getPrimaryTitle(null, 'Selected source')).toBe('Selected source');
+    expect(getPrimaryTitle({}, 'Selected source')).toBe('Selected source');
     expect(getPrimaryTitle(createSource([]), 'Selected source')).toBe('Selected source');
   });
 });

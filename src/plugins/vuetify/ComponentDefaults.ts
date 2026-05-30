@@ -23,6 +23,12 @@ export const ComponentDefaults = {
     density: 'compact',
     color: 'primary',
   },
+  VAutocomplete: {
+    hideDetails: 'auto',
+    variant: 'outlined',
+    density: 'compact',
+    color: 'primary',
+  },
   VTabs: {
     density: 'compact',
     color: 'primary',

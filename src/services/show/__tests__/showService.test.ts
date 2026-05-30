@@ -41,8 +41,8 @@ const createShow = (overrides: Partial<Show> = {}): Show => ({
   description: 'A show',
   titles: [],
   entries: [],
-  outgoingLinks: [],
-  incomingLinks: [],
+  outgoing_links: [],
+  incoming_links: [],
   ...overrides,
 });
 
