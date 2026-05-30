@@ -52,6 +52,8 @@ const editShow = (show: Show | null) => {
                 name: 'Untitled',
               },
             ],
+            outgoing_links: [],
+            incoming_links: [],
           },
     },
   });
