@@ -47,7 +47,7 @@ const youTubeSearch = (searchTerm: string) => {
           <v-text-field
             v-model="show!.banner_url"
             :rules="rules.bannerUrl"
-            class="glass-panel rounded-lg"
+            class="glass-panel rounded-lg required"
             label="Banner URL"
           >
           </v-text-field>
@@ -79,7 +79,7 @@ const youTubeSearch = (searchTerm: string) => {
           <v-text-field
             v-model="show!.card_image_url"
             :rules="rules.cardImageUrl"
-            class="glass-panel rounded-lg"
+            class="glass-panel rounded-lg required"
             label="Card Image URL"
           />
           <v-btn

@@ -12,6 +12,7 @@ import { ShowGrid } from '@/components/features/show/show-grid';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
+import { ShowEntryType } from '@/enums/show/ShowEntryType';
 import { showService } from '@/services/show/showService';
 import { deepClone } from '@/utils/clone/deepClone';
 
@@ -50,6 +51,8 @@ const editShow = (show: Show | null) => {
             entries: [
               {
                 name: 'Untitled',
+                type: ShowEntryType.Season,
+                sort_order: 0,
               },
             ],
             outgoing_links: [],
