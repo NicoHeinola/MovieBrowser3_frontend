@@ -54,6 +54,7 @@ export default [
   {
     files: ['**/*.vue'],
     rules: {
+      'vue/padding-line-between-tags': 'off',
       'vue/max-len': [
         'error',
         {

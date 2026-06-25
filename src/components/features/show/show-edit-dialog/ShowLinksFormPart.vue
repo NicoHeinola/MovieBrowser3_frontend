@@ -16,7 +16,9 @@ const props = defineProps<{
   showId?: number;
 }>();
 
-const outgoingLinks = defineModel<ShowLink[]>('outgoingLinks', { default: [] });
+const outgoingLinks = defineModel<ShowLink[]>('outgoingLinks', {
+  default: (_props) => [],
+});
 
 const rules = computed(() => getLinksRules());
 
@@ -76,6 +78,7 @@ const removeLink = async (index: number): Promise<void> => {
     <v-col cols="6">
       <show-link-type-select v-model="link.type" :rules="rules.linkType" />
     </v-col>
+
     <v-col class="d-flex align-center ga-5" cols="6">
       <show-autocomplete
         :exclude-ids="props.showId ? [props.showId] : []"
