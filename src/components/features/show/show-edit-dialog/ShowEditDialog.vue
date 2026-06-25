@@ -5,6 +5,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 import { onMounted, ref } from 'vue';
 import { BaseDialog } from '@/components/common/base-dialog';
 import BaseForm from '@/components/common/base-form/BaseForm.vue';
+import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog.ts';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { showEntryService } from '@/services/show/showEntryService';
 import { showEpisodeService } from '@/services/show/showEpisodeService.ts';
@@ -22,6 +23,8 @@ const props = defineProps<DialogComponentProps<Show>>();
 
 const show = defineModel<Show>('show', { required: true });
 const originalShow = ref<Show | null>(null);
+
+const { confirm } = useConfirmDialog();
 
 const isFormValid = ref<boolean>(false);
 const isSaving = ref<boolean>(false);
@@ -122,6 +125,30 @@ const handleSave = async (): Promise<void> => {
   }
 };
 
+const deleteShow = async (): Promise<void> => {
+  const confirmed = await confirm({
+    message: 'Are you sure you want to delete this show? This action cannot be undone.',
+    confirmText: 'Delete',
+    confirmColor: 'error',
+    cancelText: 'Cancel',
+  });
+
+  if (!confirmed) {
+    return;
+  }
+
+  isSaving.value = true;
+
+  try {
+    await showService.remove(show.value.id);
+    props.close();
+  } catch (error: unknown) {
+    showAPIErrorSnackbar(error);
+  } finally {
+    isSaving.value = false;
+  }
+};
+
 onMounted(() => {
   // Clone the show to keep track of original values for comparison
   if (show.value?.id) {
@@ -165,6 +192,16 @@ onMounted(() => {
     </template>
 
     <template #actions>
+      <v-btn
+        :disabled="isSaving"
+        color="error"
+        prepend-icon="mdi-trash-can"
+        variant="text"
+        @click="deleteShow"
+        v-if="show?.id"
+      >
+        Delete
+      </v-btn>
       <v-spacer />
       <v-btn :disabled="isSaving" variant="text" @click="props.close()"> Cancel </v-btn>
       <v-btn

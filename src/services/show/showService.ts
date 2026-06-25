@@ -32,9 +32,14 @@ const update = async (showId: number, request: UpdateShowRequest): Promise<Show>
   return response.data;
 };
 
+const remove = async (showId: number): Promise<void> => {
+  await apiClient.delete<void>(`shows/${showId}`);
+};
+
 export const showService = {
   list,
   get,
   create,
   update,
+  remove,
 };
