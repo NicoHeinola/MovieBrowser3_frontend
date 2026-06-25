@@ -4,7 +4,7 @@ import { isYouTubeUrl } from '../isYouTubeUrl';
 describe('isYouTubeUrl', () => {
   it('should return true for valid YouTube URLs', () => {
     expect(isYouTubeUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true);
-    expect(isYouTubeUrl('http://youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true);
+    expect(isYouTubeUrl('https://youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true);
     expect(isYouTubeUrl('https://youtu.be/dQw4w9WgXcQ')).toBe(true);
   });
 

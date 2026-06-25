@@ -9,6 +9,7 @@ import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog.ts';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { showEntryService } from '@/services/show/showEntryService';
 import { showEpisodeService } from '@/services/show/showEpisodeService.ts';
+import { showLinkService } from '@/services/show/showLinkService';
 import { showService } from '@/services/show/showService';
 import { showTitleService } from '@/services/show/showTitleService.ts';
 import { deepClone } from '@/utils/clone/deepClone.ts';
@@ -48,7 +49,7 @@ const handleSave = async (): Promise<void> => {
   try {
     // Save show itself
     const changedShow = getChangedObject(originalShow.value, show.value, {
-      excludes: ['titles'], // Titles are handled separately
+      excludes: ['titles', 'links', 'entries'],
     });
     const showNeedsUpdate = show.value.id && changedShow !== undefined;
 
@@ -116,6 +117,20 @@ const handleSave = async (): Promise<void> => {
             });
           }
         },
+      });
+    }
+
+    // Save links
+    const haveLinksChanged =
+      getChangedObject(originalShow.value?.outgoing_links ?? [], show.value.outgoing_links ?? []) !== undefined;
+
+    if (haveLinksChanged) {
+      await syncItems(show.value.outgoing_links ?? [], originalShow.value?.outgoing_links ?? [], {
+        create: (link) => showLinkService.create(show.value.id, link),
+        update: async (id, link) => {
+          await showLinkService.update(id, link);
+        },
+        delete: (id) => showLinkService.deleteLink(id),
       });
     }
   } catch (error: unknown) {
