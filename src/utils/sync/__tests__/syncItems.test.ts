@@ -114,7 +114,7 @@ describe('syncItems', () => {
     const update = vi.fn();
     const remove = vi.fn();
 
-    await syncItems(newItems, oldItems, { create, update, delete: remove }, 'customId' as const);
+    await syncItems(newItems, oldItems, { create, update, delete: remove, idKey: 'customId' as const });
 
     expect(update).toHaveBeenCalledTimes(1);
     expect(update).toHaveBeenCalledWith('a', newItems[0]);

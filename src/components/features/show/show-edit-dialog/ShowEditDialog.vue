@@ -8,6 +8,7 @@ import { BaseDialog } from '@/components/common/base-dialog';
 import BaseForm from '@/components/common/base-form/BaseForm.vue';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { showEntryService } from '@/services/show/showEntryService';
+import { showEpisodeService } from '@/services/show/showEpisodeService.ts';
 import { showLinkService } from '@/services/show/showLinkService';
 import { showService } from '@/services/show/showService';
 import { showTitleService } from '@/services/show/showTitleService.ts';
@@ -81,7 +82,41 @@ const handleSave = async (): Promise<void> => {
       );
     }
 
-    originalShow.value = deepClone<Show>(show.value);
+    // Save entries
+    const haveEntriesChanged =
+      getChangedObject(originalShow.value?.entries ?? [], show.value.entries ?? []) !== undefined;
+
+    if (haveEntriesChanged) {
+      await syncItems(show.value.entries ?? [], originalShow.value?.entries ?? [], {
+        create: (entry) => showEntryService.create(show.value.id, entry),
+        update: async (id, entry) => {
+          await showEntryService.update(id, entry);
+        },
+        delete: (id) => showEntryService.remove(id),
+        onItem: (action, item) => {
+          // If an entry is deleted, we don't need to check for episode changes
+          if (action === 'delete') {
+            return;
+          }
+
+          const haveEpisodesChanged =
+            getChangedObject(
+              originalShow.value?.entries?.find((e) => e.id === item.id)?.episodes ?? [],
+              item.episodes ?? [],
+            ) !== undefined;
+
+          if (haveEpisodesChanged) {
+            syncItems(item.episodes ?? [], originalShow.value?.entries?.find((e) => e.id === item.id)?.episodes ?? [], {
+              create: (episode) => showEpisodeService.create(item.id, episode),
+              update: async (id, episode) => {
+                await showEpisodeService.update(id, episode);
+              },
+              delete: (id) => showEpisodeService.remove(id),
+            });
+          }
+        },
+      });
+    }
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {
@@ -91,7 +126,9 @@ const handleSave = async (): Promise<void> => {
 
 onMounted(() => {
   // Clone the show to keep track of original values for comparison
-  originalShow.value = deepClone<Show>(show.value);
+  if (show.value?.id) {
+    originalShow.value = deepClone<Show>(show.value);
+  }
 });
 </script>
 

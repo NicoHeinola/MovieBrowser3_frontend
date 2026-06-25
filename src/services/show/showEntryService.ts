@@ -28,7 +28,7 @@ const update = async (entryId: number, request: UpdateShowEntryRequest): Promise
   return response.data;
 };
 
-const deleteEntry = async (entryId: number): Promise<void> => {
+const remove = async (entryId: number): Promise<void> => {
   await apiClient.delete(`entries/${entryId}`);
 };
 
@@ -37,5 +37,5 @@ export const showEntryService = {
   get,
   create,
   update,
-  deleteEntry,
+  remove,
 };

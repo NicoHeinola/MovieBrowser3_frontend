@@ -28,7 +28,7 @@ const update = async (episodeId: number, request: UpdateEpisodeRequest): Promise
   return response.data;
 };
 
-const deleteEpisode = async (episodeId: number): Promise<void> => {
+const remove = async (episodeId: number): Promise<void> => {
   await apiClient.delete(`episodes/${episodeId}`);
 };
 
@@ -37,5 +37,5 @@ export const showEpisodeService = {
   get,
   create,
   update,
-  deleteEpisode,
+  remove,
 };

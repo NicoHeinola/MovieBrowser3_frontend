@@ -6,7 +6,9 @@ import { computed } from 'vue';
 
 import { ShowAutocomplete } from '@/components/features/show/show-autocomplete';
 import { ShowLinkTypeSelect } from '@/components/features/show/show-link-type-select';
+import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { ShowLinkType } from '@/enums/show/ShowLinkType';
+import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getLinksRules } from './showLinksFormRules';
 
 const props = defineProps<{
@@ -17,6 +19,8 @@ const props = defineProps<{
 const outgoingLinks = defineModel<ShowLink[]>('outgoingLinks', { default: [] });
 
 const rules = computed(() => getLinksRules());
+
+const { confirm } = useConfirmDialog();
 
 const unsavedLinkRenderKey = Symbol('unsavedLinkRenderKey');
 
@@ -48,7 +52,21 @@ const addLink = (): void => {
   });
 };
 
-const removeLink = (index: number): void => {
+const removeLink = async (index: number): Promise<void> => {
+  const linkedShowName = getPrimaryTitle(outgoingLinks.value[index]?.target_show);
+
+  const isConfirmed = await confirm({
+    message: linkedShowName
+      ? `Are you sure you want to remove the link to "${linkedShowName}"?`
+      : 'Are you sure you want to remove this link?',
+    confirmColor: 'error',
+    confirmText: 'Remove',
+  });
+
+  if (!isConfirmed) {
+    return;
+  }
+
   outgoingLinks.value.splice(index, 1);
 };
 </script>
