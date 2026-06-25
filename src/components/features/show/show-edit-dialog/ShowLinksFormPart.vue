@@ -81,6 +81,7 @@ const removeLink = async (index: number): Promise<void> => {
         :exclude-ids="props.showId ? [props.showId] : []"
         :model-value="link.target_show ?? null"
         :rules="rules.linkedShow"
+        class="required"
         label="Linked show"
         @update:model-value="updateLinkedShow(link, $event)"
       />

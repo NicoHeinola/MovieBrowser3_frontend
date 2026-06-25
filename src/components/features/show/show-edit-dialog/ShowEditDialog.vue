@@ -147,16 +147,16 @@ onMounted(() => {
         <v-divider vertical />
         <base-form v-model="isFormValid" class="w-100 h-100 overflow-scroll" style="max-height: 60vh" id="show-form">
           <v-tabs-window :model-value="selectedTab[0]" class="flex-1-1">
-            <v-tabs-window-item class="pa-1" value="general">
+            <v-tabs-window-item class="pa-1" value="general" eager>
               <show-general-tab v-model:show="show" />
             </v-tabs-window-item>
-            <v-tabs-window-item class="pa-1" value="ui">
+            <v-tabs-window-item class="pa-1" value="ui" eager>
               <show-ui-tab v-model:show="show" />
             </v-tabs-window-item>
-            <v-tabs-window-item class="pa-1" value="entries">
+            <v-tabs-window-item class="pa-1" value="entries" eager>
               <show-entries-tab v-model:show="show" />
             </v-tabs-window-item>
-            <v-tabs-window-item class="pa-1" value="links">
+            <v-tabs-window-item class="pa-1" value="links" eager>
               <show-links-tab v-model:show="show" />
             </v-tabs-window-item>
           </v-tabs-window>
