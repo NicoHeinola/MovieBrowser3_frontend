@@ -85,7 +85,7 @@ describe('showEpisodeService', () => {
   it('deletes episodes', async () => {
     vi.mocked(apiClient.delete).mockResolvedValue(createResponse(undefined));
 
-    await expect(showEpisodeService.deleteEpisode(24)).resolves.toBeUndefined();
+    await expect(showEpisodeService.remove(24)).resolves.toBeUndefined();
 
     expect(apiClient.delete).toHaveBeenCalledWith('episodes/24');
   });
