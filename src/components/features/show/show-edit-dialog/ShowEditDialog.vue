@@ -50,8 +50,6 @@ const handleSave = async (): Promise<void> => {
     });
     const showNeedsUpdate = show.value.id && changedShow !== undefined;
 
-    console.log('Changed show:', changedShow);
-
     if (show.value.id) {
       if (showNeedsUpdate) {
         await showService.update(show.value.id, show.value);
@@ -62,18 +60,26 @@ const handleSave = async (): Promise<void> => {
       show.value.id = createdShow.id;
     }
 
-    // Save titles
-    await syncItems(
-      Array.from(show.value.titles.values()),
-      originalShow.value ? Array.from(originalShow.value.titles.values()) : [],
-      {
-        create: (title) => showTitleService.create(show.value.id, title),
-        update: async (id, title) => {
-          await showTitleService.update(id, title);
+    // Save titles if they have changed
+    const haveTitlesChanged =
+      getChangedObject(
+        originalShow.value ? Array.from(originalShow.value.titles.values()) : [],
+        Array.from(show.value.titles.values()),
+      ) !== undefined;
+
+    if (haveTitlesChanged) {
+      await syncItems(
+        Array.from(show.value.titles.values()),
+        originalShow.value ? Array.from(originalShow.value.titles.values()) : [],
+        {
+          create: (title) => showTitleService.create(show.value.id, title),
+          update: async (id, title) => {
+            await showTitleService.update(id, title);
+          },
+          delete: (id) => showTitleService.remove(id),
         },
-        delete: (id) => showTitleService.remove(id),
-      },
-    );
+      );
+    }
 
     originalShow.value = deepClone<Show>(show.value);
   } catch (error: unknown) {
