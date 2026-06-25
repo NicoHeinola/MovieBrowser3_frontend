@@ -19,7 +19,7 @@ import ShowGeneralTab from './ShowGeneralTab.vue';
 import ShowLinksTab from './ShowLinksTab.vue';
 import ShowUiTab from './ShowUiTab.vue';
 
-const props = defineProps<DialogComponentProps<Show>>();
+const props = defineProps<DialogComponentProps<boolean>>();
 
 const show = defineModel<Show>('show', { required: true });
 const originalShow = ref<Show | null>(null);
@@ -141,7 +141,7 @@ const deleteShow = async (): Promise<void> => {
 
   try {
     await showService.remove(show.value.id);
-    props.close();
+    props.close(true);
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {

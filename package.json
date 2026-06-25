@@ -4,7 +4,7 @@
   "type": "module",
   "version": "0.0.0",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "dev": "vite",
@@ -25,41 +25,40 @@
   },
   "dependencies": {
     "@fontsource/roboto": "^5.2.10",
-    "@mdi/font": "7.4.47",
-    "@tanstack/vue-query": "^5.99.0",
-    "@vue-dnd-kit/core": "^2.4.5",
-    "@vueuse/core": "^14.2.1",
-    "axios": "^1.15.0",
+    "@mdi/font": "^7.4.47",
+    "@tanstack/vue-query": "^5.101.1",
+    "@vue-dnd-kit/core": "^2.4.6",
+    "@vueuse/core": "^14.3.0",
+    "axios": "^1.18.1",
     "pinia": "^3.0.4",
-    "vue": "^3.5.30",
-    "vue-i18n": "^11.3.2",
-    "vue-router": "^5.0.3",
-    "vuetify": "^4.0.2"
+    "vue": "^3.5.39",
+    "vue-i18n": "^11.4.6",
+    "vue-router": "^5.1.0",
+    "vuetify": "^4.1.2"
   },
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.5",
-    "@types/node": "^24.12.0",
-    "@vitejs/plugin-vue": "^6.0.5",
-    "@vitest/ui": "^4.1.2",
-    "@vue/test-utils": "^2.4.6",
-    "@vue/tsconfig": "^0.9.0",
-    "eslint": "^9.39.4",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/node": "^24.13.2",
+    "@vitejs/plugin-vue": "^6.0.7",
+    "@vitest/ui": "^4.1.9",
+    "@vue/test-utils": "^2.4.11",
+    "@vue/tsconfig": "^0.9.1",
+    "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-config-vuetify": "^4.3.4",
-    "jsdom": "^29.0.1",
-    "npm-run-all2": "^8.0.4",
-    "prettier": "^3.8.1",
-    "sass-embedded": "^1.98.0",
-    "typescript": "~5.9.3",
-    "unplugin-fonts": "^1.4.0",
-    "vite": "^8.0.8",
+    "eslint-config-vuetify": "^4.7.1",
+    "jsdom": "^29.1.1",
+    "npm-run-all2": "^9.0.2",
+    "prettier": "^3.8.4",
+    "sass-embedded": "^1.100.0",
+    "typescript": "^6.0.3",
+    "unplugin-fonts": "^2.0.0",
+    "vite": "^8.1.0",
     "vite-plugin-vuetify": "^2.1.3",
-    "vitest": "^4.1.2",
-    "vue-tsc": "^3.2.5"
+    "vitest": "^4.1.9",
+    "vue-tsc": "^3.3.5"
   },
-  "overrides": {
-    "unplugin-fonts": {
-      "vite": "^8.0.0"
-    }
+  "allowScripts": {
+    "@parcel/watcher@2.5.6": true,
+    "vue-demi@0.14.10": true
   }
 }

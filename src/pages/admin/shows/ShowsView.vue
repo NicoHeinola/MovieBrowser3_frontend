@@ -40,8 +40,8 @@ const isLoading = computed<boolean>(() => isSearchPending.value || searchQuery.i
 
 const dialog = useDialog();
 
-const editShow = (show: Show | null) => {
-  void dialog.showDialog({
+const editShow = async (show: Show | null) => {
+  const refresh = await dialog.showDialog({
     component: ShowEditDialog,
     props: {
       show: show
@@ -60,6 +60,10 @@ const editShow = (show: Show | null) => {
           },
     },
   });
+
+  if (refresh) {
+    searchQuery.refetch();
+  }
 };
 
 watch(searchInput, (value) => {
