@@ -57,4 +57,7 @@ export const ComponentDefaults = {
   VPagination: {
     rounded: 'circle',
   },
+  VTooltip: {
+    width: '300px',
+  },
 };

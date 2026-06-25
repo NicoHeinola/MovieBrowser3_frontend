@@ -50,6 +50,9 @@ const youTubeSearch = (searchTerm: string) => {
             class="glass-panel rounded-lg required"
             label="Banner URL"
           >
+            <template #prepend>
+              <v-icon icon="mdi-help-circle" v-tooltip:bottom="'Affects the large banner of the frontpage only.'" />
+            </template>
           </v-text-field>
           <v-btn
             class="glass-panel"
@@ -81,7 +84,14 @@ const youTubeSearch = (searchTerm: string) => {
             :rules="rules.cardImageUrl"
             class="glass-panel rounded-lg required"
             label="Card Image URL"
-          />
+          >
+            <template #prepend>
+              <v-icon
+                icon="mdi-help-circle"
+                v-tooltip:bottom="'Affects cards and any other images when displaying the show.'"
+              />
+            </template>
+          </v-text-field>
           <v-btn
             class="glass-panel"
             color="primary"
@@ -117,7 +127,16 @@ const youTubeSearch = (searchTerm: string) => {
             :rules="rules.previewUrl"
             class="glass-panel rounded-lg"
             label="Preview URL (YouTube)"
-          />
+          >
+            <template #prepend>
+              <v-icon
+                icon="mdi-help-circle"
+                v-tooltip:bottom="
+                  'Used in same places as Card Image URL but takes priority most of the times or when hovered.'
+                "
+              />
+            </template>
+          </v-text-field>
           <v-btn
             class="glass-panel"
             color="primary"
