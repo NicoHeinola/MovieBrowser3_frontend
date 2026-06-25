@@ -35,9 +35,105 @@ const selectedTab = ref<string[]>(['general']);
 
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 
+const saveShow = async (): Promise<void> => {
+  const changedShow = getChangedObject(originalShow.value, show.value, {
+    excludes: ['titles', 'links', 'entries'],
+  });
+  const showNeedsUpdate = show.value.id && changedShow !== undefined;
+
+  if (show.value.id) {
+    if (showNeedsUpdate) {
+      await showService.update(show.value.id, show.value);
+    }
+  } else {
+    const createdShow = await showService.create(show.value);
+
+    show.value.id = createdShow.id;
+  }
+};
+
+const saveTitles = async (): Promise<void> => {
+  const haveTitlesChanged =
+    getChangedObject(
+      originalShow.value ? Array.from(originalShow.value.titles.values()) : [],
+      Array.from(show.value.titles.values()),
+    ) !== undefined;
+
+  if (!haveTitlesChanged) {
+    return;
+  }
+
+  await syncItems(
+    Array.from(show.value.titles.values()),
+    originalShow.value ? Array.from(originalShow.value.titles.values()) : [],
+    {
+      create: (title) => showTitleService.create(show.value.id, title),
+      update: async (id, title) => {
+        await showTitleService.update(id, title);
+      },
+      delete: (id) => showTitleService.remove(id),
+    },
+  );
+};
+
+const saveEntries = async (): Promise<void> => {
+  const haveEntriesChanged =
+    getChangedObject(originalShow.value?.entries ?? [], show.value.entries ?? []) !== undefined;
+
+  if (!haveEntriesChanged) {
+    return;
+  }
+
+  await syncItems(show.value.entries ?? [], originalShow.value?.entries ?? [], {
+    create: (entry) => showEntryService.create(show.value.id, entry),
+    update: async (id, entry) => {
+      await showEntryService.update(id, entry);
+    },
+    delete: (id) => showEntryService.remove(id),
+    onItem: (action, item) => {
+      if (action === 'delete') {
+        return;
+      }
+
+      const haveEpisodesChanged =
+        getChangedObject(
+          originalShow.value?.entries?.find((e) => e.id === item.id)?.episodes ?? [],
+          item.episodes ?? [],
+        ) !== undefined;
+
+      if (haveEpisodesChanged) {
+        syncItems(item.episodes ?? [], originalShow.value?.entries?.find((e) => e.id === item.id)?.episodes ?? [], {
+          create: (episode) => showEpisodeService.create(item.id, episode),
+          update: async (id, episode) => {
+            await showEpisodeService.update(id, episode);
+          },
+          delete: (id) => showEpisodeService.remove(id),
+        });
+      }
+    },
+  });
+};
+
+const saveLinks = async (): Promise<void> => {
+  const haveLinksChanged =
+    getChangedObject(originalShow.value?.outgoing_links ?? [], show.value.outgoing_links ?? []) !== undefined;
+
+  if (!haveLinksChanged) {
+    return;
+  }
+
+  await syncItems(show.value.outgoing_links ?? [], originalShow.value?.outgoing_links ?? [], {
+    create: (link) => showLinkService.create(show.value.id, link),
+    update: async (id, link) => {
+      await showLinkService.update(id, link);
+    },
+    delete: (id) => showLinkService.deleteLink(id),
+  });
+};
+
 /**
  * Saves the show and related data (entries, links) to the backend.
- * Creates the show first if it's new, then saves entries and links in parallel.
+ * Creates the show first if it's new, then saves each related resource with dedicated helpers.
  */
 const handleSave = async (): Promise<void> => {
   if (!isFormValid.value) {
@@ -47,92 +143,10 @@ const handleSave = async (): Promise<void> => {
   isSaving.value = true;
 
   try {
-    // Save show itself
-    const changedShow = getChangedObject(originalShow.value, show.value, {
-      excludes: ['titles', 'links', 'entries'],
-    });
-    const showNeedsUpdate = show.value.id && changedShow !== undefined;
-
-    if (show.value.id) {
-      if (showNeedsUpdate) {
-        await showService.update(show.value.id, show.value);
-      }
-    } else {
-      const createdShow = await showService.create(show.value);
-
-      show.value.id = createdShow.id;
-    }
-
-    // Save titles if they have changed
-    const haveTitlesChanged =
-      getChangedObject(
-        originalShow.value ? Array.from(originalShow.value.titles.values()) : [],
-        Array.from(show.value.titles.values()),
-      ) !== undefined;
-
-    if (haveTitlesChanged) {
-      await syncItems(
-        Array.from(show.value.titles.values()),
-        originalShow.value ? Array.from(originalShow.value.titles.values()) : [],
-        {
-          create: (title) => showTitleService.create(show.value.id, title),
-          update: async (id, title) => {
-            await showTitleService.update(id, title);
-          },
-          delete: (id) => showTitleService.remove(id),
-        },
-      );
-    }
-
-    // Save entries
-    const haveEntriesChanged =
-      getChangedObject(originalShow.value?.entries ?? [], show.value.entries ?? []) !== undefined;
-
-    if (haveEntriesChanged) {
-      await syncItems(show.value.entries ?? [], originalShow.value?.entries ?? [], {
-        create: (entry) => showEntryService.create(show.value.id, entry),
-        update: async (id, entry) => {
-          await showEntryService.update(id, entry);
-        },
-        delete: (id) => showEntryService.remove(id),
-        onItem: (action, item) => {
-          // If an entry is deleted, we don't need to check for episode changes
-          if (action === 'delete') {
-            return;
-          }
-
-          const haveEpisodesChanged =
-            getChangedObject(
-              originalShow.value?.entries?.find((e) => e.id === item.id)?.episodes ?? [],
-              item.episodes ?? [],
-            ) !== undefined;
-
-          if (haveEpisodesChanged) {
-            syncItems(item.episodes ?? [], originalShow.value?.entries?.find((e) => e.id === item.id)?.episodes ?? [], {
-              create: (episode) => showEpisodeService.create(item.id, episode),
-              update: async (id, episode) => {
-                await showEpisodeService.update(id, episode);
-              },
-              delete: (id) => showEpisodeService.remove(id),
-            });
-          }
-        },
-      });
-    }
-
-    // Save links
-    const haveLinksChanged =
-      getChangedObject(originalShow.value?.outgoing_links ?? [], show.value.outgoing_links ?? []) !== undefined;
-
-    if (haveLinksChanged) {
-      await syncItems(show.value.outgoing_links ?? [], originalShow.value?.outgoing_links ?? [], {
-        create: (link) => showLinkService.create(show.value.id, link),
-        update: async (id, link) => {
-          await showLinkService.update(id, link);
-        },
-        delete: (id) => showLinkService.deleteLink(id),
-      });
-    }
+    await saveShow();
+    await saveTitles();
+    await saveEntries();
+    await saveLinks();
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {
