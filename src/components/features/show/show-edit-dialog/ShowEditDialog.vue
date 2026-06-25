@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { DialogComponentProps } from '@/components/layouts/dialog-provider';
 import type { Show } from '@/interfaces/api/models/Show';
-import type { UpdateShowRequest } from '@/interfaces/api/requests/UpdateShowRequest.ts';
 
 import { onMounted, ref } from 'vue';
 import { BaseDialog } from '@/components/common/base-dialog';
@@ -9,7 +8,6 @@ import BaseForm from '@/components/common/base-form/BaseForm.vue';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { showEntryService } from '@/services/show/showEntryService';
 import { showEpisodeService } from '@/services/show/showEpisodeService.ts';
-import { showLinkService } from '@/services/show/showLinkService';
 import { showService } from '@/services/show/showService';
 import { showTitleService } from '@/services/show/showTitleService.ts';
 import { deepClone } from '@/utils/clone/deepClone.ts';
