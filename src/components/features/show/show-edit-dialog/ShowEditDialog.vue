@@ -147,6 +147,8 @@ const handleSave = async (): Promise<void> => {
     await saveTitles();
     await saveEntries();
     await saveLinks();
+
+    props.close(true);
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {
