@@ -25,7 +25,7 @@ const updatePanelModelValue = (value: string[]): void => {
     multiple
     @update:model-value="updatePanelModelValue"
   >
-    <v-expansion-panel class="rounded-lg border" value="entry">
+    <v-expansion-panel class="rounded-lg border" value="entry" eager>
       <template #title>
         <div class="d-flex align-center ga-2 flex-1-1-100 overflow-hidden">
           <v-icon class="handle cursor-grab text-medium-emphasis" icon="mdi-drag-vertical" @click.stop />
@@ -47,11 +47,11 @@ const updatePanelModelValue = (value: string[]): void => {
 
           <v-col cols="12">
             <v-tabs-window :model-value="selectedTab">
-              <v-tabs-window-item class="pa-1" value="general">
+              <v-tabs-window-item class="pa-1" value="general" eager>
                 <show-entry-general-form-part v-model:entry="entry" />
               </v-tabs-window-item>
 
-              <v-tabs-window-item class="pa-1" value="episodes">
+              <v-tabs-window-item class="pa-1" value="episodes" eager>
                 <show-entry-episodes-form-part v-model:entry="entry" />
               </v-tabs-window-item>
             </v-tabs-window>
