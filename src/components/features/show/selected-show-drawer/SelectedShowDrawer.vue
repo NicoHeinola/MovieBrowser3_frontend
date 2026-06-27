@@ -141,10 +141,10 @@ watch(isShown, (newVal) => {
         </v-col>
       </v-row>
       <v-row>
-        <v-col v-for="episode in selectedEntry?.episodes" cols="12" :key="episode.id">
+        <v-col v-for="(episode, index) in selectedEntry?.episodes" cols="12" :key="episode.id">
           <v-btn append-icon="mdi-play" class="max-width-button w-100 justify-start">
             <template #prepend>
-              <span class="text-medium-emphasis text-body-small">{{ episode.sequence_number }}</span>
+              <span class="text-medium-emphasis text-body-small">{{ index + 1 }}</span>
             </template>
             <span class="text-truncate">
               {{ getEpisodeName(episode) }}
