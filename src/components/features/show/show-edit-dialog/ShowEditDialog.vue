@@ -84,7 +84,24 @@ const saveEntries = async (): Promise<void> => {
     return;
   }
 
-  await syncItems(show.value.entries ?? [], originalShow.value?.entries ?? [], {
+  const originalEntries = originalShow.value?.entries ?? [];
+  let episodesToSyncAmount = (show.value.entries ?? []).reduce((amount, entry) => {
+    const originalEntry = originalEntries.find((originalEntry) => originalEntry.id === entry.id);
+    const haveEpisodesChanged = getChangedObject(originalEntry?.episodes ?? [], entry.episodes ?? []) !== undefined;
+
+    if (!haveEpisodesChanged) {
+      return amount;
+    }
+
+    const currentEpisodes = entry.episodes ?? [];
+    const deletedEpisodesCount = (originalEntry?.episodes ?? []).filter(
+      (originalEpisode) => !currentEpisodes.some((episode) => episode.id === originalEpisode.id),
+    ).length;
+
+    return amount + currentEpisodes.length + deletedEpisodesCount;
+  }, 0);
+
+  await syncItems(show.value.entries ?? [], originalEntries, {
     create: (entry) => showEntryService.create(show.value.id, entry),
     update: async (id, entry) => {
       await showEntryService.update(id, entry);
@@ -111,6 +128,35 @@ const saveEntries = async (): Promise<void> => {
               await showEpisodeService.update(id, episode);
             },
             delete: (id) => showEpisodeService.remove(id),
+            onItem: async (action, episode) => {
+              episodesToSyncAmount--;
+
+              switch (action) {
+                case 'create': {
+                  showSuccessSnackbar(
+                    `Added episode "${episode.name}" to entry "${item.name}". Episodes left: ${episodesToSyncAmount}`,
+                  );
+
+                  break;
+                }
+                case 'update': {
+                  showSuccessSnackbar(
+                    `Updated episode "${episode.name}" for entry "${item.name}". ` +
+                      `Episodes left: ${episodesToSyncAmount}`,
+                  );
+
+                  break;
+                }
+                case 'delete': {
+                  showSuccessSnackbar(
+                    `Removed episode "${episode.name}" from entry "${item.name}". ` +
+                      `Episodes left: ${episodesToSyncAmount}`,
+                  );
+
+                  break;
+                }
+              }
+            },
           },
         );
       }

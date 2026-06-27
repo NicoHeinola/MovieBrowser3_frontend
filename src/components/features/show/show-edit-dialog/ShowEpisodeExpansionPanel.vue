@@ -29,6 +29,7 @@ const updatePanelModelValue = (value: string[]): void => {
       <template #title>
         <div class="d-flex align-center ga-2 flex-1-1-100 overflow-hidden">
           <v-icon class="handle cursor-grab text-medium-emphasis" icon="mdi-drag-vertical" @click.stop />
+          <span class="text-medium-emphasis text-body-small">{{ episode.sequence_number + 1 }}</span>
           <span class="font-weight-medium text-truncate" style="flex: 1 1 auto; min-width: 0">
             {{ episode.name }}
           </span>
