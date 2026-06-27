@@ -3,7 +3,7 @@ import type { ShowEntryType } from '@/enums/show/ShowEntryType';
 export interface EpisodeFormData {
   id?: number;
   name: string;
-  filename: string;
+  file?: File;
   sequence_number: number;
 }
 

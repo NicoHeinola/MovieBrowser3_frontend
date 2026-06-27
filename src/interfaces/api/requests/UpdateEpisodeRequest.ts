@@ -1,5 +1,5 @@
 export interface UpdateEpisodeRequest {
   name: string;
-  filename: string;
+  file?: File;
   sequence_number: number;
 }

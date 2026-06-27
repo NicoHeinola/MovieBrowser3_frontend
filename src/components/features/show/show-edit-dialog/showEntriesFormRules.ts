@@ -6,6 +6,6 @@ export const getRules = (_formData: ShowEntriesFormData | null) => {
     name: [(value: string) => requiredRule(value.trim())],
     type: [(value: string) => requiredRule(value.trim())],
     episodeName: [(value: string) => requiredRule(value.trim())],
-    episodeFilename: [(value: string) => requiredRule(value.trim())],
+    episodeFile: [],
   };
 };

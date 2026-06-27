@@ -33,7 +33,7 @@ const updatePanelModelValue = (value: string[]): void => {
             {{ episode.name }}
           </span>
           <span class="text-medium-emphasis text-caption text-truncate" style="max-width: 40%; min-width: 0">
-            {{ episode.filename }}
+            {{ episode.file?.name }}
           </span>
         </div>
       </template>
@@ -45,7 +45,7 @@ const updatePanelModelValue = (value: string[]): void => {
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-text-field v-model="episode.filename" :rules="rules.episodeFilename" class="required" label="Filename" />
+            <v-file-input v-model="episode.file" :rules="rules.episodeFile" label="File" />
           </v-col>
         </v-row>
       </template>

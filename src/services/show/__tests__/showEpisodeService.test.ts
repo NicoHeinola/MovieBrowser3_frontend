@@ -30,7 +30,6 @@ describe('showEpisodeService', () => {
         id: 21,
         show_entry_id: 10,
         name: 'Episode 1',
-        filename: 'episode-1.mkv',
         sequence_number: 1,
       },
     ];
@@ -49,26 +48,22 @@ describe('showEpisodeService', () => {
   it('creates and updates episodes', async () => {
     const createRequest: CreateEpisodeRequest = {
       name: 'Episode 2',
-      filename: 'episode-2.mkv',
       sequence_number: 2,
     };
     const updateRequest: UpdateEpisodeRequest = {
       name: 'Episode 2 Director Cut',
-      filename: 'episode-2-director-cut.mkv',
       sequence_number: 2,
     };
     const createdEpisode: Episode = {
       id: 22,
       show_entry_id: 10,
       name: 'Episode 2',
-      filename: 'episode-2.mkv',
       sequence_number: 2,
     };
     const updatedEpisode: Episode = {
       id: 22,
       show_entry_id: 10,
       name: 'Episode 2 Director Cut',
-      filename: 'episode-2-director-cut.mkv',
       sequence_number: 2,
     };
 

@@ -51,7 +51,6 @@ const addEpisode = (): void => {
 
   const nextEpisode: EpisodeFormData = {
     name: 'Untitled',
-    filename: '',
     sequence_number: episodes.length,
   };
 
