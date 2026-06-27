@@ -8,6 +8,7 @@ import { AddDefaultBackgroundDialog } from '@/components/features/setting/add-de
 import { AddDefaultVideoDialog } from '@/components/features/setting/add-default-video-dialog';
 import { DefaultBackgroundGallery } from '@/components/features/setting/default-background-gallery';
 import { DefaultVideoGallery } from '@/components/features/setting/default-video-gallery';
+import { VideoSettings } from '@/components/features/setting/video-settings';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -140,6 +141,12 @@ onMounted(() => {
               <v-btn :loading="settingStore.isLoading" icon="mdi-plus" @click="void openAddBackgroundDialog()" />
             </div>
           </template>
+        </titled-section>
+      </v-col>
+
+      <v-col cols="12" lg="6">
+        <titled-section subtitle="Settings related to videos" title="Video">
+          <video-settings />
         </titled-section>
       </v-col>
     </v-row>
