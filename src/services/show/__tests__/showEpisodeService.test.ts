@@ -73,7 +73,21 @@ describe('showEpisodeService', () => {
     await expect(showEpisodeService.create(10, createRequest)).resolves.toEqual(createdEpisode);
     await expect(showEpisodeService.update(22, updateRequest)).resolves.toEqual(updatedEpisode);
 
-    expect(apiClient.post).toHaveBeenCalledWith('show-entries/10/episodes', createRequest);
+    const postCall = vi.mocked(apiClient.post).mock.calls[0];
+
+    expect(postCall?.[0]).toBe('show-entries/10/episodes');
+    expect(postCall?.[1]).toBeInstanceOf(FormData);
+    expect(postCall?.[2]).toEqual({
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    const formData = postCall?.[1] as FormData;
+    expect(formData.get('name')).toBe('Episode 2');
+    expect(formData.get('sequence_number')).toBe('2');
+    expect(formData.has('file')).toBe(false);
+
     expect(apiClient.put).toHaveBeenCalledWith('episodes/22', updateRequest);
   });
 

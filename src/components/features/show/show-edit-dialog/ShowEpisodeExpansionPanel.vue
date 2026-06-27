@@ -33,7 +33,7 @@ const updatePanelModelValue = (value: string[]): void => {
             {{ episode.name }}
           </span>
           <span class="text-medium-emphasis text-caption text-truncate" style="max-width: 40%; min-width: 0">
-            {{ episode.file?.name }}
+            {{ episode.file?.name || episode.filename || 'No video file exists.' }}
           </span>
         </div>
       </template>

@@ -33,7 +33,7 @@ const isSaving = ref<boolean>(false);
 const isDialogVisible = defineModel<boolean>({ required: true });
 const selectedTab = ref<string[]>(['general']);
 
-const { showAPIErrorSnackbar } = useCommonSnackbar();
+const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 
 const saveShow = async (): Promise<void> => {
   const changedShow = getChangedObject(originalShow.value, show.value, {
@@ -90,7 +90,7 @@ const saveEntries = async (): Promise<void> => {
       await showEntryService.update(id, entry);
     },
     delete: (id) => showEntryService.remove(id),
-    onItem: (action, item) => {
+    onItem: async (action, item) => {
       if (action === 'delete') {
         return;
       }
@@ -102,13 +102,17 @@ const saveEntries = async (): Promise<void> => {
         ) !== undefined;
 
       if (haveEpisodesChanged) {
-        syncItems(item.episodes ?? [], originalShow.value?.entries?.find((e) => e.id === item.id)?.episodes ?? [], {
-          create: (episode) => showEpisodeService.create(item.id, episode),
-          update: async (id, episode) => {
-            await showEpisodeService.update(id, episode);
+        await syncItems(
+          item.episodes ?? [],
+          originalShow.value?.entries?.find((e) => e.id === item.id)?.episodes ?? [],
+          {
+            create: (episode) => showEpisodeService.create(item.id, episode),
+            update: async (id, episode) => {
+              await showEpisodeService.update(id, episode);
+            },
+            delete: (id) => showEpisodeService.remove(id),
           },
-          delete: (id) => showEpisodeService.remove(id),
-        });
+        );
       }
     },
   });
@@ -147,6 +151,8 @@ const handleSave = async (): Promise<void> => {
     await saveTitles();
     await saveEntries();
     await saveLinks();
+
+    showSuccessSnackbar('Show saved successfully.');
 
     props.close(true);
   } catch (error: unknown) {
