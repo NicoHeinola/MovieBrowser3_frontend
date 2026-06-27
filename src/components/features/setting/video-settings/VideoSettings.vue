@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
+import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
-
 import { getRules } from './videoSettingsRules';
 
-const videoBasePath = ref<string>('');
-const vlcMediaPlayerPath = ref<string>('');
-
 const rules = getRules();
+const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 
 const settingStore = useSettingStore();
+
+const updateSetting = async (key: string, value: unknown): Promise<void> => {
+  try {
+    await settingStore.updateSetting(key, value);
+    showSuccessSnackbar('Setting updated.');
+  } catch (error: unknown) {
+    showAPIErrorSnackbar(error);
+  }
+};
 </script>
 
 <template>
@@ -22,7 +27,11 @@ const settingStore = useSettingStore();
         <v-skeleton-loader type="text" width="65" />
       </template>
       <template v-else>
-        <v-text-field v-model="videoBasePath" :rules="rules.videoBasePath" label="Video base path">
+        <v-text-field
+          v-model="settingStore.settings.video_base_path.value"
+          :rules="rules.videoBasePath"
+          label="Video base path"
+        >
           <template #prepend>
             <v-icon
               icon="mdi-help-circle"
@@ -32,7 +41,7 @@ const settingStore = useSettingStore();
             />
           </template>
         </v-text-field>
-        <v-btn>Save</v-btn>
+        <v-btn @click="updateSetting('video_base_path', settingStore.settings.video_base_path.value)"> Save </v-btn>
       </template>
     </v-col>
     <v-col class="d-flex ga-2 align-center" cols="12">
@@ -42,12 +51,18 @@ const settingStore = useSettingStore();
         <v-skeleton-loader type="text" width="65" />
       </template>
       <template v-else>
-        <v-text-field v-model="vlcMediaPlayerPath" :rules="rules.vlcMediaPlayerPath" label="VLC Media Player path">
+        <v-text-field
+          v-model="settingStore.settings.vlc_media_player_path.value"
+          :rules="rules.vlcMediaPlayerPath"
+          label="VLC Media Player path"
+        >
           <template #prepend>
             <v-icon icon="mdi-help-circle" v-tooltip:bottom="'Without this, the app cannot play videos.'" />
           </template>
         </v-text-field>
-        <v-btn>Save</v-btn>
+        <v-btn @click="updateSetting('vlc_media_player_path', settingStore.settings.vlc_media_player_path.value)">
+          Save
+        </v-btn>
       </template>
     </v-col>
   </v-row>

@@ -56,15 +56,6 @@ export const useSettingStore = defineStore('setting', () => {
     }
   };
 
-  const updateSettingArray = async (key: string, values: string[]): Promise<void> => {
-    await settingService.updateSetting(key, {
-      value: values,
-    });
-
-    await queryClient.resetQueries({ queryKey: [SettingQueryKey.Settings] });
-    await fetchSettings();
-  };
-
   const addSettingArrayItem = async (key: string, value: string): Promise<void> => {
     const trimmedValue = value.trim();
 
@@ -74,7 +65,7 @@ export const useSettingStore = defineStore('setting', () => {
 
     const values = getSetting<string[]>(key) ?? [];
 
-    await updateSettingArray(key, [...values, trimmedValue]);
+    await updateSetting(key, [...values, trimmedValue]);
   };
 
   const removeSettingArrayItem = async (key: string, value: string): Promise<void> => {
@@ -91,7 +82,7 @@ export const useSettingStore = defineStore('setting', () => {
       return;
     }
 
-    await updateSettingArray(key, nextValues);
+    await updateSetting(key, nextValues);
   };
 
   const addBannerDefaultBackground = async (url: string): Promise<void> => {
@@ -114,6 +105,13 @@ export const useSettingStore = defineStore('setting', () => {
     return settings.value[key]?.value as T;
   };
 
+  const updateSetting = async (key: string, value: unknown): Promise<void> => {
+    await settingService.updateSetting(key, { value });
+
+    await queryClient.resetQueries({ queryKey: [SettingQueryKey.Settings] });
+    await fetchSettings();
+  };
+
   return {
     settings,
     isLoading,
@@ -125,5 +123,6 @@ export const useSettingStore = defineStore('setting', () => {
     removeBannerDefaultBackground,
     fetchSettings,
     getSetting,
+    updateSetting,
   };
 });
