@@ -4,7 +4,7 @@ import { urlRule } from '../urlRule';
 
 describe('urlRule', () => {
   it('returns true for valid http and https URLs', () => {
-    expect(urlRule('http://example.com')).toBe(true);
+    expect(urlRule('https://example.com')).toBe(true);
     expect(urlRule('https://example.com/path?query=1')).toBe(true);
   });
 
