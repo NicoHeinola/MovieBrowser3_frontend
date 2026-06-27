@@ -6,6 +6,7 @@ import { ref, useTemplateRef } from 'vue';
 
 import SortableItem from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
+import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 
 import ShowEpisodeExpansionPanel from './ShowEpisodeExpansionPanel.vue';
 
@@ -15,6 +16,9 @@ const episodeZoneRef = useTemplateRef<HTMLElement>('episodeZone');
 const expandedEpisodes = ref<EpisodeFormData[]>([]);
 
 const { confirm } = useConfirmDialog();
+const { showSuccessSnackbar, showWarningSnackbar } = useCommonSnackbar();
+
+const preferredEpisodeFileExtensions = ['.mp4', '.m4v', '.mkv', '.webm', '.mov', '.avi', '.wmv', '.mpeg', '.mpg'];
 
 const unsavedEpisodeRenderKey = Symbol('unsavedEpisodeRenderKey');
 const episodeDragGroup = `show-episode-${crypto.randomUUID()}`;
@@ -56,6 +60,90 @@ const addEpisode = (): void => {
 
   episodes.push(nextEpisode);
   setEpisodeExpanded(nextEpisode, true);
+};
+
+const getEpisodeNameFromFilename = (filename: string): string => {
+  const extensionIndex = filename.lastIndexOf('.');
+  const filenameWithoutExtension = extensionIndex > 0 ? filename.slice(0, extensionIndex) : filename;
+  const normalizedFilename = filenameWithoutExtension.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+
+  return normalizedFilename === '' ? 'Untitled' : normalizedFilename;
+};
+
+const addPickedEpisodes = (selectedFiles: File[]): void => {
+  if (selectedFiles.length === 0) {
+    return;
+  }
+
+  const episodes = (entry.value.episodes ??= []);
+  const existingFilenames = new Set(
+    episodes
+      .map((episode) => episode.file?.name ?? episode.filename)
+      .filter((filename): filename is string => filename != null),
+  );
+  const duplicateFilenames: string[] = [];
+  const nextEpisodes: EpisodeFormData[] = [];
+
+  for (const file of selectedFiles) {
+    if (existingFilenames.has(file.name)) {
+      duplicateFilenames.push(file.name);
+      continue;
+    }
+
+    existingFilenames.add(file.name);
+
+    nextEpisodes.push({
+      name: getEpisodeNameFromFilename(file.name),
+      file,
+      filename: file.name,
+      sequence_number: episodes.length + nextEpisodes.length,
+    });
+  }
+
+  if (nextEpisodes.length === 0) {
+    showWarningSnackbar(`No episodes were added. Duplicate filenames: ${duplicateFilenames.join(', ')}`);
+    return;
+  }
+
+  episodes.push(...nextEpisodes);
+  expandedEpisodes.value = [...new Set([...expandedEpisodes.value, ...nextEpisodes])];
+
+  if (duplicateFilenames.length > 0) {
+    showWarningSnackbar(
+      `Added ${nextEpisodes.length} episode(s). Skipped duplicate filenames: ${duplicateFilenames.join(', ')}`,
+    );
+    return;
+  }
+
+  showSuccessSnackbar(`Added ${nextEpisodes.length} episode(s) from files.`);
+};
+
+const addEpisodesFromFilesWithInput = (): void => {
+  const input = document.createElement('input');
+
+  input.type = 'file';
+  input.accept = preferredEpisodeFileExtensions.join(',');
+  input.multiple = true;
+  input.style.display = 'none';
+
+  input.addEventListener(
+    'change',
+    () => {
+      const selectedFiles = Array.from(input.files ?? []);
+
+      input.remove();
+
+      addPickedEpisodes(selectedFiles);
+    },
+    { once: true },
+  );
+
+  document.body.append(input);
+  input.click();
+};
+
+const addEpisodesFromFiles = async (): Promise<void> => {
+  addEpisodesFromFilesWithInput();
 };
 
 const removeEpisode = async (index: number): Promise<void> => {
@@ -131,8 +219,9 @@ makeDroppable(
       </div>
     </v-col>
 
-    <v-col cols="12">
+    <v-col class="d-flex ga-2 align-center" cols="12">
       <v-btn size="small" variant="text" @click="addEpisode"> Add another episode </v-btn>
+      <v-btn size="small" variant="text" @click="addEpisodesFromFiles"> Add episodes from files </v-btn>
     </v-col>
   </v-row>
 </template>
