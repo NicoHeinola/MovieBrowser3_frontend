@@ -89,7 +89,7 @@ watch(items, (nextItems) => {
           <v-sheet class="d-flex align-center justify-center" color="background" height="220" v-else>
             <div class="d-flex flex-column align-center ga-2 text-medium-emphasis">
               <v-icon icon="mdi-youtube" size="40" />
-              <span class="text-body-2">Preview unavailable</span>
+              <span class="text-body-medium">Preview unavailable</span>
             </div>
           </v-sheet>
         </div>

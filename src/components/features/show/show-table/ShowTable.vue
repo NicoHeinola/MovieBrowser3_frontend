@@ -137,7 +137,7 @@ watch(
     <template #item.title="{ value, item }">
       <div class="py-2">
         <p class="mb-1 font-weight-medium text-truncate">{{ value }}</p>
-        <p class="mb-0 text-body-2 text-medium-emphasis">#{{ item.id }}</p>
+        <p class="mb-0 text-body-medium text-medium-emphasis">#{{ item.id }}</p>
       </div>
     </template>
 

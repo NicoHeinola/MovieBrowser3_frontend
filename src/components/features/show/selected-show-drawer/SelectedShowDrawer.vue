@@ -8,8 +8,10 @@ import { SectionContainer } from '@/components/common/section-container';
 import { VolumeControl } from '@/components/common/volume-control';
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { ShowEntrySelect } from '@/components/features/show/show-entry-select';
+import { ShowLinkType } from '@/enums/show/ShowLinkType';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
+import { getShowLinkTypeIcon } from '@/utils/show/getShowLinkTypeIcon';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
 
 const props = defineProps<{
@@ -105,6 +107,15 @@ watch(isShown, (newVal) => {
 
       <div class="image-shadow position-absolute w-100 h-100 top-0 left-0">
         <section-container class="d-flex flex-column justify-end h-100">
+          <div class="d-flex ga-2">
+            <v-tooltip v-for="category in props.show?.categories" :key="category.value">
+              <template #activator="{ props: tooltipProps }">
+                <v-icon :icon="category.icon" color="primary" v-bind="tooltipProps"> </v-icon>
+              </template>
+              <span>{{ category.name }}</span>
+            </v-tooltip>
+          </div>
+
           <h1>{{ getPrimaryTitle(props.show) }}</h1>
 
           <expandable-text
@@ -140,7 +151,8 @@ watch(isShown, (newVal) => {
           <v-btn :disabled="!selectedEntry" append-icon="mdi-play"> Watch Season </v-btn>
         </v-col>
       </v-row>
-      <v-row>
+
+      <v-row v-if="selectedEntry?.episodes && selectedEntry.episodes.length > 0">
         <v-col v-for="(episode, index) in selectedEntry?.episodes" cols="12" :key="episode.id">
           <v-btn append-icon="mdi-play" class="max-width-button w-100 justify-start">
             <template #prepend>
@@ -151,6 +163,15 @@ watch(isShown, (newVal) => {
             </span>
             <v-spacer />
           </v-btn>
+        </v-col>
+      </v-row>
+
+      <v-row class="text-body-medium text-medium-emphasis">
+        <v-col v-for="link in props.show?.outgoing_links" class="d-flex ga-2 align-center" cols="12" :key="link.id">
+          <p>{{ getPrimaryTitle(link.target_show) }}</p>
+          <p class="text-primary">
+            ({{ $t(`showLink.type.${link.type}`) }} <v-icon :icon="getShowLinkTypeIcon(link.type)" />)
+          </p>
         </v-col>
       </v-row>
     </section-container>

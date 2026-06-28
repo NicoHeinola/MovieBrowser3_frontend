@@ -43,8 +43,8 @@ const showsQuery = useAPIQuery<HomeShowsResponse>({
     const [latest, continueToWatch, isekai, romance, random] = await Promise.all([
       showService.list({ sort: '-created_at', page: { size: bannerMaxCols.value } }),
       showService.list({ sort: '-created_at', page: { size: 20 } }),
-      showService.list({ sort: '-created_at', page: { size: 20 } }),
-      showService.list({ sort: '-created_at', page: { size: 20 } }),
+      showService.list({ filter: { 'categories.value': 'isekai' }, sort: '-created_at', page: { size: 20 } }),
+      showService.list({ filter: { 'categories.value': 'romance' }, sort: '-created_at', page: { size: 20 } }),
       showService.list({ sort: 'random', page: { size: 20 } }),
     ]);
 
