@@ -77,10 +77,11 @@ describe('showEpisodeService', () => {
 
     expect(postCall?.[0]).toBe('show-entries/10/episodes');
     expect(postCall?.[1]).toBeInstanceOf(FormData);
-    expect(postCall?.[2]).toEqual({
+    expect(postCall?.[2]).toMatchObject({
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      timeout: 300_000,
     });
 
     const formData = postCall?.[1] as FormData;
@@ -88,7 +89,20 @@ describe('showEpisodeService', () => {
     expect(formData.get('sequence_number')).toBe('2');
     expect(formData.has('file')).toBe(false);
 
-    expect(apiClient.put).toHaveBeenCalledWith('episodes/22', updateRequest);
+    const putCall = vi.mocked(apiClient.put).mock.calls[0];
+    expect(putCall?.[0]).toBe('episodes/22');
+    expect(putCall?.[1]).toBeInstanceOf(FormData);
+    expect(putCall?.[2]).toMatchObject({
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      timeout: 300_000,
+    });
+
+    const updateFormData = putCall?.[1] as FormData;
+    expect(updateFormData.get('name')).toBe('Episode 2 Director Cut');
+    expect(updateFormData.get('sequence_number')).toBe('2');
+    expect(updateFormData.has('file')).toBe(false);
   });
 
   it('deletes episodes', async () => {
