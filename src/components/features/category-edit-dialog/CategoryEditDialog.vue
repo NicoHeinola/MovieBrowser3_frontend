@@ -5,10 +5,13 @@ import type { Category } from '@/interfaces/api/models/Category';
 import { onMounted, ref } from 'vue';
 import { BaseDialog } from '@/components/common/base-dialog';
 import BaseForm from '@/components/common/base-form/BaseForm.vue';
+import { MdiIconAutocomplete } from '@/components/common/mdi-icon-autocomplete';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog.ts';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { categoryService } from '@/services/show/categoryService.ts';
 import { deepClone } from '@/utils/clone/deepClone.ts';
+import { getChangedObject } from '@/utils/object/hasObjectChanged';
+import { getRules } from './categoryEditDialogRules';
 
 const props = defineProps<DialogComponentProps<boolean>>();
 
@@ -23,6 +26,29 @@ const isSaving = ref<boolean>(false);
 const isDialogVisible = defineModel<boolean>({ required: true });
 
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
+const rules = getRules();
+
+const saveCategory = async (): Promise<void> => {
+  const request = {
+    name: category.value.name,
+    value: category.value.value,
+    icon: category.value.icon,
+  };
+
+  if (category.value.id) {
+    const hasChanges = getChangedObject(originalCategory.value, category.value) !== undefined;
+
+    if (!hasChanges) {
+      return;
+    }
+
+    await categoryService.update(category.value.id, request);
+    return;
+  }
+
+  const createdCategory = await categoryService.create(request);
+  category.value.id = createdCategory.id;
+};
 
 const handleSave = async (): Promise<void> => {
   if (!isFormValid.value) {
@@ -32,6 +58,8 @@ const handleSave = async (): Promise<void> => {
   isSaving.value = true;
 
   try {
+    await saveCategory();
+
     showSuccessSnackbar('Category saved successfully.');
 
     props.close(true);
@@ -67,7 +95,6 @@ const deleteCategory = async (): Promise<void> => {
 };
 
 onMounted(() => {
-  // Clone the category to keep track of original values for comparison
   if (category.value?.id) {
     originalCategory.value = deepClone<Category>(category.value);
   }
@@ -75,13 +102,30 @@ onMounted(() => {
 </script>
 
 <template>
-  <base-dialog v-model="isDialogVisible">
+  <base-dialog v-model="isDialogVisible" max-width="600px">
     <template #title>
       {{ category?.id ? 'Edit Category' : 'Create Category' }}
     </template>
 
     <template #default>
-      <base-form v-model="isFormValid" class="w-100 h-100 overflow-scroll" style="max-height: 60vh" id="category-form">
+      <base-form v-model="isFormValid" @submit.prevent="handleSave" id="category-form">
+        <v-row>
+          <v-col cols="12">
+            <v-text-field v-model="category.name" :rules="rules.name" class="required" label="Name" />
+          </v-col>
+
+          <v-col cols="12">
+            <v-text-field v-model="category.value" :rules="rules.value" class="required" label="Value">
+              <template #prepend>
+                <v-icon icon="mdi-help-circle" v-tooltip:bottom="'Stable internal key used by backend.'" />
+              </template>
+            </v-text-field>
+          </v-col>
+
+          <v-col cols="12">
+            <mdi-icon-autocomplete v-model="category.icon" :rules="rules.icon" label="Icon" />
+          </v-col>
+        </v-row>
       </base-form>
     </template>
 

@@ -7,15 +7,12 @@ import { TitledSection } from '@/components/common/titled-section';
 import { CategoryEditDialog } from '@/components/features/category-edit-dialog';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
-import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
-import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { CategoryQueryKey } from '@/enums/query/categoryQueryKey';
 import { categoryService } from '@/services/show/categoryService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
+import { deepClone } from '@/utils/clone/deepClone';
 
 const dialog = useDialog();
-const { confirm } = useConfirmDialog();
-const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const settingStore = useSettingStore();
 
 const categoriesQuery = useAPIQuery<PaginatedResponse<Category>>({
@@ -29,11 +26,20 @@ const categoriesQuery = useAPIQuery<PaginatedResponse<Category>>({
   placeholderData: (previousData) => previousData,
 });
 
+const getEmptyCategory = (): Category => {
+  return {
+    id: 0,
+    name: '',
+    value: '',
+    icon: 'mdi-tag-outline',
+  };
+};
+
 const openEditCategoryDialog = async (category?: Category): Promise<void> => {
   const refresh = await dialog.showDialog({
     component: CategoryEditDialog,
     props: {
-      category,
+      category: category ? deepClone(category) : getEmptyCategory(),
     },
   });
 
