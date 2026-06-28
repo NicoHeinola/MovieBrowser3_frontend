@@ -3,6 +3,7 @@ import type { ShowGeneralFormData } from './ShowGeneralFormData';
 import { computed } from 'vue';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
+import ShowCategoriesAutocomplete from './ShowCategoriesAutocomplete.vue';
 import { getRules } from './showGeneralFormRules';
 
 const show = defineModel<ShowGeneralFormData>('show', { required: true });
@@ -113,6 +114,12 @@ const googleSearch = (searchTerm: string) => {
           />
         </template>
       </v-textarea>
+    </v-col>
+  </v-row>
+
+  <v-row>
+    <v-col cols="12">
+      <show-categories-autocomplete v-model:categories="show!.categories" />
     </v-col>
   </v-row>
 </template>

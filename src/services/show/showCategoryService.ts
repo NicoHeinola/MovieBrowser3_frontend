@@ -8,8 +8,8 @@ const create = async (showId: number, categoryId: number): Promise<Category> => 
   return response.data;
 };
 
-const remove = async (categoryId: number): Promise<void> => {
-  await apiClient.delete(`categories/${categoryId}`);
+const remove = async (showId: number, categoryId: number): Promise<void> => {
+  await apiClient.delete(`shows/${showId}/categories/${categoryId}`);
 };
 
 export const showCategoryService = {

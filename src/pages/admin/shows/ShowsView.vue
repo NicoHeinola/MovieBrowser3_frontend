@@ -48,6 +48,7 @@ const editShow = async (show: Show | null) => {
         ? deepClone(show)
         : {
             titles: [{ title: '', is_primary: true }],
+            categories: [],
             entries: [
               {
                 name: 'Untitled',

@@ -7,6 +7,7 @@ import { BaseDialog } from '@/components/common/base-dialog';
 import BaseForm from '@/components/common/base-form/BaseForm.vue';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog.ts';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { showCategoryService } from '@/services/show/showCategoryService';
 import { showEntryService } from '@/services/show/showEntryService';
 import { showEpisodeService } from '@/services/show/showEpisodeService.ts';
 import { showLinkService } from '@/services/show/showLinkService';
@@ -37,7 +38,7 @@ const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 
 const saveShow = async (): Promise<void> => {
   const changedShow = getChangedObject(originalShow.value, show.value, {
-    excludes: ['titles', 'links', 'entries'],
+    excludes: ['titles', 'links', 'entries', 'categories'],
   });
   const showNeedsUpdate = show.value.id && changedShow !== undefined;
 
@@ -49,6 +50,23 @@ const saveShow = async (): Promise<void> => {
     const createdShow = await showService.create(show.value);
 
     show.value.id = createdShow.id;
+  }
+};
+
+const saveCategories = async (): Promise<void> => {
+  const selectedCategoryIds = new Set<number>((show.value.categories ?? []).map((category) => category.id));
+  const originalCategoryIds = new Set<number>((originalShow.value?.categories ?? []).map((category) => category.id));
+
+  for (const categoryId of selectedCategoryIds) {
+    if (!originalCategoryIds.has(categoryId)) {
+      await showCategoryService.create(show.value.id, categoryId);
+    }
+  }
+
+  for (const categoryId of originalCategoryIds) {
+    if (!selectedCategoryIds.has(categoryId)) {
+      await showCategoryService.remove(show.value.id, categoryId);
+    }
   }
 };
 
@@ -195,6 +213,7 @@ const handleSave = async (): Promise<void> => {
   try {
     await saveShow();
     await saveTitles();
+    await saveCategories();
     await saveEntries();
     await saveLinks();
 
