@@ -57,6 +57,15 @@ const router = createRouter({
       component: () => import('@/pages/admin/shows/ShowsView.vue'),
     },
     {
+      path: '/admin/categories',
+      name: 'admin-categories',
+      meta: {
+        requiresAuth: true,
+        requiresAdmin: true,
+      },
+      component: () => import('@/pages/admin/categories/CategoriesView.vue'),
+    },
+    {
       path: '/admin/settings',
       name: 'admin-settings',
       meta: {

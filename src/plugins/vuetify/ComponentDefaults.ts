@@ -64,6 +64,6 @@ export const ComponentDefaults = {
     rounded: 'circle',
   },
   VTooltip: {
-    width: '300px',
+    maxWidth: '300px',
   },
 };

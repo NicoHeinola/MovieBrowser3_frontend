@@ -11,6 +11,7 @@ import NavIndicator from './NavIndicator.vue';
 const links: NavigationLinkItem[] = [
   { label: 'Dashboard', routeName: 'admin-dashboard', icon: 'mdi-view-dashboard' },
   { label: 'Shows', routeName: 'admin-shows', icon: 'mdi-movie-edit' },
+  { label: 'Categories', routeName: 'admin-categories', icon: 'mdi-shape' },
   { label: 'Settings', routeName: 'admin-settings', icon: 'mdi-cog' },
 ];
 
