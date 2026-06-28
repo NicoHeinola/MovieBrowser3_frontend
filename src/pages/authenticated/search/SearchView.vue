@@ -11,6 +11,7 @@ import { ShowGrid } from '@/components/features/show/show-grid';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
+import { deepClone } from '@/utils/clone/deepClone';
 
 const searchInput = ref<string>('');
 const searchTerm = ref<string>('');
@@ -37,7 +38,7 @@ const totalResults = computed<number>(() => searchQuery.data.value?.meta.total ?
 const isLoading = computed<boolean>(() => isSearchPending.value || searchQuery.isFetching.value);
 
 const selectShow = (show: Show | null) => {
-  selectedShow.value = show;
+  selectedShow.value = deepClone(show);
   isShowDrawerVisible.value = true;
 };
 
@@ -111,5 +112,5 @@ watchDebounced(
 
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
 
-  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedShow" />
+  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show="selectedShow" />
 </template>

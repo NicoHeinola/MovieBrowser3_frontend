@@ -17,6 +17,7 @@ import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
+import { deepClone } from '@/utils/clone/deepClone';
 import { homepageSections } from './homepageSections';
 
 const selectedBannerShow = ref<Show | null>(null);
@@ -119,7 +120,7 @@ watch(
   () => selectedBannerShow.value,
   () => {
     if (!!selectedBannerShow.value) {
-      selectedShow.value = selectedBannerShow.value;
+      selectedShow.value = deepClone(selectedBannerShow.value);
     }
   },
 );
@@ -217,5 +218,5 @@ watch(
     </v-row>
   </page-container>
 
-  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" :show="selectedShow" />
+  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show="selectedShow" />
 </template>

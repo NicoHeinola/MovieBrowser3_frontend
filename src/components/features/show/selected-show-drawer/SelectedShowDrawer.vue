@@ -8,19 +8,21 @@ import { SectionContainer } from '@/components/common/section-container';
 import { VolumeControl } from '@/components/common/volume-control';
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { ShowEntrySelect } from '@/components/features/show/show-entry-select';
-import { ShowLinkType } from '@/enums/show/ShowLinkType';
+import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { showService } from '@/services/show/showService';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getShowLinkTypeIcon } from '@/utils/show/getShowLinkTypeIcon';
 import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
 
-const props = defineProps<{
-  show: Show | null;
-}>();
+const show = defineModel<Show | null>('show', { required: true });
 
 const isShown = defineModel<boolean>('isShown', {
   default: false,
 });
+
+const isLoadingNextShow = ref<boolean>(false);
+
 const selectedEntry = ref<ShowEntry | null>(null);
 
 const hideTimeoutId = ref<number | null>(null);
@@ -28,6 +30,8 @@ const hideTimeoutId = ref<number | null>(null);
 const isDescriptionExpanded = ref<boolean>(false);
 
 const { xlAndUp } = useDisplay();
+
+const { showAPIErrorSnackbar } = useCommonSnackbar();
 
 const isVideoPlaying = ref<boolean>(false);
 const isVideoError = ref<boolean>(false);
@@ -39,8 +43,8 @@ const close = () => {
 };
 
 const youtubeEmbedUrl = computed<string | null>(() => {
-  if (!props.show?.preview_url) return null;
-  return getYouTubeEmbedUrl(props.show.preview_url);
+  if (!show.value?.preview_url) return null;
+  return getYouTubeEmbedUrl(show.value.preview_url);
 });
 
 const videoId = computed<string | null>(() => {
@@ -52,7 +56,24 @@ const videoId = computed<string | null>(() => {
 const canPlayVideo = computed<boolean>(() => Boolean(isShown.value && videoId.value) && !isVideoError.value);
 const activeVideoId = computed<string>(() => videoId.value ?? 'drawer-video');
 
-watch([() => props.show, () => isShown.value], () => {
+const changeShow = async (showId: number) => {
+  if (isLoadingNextShow.value) {
+    return;
+  }
+
+  isLoadingNextShow.value = true;
+
+  try {
+    const changedShow = await showService.get(showId);
+    show.value = changedShow;
+  } catch (error) {
+    showAPIErrorSnackbar(error);
+  } finally {
+    isLoadingNextShow.value = false;
+  }
+};
+
+watch([() => show.value, () => isShown.value], () => {
   selectedEntry.value = null;
   isVideoPlaying.value = false;
   isVideoError.value = false;
@@ -96,19 +117,17 @@ watch(isShown, (newVal) => {
 
       <v-fade-transition>
         <v-img
-          :src="props.show?.card_image_url || props.show?.banner_url"
+          :src="show?.card_image_url || show?.banner_url"
           class="w-100 h-100"
           cover
-          v-if="
-            ((props.show?.card_image_url || props.show?.banner_url) && (!canPlayVideo || !isVideoPlaying)) || !videoId
-          "
+          v-if="((show?.card_image_url || show?.banner_url) && (!canPlayVideo || !isVideoPlaying)) || !videoId"
         />
       </v-fade-transition>
 
       <div class="image-shadow position-absolute w-100 h-100 top-0 left-0">
         <section-container class="d-flex flex-column justify-end h-100">
           <div class="d-flex ga-2">
-            <v-tooltip v-for="category in props.show?.categories" :key="category.value">
+            <v-tooltip v-for="category in show?.categories" :key="category.value">
               <template #activator="{ props: tooltipProps }">
                 <v-icon :icon="category.icon" color="primary" v-bind="tooltipProps"> </v-icon>
               </template>
@@ -116,13 +135,9 @@ watch(isShown, (newVal) => {
             </v-tooltip>
           </div>
 
-          <h1>{{ getPrimaryTitle(props.show) }}</h1>
+          <h1>{{ getPrimaryTitle(show) }}</h1>
 
-          <expandable-text
-            v-model="isDescriptionExpanded"
-            :text="props.show?.description"
-            class="text-medium-emphasis"
-          />
+          <expandable-text v-model="isDescriptionExpanded" :text="show?.description" class="text-medium-emphasis" />
         </section-container>
       </div>
 
@@ -166,12 +181,39 @@ watch(isShown, (newVal) => {
         </v-col>
       </v-row>
 
-      <v-row class="text-body-medium text-medium-emphasis">
-        <v-col v-for="link in props.show?.outgoing_links" class="d-flex ga-2 align-center" cols="12" :key="link.id">
-          <p>{{ getPrimaryTitle(link.target_show) }}</p>
-          <p class="text-primary">
-            ({{ $t(`showLink.type.${link.type}`) }} <v-icon :icon="getShowLinkTypeIcon(link.type)" />)
-          </p>
+      <v-row v-if="(show?.outgoing_links?.length ?? 0) > 0">
+        <v-col cols="12">
+          <v-expansion-panels color="background" variant="accordion">
+            <v-expansion-panel>
+              <v-expansion-panel-title class="text-body-2 text-medium-emphasis">
+                Related shows ({{ show?.outgoing_links?.length ?? 0 }})
+              </v-expansion-panel-title>
+
+              <v-expansion-panel-text>
+                <v-list density="compact">
+                  <v-list-item
+                    v-for="link in show?.outgoing_links"
+                    class="d-flex ga-2 justify-space-between"
+                    :key="link.id"
+                  >
+                    <p
+                      :class="{ link: !isLoadingNextShow, 'text-medium-emphasis': isLoadingNextShow }"
+                      class="text-body-medium cursor-pointer text-truncate"
+                      @click="changeShow(link.target_show!.id)"
+                    >
+                      {{ getPrimaryTitle(link.target_show) }}
+                    </p>
+                    <template #append>
+                      <v-chip color="primary" size="small" variant="tonal">
+                        <v-icon :icon="getShowLinkTypeIcon(link.type)" start />
+                        {{ $t(`showLink.type.${link.type}`) }}
+                      </v-chip>
+                    </template>
+                  </v-list-item>
+                </v-list>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </v-col>
       </v-row>
     </section-container>
