@@ -23,6 +23,9 @@ import { useSettingStore } from '@/stores/setting/useSettingStore';
 import { deepClone } from '@/utils/clone/deepClone';
 import { homepageSections } from './homepageSections';
 
+/** Latest shows are fetched for the widest layout and trimmed by the grid, so resizing never refetches. */
+const MAX_BANNER_COLS = 5;
+
 const selectedBannerShow = ref<Show | null>(null);
 const selectedShow = ref<Show | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
@@ -34,7 +37,7 @@ const settingStore = useSettingStore();
 const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
 
 const bannerMaxCols = computed<number>(() => {
-  if (xxl.value) return 5;
+  if (xxl.value) return MAX_BANNER_COLS;
   if (xlAndUp.value) return 4;
   if (lgAndUp.value) return 3;
   if (smAndUp.value) return 2;
@@ -42,10 +45,10 @@ const bannerMaxCols = computed<number>(() => {
 });
 
 const showsQuery = useAPIQuery<HomeShowsResponse>({
-  queryKey: [ShowQueryKey.HomeShows, bannerMaxCols],
+  queryKey: [ShowQueryKey.HomeShows],
   queryFn: async () => {
     const [latest, continueToWatch, random, sections] = await Promise.all([
-      showService.list({ sort: '-created_at', page: { size: bannerMaxCols.value } }),
+      showService.list({ sort: '-created_at', page: { size: MAX_BANNER_COLS } }),
       showService.list({ sort: '-created_at', page: { size: 20 } }),
       showService.list({ sort: 'random', page: { size: 20 } }),
       showSectionService.list({ sort: 'sort_order', page: { number: 0, size: 0 } }),
@@ -103,6 +106,11 @@ const showMap = computed<Record<string, Show[]>>(() => ({
 
 const isLoading = computed<boolean>(() => settingStore.isLoading || showsQuery.isFetching.value);
 
+/** Banner cards don't play previews; the banner itself plays the hovered show's video. */
+const latestBannerShows = computed<Show[]>(() =>
+  (showsQuery.data.value?.latestShows ?? []).map((show: Show) => ({ ...show, preview_url: null })),
+);
+
 const bannerVideo = computed<string | null>(() => {
   if (selectedBannerShow.value) {
     return selectedBannerShow.value?.preview_url;
@@ -147,7 +155,7 @@ const onPlayingVideoUpdate = (isPlaying: boolean) => {
 watch(
   () => selectedBannerShow.value,
   () => {
-    if (!!selectedBannerShow.value) {
+    if (selectedBannerShow.value) {
       selectedShow.value = deepClone(selectedBannerShow.value);
     }
   },
@@ -195,7 +203,7 @@ watch(
             <show-grid
               :cols="bannerMaxCols"
               :selected-show="selectedBannerShow"
-              :shows="showsQuery.data.value?.latestShows.map((show: Show) => ({ ...show, preview_url: null })) ?? []"
+              :shows="latestBannerShows"
               @click:show="isShowDrawerVisible = true"
               @update:selected-show="
                 (show: Show | null) =>
