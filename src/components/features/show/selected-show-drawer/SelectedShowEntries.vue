@@ -95,11 +95,11 @@ watch([() => props.entries, () => props.isShown], () => {
       <span class="text-label-medium text-medium-emphasis text-uppercase">Episodes</span>
     </v-col>
 
-    <v-col v-for="(episode, index) in selectedEntry?.episodes" cols="12" :key="episode.id">
-      <v-btn append-icon="mdi-play" class="max-width-button w-100 justify-start">
-        <template #prepend>
-          <span class="text-medium-emphasis text-body-small">{{ index + 1 }}</span>
-        </template>
+    <v-col v-for="(episode, index) in selectedEntry?.episodes" class="d-flex ga-2" cols="12" :key="episode.id">
+      <div style="min-width: 40px">
+        <v-chip class="flex-0-1">{{ index + 1 }}</v-chip>
+      </div>
+      <v-btn append-icon="mdi-play" class="flex-1-1 max-width-button text-truncate justify-start">
         <span class="text-truncate">
           {{ getEpisodeName(episode) }}
         </span>
