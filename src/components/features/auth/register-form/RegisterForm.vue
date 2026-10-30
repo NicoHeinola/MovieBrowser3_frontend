@@ -20,7 +20,7 @@ const isValid = defineModel<boolean>('isValid', {
   default: false,
 });
 
-const rules = getRules(request.value.password);
+const rules = getRules(() => request.value.password);
 </script>
 
 <template>
