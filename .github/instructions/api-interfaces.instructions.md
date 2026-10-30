@@ -32,7 +32,7 @@ export interface Setting {
 
 ```typescript
 // Good: Simple array in service
-const getSettings = async (): Promise<Setting[]> => { ... }
+const list = async (): Promise<Setting[]> => { ... }
 
 // Bad: Unnecessary wrapper interface
 // src/interfaces/api/responses/SettingsResponse.ts -> export type SettingsResponse = Setting[];

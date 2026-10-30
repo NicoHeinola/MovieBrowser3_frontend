@@ -28,7 +28,7 @@ export const useSettingStore = defineStore('setting', () => {
   const fetchSettings = async () => {
     isLoading.value = true;
     try {
-      settings.value = await settingService.getSettings();
+      settings.value = await settingService.list();
     } finally {
       isLoading.value = false;
     }

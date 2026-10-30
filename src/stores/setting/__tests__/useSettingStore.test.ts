@@ -1,14 +1,14 @@
-import type { SettingsResponse } from '../../../interfaces/api/responses/SettingsResponse';
+import type { SettingsResponse } from '@/interfaces/api/responses/SettingsResponse';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { settingService } from '../../../services/setting/settingService';
+import { settingService } from '@/services/setting/settingService';
 import { useSettingStore } from '../useSettingStore';
 
 vi.mock('@/services/setting/settingService', () => ({
   settingService: {
-    getSettings: vi.fn(),
-    updateSetting: vi.fn(),
+    list: vi.fn(),
+    update: vi.fn(),
   },
 }));
 
@@ -49,8 +49,8 @@ describe('useSettingStore', () => {
       banner_default_videos: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
     });
 
-    vi.mocked(settingService.updateSetting).mockResolvedValue();
-    vi.mocked(settingService.getSettings).mockResolvedValue(refreshedSettings);
+    vi.mocked(settingService.update).mockResolvedValue();
+    vi.mocked(settingService.list).mockResolvedValue(refreshedSettings);
 
     await settingStore.addBannerDefaultVideo(' https://www.youtube.com/watch?v=dQw4w9WgXcQ ');
 
@@ -58,10 +58,10 @@ describe('useSettingStore', () => {
     expect(settingStore.settings).toEqual({
       banner_default_videos: refreshedSettings.data[0],
     });
-    expect(settingService.updateSetting).toHaveBeenCalledWith('banner_default_videos', {
+    expect(settingService.update).toHaveBeenCalledWith('banner_default_videos', {
       value: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
     });
-    expect(settingService.getSettings).toHaveBeenCalledTimes(1);
+    expect(settingService.list).toHaveBeenCalledTimes(1);
   });
 
   it('refreshes banner backgrounds from the backend after adding a trimmed URL', async () => {
@@ -70,8 +70,8 @@ describe('useSettingStore', () => {
       banner_default_backgrounds: ['https://images.example.com/background-1.jpg'],
     });
 
-    vi.mocked(settingService.updateSetting).mockResolvedValue();
-    vi.mocked(settingService.getSettings).mockResolvedValue(refreshedSettings);
+    vi.mocked(settingService.update).mockResolvedValue();
+    vi.mocked(settingService.list).mockResolvedValue(refreshedSettings);
 
     await settingStore.addBannerDefaultBackground(' https://images.example.com/background-1.jpg ');
 
@@ -79,10 +79,10 @@ describe('useSettingStore', () => {
     expect(settingStore.settings).toEqual({
       banner_default_backgrounds: refreshedSettings.data[0],
     });
-    expect(settingService.updateSetting).toHaveBeenCalledWith('banner_default_backgrounds', {
+    expect(settingService.update).toHaveBeenCalledWith('banner_default_backgrounds', {
       value: ['https://images.example.com/background-1.jpg'],
     });
-    expect(settingService.getSettings).toHaveBeenCalledTimes(1);
+    expect(settingService.list).toHaveBeenCalledTimes(1);
   });
 
   it('appends a trimmed banner background URL before refreshing settings', async () => {
@@ -94,8 +94,8 @@ describe('useSettingStore', () => {
       ],
     });
 
-    vi.mocked(settingService.updateSetting).mockResolvedValue();
-    vi.mocked(settingService.getSettings).mockResolvedValue(refreshedSettings);
+    vi.mocked(settingService.update).mockResolvedValue();
+    vi.mocked(settingService.list).mockResolvedValue(refreshedSettings);
 
     settingStore.settings = {
       banner_default_backgrounds: {
@@ -115,10 +115,10 @@ describe('useSettingStore', () => {
     expect(settingStore.settings).toEqual({
       banner_default_backgrounds: refreshedSettings.data[0],
     });
-    expect(settingService.updateSetting).toHaveBeenCalledWith('banner_default_backgrounds', {
+    expect(settingService.update).toHaveBeenCalledWith('banner_default_backgrounds', {
       value: ['https://images.example.com/background-1.jpg', 'https://images.example.com/background-2.jpg'],
     });
-    expect(settingService.getSettings).toHaveBeenCalledTimes(1);
+    expect(settingService.list).toHaveBeenCalledTimes(1);
   });
 
   it('forces a fresh banner background fetch after updating settings', async () => {
@@ -138,8 +138,8 @@ describe('useSettingStore', () => {
       ],
     });
 
-    vi.mocked(settingService.updateSetting).mockResolvedValue();
-    vi.mocked(settingService.getSettings).mockResolvedValue(refreshedSettings);
+    vi.mocked(settingService.update).mockResolvedValue();
+    vi.mocked(settingService.list).mockResolvedValue(refreshedSettings);
 
     settingStore.settings = staleSettings;
 
@@ -157,8 +157,8 @@ describe('useSettingStore', () => {
       banner_default_videos: ['https://www.youtube.com/watch?v=oHg5SJYRHA0'],
     });
 
-    vi.mocked(settingService.updateSetting).mockResolvedValue();
-    vi.mocked(settingService.getSettings).mockResolvedValue(refreshedSettings);
+    vi.mocked(settingService.update).mockResolvedValue();
+    vi.mocked(settingService.list).mockResolvedValue(refreshedSettings);
 
     settingStore.settings = {
       banner_default_videos: {
@@ -175,10 +175,10 @@ describe('useSettingStore', () => {
     expect(settingStore.settings).toEqual({
       banner_default_videos: refreshedSettings.data[0],
     });
-    expect(settingService.updateSetting).toHaveBeenCalledWith('banner_default_videos', {
+    expect(settingService.update).toHaveBeenCalledWith('banner_default_videos', {
       value: ['https://www.youtube.com/watch?v=oHg5SJYRHA0'],
     });
-    expect(settingService.getSettings).toHaveBeenCalledTimes(1);
+    expect(settingService.list).toHaveBeenCalledTimes(1);
   });
 
   it('removes a banner background URL before refreshing settings', async () => {
@@ -187,8 +187,8 @@ describe('useSettingStore', () => {
       banner_default_backgrounds: ['https://images.example.com/background-2.jpg'],
     });
 
-    vi.mocked(settingService.updateSetting).mockResolvedValue();
-    vi.mocked(settingService.getSettings).mockResolvedValue(refreshedSettings);
+    vi.mocked(settingService.update).mockResolvedValue();
+    vi.mocked(settingService.list).mockResolvedValue(refreshedSettings);
 
     settingStore.settings = {
       banner_default_backgrounds: {
@@ -205,10 +205,10 @@ describe('useSettingStore', () => {
     expect(settingStore.settings).toEqual({
       banner_default_backgrounds: refreshedSettings.data[0],
     });
-    expect(settingService.updateSetting).toHaveBeenCalledWith('banner_default_backgrounds', {
+    expect(settingService.update).toHaveBeenCalledWith('banner_default_backgrounds', {
       value: ['https://images.example.com/background-2.jpg'],
     });
-    expect(settingService.getSettings).toHaveBeenCalledTimes(1);
+    expect(settingService.list).toHaveBeenCalledTimes(1);
   });
 
   it('skips update when removing a background that is not present', async () => {
@@ -225,8 +225,8 @@ describe('useSettingStore', () => {
 
     await settingStore.removeBannerDefaultBackground('https://images.example.com/background-2.jpg');
 
-    expect(settingService.updateSetting).not.toHaveBeenCalled();
-    expect(settingService.getSettings).not.toHaveBeenCalled();
+    expect(settingService.update).not.toHaveBeenCalled();
+    expect(settingService.list).not.toHaveBeenCalled();
   });
 
   it('skips update when removing a video that is not present', async () => {
@@ -243,7 +243,7 @@ describe('useSettingStore', () => {
 
     await settingStore.removeBannerDefaultVideo('https://www.youtube.com/watch?v=oHg5SJYRHA0');
 
-    expect(settingService.updateSetting).not.toHaveBeenCalled();
-    expect(settingService.getSettings).not.toHaveBeenCalled();
+    expect(settingService.update).not.toHaveBeenCalled();
+    expect(settingService.list).not.toHaveBeenCalled();
   });
 });

@@ -22,15 +22,24 @@ applyTo: 'src/services/**/*.ts'
 
 ```typescript
 // src/services/setting/settingService.ts
-import type { Setting } from '@/interfaces/api/models/Setting';
+import type { UpdateSettingRequest } from '@/interfaces/api/requests/UpdateSettingRequest';
+import type { SettingsResponse } from '@/interfaces/api/responses/SettingsResponse';
+
 import { apiClient } from '@/plugins/api/apiClient';
 
+const list = async (): Promise<SettingsResponse> => {
+  const response = await apiClient.get<SettingsResponse>('settings');
+
+  return response.data;
+};
+
+const update = async <T>(key: string, request: UpdateSettingRequest<T>): Promise<void> => {
+  await apiClient.patch(`settings/${key}`, request);
+};
+
 export const settingService = {
-  // Use explicit return type, avoid unnecessary response wrappers
-  getSettings: async (): Promise<Setting[]> => {
-    const { data } = await apiClient.get<Setting[]>('/settings');
-    return data;
-  },
+  list,
+  update,
 };
 ```
 
