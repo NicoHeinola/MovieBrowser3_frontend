@@ -6,6 +6,7 @@ import { ref, useTemplateRef } from 'vue';
 import { SortableItem } from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { getEpisodeNameFromFilename } from '@/utils/show/getEpisodeNameFromFilename';
 
 import ShowEpisodeExpansionPanel from './ShowEpisodeExpansionPanel.vue';
 
@@ -59,14 +60,6 @@ const addEpisode = (): void => {
 
   episodes.push(nextEpisode);
   setEpisodeExpanded(nextEpisode, true);
-};
-
-const getEpisodeNameFromFilename = (filename: string): string => {
-  const extensionIndex = filename.lastIndexOf('.');
-  const filenameWithoutExtension = extensionIndex > 0 ? filename.slice(0, extensionIndex) : filename;
-  const normalizedFilename = filenameWithoutExtension.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
-
-  return normalizedFilename === '' ? 'Untitled' : normalizedFilename;
 };
 
 const addPickedEpisodes = (selectedFiles: File[]): void => {
