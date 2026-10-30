@@ -1,6 +1,8 @@
-import type { SnackbarColor } from '@/components/layouts/snackbar-provider/SnackbarColor';
-import type { SnackbarDismissReason } from '@/components/layouts/snackbar-provider/SnackbarDismissReason';
-import type { SnackbarPresetOptions } from '@/components/layouts/snackbar-provider/SnackbarPresetOptions';
+import type {
+  SnackbarColor,
+  SnackbarDismissReason,
+  SnackbarPresetOptions,
+} from '@/components/layouts/snackbar-provider';
 import { isAxiosError } from 'axios';
 
 import { useSnackbar } from '@/components/layouts/snackbar-provider';

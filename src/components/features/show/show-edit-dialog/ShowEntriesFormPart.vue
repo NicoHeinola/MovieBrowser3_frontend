@@ -2,7 +2,7 @@
 import type { ShowEntriesFormData, ShowEntryFormData } from './ShowEntriesFormData';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { ref, useTemplateRef } from 'vue';
-import SortableItem from '@/components/common/sortable-item';
+import { SortableItem } from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
 import ShowEntryExpansionPanel from './ShowEntryExpansionPanel.vue';

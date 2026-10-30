@@ -1,4 +1,5 @@
 export type { SnackbarApi } from './SnackbarApi';
+export type { SnackbarColor } from './SnackbarColor';
 export type { SnackbarDismissReason } from './SnackbarDismissReason';
 export type { SnackbarOptions } from './SnackbarOptions';
 export type { SnackbarPresetOptions } from './SnackbarPresetOptions';

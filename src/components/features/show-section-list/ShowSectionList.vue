@@ -3,7 +3,7 @@ import type { ShowSection } from '@/interfaces/api/models/ShowSection';
 
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { useTemplateRef } from 'vue';
-import SortableItem from '@/components/common/sortable-item';
+import { SortableItem } from '@/components/common/sortable-item';
 
 const props = defineProps<{
   disabled?: boolean;

@@ -23,11 +23,11 @@ let activePointerId: number | null = null;
 let lastPointerX = 0;
 let lastPointerTime = 0;
 let dragVelocity = 0;
-let isDragging = false;
 let suppressClick = false;
 let momentumFrameId: number | null = null;
 let momentumTimestamp = 0;
-const overscrollOffset = ref(0);
+const overscrollOffset = ref<number>(0);
+const isDragging = ref<boolean>(false);
 
 const stopMomentum = () => {
   if (momentumFrameId !== null) {
@@ -97,7 +97,7 @@ const endDrag = (timestamp: number) => {
   }
 
   activePointerId = null;
-  isDragging = false;
+  isDragging.value = false;
   overscrollOffset.value = 0;
 
   const velocityAge = timestamp - lastPointerTime;
@@ -132,7 +132,7 @@ const handlePointerDown = (event: PointerEvent) => {
   activePointerId = event.pointerId;
   lastPointerX = event.clientX;
   lastPointerTime = event.timeStamp;
-  isDragging = false;
+  isDragging.value = false;
   suppressClick = false;
 };
 
@@ -145,12 +145,12 @@ const handlePointerMove = (event: PointerEvent) => {
 
   const moveDelta = event.clientX - lastPointerX;
 
-  if (!isDragging && Math.abs(moveDelta) <= props.dragThreshold) {
+  if (!isDragging.value && Math.abs(moveDelta) <= props.dragThreshold) {
     return;
   }
 
-  if (!isDragging) {
-    isDragging = true;
+  if (!isDragging.value) {
+    isDragging.value = true;
     suppressClick = true;
     element.setPointerCapture(event.pointerId);
   }

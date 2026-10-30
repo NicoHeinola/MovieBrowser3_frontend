@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import {
-  type IBaseOptions,
-  type IDragActivationOptions,
-  type IDragEvent,
-  type IDraggableEvents,
-  type IModifierOptions,
-  type IPlacementMargins,
-  makeDraggable,
-  type TDraggablePayload,
+import type {
+  IBaseOptions,
+  IDragActivationOptions,
+  IDragEvent,
+  IDraggableEvents,
+  IModifierOptions,
+  IPlacementMargins,
+  TDraggablePayload,
 } from '@vue-dnd-kit/core';
-import { type Component, type Ref, useTemplateRef } from 'vue';
+import type { Component, Ref } from 'vue';
+
+import { makeDraggable } from '@vue-dnd-kit/core';
+import { useTemplateRef } from 'vue';
 
 interface IMakeDraggableOptions extends IBaseOptions {
   /** Stable id for this draggable. Required for correct behavior inside virtual lists

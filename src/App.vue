@@ -2,9 +2,9 @@
 import { DnDProvider } from '@vue-dnd-kit/core';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { DialogProvider } from './components/layouts/dialog-provider';
-import { SnackbarProvider } from './components/layouts/snackbar-provider';
-import { TopNavigation } from './components/layouts/top-navigation';
+import { DialogProvider } from '@/components/layouts/dialog-provider';
+import { SnackbarProvider } from '@/components/layouts/snackbar-provider';
+import { TopNavigation } from '@/components/layouts/top-navigation';
 
 const route = useRoute();
 const router = useRouter();

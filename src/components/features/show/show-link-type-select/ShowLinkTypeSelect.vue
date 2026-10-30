@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { ShowLinkType } from '@/enums/show/ShowLinkType';
 import { computed, useAttrs } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { ShowLinkType as ShowLinkTypeEnum } from '@/enums/show/ShowLinkType';
+import { ShowLinkType } from '@/enums/show/ShowLinkType';
 import { getShowLinkTypeIcon } from '@/utils/show/getShowLinkTypeIcon';
 
 defineOptions({
@@ -27,7 +26,7 @@ const attrs = useAttrs();
 const { t } = useI18n();
 
 const linkTypeItems = computed<Array<{ icon: string; label: string; value: ShowLinkType }>>(() => {
-  return Object.values(ShowLinkTypeEnum).map((linkType) => ({
+  return Object.values(ShowLinkType).map((linkType) => ({
     icon: getShowLinkTypeIcon(linkType),
     label: t(`showLink.type.${linkType}`),
     value: linkType,

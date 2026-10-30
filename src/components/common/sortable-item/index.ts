@@ -1,1 +1,1 @@
-export { default } from './SortableItem.vue';
+export { default as SortableItem } from './SortableItem.vue';

@@ -1,9 +1,16 @@
+/**
+ * Deep clone plain data via a JSON round-trip.
+ * `structuredClone` is not used because it throws on Vue reactive proxies.
+ * Functions, `undefined` values and `File`/`Blob` instances do not survive the clone.
+ *
+ * @param obj The value to clone.
+ * @returns A deep copy of the value.
+ */
 export const deepClone = <T>(obj: T): T => {
-  // If has methods:
-  if (obj && typeof obj === 'object' && typeof obj.constructor === 'function') {
-    // eslint-disable-next-line
-    return JSON.parse(JSON.stringify(obj));
+  if (obj === undefined) {
+    return obj;
   }
 
-  return structuredClone(obj);
+  // eslint-disable-next-line unicorn/prefer-structured-clone -- structuredClone throws on Vue reactive proxies
+  return JSON.parse(JSON.stringify(obj)) as T;
 };

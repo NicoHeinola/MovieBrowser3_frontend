@@ -13,29 +13,29 @@ export type ObjectChangeCheckOptions = {
   excludes?: string[];
 };
 
-// Normalize path patterns by trimming whitespace and removing empty entries.
+/** Normalize path patterns by trimming whitespace and removing empty entries. */
 const normalizePaths = (paths?: string[]): string[] => paths?.map((path) => path.trim()).filter(Boolean) ?? [];
 
-// Build normalized patterns for include/exclude comparison.
+/** Build normalized patterns for include/exclude comparison. */
 const buildPathMatchers = (paths?: string[] | undefined): string[] => normalizePaths(paths);
 
-// Check whether a path matches any of the provided include/exclude patterns.
+/** Check whether a path matches any of the provided include/exclude patterns. */
 const pathMatches = (path: string, patterns: string[]): boolean =>
   patterns.some((pattern) => pattern === path || pattern.startsWith(`${path}.`) || path.startsWith(`${pattern}.`));
 
-// Decide whether a given property path should be compared.
+/** Decide whether a given property path should be compared. */
 const shouldComparePath = (path: string, includePatterns: string[], excludePatterns: string[]): boolean => {
-  // Excluded paths always take precedence.
+  /** Excluded paths always take precedence. */
   if (excludePatterns.length > 0 && pathMatches(path, excludePatterns)) {
     return false;
   }
 
-  // If no include list is defined, compare everything that is not excluded.
+  /** If no include list is defined, compare everything that is not excluded. */
   if (includePatterns.length === 0) {
     return true;
   }
 
-  // Root-level comparison remains enabled when include patterns exist.
+  /** Root-level comparison remains enabled when include patterns exist. */
   if (path === '') {
     return true;
   }
@@ -43,7 +43,7 @@ const shouldComparePath = (path: string, includePatterns: string[], excludePatte
   return pathMatches(path, includePatterns);
 };
 
-// Convert provided option aliases into normalized pattern arrays.
+/** Convert provided option aliases into normalized pattern arrays. */
 const getCombinedPatterns = (options: ObjectChangeCheckOptions) => ({
   include: buildPathMatchers(options.include ?? options.includes),
   exclude: buildPathMatchers(options.exclude ?? options.excludes),
