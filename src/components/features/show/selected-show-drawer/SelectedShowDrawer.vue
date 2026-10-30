@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { WatchStatus } from '@/enums/show/WatchStatus';
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import { computed, ref, watch } from 'vue';
@@ -8,7 +9,9 @@ import { SectionContainer } from '@/components/common/section-container';
 import { VolumeControl } from '@/components/common/volume-control';
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { ShowEntrySelect } from '@/components/features/show/show-entry-select';
+import { WatchStatusButton } from '@/components/features/show/watch-status-button';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { showEntryWatchStatusService } from '@/services/show/showEntryWatchStatusService';
 import { showService } from '@/services/show/showService';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
@@ -22,6 +25,7 @@ const isShown = defineModel<boolean>('isShown', {
 });
 
 const isLoadingNextShow = ref<boolean>(false);
+const isSavingStatus = ref<boolean>(false);
 
 const selectedEntry = ref<ShowEntry | null>(null);
 
@@ -46,6 +50,34 @@ const videoId = computed<string | null>(() => getYouTubeVideoId(show.value?.prev
 
 const canPlayVideo = computed<boolean>(() => Boolean(isShown.value && videoId.value) && !isVideoError.value);
 const activeVideoId = computed<string>(() => videoId.value ?? 'drawer-video');
+
+/**
+ * Persists a watch status for the selected entry and mirrors the chosen status onto it.
+ * @param status - The new watch status, or null to clear it.
+ */
+const setWatchStatus = async (status: WatchStatus | null): Promise<void> => {
+  const entry = selectedEntry.value;
+
+  if (!entry || isSavingStatus.value) {
+    return;
+  }
+
+  isSavingStatus.value = true;
+
+  try {
+    if (status) {
+      await showEntryWatchStatusService.update(entry.id, { status });
+      entry.watch_status = { show_entry_id: entry.id, status };
+    } else {
+      await showEntryWatchStatusService.remove(entry.id);
+      entry.watch_status = null;
+    }
+  } catch (error: unknown) {
+    showAPIErrorSnackbar(error);
+  } finally {
+    isSavingStatus.value = false;
+  }
+};
 
 const changeShow = async (showId: number) => {
   if (isLoadingNextShow.value) {
@@ -159,7 +191,17 @@ watch(isShown, (newVal) => {
       <v-row>
         <v-col class="d-flex ga-6 align-center" cols="12">
           <show-entry-select v-model="selectedEntry" :entries="show?.entries" clearable />
-          <v-btn :disabled="!selectedEntry" append-icon="mdi-play"> Watch Season </v-btn>
+        </v-col>
+        <v-col cols="6">
+          <watch-status-button
+            :disabled="!selectedEntry"
+            :loading="isSavingStatus"
+            :model-value="selectedEntry?.watch_status?.status ?? null"
+            @update:model-value="setWatchStatus"
+          />
+        </v-col>
+        <v-col cols="6">
+          <v-btn :disabled="!selectedEntry" append-icon="mdi-play" block> Watch Season </v-btn>
         </v-col>
       </v-row>
 

@@ -7,6 +7,13 @@
       "movie": "Movie",
       "season": "Season",
       "tv_special": "TV Special"
+    },
+    "watchStatus": {
+      "watching": "Watching",
+      "plan_to_watch": "Plan to watch",
+      "completed": "Completed",
+      "on_hold": "On hold",
+      "dropped": "Dropped"
     }
   },
   "showLink": {

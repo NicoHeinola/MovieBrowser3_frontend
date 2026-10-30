@@ -4,6 +4,8 @@ import { computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { ShowEntryTypeChip } from '@/components/features/show/show-entry-type-chip';
+import { getWatchStatusColor } from '@/utils/show/getWatchStatusColor';
+import { getWatchStatusIcon } from '@/utils/show/getWatchStatusIcon';
 
 const props = defineProps<{
   entries?: ShowEntry[] | null;
@@ -44,6 +46,13 @@ watch(availableEntries, (nextEntries) => {
   >
     <template #item="{ item, props: itemProps }">
       <v-list-item v-bind="itemProps" :title="item.name">
+        <template #prepend v-if="item.watch_status">
+          <v-icon
+            :color="getWatchStatusColor(item.watch_status!.status)"
+            :icon="getWatchStatusIcon(item.watch_status!.status)"
+            size="small"
+          />
+        </template>
         <template #append>
           <show-entry-type-chip :type="item.type" />
         </template>
