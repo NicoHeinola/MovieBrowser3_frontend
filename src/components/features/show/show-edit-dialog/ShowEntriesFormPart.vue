@@ -76,10 +76,11 @@ const removeEntry = async (index: number): Promise<void> => {
 
 const addEntry = (): void => {
   const entries = (show.value.entries ??= []);
+  const seasonCount = entries.filter((entry) => entry.type === ShowEntryType.Season).length;
 
   const nextEntry: ShowEntryFormData = {
     type: ShowEntryType.Season,
-    name: `Untitled`,
+    name: `Season ${seasonCount + 1}`,
     sort_order: entries.length,
     episodes: [],
   };

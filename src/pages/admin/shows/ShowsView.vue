@@ -29,7 +29,7 @@ const editShow = async (show: Show | null) => {
             categories: [],
             entries: [
               {
-                name: 'Untitled',
+                name: 'Season 1',
                 type: ShowEntryType.Season,
                 sort_order: 0,
               },
