@@ -2,6 +2,7 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 
+import { refDebounced } from '@vueuse/core';
 import { computed, ref } from 'vue';
 
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
@@ -25,12 +26,15 @@ const selectedShow = defineModel<Show | null>({
 });
 
 const search = ref<string>('');
+const debouncedSearch = refDebounced(search, 300);
 
 const showsQuery = useAPIQuery<PaginatedResponse<Show>>({
-  queryKey: computed(() => [ShowQueryKey.AdminShows, 'autocomplete', search.value]),
+  queryKey: computed(() => [ShowQueryKey.ShowAutocomplete, debouncedSearch.value.trim()]),
   queryFn: async () => {
+    const searchTerm = debouncedSearch.value.trim();
+
     return await showService.list({
-      filter: search.value.trim() ? { search: search.value.trim() } : undefined,
+      filter: searchTerm ? { search: searchTerm } : undefined,
       sort: '-created_at',
       page: {
         number: 1,
