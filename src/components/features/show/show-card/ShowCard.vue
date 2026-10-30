@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Show } from '@/interfaces/api/models/Show';
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, ref } from 'vue';
 
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
@@ -64,6 +64,11 @@ const onMouseLeave = () => {
 };
 
 const primaryTitle = computed<string>(() => getPrimaryTitle(props.show));
+
+/** A card can unmount while hovered (e.g. on refetch); release the parent's "playing" state with it. */
+onBeforeUnmount(() => {
+  onMouseLeave();
+});
 </script>
 
 <template>
@@ -76,9 +81,16 @@ const primaryTitle = computed<string>(() => getPrimaryTitle(props.show));
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
   >
-    <v-lazy class="h-100">
-      <v-img :src="cardImage" class="h-100 w-100" style="pointer-events: none" cover v-if="!videoId"></v-img>
-      <div class="h-100 w-100" style="pointer-events: none; overflow: hidden" v-else>
+    <!-- v-lazy cross-fades its slot, so both layers are stacked to keep the outgoing one from pushing the other down. -->
+    <v-lazy class="h-100 position-relative">
+      <v-img
+        :src="cardImage"
+        class="position-absolute top-0 left-0 h-100 w-100"
+        style="pointer-events: none"
+        cover
+        v-if="!videoId"
+      ></v-img>
+      <div class="position-absolute top-0 left-0 h-100 w-100" style="pointer-events: none; overflow: hidden" v-else>
         <you-tube-player :video-id="videoId" class="h-100 w-100" style="transform: scale(1.2)" />
       </div>
     </v-lazy>
