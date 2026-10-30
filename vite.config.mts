@@ -1,6 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
 import Vue from '@vitejs/plugin-vue';
-import Fonts from 'unplugin-fonts/vite';
 import { defineConfig, loadEnv } from 'vite';
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 
@@ -17,17 +16,6 @@ export default defineConfig(({ mode }) => {
         autoImport: true,
         styles: {
           configFile: 'src/styles/settings.scss',
-        },
-      }),
-      Fonts({
-        fontsource: {
-          families: [
-            {
-              name: 'Roboto',
-              weights: [100, 300, 400, 500, 700, 900],
-              styles: ['normal', 'italic'],
-            },
-          ],
         },
       }),
     ],
