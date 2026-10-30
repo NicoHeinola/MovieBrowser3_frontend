@@ -107,7 +107,7 @@ onBeforeUnmount(() => {
     <div
       :class="`bg-${watchStatusColor}`"
       class="position-absolute bottom-0 w-100"
-      style="height: 5px"
+      style="height: 3px"
       v-if="watchStatusColor"
     ></div>
   </v-card>
