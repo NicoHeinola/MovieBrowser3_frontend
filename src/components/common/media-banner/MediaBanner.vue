@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 
 import { YouTubePlayer } from '@/components/common/youtube-player';
-import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
+import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 
 const props = withDefaults(
   defineProps<{
@@ -20,15 +20,7 @@ const props = withDefaults(
 const isVideoPlaying = ref<boolean>(false);
 const isVideoError = ref<boolean>(false);
 
-const youtubeEmbedUrl = computed<string | null>(() => {
-  return getYouTubeEmbedUrl(props.videoSrc ?? undefined);
-});
-
-const videoId = computed<string | null>(() => {
-  if (!youtubeEmbedUrl.value) return null;
-  const match = youtubeEmbedUrl.value.match(/embed\/([^?]+)/);
-  return match ? match[1] : null;
-});
+const videoId = computed<string | null>(() => getYouTubeVideoId(props.videoSrc ?? undefined));
 
 const canPlayYouTubeVideo = computed<boolean>(
   () => Boolean(videoId.value) && !isVideoError.value && !props.disableVideoPlayback,

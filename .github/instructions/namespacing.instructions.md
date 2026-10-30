@@ -72,7 +72,7 @@ src/
       getEnvBoolean.ts
     youtube/
       isYouTubeUrl.ts
-      getYouTubeEmbedUrl.ts
+      getYouTubeVideoId.ts
   services/
     auth/
       authService.ts

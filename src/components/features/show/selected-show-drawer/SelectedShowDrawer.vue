@@ -13,7 +13,7 @@ import { showService } from '@/services/show/showService';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getShowLinkTypeIcon } from '@/utils/show/getShowLinkTypeIcon';
-import { getYouTubeEmbedUrl } from '@/utils/youtube/getYouTubeEmbedUrl';
+import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 
 const show = defineModel<Show | null>('show', { required: true });
 
@@ -25,7 +25,7 @@ const isLoadingNextShow = ref<boolean>(false);
 
 const selectedEntry = ref<ShowEntry | null>(null);
 
-const hideTimeoutId = ref<number | null>(null);
+let hideTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
 const isDescriptionExpanded = ref<boolean>(false);
 
@@ -42,16 +42,7 @@ const close = () => {
   isShown.value = false;
 };
 
-const youtubeEmbedUrl = computed<string | null>(() => {
-  if (!show.value?.preview_url) return null;
-  return getYouTubeEmbedUrl(show.value.preview_url);
-});
-
-const videoId = computed<string | null>(() => {
-  if (!youtubeEmbedUrl.value) return null;
-  const match = youtubeEmbedUrl.value.match(/embed\/([^?]+)/);
-  return match ? match[1] : null;
-});
+const videoId = computed<string | null>(() => getYouTubeVideoId(show.value?.preview_url ?? undefined));
 
 const canPlayVideo = computed<boolean>(() => Boolean(isShown.value && videoId.value) && !isVideoError.value);
 const activeVideoId = computed<string>(() => videoId.value ?? 'drawer-video');
@@ -80,12 +71,17 @@ watch([() => show.value, () => isShown.value], () => {
 });
 
 watch(isShown, (newVal) => {
+  if (hideTimeoutId) {
+    clearTimeout(hideTimeoutId);
+    hideTimeoutId = null;
+  }
+
   if (newVal) {
     return;
   }
 
-  // Wait until drawer closes
-  hideTimeoutId.value = setTimeout(() => {
+  /** Wait until the drawer close animation finishes. */
+  hideTimeoutId = setTimeout(() => {
     isVideoPlaying.value = false;
     isVideoError.value = false;
     isDescriptionExpanded.value = false;

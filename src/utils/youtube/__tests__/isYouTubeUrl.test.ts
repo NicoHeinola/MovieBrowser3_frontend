@@ -6,6 +6,12 @@ describe('isYouTubeUrl', () => {
     expect(isYouTubeUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true);
     expect(isYouTubeUrl('https://youtube.com/watch?v=dQw4w9WgXcQ')).toBe(true);
     expect(isYouTubeUrl('https://youtu.be/dQw4w9WgXcQ')).toBe(true);
+    expect(isYouTubeUrl('https://www.youtube.com/shorts/dQw4w9WgXcQ')).toBe(true);
+  });
+
+  it('should return false for YouTube URLs without a playable video id', () => {
+    expect(isYouTubeUrl('https://www.youtube.com/@SomeChannel')).toBe(false);
+    expect(isYouTubeUrl('https://www.youtube.com/playlist?list=PL1234567890')).toBe(false);
   });
 
   it('should return false for non-YouTube URLs', () => {
