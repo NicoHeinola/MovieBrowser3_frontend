@@ -1,62 +1,24 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
-import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
-import { watchDebounced } from '@vueuse/core';
-import { computed, ref, watch } from 'vue';
+import { ref } from 'vue';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowGrid } from '@/components/features/show/show-grid';
-import { useAPIQuery } from '@/composables/api/useAPIQuery';
+import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
-import { showService } from '@/services/show/showService';
 import { deepClone } from '@/utils/clone/deepClone';
 
-const searchInput = ref<string>('');
-const searchTerm = ref<string>('');
-const page = ref<number>(1);
 const selectedShow = ref<Show | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
-const isSearchPending = ref<boolean>(false);
 
-const searchQuery = useAPIQuery<PaginatedResponse<Show>>({
-  queryKey: [ShowQueryKey.SearchShows, searchTerm, page],
-  queryFn: async () => {
-    return await showService.list({
-      filter: searchTerm.value ? { search: searchTerm.value } : undefined,
-      sort: '-created_at',
-      page: { number: page.value, size: 32 },
-    });
-  },
-  placeholderData: (previousData) => previousData,
-});
-
-const shows = computed<Show[]>(() => searchQuery.data.value?.data ?? []);
-const totalPages = computed<number>(() => searchQuery.data.value?.meta.last_page ?? 1);
-const totalResults = computed<number>(() => searchQuery.data.value?.meta.total ?? 0);
-const isLoading = computed<boolean>(() => isSearchPending.value || searchQuery.isFetching.value);
+const { searchInput, page, shows, totalPages, totalResults, isLoading } = useShowSearch(ShowQueryKey.SearchShows);
 
 const selectShow = (show: Show | null) => {
   selectedShow.value = deepClone(show);
   isShowDrawerVisible.value = true;
 };
-
-watch(searchInput, (value) => {
-  isSearchPending.value = value.trim() !== searchTerm.value;
-});
-
-watchDebounced(
-  searchInput,
-  (value) => {
-    searchTerm.value = value.trim();
-    page.value = 1;
-    isSearchPending.value = false;
-  },
-  {
-    debounce: 300,
-  },
-);
 </script>
 
 <template>
@@ -97,7 +59,6 @@ watchDebounced(
             card-width="280"
             class="d-flex justify-center flex-1-1"
             @click:show="selectShow"
-            v-if="shows.length > 0"
           />
         </v-col>
       </v-row>
