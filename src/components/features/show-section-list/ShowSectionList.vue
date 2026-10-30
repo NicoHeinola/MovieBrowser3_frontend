@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ShowSection } from '@/interfaces/api/models/ShowSection';
-import type { IDragEvent } from '@vue-dnd-kit/core';
 
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { useTemplateRef } from 'vue';
@@ -23,21 +22,6 @@ makeDroppable(
   zoneRef,
   {
     groups: ['show-section'],
-    events: {
-      onDrop(e: IDragEvent) {
-        if (props.disabled) {
-          return;
-        }
-
-        const suggestedSort = e.helpers.suggestSort('vertical');
-        if (suggestedSort == null) {
-          return;
-        }
-
-        sections.value = suggestedSort.sourceItems as ShowSection[];
-        emit('reorder', sections.value);
-      },
-    },
   },
   () => sections.value,
 );
@@ -50,6 +34,7 @@ makeDroppable(
         v-for="(section, i) in sections"
         :drag-options="{ dragHandle: '.handle', groups: ['show-section'] }"
         :drag-payload="() => [i, sections]"
+        @sorted="emit('reorder', sections)"
         :key="section.id"
       >
         <v-card>

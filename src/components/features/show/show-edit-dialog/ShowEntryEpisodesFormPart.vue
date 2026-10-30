@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { EpisodeFormData, ShowEntryFormData } from './ShowEntriesFormData';
-import type { IDragEvent } from '@vue-dnd-kit/core';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { ref, useTemplateRef } from 'vue';
 
@@ -172,17 +171,6 @@ makeDroppable(
   episodeZoneRef,
   {
     groups: [episodeDragGroup],
-    events: {
-      onDrop(e: IDragEvent) {
-        const suggestedSort = e.helpers.suggestSort('vertical');
-        if (suggestedSort == null) {
-          return;
-        }
-
-        entry.value.episodes = suggestedSort.sourceItems as EpisodeFormData[];
-        syncEpisodeSequenceNumbers();
-      },
-    },
   },
   () => entry.value.episodes ?? [],
 );
@@ -198,6 +186,7 @@ makeDroppable(
             :drag-options="{ dragHandle: '.handle', groups: [episodeDragGroup] }"
             :drag-payload="() => [index, entry.episodes!]"
             class="d-flex ga-2"
+            @sorted="syncEpisodeSequenceNumbers"
             :key="getEpisodeRenderKey(episode)"
           >
             <show-episode-expansion-panel

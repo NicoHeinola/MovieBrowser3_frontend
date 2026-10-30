@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { ShowEntriesFormData, ShowEntryFormData } from './ShowEntriesFormData';
-import type { IDragEvent } from '@vue-dnd-kit/core';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { ref, useTemplateRef } from 'vue';
 import SortableItem from '@/components/common/sortable-item';
@@ -93,17 +92,6 @@ makeDroppable(
   zoneRef,
   {
     groups: ['show-entry'],
-    events: {
-      onDrop(e: IDragEvent) {
-        const suggestedSort = e.helpers.suggestSort('vertical');
-        if (suggestedSort == null) {
-          return;
-        }
-
-        show.value.entries = suggestedSort.sourceItems as ShowEntryFormData[];
-        syncEntrySortOrder();
-      },
-    },
   },
   () => show.value?.entries ?? [],
 );
@@ -119,6 +107,7 @@ makeDroppable(
             :drag-options="{ dragHandle: '.handle', groups: ['show-entry'] }"
             :drag-payload="() => [i, show.entries!]"
             class="d-flex ga-2"
+            @sorted="syncEntrySortOrder"
             :key="getEntryRenderKey(entry)"
           >
             <show-entry-expansion-panel
