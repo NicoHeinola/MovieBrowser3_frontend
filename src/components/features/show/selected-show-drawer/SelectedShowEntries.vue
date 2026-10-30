@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { WatchStatus } from '@/enums/show/WatchStatus';
 import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
-import { ref, watch } from 'vue';
+import type { CombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
+import { computed, ref, watch } from 'vue';
 import { ShowEntrySelect } from '@/components/features/show/show-entry-select';
 import { WatchStatusButton } from '@/components/features/show/watch-status-button';
 import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchStatus';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { getCombinedWatchStatus, MIXED_WATCH_STATUS } from '@/utils/show/getCombinedWatchStatus';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
 
 const props = defineProps<{
@@ -19,23 +20,43 @@ const isSavingStatus = ref<boolean>(false);
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 const { saveWatchStatus } = useShowEntryWatchStatus();
 
-/**
- * Persists a watch status for the selected entry and mirrors the chosen status onto it.
- * @param status - The new watch status, or null to clear it.
- */
-const setWatchStatus = async (status: WatchStatus | null): Promise<void> => {
-  const entry = selectedEntry.value;
+/** The selected entry, or every entry when none is selected. */
+const targetEntries = computed<ShowEntry[]>(() => {
+  if (selectedEntry.value) return [selectedEntry.value];
+  return props.entries ?? [];
+});
 
-  if (!entry || isSavingStatus.value) {
+const targetStatus = computed<CombinedWatchStatus>(() => getCombinedWatchStatus(targetEntries.value));
+
+/**
+ * Persists a watch status for the targeted entries, overwriting any status they already have.
+ * Entries that already have the status are skipped, and the rest are still saved when one of them fails.
+ * @param status - The new watch status, or null to clear it. `mixed` is display-only and ignored.
+ */
+const setWatchStatus = async (status: CombinedWatchStatus): Promise<void> => {
+  if (status === MIXED_WATCH_STATUS) {
+    return;
+  }
+
+  const entries = targetEntries.value.filter((entry) => (entry.watch_status?.status ?? null) !== status);
+
+  if (entries.length === 0 || isSavingStatus.value) {
     return;
   }
 
   isSavingStatus.value = true;
 
   try {
-    entry.watch_status = await saveWatchStatus(entry, status);
-  } catch (error: unknown) {
-    showAPIErrorSnackbar(error);
+    const results = await Promise.allSettled(
+      entries.map(async (entry) => {
+        entry.watch_status = await saveWatchStatus(entry, status);
+      }),
+    );
+
+    const failure = results.find((result) => result.status === 'rejected');
+    if (failure) {
+      showAPIErrorSnackbar(failure.reason);
+    }
   } finally {
     isSavingStatus.value = false;
   }
@@ -53,9 +74,10 @@ watch([() => props.entries, () => props.isShown], () => {
     </v-col>
     <v-col cols="6">
       <watch-status-button
-        :disabled="!selectedEntry"
+        :disabled="targetEntries.length === 0"
         :loading="isSavingStatus"
-        :model-value="selectedEntry?.watch_status?.status ?? null"
+        :model-value="targetStatus"
+        :suffix="selectedEntry ? '(Entry)' : '(Show)'"
         @update:model-value="setWatchStatus"
       />
     </v-col>
