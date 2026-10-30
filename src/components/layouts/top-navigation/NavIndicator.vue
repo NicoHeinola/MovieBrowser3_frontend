@@ -11,7 +11,7 @@ const route = useRoute();
 const indicatorEl = ref<HTMLElement | null>(null);
 const left = ref(0);
 const width = ref(0);
-// Tracks whether the initial position has been set; CSS transitions are only enabled after this
+/** Whether the initial position has been set; CSS transitions are only enabled after this. */
 const initialized = ref(false);
 const isSquishing = ref(false);
 let resizeObserver: ResizeObserver | null = null;
@@ -19,8 +19,13 @@ let resizeObserver: ResizeObserver | null = null;
 const activeRouteName = computed(() => String(route.name ?? ''));
 const activeIndex = computed(() => props.linkRouteNames.indexOf(activeRouteName.value));
 
-// Measures the active link's position relative to the container and moves the indicator there.
-// On first call (animate=false), position is set instantly to avoid a transition from 0,0.
+/**
+ * Measure the active link's position relative to the container and move the indicator there.
+ * The first call sets the position instantly to avoid a transition from 0,0.
+ *
+ * @param animate Whether to play the squish animation after moving.
+ * @returns Nothing.
+ */
 const updatePosition = (animate: boolean) => {
   const idx = activeIndex.value;
   if (idx < 0 || !props.linkEls[idx] || !indicatorEl.value?.parentElement) return;
@@ -32,7 +37,7 @@ const updatePosition = (animate: boolean) => {
   width.value = linkRect.width;
 
   if (!initialized.value) {
-    // Wait one tick so the position is applied before enabling transitions
+    /** Wait one tick so the position is applied before enabling transitions. */
     nextTick(() => {
       initialized.value = true;
     });
@@ -40,7 +45,7 @@ const updatePosition = (animate: boolean) => {
   }
 
   if (animate) {
-    // Reset the squish animation so it can re-trigger even if already playing
+    /** Reset the squish animation so it can re-trigger even if already playing. */
     isSquishing.value = false;
     nextTick(() => {
       isSquishing.value = true;

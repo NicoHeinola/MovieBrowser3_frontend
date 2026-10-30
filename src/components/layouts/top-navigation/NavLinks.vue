@@ -8,18 +8,16 @@ import { captureComponentEl } from '@/utils/vue/captureComponentEl';
 import NavigationLink from './NavigationLink.vue';
 import NavIndicator from './NavIndicator.vue';
 
-const links: NavigationLinkItem[] = [
-  { label: 'Dashboard', routeName: 'admin-dashboard', icon: 'mdi-view-dashboard' },
-  { label: 'Shows', routeName: 'admin-shows', icon: 'mdi-movie-edit' },
-  { label: 'Settings', routeName: 'admin-settings', icon: 'mdi-cog' },
-];
+const props = defineProps<{
+  links: NavigationLinkItem[];
+}>();
 
 const linkEls = ref<HTMLElement[]>([]);
-const linkRouteNames = links.map((link) => link.routeName);
+const linkRouteNames = props.links.map((link) => link.routeName);
 </script>
 
 <template>
-  <v-list-item v-for="(link, index) in links" :key="link.routeName">
+  <v-list-item v-for="(link, index) in props.links" :key="link.routeName">
     <navigation-link
       :icon="link.icon"
       :label="link.label"

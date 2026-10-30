@@ -40,7 +40,7 @@ Reference slice: **categories**. Before writing anything, read the files it touc
 ## 6. Route + Nav
 
 - Add a lazy route `admin-<names>` with `meta: { requiresAuth: true, requiresAdmin: true }` in `src/router/index.ts`.
-- Add an entry to `components/layouts/top-navigation/AdminNavLinks.vue` with an `mdi-*` icon.
+- Add an entry to `adminLinks` in `components/layouts/top-navigation/TopNavigation.vue` with an `mdi-*` icon.
 
 ## 7. Validate
 

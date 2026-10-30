@@ -1,12 +1,25 @@
 <script lang="ts" setup>
+import type { NavigationLinkItem } from './navigationLinkItem';
+
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
-import AdminNavLinks from './AdminNavLinks.vue';
-import AuthenticatedNavLinks from './AuthenticatedNavLinks.vue';
+import NavLinks from './NavLinks.vue';
+
+const authenticatedLinks: NavigationLinkItem[] = [
+  { label: 'Home', routeName: 'authenticated-home', icon: 'mdi-home' },
+  { label: 'Search', routeName: 'authenticated-search', icon: 'mdi-magnify' },
+];
+
+const adminLinks: NavigationLinkItem[] = [
+  { label: 'Dashboard', routeName: 'admin-dashboard', icon: 'mdi-view-dashboard' },
+  { label: 'Shows', routeName: 'admin-shows', icon: 'mdi-movie-edit' },
+  { label: 'Categories', routeName: 'admin-categories', icon: 'mdi-shape' },
+  { label: 'Settings', routeName: 'admin-settings', icon: 'mdi-cog' },
+];
 
 const route = useRoute();
 const router = useRouter();
@@ -34,8 +47,8 @@ const logout = async (): Promise<void> => {
 <template>
   <v-app-bar class="navigation-bar px-4" color="transparent" flat>
     <v-list class="d-flex flex-row ga-6 bg-transparent justify-center w-100">
-      <admin-nav-links v-if="isInAdminArea" />
-      <authenticated-nav-links v-else />
+      <nav-links :links="adminLinks" v-if="isInAdminArea" />
+      <nav-links :links="authenticatedLinks" v-else />
       <v-list class="d-flex flex-row ga-6 bg-transparent position-absolute right-0 top-0">
         <v-list-item class="d-flex">
           <div class="d-flex align-center ga-4 text-grey-lighten-1">
