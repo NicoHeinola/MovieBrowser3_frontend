@@ -3,6 +3,6 @@ export interface HomepageSection {
   subtitle: string;
   icon: string;
   iconColor: string;
-  dataKey: 'continueToWatchShows' | 'isekaiShows' | 'romanceShows' | 'randomShows';
+  dataKey: string;
   lazyLoad?: boolean;
 }

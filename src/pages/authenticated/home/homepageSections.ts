@@ -17,20 +17,4 @@ export const homepageSections: HomepageSection[] = [
     dataKey: 'randomShows',
     lazyLoad: true,
   },
-  {
-    title: 'Isekai',
-    subtitle: 'World-hopping stories with larger-than-life stakes.',
-    icon: 'mdi-earth',
-    iconColor: 'success',
-    dataKey: 'isekaiShows',
-    lazyLoad: false,
-  },
-  {
-    title: 'Romance',
-    subtitle: 'Softer pacing, sharper emotions, and character chemistry.',
-    icon: 'mdi-heart',
-    iconColor: 'error',
-    dataKey: 'romanceShows',
-    lazyLoad: true,
-  },
 ];

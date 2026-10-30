@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { HomepageSection } from './HomepageSection';
 import type { HomeShowsResponse } from './HomeShowsResponse';
 import type { Show } from '@/interfaces/api/models/Show';
+import type { ShowSection } from '@/interfaces/api/models/ShowSection';
 
 import { computed, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
@@ -15,6 +17,7 @@ import { ShowCarousel } from '@/components/features/show/show-carousel';
 import { ShowGrid } from '@/components/features/show/show-grid';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
+import { showSectionService } from '@/services/show/showSectionService';
 import { showService } from '@/services/show/showService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 import { deepClone } from '@/utils/clone/deepClone';
@@ -41,36 +44,61 @@ const bannerMaxCols = computed<number>(() => {
 const showsQuery = useAPIQuery<HomeShowsResponse>({
   queryKey: [ShowQueryKey.HomeShows, bannerMaxCols],
   queryFn: async () => {
-    const [latest, continueToWatch, isekai, romance, random] = await Promise.all([
+    const [latest, continueToWatch, random, sections] = await Promise.all([
       showService.list({ sort: '-created_at', page: { size: bannerMaxCols.value } }),
       showService.list({ sort: '-created_at', page: { size: 20 } }),
-      showService.list({ filter: { 'categories.value': 'isekai' }, sort: '-created_at', page: { size: 20 } }),
-      showService.list({ filter: { 'categories.value': 'romance' }, sort: '-created_at', page: { size: 20 } }),
       showService.list({ sort: 'random', page: { size: 20 } }),
+      showSectionService.list({ sort: 'sort_order', page: { number: 0, size: 0 } }),
     ]);
+
+    const sectionShows = await Promise.all(
+      sections.data.map((section: ShowSection) =>
+        showService.list({
+          filter: { 'categories.value': section.category.value },
+          sort: '-created_at',
+          page: { size: 20 },
+        }),
+      ),
+    );
 
     return {
       latestShows: latest.data,
       continueToWatchShows: continueToWatch.data,
-      isekaiShows: isekai.data,
-      romanceShows: romance.data,
       randomShows: random.data,
+      categorySections: sections.data.map((section: ShowSection) => ({
+        title: section.category.name,
+        subtitle: section.description ?? '',
+        icon: section.category.icon,
+        iconColor: 'primary',
+        dataKey: `showSection-${section.id}`,
+        lazyLoad: true,
+      })),
+      categoryShows: Object.fromEntries(
+        sections.data.map((section: ShowSection, index: number) => [
+          `showSection-${section.id}`,
+          sectionShows[index]?.data ?? [],
+        ]),
+      ),
     };
   },
   placeholderData: {
     latestShows: [],
     continueToWatchShows: [],
-    isekaiShows: [],
-    romanceShows: [],
     randomShows: [],
+    categorySections: [],
+    categoryShows: {},
   },
 });
 
+const sections = computed<HomepageSection[]>(() => [
+  ...homepageSections,
+  ...(showsQuery.data.value?.categorySections ?? []),
+]);
+
 const showMap = computed<Record<string, Show[]>>(() => ({
   continueToWatchShows: showsQuery.data.value?.continueToWatchShows ?? [],
-  isekaiShows: showsQuery.data.value?.isekaiShows ?? [],
-  romanceShows: showsQuery.data.value?.romanceShows ?? [],
   randomShows: showsQuery.data.value?.randomShows ?? [],
+  ...showsQuery.data.value?.categoryShows,
 }));
 
 const isLoading = computed<boolean>(() => settingStore.isLoading || showsQuery.isFetching.value);
@@ -187,7 +215,7 @@ watch(
 
   <page-container class="pr-0 pt-0" fluid>
     <v-row gap="48">
-      <v-col v-for="section in homepageSections" cols="12" :key="section.title">
+      <v-col v-for="section in sections" cols="12" :key="section.dataKey">
         <component :is="section.lazyLoad ? VLazy : 'div'">
           <titled-section
             :icon="section.icon"
@@ -199,7 +227,7 @@ watch(
 
             <show-carousel
               v-model:selected-show="selectedShow"
-              :shows="showMap[section.dataKey]"
+              :shows="showMap[section.dataKey] ?? []"
               :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
               drag-class="pl-12 pr-12"
               @click:show="isShowDrawerVisible = true"
@@ -207,7 +235,7 @@ watch(
               v-else
             />
 
-            <div class="d-flex" v-if="!isLoading && showMap[section.dataKey].length === 0">
+            <div class="d-flex" v-if="!isLoading && (showMap[section.dataKey]?.length ?? 0) === 0">
               <v-alert class="flex-0-0" type="info">
                 <p class="text-no-wrap">There are no shows in this category</p>
               </v-alert>
