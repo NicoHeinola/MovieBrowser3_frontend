@@ -15,9 +15,9 @@ Example:
 
 ```ts
 {
-	path: '/auth/login',
-	name: 'login',
-	component: () => import('@/pages/public/auth/login/LoginPage.vue'),
+	path: '/auth',
+	name: 'guest-auth',
+	component: () => import('@/pages/guest/auth/AuthView.vue'),
 }
 ```
 

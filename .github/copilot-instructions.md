@@ -23,7 +23,7 @@
 - For loading states in the UI, use Vuetify built-in `loading` props when the component supports them, or `v-skeleton-loader` when a placeholder is needed. Do not build any other loading treatment.
 - Use the dialog provider system for application dialogs. Open dialogs with `useDialog().showDialog(...)` and keep dialog components compatible with `src/components/layouts/dialog-provider`; do not mount feature dialogs inline in pages or other templates.
 - Use Conventional Commits when drafting commit messages for this repository. Follow `type(scope): summary` with lowercase type and scope, and keep the summary short and imperative.
-- Run the smallest relevant validation after changes, usually `npm run lint`, `npm test`, or a targeted type check.
+- Run the smallest relevant validation after changes, usually `npm run check:lint`, `npm test`, or `npm run check:types`.
 - When a requested change affects repository conventions, structure, ownership boundaries, or workflow guidance, update the relevant customization files in the same change without waiting for a separate prompt.
 - Treat service ownership changes as customization changes: whenever a backend endpoint family moves, splits, or gains a new service concept, update the affected instruction files in the same change.
 

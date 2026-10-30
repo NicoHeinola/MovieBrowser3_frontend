@@ -7,7 +7,7 @@ description: Build a frontend feature slice across pages, components, router, st
 
 Use this skill when the work touches more than one of the following: page composition, reusable components, routing, client state, API contracts, theming, or tests.
 
-Use a narrower skill only when the ownership is already clear and the task stays inside one workflow such as structure cleanup, store and API orchestration, or test writing.
+Use a narrower skill only when the ownership is already clear and the task stays inside one workflow such as structure cleanup, store and API orchestration, or test writing. For a standard CRUD resource modeled on categories, use `resource-slice`.
 
 ## Workflow
 
