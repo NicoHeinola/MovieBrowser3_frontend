@@ -1,9 +1,10 @@
+import type { HomepageSection } from './HomepageSection';
 import type { Show } from '@/interfaces/api/models/Show';
 
 export interface HomeShowsResponse {
   latestShows: Show[];
   continueToWatchShows: Show[];
-  isekaiShows: Show[];
-  romanceShows: Show[];
   randomShows: Show[];
+  categorySections: HomepageSection[];
+  categoryShows: Record<string, Show[]>;
 }

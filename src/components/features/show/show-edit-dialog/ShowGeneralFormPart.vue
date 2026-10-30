@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { ShowGeneralFormData } from './ShowGeneralFormData';
 import { computed } from 'vue';
+import { CategoryAutocomplete } from '@/components/features/category-autocomplete';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
-import ShowCategoriesAutocomplete from './ShowCategoriesAutocomplete.vue';
 import { getRules } from './showGeneralFormRules';
 
 const show = defineModel<ShowGeneralFormData>('show', { required: true });
@@ -119,7 +119,14 @@ const googleSearch = (searchTerm: string) => {
 
   <v-row>
     <v-col cols="12">
-      <show-categories-autocomplete v-model:categories="show!.categories" />
+      <category-autocomplete
+        v-model="show!.categories"
+        label="Categories"
+        chips
+        closable-chips
+        multiple
+        return-object
+      />
     </v-col>
   </v-row>
 </template>

@@ -42,6 +42,12 @@ export const ComponentDefaults = {
     density: 'compact',
     color: 'primary',
   },
+  VNumberInput: {
+    hideDetails: 'auto',
+    variant: 'outlined',
+    density: 'compact',
+    color: 'primary',
+  },
   VFileInput: {
     hideDetails: 'auto',
     variant: 'outlined',
