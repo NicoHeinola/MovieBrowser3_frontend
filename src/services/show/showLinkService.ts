@@ -28,7 +28,7 @@ const update = async (linkId: number, request: UpdateShowLinkRequest): Promise<S
   return response.data;
 };
 
-const deleteLink = async (linkId: number): Promise<void> => {
+const remove = async (linkId: number): Promise<void> => {
   await apiClient.delete(`links/${linkId}`);
 };
 
@@ -37,5 +37,5 @@ export const showLinkService = {
   get,
   create,
   update,
-  deleteLink,
+  remove,
 };

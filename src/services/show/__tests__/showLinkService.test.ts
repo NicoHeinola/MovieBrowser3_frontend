@@ -81,7 +81,7 @@ describe('showLinkService', () => {
   it('deletes show links', async () => {
     vi.mocked(apiClient.delete).mockResolvedValue(createResponse(undefined));
 
-    await expect(showLinkService.deleteLink(40)).resolves.toBeUndefined();
+    await expect(showLinkService.remove(40)).resolves.toBeUndefined();
 
     expect(apiClient.delete).toHaveBeenCalledWith('links/40');
   });

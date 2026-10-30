@@ -1,6 +1,13 @@
+import type { ObjectChangeCheckOptions } from '@/utils/object/hasObjectChanged';
+
+import { getSyncPlan } from './getSyncPlan';
+
 /**
  * Syncs a collection of items with the backend by creating new items,
- * updating existing ones, and deleting removed ones.
+ * updating changed ones, and deleting removed ones.
+ *
+ * Created items get their returned id assigned back, and deleted items are removed from `oldItems`,
+ * so calling this again after a partial failure only retries the work that did not finish.
  *
  * @param newItems - The new/current items to sync
  * @param oldItems - The original items before changes
@@ -9,32 +16,25 @@
  * @param options.update - Service method to update an existing item by id
  * @param options.delete - Service method to delete an item by id
  * @param options.idKey - The property name used to identify items (default: `'id'`)
+ * @param options.compareOptions - Paths to include or exclude when deciding whether an existing item changed
  * @param options.onItem - Optional callback invoked after each create, update, or delete operation.
- *   Receives the action type and the affected item. Use this to hook additional sync logic,
- *   such as syncing sub-resources (e.g. episodes of an entry) after the parent operation.
  * @returns Promise that resolves when all sync operations complete
  *
  * @example
- * await syncItems(
- *   show.value.entries,
- *   originalShow.value?.entries ?? [],
- *   {
- *     create: (entry) => showEntryService.create(entry),
- *     update: (id, entry) => showEntryService.update(id, entry),
- *     delete: (id) => showEntryService.remove(id),
- *     onItem: async (action, entry) => {
- *       if (action !== 'delete') {
- *         await syncItems(entry.episodes, originalEpisodes, { ... });
- *       }
- *     },
+ * await syncItems(show.value.titles, originalShow.value?.titles ?? [], {
+ *   create: (title) => showTitleService.create(show.value.id, title),
+ *   update: async (id, title) => {
+ *     await showTitleService.update(id, title);
  *   },
- * );
+ *   delete: (id) => showTitleService.remove(id),
+ * });
  */
 export const syncItems = async <T extends Record<string, unknown>, K extends keyof T = 'id' & keyof T>(
   newItems: T[],
   oldItems: T[],
   options: {
     idKey?: K;
+    compareOptions?: ObjectChangeCheckOptions;
     create: (item: T) => Promise<T>;
     update: (id: T[K], item: T) => Promise<void>;
     delete: (id: T[K]) => Promise<void>;
@@ -42,26 +42,22 @@ export const syncItems = async <T extends Record<string, unknown>, K extends key
   },
 ): Promise<void> => {
   const idKey = (options.idKey ?? 'id') as K;
+  const { toCreate, toUpdate, toDelete } = getSyncPlan(newItems, oldItems, idKey, options.compareOptions);
 
-  // Create new items and update existing ones
-  for (const newItem of newItems) {
-    if (newItem[idKey]) {
-      // Item exists, update it
-      await options.update(newItem[idKey], newItem);
-      await options.onItem?.('update', newItem);
-    } else {
-      // Item is new, create it and assign the returned ID back
-      const createdItem = await options.create(newItem);
-      newItem[idKey] = createdItem[idKey];
-      await options.onItem?.('create', newItem);
+  for (const item of newItems) {
+    if (toCreate.includes(item)) {
+      const createdItem = await options.create(item);
+      item[idKey] = createdItem[idKey];
+      await options.onItem?.('create', item);
+    } else if (toUpdate.includes(item)) {
+      await options.update(item[idKey], item);
+      await options.onItem?.('update', item);
     }
   }
 
-  // Delete items that were removed
-  for (const oldItem of oldItems) {
-    if (!newItems.some((item) => item[idKey] === oldItem[idKey])) {
-      await options.delete(oldItem[idKey]);
-      await options.onItem?.('delete', oldItem);
-    }
+  for (const item of toDelete) {
+    await options.delete(item[idKey]);
+    oldItems.splice(oldItems.indexOf(item), 1);
+    await options.onItem?.('delete', item);
   }
 };

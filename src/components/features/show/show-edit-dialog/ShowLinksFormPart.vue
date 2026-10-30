@@ -2,14 +2,12 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowLink } from '@/interfaces/api/models/ShowLink';
 
-import { computed } from 'vue';
-
 import { ShowAutocomplete } from '@/components/features/show/show-autocomplete';
 import { ShowLinkTypeSelect } from '@/components/features/show/show-link-type-select';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { ShowLinkType } from '@/enums/show/ShowLinkType';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
-import { getLinksRules } from './showLinksFormRules';
+import { getRules } from './showLinksFormRules';
 
 const props = defineProps<{
   /** Used for excluding the current show from the list of available shows. */
@@ -20,7 +18,7 @@ const outgoingLinks = defineModel<ShowLink[]>('outgoingLinks', {
   default: (_props) => [],
 });
 
-const rules = computed(() => getLinksRules());
+const rules = getRules();
 
 const { confirm } = useConfirmDialog();
 

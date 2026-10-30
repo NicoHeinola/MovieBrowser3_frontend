@@ -4,52 +4,69 @@ import type { Show } from '@/interfaces/api/models/Show';
 
 import { onMounted, ref } from 'vue';
 import { BaseDialog } from '@/components/common/base-dialog';
-import BaseForm from '@/components/common/base-form/BaseForm.vue';
-import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog.ts';
+import { BaseForm } from '@/components/common/base-form';
+import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { showCategoryService } from '@/services/show/showCategoryService';
 import { showEntryService } from '@/services/show/showEntryService';
-import { showEpisodeService } from '@/services/show/showEpisodeService.ts';
+import { showEpisodeService } from '@/services/show/showEpisodeService';
 import { showLinkService } from '@/services/show/showLinkService';
 import { showService } from '@/services/show/showService';
-import { showTitleService } from '@/services/show/showTitleService.ts';
-import { deepClone } from '@/utils/clone/deepClone.ts';
-import { getChangedObject } from '@/utils/object/hasObjectChanged.ts';
-import { syncItems } from '@/utils/sync/syncItems.ts';
-import ShowEntriesTab from './ShowEntriesTab.vue';
-import ShowGeneralTab from './ShowGeneralTab.vue';
-import ShowLinksTab from './ShowLinksTab.vue';
-import ShowUiTab from './ShowUiTab.vue';
+import { showTitleService } from '@/services/show/showTitleService';
+import { deepClone } from '@/utils/clone/deepClone';
+import { getChangedObject } from '@/utils/object/hasObjectChanged';
+import { getSyncPlan } from '@/utils/sync/getSyncPlan';
+import { syncItems } from '@/utils/sync/syncItems';
+import ShowEntriesFormPart from './ShowEntriesFormPart.vue';
+import ShowGeneralFormPart from './ShowGeneralFormPart.vue';
+import ShowLinksFormPart from './ShowLinksFormPart.vue';
+import ShowUiFormPart from './ShowUiFormPart.vue';
 
 const props = defineProps<DialogComponentProps<boolean>>();
 
 const show = defineModel<Show>('show', { required: true });
+const isDialogVisible = defineModel<boolean>({ required: true });
+
 const originalShow = ref<Show | null>(null);
-
-const { confirm } = useConfirmDialog();
-
 const isFormValid = ref<boolean>(false);
 const isSaving = ref<boolean>(false);
-
-const isDialogVisible = defineModel<boolean>({ required: true });
+/** Set once anything reached the backend, so cancelling after a partial failure still refreshes the caller. */
+const hasSavedChanges = ref<boolean>(false);
 const selectedTab = ref<string[]>(['general']);
 
+const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 
-const saveShow = async (): Promise<void> => {
-  const changedShow = getChangedObject(originalShow.value, show.value, {
-    excludes: ['titles', 'links', 'entries', 'categories'],
-  });
-  const showNeedsUpdate = show.value.id && changedShow !== undefined;
+const episodeActionMessages = {
+  create: (episodeName: string, entryName: string) => `Added episode "${episodeName}" to entry "${entryName}".`,
+  update: (episodeName: string, entryName: string) => `Updated episode "${episodeName}" for entry "${entryName}".`,
+  delete: (episodeName: string, entryName: string) => `Removed episode "${episodeName}" from entry "${entryName}".`,
+};
 
-  if (show.value.id) {
-    if (showNeedsUpdate) {
-      await showService.update(show.value.id, show.value);
-    }
-  } else {
-    const createdShow = await showService.create(show.value);
+const saveShow = async (): Promise<void> => {
+  const request = {
+    banner_url: show.value.banner_url,
+    card_image_url: show.value.card_image_url,
+    preview_url: show.value.preview_url,
+    description: show.value.description,
+  };
+
+  if (!show.value.id) {
+    const createdShow = await showService.create(request);
 
     show.value.id = createdShow.id;
+    hasSavedChanges.value = true;
+    return;
+  }
+
+  const hasShowChanged =
+    getChangedObject(originalShow.value, show.value, {
+      excludes: ['titles', 'categories', 'entries', 'outgoing_links', 'incoming_links'],
+    }) !== undefined;
+
+  if (hasShowChanged) {
+    await showService.update(show.value.id, request);
+    hasSavedChanges.value = true;
   }
 };
 
@@ -71,137 +88,77 @@ const saveCategories = async (): Promise<void> => {
 };
 
 const saveTitles = async (): Promise<void> => {
-  const haveTitlesChanged =
-    getChangedObject(
-      originalShow.value ? Array.from(originalShow.value.titles.values()) : [],
-      Array.from(show.value.titles.values()),
-    ) !== undefined;
-
-  if (!haveTitlesChanged) {
-    return;
-  }
-
-  await syncItems(
-    Array.from(show.value.titles.values()),
-    originalShow.value ? Array.from(originalShow.value.titles.values()) : [],
-    {
-      create: (title) => showTitleService.create(show.value.id, title),
-      update: async (id, title) => {
-        await showTitleService.update(id, title);
-      },
-      delete: (id) => showTitleService.remove(id),
+  await syncItems(show.value.titles, originalShow.value?.titles ?? [], {
+    create: (title) => showTitleService.create(show.value.id, title),
+    update: async (id, title) => {
+      await showTitleService.update(id, title);
     },
-  );
+    delete: (id) => showTitleService.remove(id),
+  });
 };
 
 const saveEntries = async (): Promise<void> => {
-  const haveEntriesChanged =
-    getChangedObject(originalShow.value?.entries ?? [], show.value.entries ?? []) !== undefined;
-
-  if (!haveEntriesChanged) {
-    return;
-  }
-
-  const originalEntries = originalShow.value?.entries ?? [];
-  let episodesToSyncAmount = (show.value.entries ?? []).reduce((amount, entry) => {
-    const originalEntry = originalEntries.find((originalEntry) => originalEntry.id === entry.id);
-    const haveEpisodesChanged = getChangedObject(originalEntry?.episodes ?? [], entry.episodes ?? []) !== undefined;
-
-    if (!haveEpisodesChanged) {
-      return amount;
-    }
-
-    const currentEpisodes = entry.episodes ?? [];
-    const deletedEpisodesCount = (originalEntry?.episodes ?? []).filter(
-      (originalEpisode) => !currentEpisodes.some((episode) => episode.id === originalEpisode.id),
-    ).length;
-
-    return amount + currentEpisodes.length + deletedEpisodesCount;
-  }, 0);
-
-  await syncItems(show.value.entries ?? [], originalEntries, {
+  await syncItems(show.value.entries ?? [], originalShow.value?.entries ?? [], {
+    compareOptions: { excludes: ['episodes'] },
     create: (entry) => showEntryService.create(show.value.id, entry),
     update: async (id, entry) => {
       await showEntryService.update(id, entry);
     },
     delete: (id) => showEntryService.remove(id),
-    onItem: async (action, item) => {
-      if (action === 'delete') {
-        return;
-      }
-
-      const haveEpisodesChanged =
-        getChangedObject(
-          originalShow.value?.entries?.find((e) => e.id === item.id)?.episodes ?? [],
-          item.episodes ?? [],
-        ) !== undefined;
-
-      if (haveEpisodesChanged) {
-        await syncItems(
-          item.episodes ?? [],
-          originalShow.value?.entries?.find((e) => e.id === item.id)?.episodes ?? [],
-          {
-            create: (episode) => showEpisodeService.create(item.id, episode),
-            update: async (id, episode) => {
-              await showEpisodeService.update(id, episode);
-            },
-            delete: (id) => showEpisodeService.remove(id),
-            onItem: async (action, episode) => {
-              episodesToSyncAmount--;
-
-              switch (action) {
-                case 'create': {
-                  showSuccessSnackbar(
-                    `Added episode "${episode.name}" to entry "${item.name}". Episodes left: ${episodesToSyncAmount}`,
-                  );
-
-                  break;
-                }
-                case 'update': {
-                  showSuccessSnackbar(
-                    `Updated episode "${episode.name}" for entry "${item.name}". ` +
-                      `Episodes left: ${episodesToSyncAmount}`,
-                  );
-
-                  break;
-                }
-                case 'delete': {
-                  showSuccessSnackbar(
-                    `Removed episode "${episode.name}" from entry "${item.name}". ` +
-                      `Episodes left: ${episodesToSyncAmount}`,
-                  );
-
-                  break;
-                }
-              }
-            },
-          },
-        );
-      }
-    },
   });
 };
 
-const saveLinks = async (): Promise<void> => {
-  const haveLinksChanged =
-    getChangedObject(originalShow.value?.outgoing_links ?? [], show.value.outgoing_links ?? []) !== undefined;
+/**
+ * Sync episodes per entry after the entries exist, reporting progress because uploads can take a while.
+ *
+ * @returns Nothing.
+ */
+const saveEpisodes = async (): Promise<void> => {
+  const originalEntries = originalShow.value?.entries ?? [];
+  const episodeSyncs = (show.value.entries ?? []).map((entry) => ({
+    entry,
+    episodes: entry.episodes ?? [],
+    originalEpisodes: originalEntries.find((originalEntry) => originalEntry.id === entry.id)?.episodes ?? [],
+  }));
 
-  if (!haveLinksChanged) {
-    return;
+  let episodesLeft = episodeSyncs.reduce((amount, { episodes, originalEpisodes }) => {
+    const { toCreate, toUpdate, toDelete } = getSyncPlan(episodes, originalEpisodes, 'id');
+
+    return amount + toCreate.length + toUpdate.length + toDelete.length;
+  }, 0);
+
+  for (const { entry, episodes, originalEpisodes } of episodeSyncs) {
+    await syncItems(episodes, originalEpisodes, {
+      create: (episode) => showEpisodeService.create(entry.id, episode),
+      update: async (id, episode) => {
+        await showEpisodeService.update(id, episode);
+      },
+      delete: (id) => showEpisodeService.remove(id),
+      onItem: (action, episode) => {
+        episodesLeft--;
+        const message = episodeActionMessages[action](episode.name, entry.name);
+
+        showSuccessSnackbar(`${message} Episodes left: ${episodesLeft}`);
+      },
+    });
   }
+};
 
+const saveLinks = async (): Promise<void> => {
   await syncItems(show.value.outgoing_links ?? [], originalShow.value?.outgoing_links ?? [], {
     create: (link) => showLinkService.create(show.value.id, link),
     update: async (id, link) => {
       await showLinkService.update(id, link);
     },
-    delete: (id) => showLinkService.deleteLink(id),
+    delete: (id) => showLinkService.remove(id),
   });
 };
 
 /**
- * Saves the show and related data (entries, links) to the backend.
+ * Saves the show and related data (titles, categories, entries, episodes, links) to the backend.
  * Creates the show first if it's new, then saves each related resource with dedicated helpers.
+ *
+ * @returns Nothing.
  */
 const handleSave = async (): Promise<void> => {
   if (!isFormValid.value) {
@@ -215,6 +172,7 @@ const handleSave = async (): Promise<void> => {
     await saveTitles();
     await saveCategories();
     await saveEntries();
+    await saveEpisodes();
     await saveLinks();
 
     showSuccessSnackbar('Show saved successfully.');
@@ -252,7 +210,7 @@ const deleteShow = async (): Promise<void> => {
 };
 
 onMounted(() => {
-  // Clone the show to keep track of original values for comparison
+  /** Snapshot the original values for change detection. */
   if (show.value?.id) {
     originalShow.value = deepClone<Show>(show.value);
   }
@@ -274,19 +232,24 @@ onMounted(() => {
           <v-list-item title="Links" value="links" />
         </v-list>
         <v-divider vertical />
-        <base-form v-model="isFormValid" class="w-100 h-100 overflow-scroll" style="max-height: 60vh" id="show-form">
+        <base-form
+          v-model:is-valid="isFormValid"
+          class="w-100 h-100 overflow-scroll"
+          style="max-height: 60vh"
+          id="show-form"
+        >
           <v-tabs-window :model-value="selectedTab[0]" class="flex-1-1">
             <v-tabs-window-item class="pa-1" value="general" eager>
-              <show-general-tab v-model:show="show" />
+              <show-general-form-part v-model:show="show" />
             </v-tabs-window-item>
             <v-tabs-window-item class="pa-1" value="ui" eager>
-              <show-ui-tab v-model:show="show" />
+              <show-ui-form-part v-model:show="show" />
             </v-tabs-window-item>
             <v-tabs-window-item class="pa-1" value="entries" eager>
-              <show-entries-tab v-model:show="show" />
+              <show-entries-form-part v-model:show="show" />
             </v-tabs-window-item>
             <v-tabs-window-item class="pa-1" value="links" eager>
-              <show-links-tab v-model:show="show" />
+              <show-links-form-part v-model:outgoing-links="show.outgoing_links" :show-id="show.id" />
             </v-tabs-window-item>
           </v-tabs-window>
         </base-form>
@@ -305,7 +268,7 @@ onMounted(() => {
         Delete
       </v-btn>
       <v-spacer />
-      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> Cancel </v-btn>
+      <v-btn :disabled="isSaving" variant="text" @click="props.close(hasSavedChanges)"> Cancel </v-btn>
       <v-btn
         :disabled="!isFormValid || isSaving"
         :loading="isSaving"
