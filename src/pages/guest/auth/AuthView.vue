@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { RegisterRequest } from '@/components/features/auth/register-form';
 import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginRequest';
 
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { LoginForm } from '@/components/features/auth/login-form';
-import { RegisterForm, type RegisterRequest } from '@/components/features/auth/register-form';
+import { RegisterForm } from '@/components/features/auth/register-form';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
@@ -92,7 +93,7 @@ const submitRegister = async (): Promise<void> => {
               <v-btn value="register">Register</v-btn>
             </v-btn-toggle>
 
-            <div style="width: 450px">
+            <div style="max-width: 450px">
               <template v-if="mode === 'login'">
                 <h2>Welcome back</h2>
                 <p class="text-medium-emphasis">Sign in to continue browsing your library and picks.</p>
