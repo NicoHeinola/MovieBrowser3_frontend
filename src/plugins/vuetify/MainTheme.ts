@@ -13,6 +13,8 @@ export const MainTheme: ThemeDefinition = {
     success: '#65C89B',
     warning: '#E7B657',
     error: '#FF8A8A',
+    /** A show whose entries have different watch statuses, or only some have one. */
+    'watch-status-mixed': '#8A93A6',
     'pattern-start': '#6B4FCC',
     'pattern-end': '#2A7A8A',
   },

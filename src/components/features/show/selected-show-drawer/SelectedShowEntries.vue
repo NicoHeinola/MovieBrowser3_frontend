@@ -4,8 +4,8 @@ import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import { ref, watch } from 'vue';
 import { ShowEntrySelect } from '@/components/features/show/show-entry-select';
 import { WatchStatusButton } from '@/components/features/show/watch-status-button';
+import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchStatus';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
-import { showEntryWatchStatusService } from '@/services/show/showEntryWatchStatusService';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
 
 const props = defineProps<{
@@ -17,6 +17,7 @@ const selectedEntry = ref<ShowEntry | null>(null);
 const isSavingStatus = ref<boolean>(false);
 
 const { showAPIErrorSnackbar } = useCommonSnackbar();
+const { saveWatchStatus } = useShowEntryWatchStatus();
 
 /**
  * Persists a watch status for the selected entry and mirrors the chosen status onto it.
@@ -32,13 +33,7 @@ const setWatchStatus = async (status: WatchStatus | null): Promise<void> => {
   isSavingStatus.value = true;
 
   try {
-    if (status) {
-      await showEntryWatchStatusService.update(entry.id, { status });
-      entry.watch_status = { show_entry_id: entry.id, status };
-    } else {
-      await showEntryWatchStatusService.remove(entry.id);
-      entry.watch_status = null;
-    }
+    entry.watch_status = await saveWatchStatus(entry, status);
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {

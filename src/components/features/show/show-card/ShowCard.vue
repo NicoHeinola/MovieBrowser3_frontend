@@ -4,6 +4,7 @@ import { computed, onBeforeUnmount, ref } from 'vue';
 
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
+import { getShowWatchStatusColor } from '@/utils/show/getShowWatchStatusColor';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 
 const props = withDefaults(
@@ -65,6 +66,9 @@ const onMouseLeave = () => {
 
 const primaryTitle = computed<string>(() => getPrimaryTitle(props.show));
 
+/** Single status color, gray when statuses are mixed or incomplete, `null` when none is set. */
+const watchStatusColor = computed<string | null>(() => getShowWatchStatusColor(props.show));
+
 /** A card can unmount while hovered (e.g. on refetch); release the parent's "playing" state with it. */
 onBeforeUnmount(() => {
   onMouseLeave();
@@ -100,6 +104,12 @@ onBeforeUnmount(() => {
         {{ primaryTitle }}
       </p>
     </div>
+    <div
+      :class="`bg-${watchStatusColor}`"
+      class="position-absolute bottom-0 w-100"
+      style="height: 5px"
+      v-if="watchStatusColor"
+    ></div>
   </v-card>
 </template>
 

@@ -234,12 +234,13 @@ watch(
             <v-skeleton-loader type="image" v-if="isLoading" />
 
             <show-carousel
-              v-model:selected-show="selectedShow"
+              :selected-show="selectedShow"
               :shows="showMap[section.dataKey] ?? []"
               :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
               drag-class="pl-12 pr-12"
               @click:show="isShowDrawerVisible = true"
               @playing-video="onPlayingVideoUpdate"
+              @update:selected-show="(show: Show | null | undefined) => (selectedShow = deepClone(show ?? null))"
               v-else
             />
 
