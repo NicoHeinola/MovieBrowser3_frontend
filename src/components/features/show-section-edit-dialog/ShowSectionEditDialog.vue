@@ -117,7 +117,7 @@ onMounted(() => {
     </template>
 
     <template #default>
-      <base-form v-model="isFormValid" @submit.prevent="handleSave" id="show-section-form">
+      <base-form v-model:is-valid="isFormValid" @submit="handleSave" id="show-section-form">
         <v-row>
           <v-col cols="12">
             <category-autocomplete

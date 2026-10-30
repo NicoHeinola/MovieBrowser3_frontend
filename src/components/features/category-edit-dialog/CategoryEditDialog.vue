@@ -4,12 +4,12 @@ import type { Category } from '@/interfaces/api/models/Category';
 
 import { onMounted, ref } from 'vue';
 import { BaseDialog } from '@/components/common/base-dialog';
-import BaseForm from '@/components/common/base-form/BaseForm.vue';
+import { BaseForm } from '@/components/common/base-form';
 import { MdiIconAutocomplete } from '@/components/common/mdi-icon-autocomplete';
-import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog.ts';
+import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
-import { categoryService } from '@/services/show/categoryService.ts';
-import { deepClone } from '@/utils/clone/deepClone.ts';
+import { categoryService } from '@/services/show/categoryService';
+import { deepClone } from '@/utils/clone/deepClone';
 import { getChangedObject } from '@/utils/object/hasObjectChanged';
 import { getRules } from './categoryEditDialogRules';
 
@@ -108,7 +108,7 @@ onMounted(() => {
     </template>
 
     <template #default>
-      <base-form v-model="isFormValid" @submit.prevent="handleSave" id="category-form">
+      <base-form v-model:is-valid="isFormValid" @submit="handleSave" id="category-form">
         <v-row>
           <v-col cols="12">
             <v-text-field v-model="category.name" :rules="rules.name" class="required" label="Name" />
