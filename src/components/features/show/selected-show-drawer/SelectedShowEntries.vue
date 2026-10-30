@@ -70,6 +70,14 @@ watch([() => props.entries, () => props.isShown], () => {
   </v-row>
 
   <v-row v-if="selectedEntry?.episodes && selectedEntry.episodes.length > 0">
+    <v-col cols="12">
+      <v-divider></v-divider>
+    </v-col>
+
+    <v-col cols="12">
+      <span class="text-label-medium text-medium-emphasis text-uppercase">Episodes</span>
+    </v-col>
+
     <v-col v-for="(episode, index) in selectedEntry?.episodes" cols="12" :key="episode.id">
       <v-btn append-icon="mdi-play" class="max-width-button w-100 justify-start">
         <template #prepend>

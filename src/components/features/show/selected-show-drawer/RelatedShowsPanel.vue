@@ -36,6 +36,10 @@ const changeShow = async (showId: number): Promise<void> => {
 <template>
   <v-row v-if="(show?.outgoing_links?.length ?? 0) > 0">
     <v-col cols="12">
+      <v-divider></v-divider>
+    </v-col>
+
+    <v-col cols="12">
       <v-expansion-panels color="background" variant="accordion">
         <v-expansion-panel>
           <v-expansion-panel-title class="text-body-2 text-medium-emphasis">
