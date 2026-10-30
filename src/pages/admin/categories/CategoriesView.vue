@@ -20,7 +20,6 @@ import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { ShowSectionQueryKey } from '@/enums/query/showSectionQueryKey';
 import { categoryService } from '@/services/show/categoryService';
 import { showSectionService } from '@/services/show/showSectionService';
-import { useSettingStore } from '@/stores/setting/useSettingStore';
 import { deepClone } from '@/utils/clone/deepClone';
 
 const showSections = ref<ShowSection[]>([]);
@@ -28,7 +27,6 @@ const isSavingSectionOrder = ref<boolean>(false);
 
 const dialog = useDialog();
 const queryClient = useQueryClient();
-const settingStore = useSettingStore();
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 
 const categoriesQuery = useAPIQuery<PaginatedResponse<Category>>({
@@ -138,6 +136,9 @@ const saveShowSectionOrder = async (sections: ShowSection[]): Promise<void> => {
         section.sort_order = index;
       }),
     );
+
+    /** Bring the cache in line with the saved order; the paused watch keeps the screen as-is. */
+    await showSectionsQuery.refetch();
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
 
@@ -200,7 +201,7 @@ watch(
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn :loading="settingStore.isLoading" icon="mdi-plus" @click="void openEditCategoryDialog()" />
+              <v-btn icon="mdi-plus" @click="void openEditCategoryDialog()" />
             </div>
           </template>
         </titled-section>
