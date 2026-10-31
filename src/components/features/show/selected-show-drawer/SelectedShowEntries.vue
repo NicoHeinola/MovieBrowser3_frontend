@@ -4,7 +4,7 @@ import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import type { CombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
 import { computed, ref, watch } from 'vue';
 import { SectionLabel } from '@/components/common/section-label';
-import { ShowEntrySelect } from '@/components/features/show/show-entry-select';
+import { ShowEntryPicker } from '@/components/features/show/show-entry-picker';
 import { WatchStatusButton } from '@/components/features/show/watch-status-button';
 import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchStatus';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -80,8 +80,12 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
 
 <template>
   <v-row>
-    <v-col class="d-flex ga-6 align-center" cols="12">
-      <show-entry-select v-model="selectedEntry" :entries="entries" clearable />
+    <v-col cols="12">
+      <show-entry-picker
+        v-model="selectedEntry"
+        :entries="entries"
+        :watching-entry-id="show?.watch_progress?.show_entry_id"
+      />
     </v-col>
     <v-col cols="6">
       <watch-status-button
