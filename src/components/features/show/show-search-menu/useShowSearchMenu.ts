@@ -43,7 +43,10 @@ export const useShowSearchMenu = () => {
 
   const shows = computed<Show[]>(() => showsQuery.data.value?.data ?? []);
   const totalResults = computed<number>(() => showsQuery.data.value?.meta.total ?? 0);
-  const isLoading = computed<boolean>(() => term.value !== debouncedTerm.value || showsQuery.isFetching.value);
+  /** A cleared field closes the menu, so it never shows the skeleton while the menu fades out. */
+  const isLoading = computed<boolean>(
+    () => term.value !== '' && (term.value !== debouncedTerm.value || showsQuery.isFetching.value),
+  );
 
   /**
    * Opens the search page with the typed term and clears the field. Already on the search page, its filters and sort

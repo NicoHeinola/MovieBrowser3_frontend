@@ -101,6 +101,23 @@ describe('useShowSearchMenu', () => {
     expect(isLoading.value).toBe(false);
   });
 
+  it('does not count a cleared field as loading', async () => {
+    vi.useFakeTimers();
+    const { search, shows, isLoading } = await setupSearch();
+
+    search.value = 'naruto';
+    await flushPromises();
+    vi.advanceTimersByTime(300);
+    await flushPromises();
+    expect(shows.value).toEqual([show]);
+
+    search.value = '';
+    await flushPromises();
+
+    expect(isLoading.value).toBe(false);
+    expect(shows.value).toEqual([show]);
+  });
+
   it('opens the search page with the term and clears the field', async () => {
     const { search, openSearchPage, router } = await setupSearch();
 
