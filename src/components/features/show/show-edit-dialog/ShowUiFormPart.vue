@@ -50,7 +50,7 @@ const youTubeSearch = (searchTerm: string) => {
             class="glass-panel rounded-lg required"
             label="Banner URL"
           >
-            <template #prepend>
+            <template #prepend-inner>
               <v-icon icon="mdi-help-circle" v-tooltip:bottom="'Affects the large banner of the frontpage only.'" />
             </template>
           </v-text-field>
@@ -85,7 +85,7 @@ const youTubeSearch = (searchTerm: string) => {
             class="glass-panel rounded-lg required"
             label="Card Image URL"
           >
-            <template #prepend>
+            <template #prepend-inner>
               <v-icon
                 icon="mdi-help-circle"
                 v-tooltip:bottom="'Affects cards and any other images when displaying the show.'"
@@ -128,7 +128,7 @@ const youTubeSearch = (searchTerm: string) => {
             class="glass-panel rounded-lg"
             label="Preview URL (YouTube)"
           >
-            <template #prepend>
+            <template #prepend-inner>
               <v-icon
                 icon="mdi-help-circle"
                 v-tooltip:bottom="
