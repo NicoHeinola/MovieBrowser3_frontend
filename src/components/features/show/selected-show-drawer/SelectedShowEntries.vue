@@ -10,6 +10,7 @@ import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchSta
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { getCombinedWatchStatus, MIXED_WATCH_STATUS } from '@/utils/show/getCombinedWatchStatus';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
+import { getWatchedEpisodeIds } from '@/utils/show/getWatchedEpisodeIds';
 import { useSelectedEntry } from './useSelectedEntry';
 import { useSelectedShowPlayback } from './useSelectedShowPlayback';
 
@@ -41,6 +42,20 @@ const targetEntries = computed<ShowEntry[]>(() => {
   if (selectedEntry.value) return [selectedEntry.value];
   return entries.value;
 });
+
+/** Episodes before the last started one or in a completed entry, which count as watched. */
+const watchedEpisodeIds = computed<Set<number>>(() => getWatchedEpisodeIds(props.show));
+
+/**
+ * Resolves how an episode's number chip shows its progress.
+ * @param episodeId - The episode to look up.
+ * @returns The chip color and icon: watched, playing, or neither.
+ */
+const getEpisodeChipProps = (episodeId: number): { color?: string; prependIcon?: string } => {
+  if (watchedEpisodeIds.value.has(episodeId)) return { color: 'success', prependIcon: 'mdi-check' };
+  if (episodeId === props.show?.watch_progress?.episode_id) return { color: 'secondary', prependIcon: 'mdi-play' };
+  return {};
+};
 
 const targetStatus = computed<CombinedWatchStatus>(() => getCombinedWatchStatus(targetEntries.value));
 
@@ -128,11 +143,7 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
 
     <v-col v-for="(episode, index) in selectedEntry?.episodes" class="d-flex ga-2" cols="12" :key="episode.id">
       <div style="min-width: 60px">
-        <v-chip
-          :color="episode.id === show?.watch_progress?.episode_id ? 'secondary' : undefined"
-          :prepend-icon="episode.id === show?.watch_progress?.episode_id ? 'mdi-play' : undefined"
-          class="flex-0-1"
-        >
+        <v-chip v-bind="getEpisodeChipProps(episode.id)" class="flex-0-1">
           {{ index + 1 }}
         </v-chip>
       </div>
