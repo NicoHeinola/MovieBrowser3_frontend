@@ -59,7 +59,7 @@ const cycleStateBackwards = (): void => {
  * @returns void
  */
 const onClick = (event: KeyboardEvent | MouseEvent): void => {
-  if (event.ctrlKey || event.metaKey) {
+  if (event.ctrlKey || event.shiftKey || event.metaKey) {
     state.value = null;
     return;
   }
@@ -73,7 +73,7 @@ const onClick = (event: KeyboardEvent | MouseEvent): void => {
  */
 const onContextMenu = (event: MouseEvent): void => {
   event.preventDefault();
-  if (event.ctrlKey || event.metaKey) {
+  if (event.ctrlKey || event.shiftKey || event.metaKey) {
     state.value = null;
     return;
   }
