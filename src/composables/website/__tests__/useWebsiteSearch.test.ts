@@ -4,6 +4,7 @@ import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { flushPromises } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp, effectScope } from 'vue';
+import { createMemoryHistory, createRouter } from 'vue-router';
 
 import { websiteService } from '@/services/website/websiteService';
 import { useWebsiteSearch } from '../useWebsiteSearch';
@@ -34,12 +35,20 @@ const website: Website = {
 const scopes: EffectScope[] = [];
 
 /**
- * Runs the website search inside an app that provides the query client, and waits for the first load.
+ * Runs the website search inside an app that provides the query client and a router, and waits for the first load.
+ * @param url - The URL the router starts at.
  * @returns The website search state.
  */
-const setupSearch = async () => {
+const setupSearch = async (url = '/admin/websites') => {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/admin/websites', component: { template: '<div />' } }],
+  });
+  await router.push(url);
+
   const app = createApp({});
   app.use(VueQueryPlugin, { queryClient });
+  app.use(router);
 
   const scope = effectScope();
   scopes.push(scope);
@@ -47,7 +56,7 @@ const setupSearch = async () => {
   const search = app.runWithContext(() => scope.run(() => useWebsiteSearch()))!;
   await flushPromises();
 
-  return search;
+  return { ...search, router };
 };
 
 describe('useWebsiteSearch', () => {
@@ -96,5 +105,19 @@ describe('useWebsiteSearch', () => {
     filters.value = { tagIds: [3], excludedTagIds: [2] };
     toggleTag(4);
     expect(filters.value).toEqual({ tagIds: [3, 4], excludedTagIds: [2] });
+  });
+
+  it('keeps the tag filters in the URL query', async () => {
+    const { toggleTag, router } = await setupSearch('/admin/websites?exclude_tag=3&sort=-created_at');
+
+    expect(vi.mocked(websiteService.list).mock.lastCall?.[0]).toMatchObject({
+      filter: { exclude_tags: ['3'] },
+      sort: '-created_at',
+    });
+
+    toggleTag(5);
+    await flushPromises();
+
+    expect(router.currentRoute.value.fullPath).toBe('/admin/websites?tag=5&exclude_tag=3&sort=-created_at');
   });
 });

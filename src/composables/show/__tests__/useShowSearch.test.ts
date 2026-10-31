@@ -3,6 +3,7 @@ import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { flushPromises } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp, effectScope } from 'vue';
+import { createMemoryHistory, createRouter } from 'vue-router';
 
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { WatchStatus } from '@/enums/show/WatchStatus';
@@ -24,12 +25,20 @@ vi.mock('@/services/show/showService', () => ({
 const scopes: EffectScope[] = [];
 
 /**
- * Runs the show search inside an app that provides the query client, and waits for the first load.
+ * Runs the show search inside an app that provides the query client and a router, and waits for the first load.
+ * @param url - The URL the router starts at.
  * @returns The show search state.
  */
-const setupSearch = async () => {
+const setupSearch = async (url = '/search') => {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/search', component: { template: '<div />' } }],
+  });
+  await router.push(url);
+
   const app = createApp({});
   app.use(VueQueryPlugin, { queryClient });
+  app.use(router);
 
   const scope = effectScope();
   scopes.push(scope);
@@ -37,7 +46,7 @@ const setupSearch = async () => {
   const search = app.runWithContext(() => scope.run(() => useShowSearch(ShowQueryKey.SearchShows)))!;
   await flushPromises();
 
-  return search;
+  return { ...search, router };
 };
 
 describe('useShowSearch', () => {
@@ -84,5 +93,22 @@ describe('useShowSearch', () => {
       preview_url: 'not_null',
     });
     expect(activeFilterCount.value).toBe(5);
+  });
+
+  it('keeps the filters in the URL query', async () => {
+    const { filters, router } = await setupSearch('/search?category=anime&watch_status=watching&has_preview=true');
+
+    expect(vi.mocked(showService.list).mock.lastCall?.[0].filter).toEqual({
+      'categories.value': ['anime'],
+      watch_status: [WatchStatus.Watching],
+      preview_url: 'not_null',
+    });
+
+    filters.value = { ...filters.value, excludedCategories: ['horror'], hasPreview: false };
+    await flushPromises();
+
+    expect(router.currentRoute.value.fullPath).toBe(
+      '/search?category=anime&exclude_category=horror&watch_status=watching',
+    );
   });
 });

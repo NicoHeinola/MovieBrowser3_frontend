@@ -5,10 +5,12 @@ import type { Show } from '@/interfaces/api/models/Show';
 import { usePaginatedSearch } from '@/composables/search/usePaginatedSearch';
 import { showService } from '@/services/show/showService';
 import { getShowSearchFilterParams } from '@/utils/show/getShowSearchFilterParams';
+import { getShowSearchFiltersFromQuery } from '@/utils/show/getShowSearchFiltersFromQuery';
+import { getShowSearchFiltersQuery } from '@/utils/show/getShowSearchFiltersQuery';
 import { showSortOptions } from './showSortOptions';
 
 /**
- * Debounced, paginated show search shared by the search page and the admin shows page.
+ * Debounced, paginated show search shared by the search page and the admin shows page, kept in the URL query.
  *
  * @param queryKey Query key of the calling page, so each page keeps its own cache entry.
  * @returns The search input, filter, sort and page refs, the query, and the shows.
@@ -33,6 +35,11 @@ export const useShowSearch = (queryKey: ShowQueryKey) => {
       Number(filters.hasPreview),
     defaultSort: showSortOptions[0].value,
     pageSize: 32,
+    routeQuery: {
+      sortValues: showSortOptions.map((option) => option.value),
+      getFiltersQuery: getShowSearchFiltersQuery,
+      getFiltersFromQuery: getShowSearchFiltersFromQuery,
+    },
   });
 
   return {

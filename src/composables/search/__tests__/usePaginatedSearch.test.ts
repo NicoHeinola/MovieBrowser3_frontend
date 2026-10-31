@@ -4,7 +4,9 @@ import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { flushPromises } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp, effectScope } from 'vue';
+import { createMemoryHistory, createRouter } from 'vue-router';
 
+import { getQueryStrings } from '@/utils/route/getQueryStrings';
 import { usePaginatedSearch } from '../usePaginatedSearch';
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -55,6 +57,44 @@ const setupSearch = async () => {
   await flushPromises();
 
   return search;
+};
+
+const routeOptions: PaginatedSearchOptions<Item, Filters> = {
+  ...options,
+  routeQuery: {
+    sortValues: ['-created_at', 'title'],
+    getFiltersQuery: (filters) => (filters.colors.length > 0 ? { color: filters.colors } : {}),
+    getFiltersFromQuery: (query) => ({ colors: getQueryStrings(query.color) }),
+  },
+};
+
+/**
+ * Runs the URL-synced search on a memory router opened at the given URL, and waits for the first load.
+ * @param url - The URL the router starts at.
+ * @returns The search state and the router.
+ */
+const setupRouteSearch = async (url: string) => {
+  const component = { template: '<div />' };
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: '/search', name: 'search', component },
+      { path: '/other', name: 'other', component },
+    ],
+  });
+  await router.push(url);
+
+  const app = createApp({});
+  app.use(VueQueryPlugin, { queryClient });
+  app.use(router);
+
+  const scope = effectScope();
+  scopes.push(scope);
+
+  const search = app.runWithContext(() => scope.run(() => usePaginatedSearch(routeOptions)))!;
+  await flushPromises();
+
+  return { search, router };
 };
 
 const getLastQuery = () => list.mock.lastCall?.[0];
@@ -166,5 +206,91 @@ describe('usePaginatedSearch', () => {
     expect(filters.value).toEqual({ colors: [] });
     expect(activeFilterCount.value).toBe(0);
     expect(searchInput.value).toBe('car');
+  });
+
+  describe('with routeQuery', () => {
+    it('starts from the URL without fetching the defaults first', async () => {
+      const { search } = await setupRouteSearch('/search?q=car&color=red&sort=title&page=2');
+
+      expect(list).toHaveBeenCalledTimes(1);
+      expect(getLastQuery()).toEqual({
+        filter: { search: 'car', color: ['red'] },
+        sort: 'title',
+        page: { number: 2, size: 10 },
+      });
+      expect(search.searchInput.value).toBe('car');
+      expect(search.isLoading.value).toBe(false);
+    });
+
+    it('keeps the URL page once the restored search term settles', async () => {
+      vi.useFakeTimers();
+      const { search } = await setupRouteSearch('/search?q=car&page=2');
+
+      vi.advanceTimersByTime(300);
+      await flushPromises();
+
+      expect(search.page.value).toBe(2);
+    });
+
+    it('writes changes to the URL, leaving out defaults', async () => {
+      const { search, router } = await setupRouteSearch('/search');
+
+      search.filters.value = { colors: ['red', 'blue'] };
+      search.sort.value = 'title';
+      await flushPromises();
+      expect(router.currentRoute.value.fullPath).toBe('/search?color=red&color=blue&sort=title');
+
+      search.page.value = 2;
+      await flushPromises();
+      expect(router.currentRoute.value.query.page).toBe('2');
+
+      search.clearFilters();
+      search.sort.value = '-created_at';
+      await flushPromises();
+      expect(router.currentRoute.value.fullPath).toBe('/search');
+    });
+
+    it('replaces the history entry instead of adding one', async () => {
+      const { search, router } = await setupRouteSearch('/search');
+      const push = vi.spyOn(router, 'push');
+
+      search.sort.value = 'title';
+      await flushPromises();
+
+      expect(push).not.toHaveBeenCalled();
+      expect(router.currentRoute.value.query.sort).toBe('title');
+    });
+
+    it('follows a URL change on the same page, keeping its page', async () => {
+      const { search, router } = await setupRouteSearch('/search?q=car');
+
+      await router.push('/search?q=bike&color=red&page=3');
+      await flushPromises();
+
+      expect(search.searchInput.value).toBe('bike');
+      expect(search.filters.value).toEqual({ colors: ['red'] });
+      expect(search.page.value).toBe(3);
+      expect(getLastQuery()).toEqual({
+        filter: { search: 'bike', color: ['red'] },
+        sort: '-created_at',
+        page: { number: 3, size: 10 },
+      });
+    });
+
+    it('ignores the query of the page being navigated to', async () => {
+      const { search, router } = await setupRouteSearch('/search?q=car');
+
+      await router.push('/other?q=bike');
+      await flushPromises();
+
+      expect(search.searchInput.value).toBe('car');
+      expect(router.currentRoute.value.fullPath).toBe('/other?q=bike');
+    });
+
+    it('falls back to the defaults for an unknown sort and an invalid page', async () => {
+      await setupRouteSearch('/search?sort=password&page=abc');
+
+      expect(getLastQuery()).toEqual({ filter: undefined, sort: '-created_at', page: { number: 1, size: 10 } });
+    });
   });
 });

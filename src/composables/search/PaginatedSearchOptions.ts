@@ -1,3 +1,4 @@
+import type { PaginatedSearchRouteQuery } from './PaginatedSearchRouteQuery';
 import type { ApiQueryParams } from '@/interfaces/api/requests/ApiQueryParams';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 
@@ -16,4 +17,6 @@ export interface PaginatedSearchOptions<TItem, TFilters> {
   /** Backend sort value to start with, such as `-created_at`. */
   defaultSort: string;
   pageSize: number;
+  /** Keeps the search in the URL query when set. Only one search per page may use it. */
+  routeQuery?: PaginatedSearchRouteQuery<TFilters>;
 }

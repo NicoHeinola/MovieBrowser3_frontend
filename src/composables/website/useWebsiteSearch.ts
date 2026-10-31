@@ -6,10 +6,12 @@ import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
 import { websiteService } from '@/services/website/websiteService';
 import { toggleFilterValue } from '@/utils/filter/toggleFilterValue';
 import { getWebsiteSearchFilterParams } from '@/utils/website/getWebsiteSearchFilterParams';
+import { getWebsiteSearchFiltersFromQuery } from '@/utils/website/getWebsiteSearchFiltersFromQuery';
+import { getWebsiteSearchFiltersQuery } from '@/utils/website/getWebsiteSearchFiltersQuery';
 import { websiteSortOptions } from './websiteSortOptions';
 
 /**
- * Debounced, paginated website search for the admin websites page.
+ * Debounced, paginated website search for the admin websites page, kept in the URL query.
  *
  * @returns The search input, filter, sort and page refs, the query, the websites, and `toggleTag`.
  */
@@ -22,6 +24,11 @@ export const useWebsiteSearch = () => {
     countActiveFilters: (currentFilters) => currentFilters.tagIds.length + currentFilters.excludedTagIds.length,
     defaultSort: websiteSortOptions[0].value,
     pageSize: 24,
+    routeQuery: {
+      sortValues: websiteSortOptions.map((option) => option.value),
+      getFiltersQuery: getWebsiteSearchFiltersQuery,
+      getFiltersFromQuery: getWebsiteSearchFiltersFromQuery,
+    },
   });
 
   /**

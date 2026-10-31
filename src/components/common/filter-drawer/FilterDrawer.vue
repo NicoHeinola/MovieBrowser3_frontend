@@ -26,6 +26,7 @@ const resultLabel = computed<string>(() => {
     location="right"
     style="height: 100vh !important; top: 0; z-index: 2000"
     width="470"
+    disable-route-watcher
     temporary
   >
     <v-container>
