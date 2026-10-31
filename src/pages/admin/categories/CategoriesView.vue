@@ -209,7 +209,7 @@ watch(
       <v-col cols="12" lg="6">
         <titled-section subtitle="Decide what categories appear on the frontpage." title="Frontpage categories">
           <v-row>
-            <template v-if="showSectionsQuery.isFetching.value">
+            <template v-if="showSectionsQuery.isFetching.value && !isSavingSectionOrder">
               <v-col v-for="n in 4" class="d-flex" cols="12" :key="n">
                 <v-skeleton-loader class="rounded-e-0" height="51px" type="text" width="45px" />
                 <v-skeleton-loader class="flex-1-1 rounded-0" type="text" />
