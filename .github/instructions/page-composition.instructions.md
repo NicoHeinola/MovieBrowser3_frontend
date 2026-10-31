@@ -22,6 +22,12 @@ applyTo: 'src/pages/**/*.vue'
 - Route registration belongs in `src/router`, not inside page files.
 - Backend contracts belong in `src/interfaces/api`, not inline in page components unless the type is trivial and page-local.
 
+## Search Pages
+
+- Searchable list pages (shows, search, websites) share one layout. Use `search-toolbar` (search field, `sort-menu`, filter button with badge), `result-count` above the results and a feature filter drawer built on `filter-drawer` + `filter-drawer-section` with `filter-chip` include/exclude chips.
+- Keep the search, filter and sort state in a `use<Domain>Search` composable built on `usePaginatedSearch` (`src/composables/search`). It supplies only the domain parts (query key, list call, filter shape and params, active filter count, default sort, page size) and renames `items` to the domain name. Put the sort choices in a sibling `<domain>SortOptions.ts`. Sort values are backend sort strings such as `-created_at`.
+- The empty state is an info alert. It offers "Clear filters" only when filters are active. Adding items goes through the page's floating action button, not the alert.
+
 ## Loading States
 
 - Pages should pass loading state into child sections and render it with Vuetify built-in `loading` props or `v-skeleton-loader`.

@@ -12,6 +12,8 @@ applyTo: 'src/components/**/*Table.vue'
 
 ## Table Setup
 
+- A `*Table.vue` wrapper renders only the table (plus its `v-skeleton-loader` placeholder). Search fields, toolbars and the `v-row`/`v-col` layout belong to the page, which passes the search term in as a prop.
+
 - Type headers explicitly with `DataTableHeader`.
 - Map store or API arrays into row objects with a `computed(...)` value before passing them to the table.
 - Use the table's built-in `loading` prop for in-place loading states, or `v-skeleton-loader` for initial placeholder rendering around the table region.
