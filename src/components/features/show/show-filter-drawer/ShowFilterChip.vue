@@ -38,6 +38,47 @@ const cycleState = (): void => {
     state.value = null;
   }
 };
+
+/**
+ * Moves the chip to its previous state: off, then excluded, then included, then off again.
+ * @returns void
+ */
+const cycleStateBackwards = (): void => {
+  if (state.value === null) {
+    state.value = 'exclude';
+  } else if (state.value === 'exclude') {
+    state.value = 'include';
+  } else {
+    state.value = null;
+  }
+};
+
+/**
+ * Handles a left click: Ctrl (or Cmd) clears the chip, otherwise it cycles forwards.
+ * @param event The click event.
+ * @returns void
+ */
+const onClick = (event: KeyboardEvent | MouseEvent): void => {
+  if (event.ctrlKey || event.metaKey) {
+    state.value = null;
+    return;
+  }
+  cycleState();
+};
+
+/**
+ * Handles a right click: Ctrl (or Cmd) clears the chip, otherwise it cycles backwards.
+ * @param event The context menu event.
+ * @returns void
+ */
+const onContextMenu = (event: MouseEvent): void => {
+  event.preventDefault();
+  if (event.ctrlKey || event.metaKey) {
+    state.value = null;
+    return;
+  }
+  cycleStateBackwards();
+};
 </script>
 
 <template>
@@ -47,6 +88,7 @@ const cycleState = (): void => {
     :prepend-icon="props.icon"
     :text="props.text"
     :variant="state === 'exclude' ? 'outlined' : 'tonal'"
-    @click="cycleState"
+    @click="onClick"
+    @contextmenu="onContextMenu"
   />
 </template>
