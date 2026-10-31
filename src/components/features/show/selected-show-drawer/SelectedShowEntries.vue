@@ -114,11 +114,16 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
     </v-col>
 
     <v-col v-for="(episode, index) in selectedEntry?.episodes" class="d-flex ga-2" cols="12" :key="episode.id">
-      <div style="min-width: 40px">
-        <v-chip class="flex-0-1">{{ index + 1 }}</v-chip>
+      <div style="min-width: 60px">
+        <v-chip
+          :color="episode.id === show?.watch_progress?.episode_id ? 'secondary' : undefined"
+          :prepend-icon="episode.id === show?.watch_progress?.episode_id ? 'mdi-play' : undefined"
+          class="flex-0-1"
+        >
+          {{ index + 1 }}
+        </v-chip>
       </div>
       <v-btn
-        :active="episode.id === show?.watch_progress?.episode_id"
         :disabled="isStartingPlayback && startingEpisodeId !== episode.id"
         :loading="startingEpisodeId === episode.id"
         append-icon="mdi-play"
