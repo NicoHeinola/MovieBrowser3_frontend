@@ -5,6 +5,7 @@ import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
+import { useRouteLoading } from '@/composables/router/useRouteLoading';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
 import NavLinks from './NavLinks.vue';
@@ -26,6 +27,7 @@ const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const { confirm } = useConfirmDialog();
+const { isNavigating } = useRouteLoading();
 
 const isInAdminArea = computed<boolean>(() => String(route.name ?? '').startsWith('admin-'));
 
@@ -46,7 +48,7 @@ const logout = async (): Promise<void> => {
 </script>
 
 <template>
-  <v-app-bar class="navigation-bar px-4" color="transparent" flat>
+  <v-app-bar :loading="isNavigating" class="navigation-bar px-4" color="transparent" flat>
     <v-list class="d-flex flex-row ga-6 bg-transparent justify-center w-100">
       <nav-links :links="adminLinks" v-if="isInAdminArea" />
       <nav-links :links="authenticatedLinks" v-else />
