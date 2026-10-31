@@ -35,6 +35,7 @@ const emit = defineEmits<{
         prepend-inner-icon="mdi-magnify"
         rounded="xl"
         variant="solo-filled"
+        autofocus
         clearable
       />
       <sort-menu v-model="sort" :options="props.sortOptions" v-if="props.sortOptions" />
