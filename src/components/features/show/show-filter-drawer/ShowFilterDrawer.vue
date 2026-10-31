@@ -11,6 +11,7 @@ import { WatchStatus } from '@/enums/show/WatchStatus';
 import { categoryService } from '@/services/show/categoryService';
 import { getWatchStatusColor } from '@/utils/show/getWatchStatusColor';
 import { getWatchStatusIcon } from '@/utils/show/getWatchStatusIcon';
+import ShowFilterChip from './ShowFilterChip.vue';
 
 const props = defineProps<{
   activeFilterCount: number;
@@ -48,6 +49,57 @@ const categories = computed<Category[]>(() => categoriesQuery.data.value?.data ?
 const resultLabel = computed<string>(() => {
   return `Show ${props.totalResults} result${props.totalResults === 1 ? '' : 's'}`;
 });
+
+/**
+ * Resolves whether a value is included, excluded or not filtered on.
+ * @param included - The included values.
+ * @param excluded - The excluded values.
+ * @param value - The value to look up.
+ * @returns The value's filter state.
+ */
+const getFilterState = <T,>(included: T[], excluded: T[], value: T): 'include' | 'exclude' | null => {
+  if (included.includes(value)) return 'include';
+  if (excluded.includes(value)) return 'exclude';
+  return null;
+};
+
+/**
+ * Adds a value to or removes it from a list without duplicating it.
+ * @param values - The current values.
+ * @param value - The value to add or remove.
+ * @param isAdded - Whether the value should be in the list.
+ * @returns The updated values.
+ */
+const toggleValue = <T,>(values: T[], value: T, isAdded: boolean): T[] => {
+  const otherValues = values.filter((existingValue) => existingValue !== value);
+  return isAdded ? [...otherValues, value] : otherValues;
+};
+
+/**
+ * Includes, excludes or stops filtering on a watch status.
+ * @param status - The watch status.
+ * @param state - The new filter state.
+ * @returns void
+ */
+const setWatchStatusState = (status: WatchStatus, state: 'include' | 'exclude' | null): void => {
+  updateFilters({
+    watchStatuses: toggleValue(filters.value.watchStatuses, status, state === 'include'),
+    excludedWatchStatuses: toggleValue(filters.value.excludedWatchStatuses, status, state === 'exclude'),
+  });
+};
+
+/**
+ * Includes, excludes or stops filtering on a category.
+ * @param value - The category value.
+ * @param state - The new filter state.
+ * @returns void
+ */
+const setCategoryState = (value: string, state: 'include' | 'exclude' | null): void => {
+  updateFilters({
+    categories: toggleValue(filters.value.categories, value, state === 'include'),
+    excludedCategories: toggleValue(filters.value.excludedCategories, value, state === 'exclude'),
+  });
+};
 
 /**
  * Replaces the filters with a copy that has the given fields changed.
@@ -88,51 +140,49 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
     <v-container>
       <v-row gap="12">
         <v-col cols="12">
+          <p class="text-body-small text-medium-emphasis">
+            <v-icon size="small">mdi-gesture-tap</v-icon>
+            Tap a chip once to <span class="text-primary">include</span> it, twice to
+            <span class="text-error">exclude</span> it.
+          </p>
+        </v-col>
+
+        <v-col cols="12">
           <p class="text-label-medium text-medium-emphasis text-uppercase">Watch status</p>
           <p class="text-body-small text-medium-emphasis">
-            Shows where <span class="text-primary">any</span> entry has a selected status.
+            Shows where <span class="text-primary">any</span> entry has an included status and
+            <span class="text-error">none</span> has an excluded one.
           </p>
-          <v-chip-group
-            :model-value="filters.watchStatuses"
-            column
-            multiple
-            @update:model-value="updateFilters({ watchStatuses: $event })"
-          >
-            <v-chip
+          <div class="d-flex flex-wrap ga-2">
+            <show-filter-chip
               v-for="status in watchStatuses"
               :color="getWatchStatusColor(status)"
-              :prepend-icon="getWatchStatusIcon(status)"
+              :icon="getWatchStatusIcon(status)"
+              :model-value="getFilterState(filters.watchStatuses, filters.excludedWatchStatuses, status)"
               :text="t(`showEntry.watchStatus.${status}`)"
-              :value="status"
-              filter
+              @update:model-value="setWatchStatusState(status, $event)"
               :key="status"
             />
-          </v-chip-group>
+          </div>
         </v-col>
 
         <v-col cols="12">
           <p class="text-label-medium text-medium-emphasis text-uppercase">Categories</p>
           <p class="text-body-small text-medium-emphasis">
-            Shows must have <span class="text-primary">every</span> selected category.
+            Shows must have <span class="text-primary">every</span> included category and
+            <span class="text-error">none</span> of the excluded ones.
           </p>
           <v-skeleton-loader class="bg-transparent" type="chip@6" v-if="categoriesQuery.isPending.value" />
-          <v-chip-group
-            :model-value="filters.categories"
-            color="primary"
-            column
-            multiple
-            @update:model-value="updateFilters({ categories: $event })"
-            v-else-if="categories.length > 0"
-          >
-            <v-chip
+          <div class="d-flex flex-wrap ga-2" v-else-if="categories.length > 0">
+            <show-filter-chip
               v-for="category in categories"
-              :prepend-icon="category.icon"
+              :icon="category.icon"
+              :model-value="getFilterState(filters.categories, filters.excludedCategories, category.value)"
               :text="category.name"
-              :value="category.value"
-              filter
+              @update:model-value="setCategoryState(category.value, $event)"
               :key="category.id"
             />
-          </v-chip-group>
+          </div>
           <p class="text-body-small text-disabled" v-else>No categories yet.</p>
         </v-col>
 

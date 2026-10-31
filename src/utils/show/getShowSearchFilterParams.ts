@@ -21,8 +21,16 @@ export const getShowSearchFilterParams = (
     params['categories.value'] = filters.categories;
   }
 
+  if (filters.excludedCategories.length > 0) {
+    params.exclude_categories = filters.excludedCategories;
+  }
+
   if (filters.watchStatuses.length > 0) {
     params.watch_status = filters.watchStatuses;
+  }
+
+  if (filters.excludedWatchStatuses.length > 0) {
+    params.exclude_watch_status = filters.excludedWatchStatuses;
   }
 
   if (filters.hasPreview) {

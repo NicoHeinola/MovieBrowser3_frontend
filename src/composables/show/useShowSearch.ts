@@ -15,7 +15,9 @@ import { getShowSearchFilterParams } from '@/utils/show/getShowSearchFilterParam
  */
 const createEmptyFilters = (): ShowSearchFilters => ({
   categories: [],
+  excludedCategories: [],
   watchStatuses: [],
+  excludedWatchStatuses: [],
   hasPreview: false,
 });
 
@@ -49,7 +51,12 @@ export const useShowSearch = (queryKey: ShowQueryKey) => {
   const totalResults = computed<number>(() => searchQuery.data.value?.meta.total ?? 0);
   const isLoading = computed<boolean>(() => isSearchPending.value || searchQuery.isFetching.value);
   const activeFilterCount = computed<number>(
-    () => filters.value.categories.length + filters.value.watchStatuses.length + Number(filters.value.hasPreview),
+    () =>
+      filters.value.categories.length +
+      filters.value.excludedCategories.length +
+      filters.value.watchStatuses.length +
+      filters.value.excludedWatchStatuses.length +
+      Number(filters.value.hasPreview),
   );
 
   /**
