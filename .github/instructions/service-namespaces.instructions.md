@@ -46,6 +46,7 @@ export const settingService = {
 ## Boundaries
 
 - Service files may depend on shared API clients, request and response interfaces, and closely related service-local helpers.
+- Server-Sent Event streams cannot use the axios `apiClient`; open them with `fetchEventSource` from `@microsoft/fetch-event-source`, take the bearer token and an `AbortSignal` from the caller, set `openWhenHidden: true` so the caller owns tab-visibility handling, and pass parsed events to callbacks (see `watchProgressStreamService.ts`).
 - Do not move backend contract definitions into services; import them from `src/interfaces/api`.
 - Return backend fetch payloads as received. Do not normalize paginated responses into keyed maps, flatten wrapper objects, or reshape data for one consumer inside a service.
 - Keep UI state, persistence decisions, and view-specific formatting in stores or components rather than in service modules.

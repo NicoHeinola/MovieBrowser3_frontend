@@ -2,20 +2,12 @@ import type { Episode } from '@/interfaces/api/models/Episode';
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import type { ShowWatchProgress } from '@/interfaces/api/models/ShowWatchProgress';
-import { useQueryClient } from '@tanstack/vue-query';
 import { ref } from 'vue';
 
+import { useShowWatchProgressCache } from '@/composables/show/useShowWatchProgressCache';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
-import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { episodePlaybackService } from '@/services/show/episodePlaybackService';
 import { getResumeEpisode } from '@/utils/show/getResumeEpisode';
-import { setShowWatchProgress } from '@/utils/show/setShowWatchProgress';
-
-/** Cached show lists that resume playback from a card and must know the latest progress without refetching. */
-const showListQueryKeys = [ShowQueryKey.HomeShows, ShowQueryKey.SearchShows];
-
-/** Cached show lists whose membership or order depends on progress, so they are refetched instead. */
-const progressListQueryKeys = [ShowQueryKey.ContinueWatchingShows];
 
 /**
  * Starts show playback in the external media player and mirrors the saved progress onto the cached show lists.
@@ -24,7 +16,7 @@ const progressListQueryKeys = [ShowQueryKey.ContinueWatchingShows];
 export const useShowPlayback = () => {
   const isStartingPlayback = ref<boolean>(false);
 
-  const queryClient = useQueryClient();
+  const { applyWatchProgress } = useShowWatchProgressCache();
   const { showAPIErrorSnackbar, showWarningSnackbar } = useCommonSnackbar();
 
   /**
@@ -42,15 +34,7 @@ export const useShowPlayback = () => {
     try {
       const watchProgress = await episodePlaybackService.play(episode.id);
 
-      for (const queryKey of showListQueryKeys) {
-        queryClient.setQueriesData({ queryKey: [queryKey] }, (data: unknown) =>
-          setShowWatchProgress(data, watchProgress),
-        );
-      }
-
-      for (const queryKey of progressListQueryKeys) {
-        void queryClient.invalidateQueries({ queryKey: [queryKey] });
-      }
+      applyWatchProgress(watchProgress);
 
       return watchProgress;
     } catch (error: unknown) {

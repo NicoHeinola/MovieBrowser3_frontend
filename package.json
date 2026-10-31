@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@tanstack/vue-query": "^5.105.0",
     "@vue-dnd-kit/core": "^2.4.7",
     "@vueuse/core": "^15.0.0",

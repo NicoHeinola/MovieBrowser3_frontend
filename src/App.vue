@@ -5,10 +5,13 @@ import { useRoute, useRouter } from 'vue-router';
 import { DialogProvider } from '@/components/layouts/dialog-provider';
 import { SnackbarProvider } from '@/components/layouts/snackbar-provider';
 import { TopNavigation } from '@/components/layouts/top-navigation';
+import { useWatchProgressStream } from '@/composables/show/useWatchProgressStream';
+
+const isRouterReady = ref<boolean>(false);
 
 const route = useRoute();
 const router = useRouter();
-const isRouterReady = ref<boolean>(false);
+useWatchProgressStream();
 
 onMounted(async () => {
   await router.isReady();
