@@ -48,11 +48,18 @@ const logout = async (): Promise<void> => {
 </script>
 
 <template>
-  <v-app-bar :loading="isNavigating" class="navigation-bar px-4" color="transparent" flat>
-    <v-list class="d-flex flex-row ga-6 bg-transparent justify-center w-100">
+  <v-app-bar class="navigation-bar" color="transparent" flat>
+    <v-progress-linear
+      :active="isNavigating"
+      class="position-absolute bottom-0 left-0 w-100"
+      color="primary"
+      height="3"
+      indeterminate
+    />
+    <v-list class="d-flex flex-row ga-6 bg-transparent justify-center px-4 w-100">
       <nav-links :links="adminLinks" v-if="isInAdminArea" />
       <nav-links :links="authenticatedLinks" v-else />
-      <v-list class="d-flex flex-row ga-6 bg-transparent position-absolute right-0 top-0">
+      <v-list class="d-flex flex-row ga-6 bg-transparent position-absolute right-0 top-0 me-4">
         <v-list-item class="d-flex">
           <div class="d-flex align-center ga-4 text-grey-lighten-1">
             <span>{{ authStore.user?.username }}</span>
