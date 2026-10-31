@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { FilterChipState } from './filterChipState';
+
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -9,7 +11,7 @@ const props = defineProps<{
 }>();
 
 /** Whether the chip's value is included, excluded or not filtered on. */
-const state = defineModel<'include' | 'exclude' | null>({
+const state = defineModel<FilterChipState>({
   default: null,
 });
 
