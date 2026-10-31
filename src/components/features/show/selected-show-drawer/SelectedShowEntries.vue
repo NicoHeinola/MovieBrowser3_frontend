@@ -109,13 +109,21 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
     </v-col>
   </v-row>
 
-  <v-row v-if="selectedEntry?.episodes && selectedEntry.episodes.length > 0">
+  <v-row>
     <v-col cols="12">
       <v-divider></v-divider>
     </v-col>
 
     <v-col cols="12">
       <section-label title="Episodes" />
+    </v-col>
+
+    <v-col cols="12" v-if="!selectedEntry">
+      <v-alert class="flex-0-1" type="info" variant="tonal">Select an entry to see its episodes.</v-alert>
+    </v-col>
+
+    <v-col cols="12" v-else-if="!selectedEntry.episodes || selectedEntry.episodes.length === 0">
+      <v-alert class="flex-0-1" type="info" variant="tonal">This entry has no episodes.</v-alert>
     </v-col>
 
     <v-col v-for="(episode, index) in selectedEntry?.episodes" class="d-flex ga-2" cols="12" :key="episode.id">
