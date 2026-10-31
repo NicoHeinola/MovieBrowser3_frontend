@@ -29,6 +29,10 @@ export const ComponentDefaults = {
     density: 'compact',
     color: 'primary',
   },
+  VSwitch: {
+    hideDetails: 'auto',
+    color: 'primary',
+  },
   VTabs: {
     density: 'compact',
     color: 'primary',

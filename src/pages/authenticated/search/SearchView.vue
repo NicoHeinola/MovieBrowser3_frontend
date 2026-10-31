@@ -5,14 +5,17 @@ import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
+import { ShowFilterDrawer } from '@/components/features/show/show-filter-drawer';
 import { ShowGrid } from '@/components/features/show/show-grid';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 
 const selectedShowId = ref<number | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
+const isFilterDrawerVisible = ref<boolean>(false);
 
-const { searchInput, page, shows, totalPages, totalResults, isLoading } = useShowSearch(ShowQueryKey.SearchShows);
+const { searchInput, filters, activeFilterCount, clearFilters, page, shows, totalPages, totalResults, isLoading } =
+  useShowSearch(ShowQueryKey.SearchShows);
 
 const selectShow = (show: Show | null) => {
   selectedShowId.value = show?.id ?? null;
@@ -34,6 +37,14 @@ const selectShow = (show: Show | null) => {
           variant="solo-filled"
           clearable
         />
+        <v-badge :content="activeFilterCount" :model-value="activeFilterCount > 0" color="secondary" bordered>
+          <v-btn
+            :variant="activeFilterCount > 0 ? 'flat' : 'tonal'"
+            icon="mdi-tune-variant"
+            size="small"
+            @click="isFilterDrawerVisible = true"
+          />
+        </v-badge>
       </v-col>
     </v-row>
 
@@ -64,13 +75,28 @@ const selectShow = (show: Show | null) => {
 
       <v-row justify="center" v-else>
         <v-col class="d-flex justify-center" cols="12">
-          <v-alert class="flex-0-1" type="info"> No shows found </v-alert>
+          <v-alert class="flex-0-1" type="info" v-if="activeFilterCount > 0">
+            No shows match these filters
+            <template #append>
+              <v-btn color="info" size="small" variant="text" @click="clearFilters">Clear filters</v-btn>
+            </template>
+          </v-alert>
+          <v-alert class="flex-0-1" type="info" v-else> No shows found </v-alert>
         </v-col>
       </v-row>
     </template>
   </page-container>
 
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
+
+  <show-filter-drawer
+    v-model:filters="filters"
+    v-model:is-shown="isFilterDrawerVisible"
+    :active-filter-count="activeFilterCount"
+    :is-loading="isLoading"
+    :total-results="totalResults"
+    @clear="clearFilters"
+  />
 
   <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show-id="selectedShowId" />
 </template>

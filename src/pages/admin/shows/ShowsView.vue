@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
 import { useQueryClient } from '@tanstack/vue-query';
+import { ref } from 'vue';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { ShowEditDialog } from '@/components/features/show/show-edit-dialog';
+import { ShowFilterDrawer } from '@/components/features/show/show-filter-drawer';
 import { ShowGrid } from '@/components/features/show/show-grid';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { useShowSearch } from '@/composables/show/useShowSearch';
@@ -13,7 +15,10 @@ import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
 import { deepClone } from '@/utils/clone/deepClone';
 
-const { searchInput, page, shows, totalPages, totalResults, isLoading } = useShowSearch(ShowQueryKey.AdminShows);
+const isFilterDrawerVisible = ref<boolean>(false);
+
+const { searchInput, filters, activeFilterCount, clearFilters, page, shows, totalPages, totalResults, isLoading } =
+  useShowSearch(ShowQueryKey.AdminShows);
 
 const dialog = useDialog();
 const queryClient = useQueryClient();
@@ -63,6 +68,14 @@ const editShow = async (show: Show | null) => {
           variant="solo-filled"
           clearable
         />
+        <v-badge :content="activeFilterCount" :model-value="activeFilterCount > 0" color="secondary" bordered>
+          <v-btn
+            :variant="activeFilterCount > 0 ? 'flat' : 'tonal'"
+            icon="mdi-tune-variant"
+            size="small"
+            @click="isFilterDrawerVisible = true"
+          />
+        </v-badge>
       </v-col>
     </v-row>
 
@@ -93,7 +106,13 @@ const editShow = async (show: Show | null) => {
 
       <v-row justify="center" v-else>
         <v-col class="d-flex justify-center" cols="12">
-          <v-alert class="flex-0-1" type="info"> No shows found </v-alert>
+          <v-alert class="flex-0-1" type="info" v-if="activeFilterCount > 0">
+            No shows match these filters
+            <template #append>
+              <v-btn color="info" size="small" variant="text" @click="clearFilters">Clear filters</v-btn>
+            </template>
+          </v-alert>
+          <v-alert class="flex-0-1" type="info" v-else> No shows found </v-alert>
         </v-col>
       </v-row>
     </template>
@@ -101,4 +120,13 @@ const editShow = async (show: Show | null) => {
 
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
   <floating-action-button class="z-100" icon="mdi-plus" @click="editShow(null)" />
+
+  <show-filter-drawer
+    v-model:filters="filters"
+    v-model:is-shown="isFilterDrawerVisible"
+    :active-filter-count="activeFilterCount"
+    :is-loading="isLoading"
+    :total-results="totalResults"
+    @clear="clearFilters"
+  />
 </template>
