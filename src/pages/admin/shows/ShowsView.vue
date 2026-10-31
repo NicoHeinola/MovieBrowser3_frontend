@@ -6,10 +6,13 @@ import { FloatingActionButton } from '@/components/common/floating-action-button
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
+import { ResultCount } from '@/components/common/result-count';
+import { SearchToolbar } from '@/components/common/search-toolbar';
 import { ShowEditDialog } from '@/components/features/show/show-edit-dialog';
 import { ShowFilterDrawer } from '@/components/features/show/show-filter-drawer';
 import { ShowGrid } from '@/components/features/show/show-grid';
 import { useDialog } from '@/components/layouts/dialog-provider';
+import { showSortOptions } from '@/composables/show/showSortOptions';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
@@ -17,8 +20,18 @@ import { deepClone } from '@/utils/clone/deepClone';
 
 const isFilterDrawerVisible = ref<boolean>(false);
 
-const { searchInput, filters, activeFilterCount, clearFilters, page, shows, totalPages, totalResults, isLoading } =
-  useShowSearch(ShowQueryKey.AdminShows);
+const {
+  searchInput,
+  filters,
+  activeFilterCount,
+  clearFilters,
+  sort,
+  page,
+  shows,
+  totalPages,
+  totalResults,
+  isLoading,
+} = useShowSearch(ShowQueryKey.AdminShows);
 
 const dialog = useDialog();
 const queryClient = useQueryClient();
@@ -58,26 +71,14 @@ const editShow = async (show: Show | null) => {
   <page-background />
 
   <page-container class="mb-12">
-    <v-row justify="center">
-      <v-col class="d-flex ga-2 align-center" cols="12" lg="8" md="10" xl="6">
-        <v-text-field
-          v-model="searchInput"
-          placeholder="Search shows..."
-          prepend-inner-icon="mdi-magnify"
-          rounded="xl"
-          variant="solo-filled"
-          clearable
-        />
-        <v-badge :content="activeFilterCount" :model-value="activeFilterCount > 0" color="secondary" bordered>
-          <v-btn
-            :variant="activeFilterCount > 0 ? 'flat' : 'tonal'"
-            icon="mdi-tune-variant"
-            size="small"
-            @click="isFilterDrawerVisible = true"
-          />
-        </v-badge>
-      </v-col>
-    </v-row>
+    <search-toolbar
+      v-model:search="searchInput"
+      v-model:sort="sort"
+      :active-filter-count="activeFilterCount"
+      :sort-options="showSortOptions"
+      placeholder="Search shows..."
+      @click:filters="isFilterDrawerVisible = true"
+    />
 
     <v-row v-if="isLoading">
       <v-col v-for="i in 16" cols="auto" :key="i">
@@ -86,11 +87,7 @@ const editShow = async (show: Show | null) => {
     </v-row>
 
     <template v-else>
-      <v-row v-if="shows.length > 0">
-        <v-col cols="12">
-          <p class="text-center">{{ totalResults }} result{{ totalResults !== 1 ? 's' : '' }} found</p>
-        </v-col>
-      </v-row>
+      <result-count :count="totalResults" v-if="shows.length > 0" />
 
       <v-row justify="center" v-if="shows.length > 0">
         <v-col class="d-flex justify-center" cols="12">
