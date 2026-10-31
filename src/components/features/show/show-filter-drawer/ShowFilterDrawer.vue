@@ -117,7 +117,7 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
     v-model="isShown"
     location="right"
     style="height: 100vh !important; top: 0; z-index: 2000"
-    width="410"
+    width="470"
     temporary
   >
     <v-container>
