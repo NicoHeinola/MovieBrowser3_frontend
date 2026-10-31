@@ -41,6 +41,10 @@ const isLoading = ref(false);
 const totalCount = computed(() => items.value.length);
 ```
 
+## Arrays
+
+- Sort with `toSorted()` instead of `sort()`; ESLint enforces it, and `tsconfig.app.json` includes the `ES2023` lib for it.
+
 ## Imports and Types
 
 - Keep imports grouped with external packages first and internal aliases second.
