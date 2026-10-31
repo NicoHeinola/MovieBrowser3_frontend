@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
-import { ref, watch } from 'vue';
+import { onKeyStroke } from '@vueuse/core';
+import { ref, useTemplateRef, watch } from 'vue';
+import { useDisplay } from 'vuetify';
 
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { useShowSearchMenu } from './useShowSearchMenu';
@@ -10,7 +12,9 @@ const emit = defineEmits<{
 }>();
 
 const isMenuShown = ref<boolean>(false);
+const searchField = useTemplateRef<{ focus: () => void }>('searchField');
 
+const { mdAndUp } = useDisplay();
 const { search, term, shows, totalResults, isLoading, openSearchPage } = useShowSearchMenu();
 
 /**
@@ -47,28 +51,52 @@ const submit = async (): Promise<void> => {
   await openSearchPage();
 };
 
+/**
+ * Focuses the search field on Ctrl+K / Cmd+K. Below `md` the navigation hides the field, so the key is left to the
+ * browser.
+ * @param event - The shortcut key press.
+ * @returns void
+ */
+const focusSearch = (event: KeyboardEvent): void => {
+  if (!mdAndUp.value) {
+    return;
+  }
+
+  event.preventDefault();
+  searchField.value?.focus();
+};
+
 watch(term, (value) => {
   isMenuShown.value = value !== '';
+});
+
+onKeyStroke('k', (event) => {
+  if (event.ctrlKey || event.metaKey) {
+    focusSearch(event);
+  }
 });
 </script>
 
 <template>
   <v-menu v-model="isMenuShown" :open-on-click="false" location="bottom end" width="380">
     <template #activator="{ props: activatorProps }">
-      <v-text-field
-        v-model="search"
-        v-bind="activatorProps"
-        class="glass-panel rounded-xl"
-        color="link"
-        placeholder="Search shows..."
-        prepend-inner-icon="mdi-magnify"
-        rounded="xl"
-        clearable
-        hide-details
-        @click="openMenu"
-        @keydown.enter="submit"
-        @keydown.esc="isMenuShown = false"
-      />
+      <!-- The activator props carry the menu's anchor ref, so they go on a wrapper to keep the field's ref free. -->
+      <div v-bind="activatorProps">
+        <v-text-field
+          v-model="search"
+          class="glass-panel rounded-xl"
+          color="link"
+          placeholder="Search shows..."
+          prepend-inner-icon="mdi-magnify"
+          rounded="xl"
+          clearable
+          hide-details
+          @click="openMenu"
+          @keydown.enter="submit"
+          @keydown.esc="isMenuShown = false"
+          ref="searchField"
+        />
+      </div>
     </template>
 
     <v-card class="glass-panel mt-2" rounded="xl" border>
