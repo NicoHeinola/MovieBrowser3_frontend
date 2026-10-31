@@ -8,6 +8,7 @@ import { computed, ref } from 'vue';
 
 import { queryClient } from '@/plugins/query';
 import { authService } from '@/services/auth/authService';
+import { userService } from '@/services/user/userService';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = useStorage<string | null>('auth.token', null);
@@ -56,7 +57,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     isLoading.value = true;
     try {
-      user.value = await authService.updateUser(user.value.id, request);
+      user.value = await userService.update(user.value.id, request);
     } finally {
       isLoading.value = false;
     }

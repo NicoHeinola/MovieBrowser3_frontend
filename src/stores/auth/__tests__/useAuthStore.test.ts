@@ -3,7 +3,7 @@ import type { User } from '@/interfaces/api/models/User';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { authService } from '@/services/auth/authService';
+import { userService } from '@/services/user/userService';
 
 import { useAuthStore } from '../useAuthStore';
 
@@ -11,7 +11,12 @@ vi.mock('@/services/auth/authService', () => ({
   authService: {
     login: vi.fn(),
     register: vi.fn(),
-    updateUser: vi.fn(),
+  },
+}));
+
+vi.mock('@/services/user/userService', () => ({
+  userService: {
+    update: vi.fn(),
   },
 }));
 
@@ -19,8 +24,6 @@ const createUser = (overrides?: Partial<User>): User => ({
   id: 1,
   username: 'testuser',
   is_admin: false,
-  created_at: '2026-01-01T00:00:00Z',
-  updated_at: '2026-01-01T00:00:00Z',
   ...overrides,
 });
 
@@ -36,13 +39,13 @@ describe('useAuthStore', () => {
       const original = createUser();
       authStore.user = original;
 
-      const updated = createUser({ username: 'newname', updated_at: '2026-04-12T00:00:00Z' });
-      vi.mocked(authService.updateUser).mockResolvedValue(updated);
+      const updated = createUser({ username: 'newname' });
+      vi.mocked(userService.update).mockResolvedValue(updated);
 
       await authStore.updateUser({ username: 'newname' });
 
       expect(authStore.user).toEqual(updated);
-      expect(authService.updateUser).toHaveBeenCalledWith(1, { username: 'newname' });
+      expect(userService.update).toHaveBeenCalledWith(1, { username: 'newname' });
     });
 
     it('updates persisted user after a successful password change', async () => {
@@ -50,13 +53,13 @@ describe('useAuthStore', () => {
       const original = createUser();
       authStore.user = original;
 
-      const updated = createUser({ updated_at: '2026-04-12T00:00:00Z' });
-      vi.mocked(authService.updateUser).mockResolvedValue(updated);
+      const updated = createUser({ username: 'renamed' });
+      vi.mocked(userService.update).mockResolvedValue(updated);
 
       await authStore.updateUser({ password: 'newpass', password_confirmation: 'newpass' });
 
       expect(authStore.user).toEqual(updated);
-      expect(authService.updateUser).toHaveBeenCalledWith(1, {
+      expect(userService.update).toHaveBeenCalledWith(1, {
         password: 'newpass',
         password_confirmation: 'newpass',
       });
@@ -68,7 +71,7 @@ describe('useAuthStore', () => {
 
       await authStore.updateUser({ username: 'newname' });
 
-      expect(authService.updateUser).not.toHaveBeenCalled();
+      expect(userService.update).not.toHaveBeenCalled();
     });
 
     it('sets isLoading during the update and resets it on success', async () => {
@@ -76,7 +79,7 @@ describe('useAuthStore', () => {
       authStore.user = createUser();
 
       let resolvePromise: (value: User) => void = () => {};
-      vi.mocked(authService.updateUser).mockReturnValue(
+      vi.mocked(userService.update).mockReturnValue(
         new Promise<User>((resolve) => {
           resolvePromise = resolve;
         }),
@@ -94,7 +97,7 @@ describe('useAuthStore', () => {
       const authStore = useAuthStore();
       authStore.user = createUser();
 
-      vi.mocked(authService.updateUser).mockRejectedValue(new Error('network error'));
+      vi.mocked(userService.update).mockRejectedValue(new Error('network error'));
 
       await expect(authStore.updateUser({ username: 'newname' })).rejects.toThrow('network error');
       expect(authStore.isLoading).toBe(false);

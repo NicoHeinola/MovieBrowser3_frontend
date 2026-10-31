@@ -23,6 +23,7 @@ const adminLinks: NavigationLinkItem[] = [
   { label: 'Shows', routeName: 'admin-shows', icon: 'mdi-movie-edit' },
   { label: 'Categories', routeName: 'admin-categories', icon: 'mdi-shape' },
   { label: 'Websites', routeName: 'admin-websites', icon: 'mdi-web' },
+  { label: 'Users', routeName: 'admin-users', icon: 'mdi-account-group' },
   { label: 'Settings', routeName: 'admin-settings', icon: 'mdi-cog' },
 ];
 

@@ -75,6 +75,15 @@ const router = createRouter({
       component: () => import('@/pages/admin/websites/WebsitesView.vue'),
     },
     {
+      path: '/admin/users',
+      name: 'admin-users',
+      meta: {
+        requiresAuth: true,
+        requiresAdmin: true,
+      },
+      component: () => import('@/pages/admin/users/UsersView.vue'),
+    },
+    {
       path: '/admin/settings',
       name: 'admin-settings',
       meta: {
