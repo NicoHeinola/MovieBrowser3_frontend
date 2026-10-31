@@ -110,7 +110,11 @@ onBeforeUnmount(() => {
     </v-lazy>
     <div class="card-shadow position-absolute bottom-0 left-0 w-100" style="height: 20%" />
     <div class="position-absolute bottom-0 left-0 px-4 my-4 text-truncate" style="cursor: pointer; max-width: 100%">
-      <p class="card-title text-truncate text-grey-lighten-2 ma-0 font-weight-bold" style="text-shadow: 0 0 5px black">
+      <p
+        class="card-title text-truncate text-grey-lighten-2 ma-0 font-weight-bold"
+        style="text-shadow: 0 0 5px black"
+        v-tooltip:top="primaryTitle"
+      >
         {{ primaryTitle }}
       </p>
     </div>
