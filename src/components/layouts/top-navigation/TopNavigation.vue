@@ -68,8 +68,8 @@ const logout = async (): Promise<void> => {
     <v-progress-linear
       :active="isNavigating"
       class="position-absolute bottom-0 left-0 w-100"
-      color="primary"
-      height="3"
+      color="secondary"
+      height="1"
       indeterminate
     />
     <v-list class="d-flex flex-row ga-6 bg-transparent justify-center px-4 w-100">
