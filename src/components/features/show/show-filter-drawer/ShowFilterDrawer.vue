@@ -116,7 +116,7 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
     v-model="isShown"
     location="right"
     style="height: 100vh !important; top: 0; z-index: 2000"
-    width="380"
+    width="410"
     temporary
   >
     <v-container>
@@ -138,61 +138,69 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
     <v-divider />
 
     <v-container>
-      <v-row gap="12">
+      <v-row>
         <v-col cols="12">
-          <p class="text-body-small text-medium-emphasis">
-            <v-icon size="small">mdi-gesture-tap</v-icon>
-            Tap a chip once to <span class="text-primary">include</span> it, twice to
-            <span class="text-error">exclude</span> it.
-          </p>
+          <v-row gap="12">
+            <v-col cols="12">
+              <p class="text-label-medium text-medium-emphasis text-uppercase">Watch status</p>
+              <p class="text-body-small text-medium-emphasis">
+                Matches <span class="text-primary">any</span> included, <span class="text-error">none</span> excluded.
+              </p>
+            </v-col>
+            <v-col class="d-flex flex-wrap ga-3" cols="12">
+              <show-filter-chip
+                v-for="status in watchStatuses"
+                :color="getWatchStatusColor(status)"
+                :icon="getWatchStatusIcon(status)"
+                :model-value="getFilterState(filters.watchStatuses, filters.excludedWatchStatuses, status)"
+                :text="t(`showEntry.watchStatus.${status}`)"
+                @update:model-value="setWatchStatusState(status, $event)"
+                :key="status"
+              />
+            </v-col>
+          </v-row>
         </v-col>
 
         <v-col cols="12">
-          <p class="text-label-medium text-medium-emphasis text-uppercase">Watch status</p>
-          <p class="text-body-small text-medium-emphasis">
-            Shows where <span class="text-primary">any</span> entry has an included status and
-            <span class="text-error">none</span> has an excluded one.
-          </p>
-          <div class="d-flex flex-wrap ga-2">
-            <show-filter-chip
-              v-for="status in watchStatuses"
-              :color="getWatchStatusColor(status)"
-              :icon="getWatchStatusIcon(status)"
-              :model-value="getFilterState(filters.watchStatuses, filters.excludedWatchStatuses, status)"
-              :text="t(`showEntry.watchStatus.${status}`)"
-              @update:model-value="setWatchStatusState(status, $event)"
-              :key="status"
-            />
-          </div>
+          <v-row gap="12">
+            <v-col cols="12">
+              <p class="text-label-medium text-medium-emphasis text-uppercase">Categories</p>
+              <p class="text-body-small text-medium-emphasis">
+                Matches <span class="text-primary">every</span> included, <span class="text-error">none</span> excluded.
+              </p>
+            </v-col>
+            <v-col cols="12" v-if="categoriesQuery.isPending.value">
+              <v-skeleton-loader class="bg-transparent" type="chip@6" />
+            </v-col>
+            <v-col class="d-flex flex-wrap ga-3" cols="12" v-else-if="categories.length > 0">
+              <show-filter-chip
+                v-for="category in categories"
+                :icon="category.icon"
+                :model-value="getFilterState(filters.categories, filters.excludedCategories, category.value)"
+                :text="category.name"
+                @update:model-value="setCategoryState(category.value, $event)"
+                :key="category.id"
+              />
+            </v-col>
+            <v-col cols="12" v-else>
+              <p class="text-body-small text-disabled">No categories yet.</p>
+            </v-col>
+          </v-row>
         </v-col>
 
         <v-col cols="12">
-          <p class="text-label-medium text-medium-emphasis text-uppercase">Categories</p>
-          <p class="text-body-small text-medium-emphasis">
-            Shows must have <span class="text-primary">every</span> included category and
-            <span class="text-error">none</span> of the excluded ones.
-          </p>
-          <v-skeleton-loader class="bg-transparent" type="chip@6" v-if="categoriesQuery.isPending.value" />
-          <div class="d-flex flex-wrap ga-2" v-else-if="categories.length > 0">
-            <show-filter-chip
-              v-for="category in categories"
-              :icon="category.icon"
-              :model-value="getFilterState(filters.categories, filters.excludedCategories, category.value)"
-              :text="category.name"
-              @update:model-value="setCategoryState(category.value, $event)"
-              :key="category.id"
-            />
-          </div>
-          <p class="text-body-small text-disabled" v-else>No categories yet.</p>
-        </v-col>
-
-        <v-col cols="12">
-          <p class="text-label-medium text-medium-emphasis text-uppercase">Preview</p>
-          <v-switch
-            :model-value="filters.hasPreview"
-            label="Only shows with a preview"
-            @update:model-value="updateFilters({ hasPreview: $event === true })"
-          />
+          <v-row gap="12">
+            <v-col cols="12">
+              <p class="text-label-medium text-medium-emphasis text-uppercase">Preview</p>
+            </v-col>
+            <v-col cols="12">
+              <v-switch
+                :model-value="filters.hasPreview"
+                label="Only shows with a preview"
+                @update:model-value="updateFilters({ hasPreview: $event === true })"
+              />
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-container>
@@ -200,7 +208,7 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
     <template #append>
       <v-divider />
       <v-container>
-        <v-row dense>
+        <v-row density="compact">
           <v-col cols="auto">
             <v-btn
               :disabled="props.activeFilterCount === 0"
