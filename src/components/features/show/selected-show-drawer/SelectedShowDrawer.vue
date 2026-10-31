@@ -26,7 +26,7 @@ const { xlAndUp } = useDisplay();
     <selected-show-hero :is-shown="isShown" :show="show" @close="isShown = false" />
 
     <section-container class="pt-0">
-      <selected-show-entries :entries="show?.entries" :is-shown="isShown" />
+      <selected-show-entries v-model:show="show" :is-shown="isShown" />
       <related-shows-panel v-model:show="show" />
     </section-container>
   </v-navigation-drawer>

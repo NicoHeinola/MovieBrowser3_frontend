@@ -8,7 +8,7 @@ import { showEntryWatchStatusService } from '@/services/show/showEntryWatchStatu
 import { setShowEntryWatchStatus } from '@/utils/show/setShowEntryWatchStatus';
 
 /** Cached show lists that render watch statuses and must reflect a change without refetching. */
-const showListQueryKeys = [ShowQueryKey.HomeShows, ShowQueryKey.SearchShows];
+const showListQueryKeys = [ShowQueryKey.HomeShows, ShowQueryKey.ContinueWatchingShows, ShowQueryKey.SearchShows];
 
 /**
  * Saves show entry watch statuses and mirrors them onto the cached show lists.

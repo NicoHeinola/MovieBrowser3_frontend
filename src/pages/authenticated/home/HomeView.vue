@@ -16,6 +16,7 @@ import { SelectedShowDrawer } from '@/components/features/show/selected-show-dra
 import { ShowCarousel } from '@/components/features/show/show-carousel';
 import { ShowGrid } from '@/components/features/show/show-grid';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
+import { useShowPlayback } from '@/composables/show/useShowPlayback';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showSectionService } from '@/services/show/showSectionService';
 import { showService } from '@/services/show/showService';
@@ -33,6 +34,7 @@ const isPlayingCardVideo = ref<boolean>(false);
 let bannerResumeTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const settingStore = useSettingStore();
+const { playShow } = useShowPlayback();
 
 const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
 
@@ -47,9 +49,8 @@ const bannerMaxCols = computed<number>(() => {
 const showsQuery = useAPIQuery<HomeShowsResponse>({
   queryKey: [ShowQueryKey.HomeShows],
   queryFn: async () => {
-    const [latest, continueToWatch, random, sections] = await Promise.all([
+    const [latest, random, sections] = await Promise.all([
       showService.list({ sort: '-created_at', page: { size: MAX_BANNER_COLS } }),
-      showService.list({ sort: '-created_at', page: { size: 20 } }),
       showService.list({ sort: 'random', page: { size: 20 } }),
       showSectionService.list({ sort: 'sort_order', page: { number: 0, size: 0 } }),
     ]);
@@ -66,7 +67,6 @@ const showsQuery = useAPIQuery<HomeShowsResponse>({
 
     return {
       latestShows: latest.data,
-      continueToWatchShows: continueToWatch.data,
       randomShows: random.data,
       categorySections: sections.data.map((section: ShowSection) => ({
         title: section.category.name,
@@ -86,10 +86,23 @@ const showsQuery = useAPIQuery<HomeShowsResponse>({
   },
   placeholderData: {
     latestShows: [],
-    continueToWatchShows: [],
     randomShows: [],
     categorySections: [],
     categoryShows: {},
+  },
+});
+
+/** Separate from the other lists so playback can refetch it without reshuffling the random picks. */
+const continueWatchingQuery = useAPIQuery<Show[]>({
+  queryKey: [ShowQueryKey.ContinueWatchingShows],
+  queryFn: async () => {
+    const response = await showService.list({
+      filter: { has_watch_progress: '1' },
+      sort: '-last_watched_at',
+      page: { size: 20 },
+    });
+
+    return response.data;
   },
 });
 
@@ -99,12 +112,15 @@ const sections = computed<HomepageSection[]>(() => [
 ]);
 
 const showMap = computed<Record<string, Show[]>>(() => ({
-  continueToWatchShows: showsQuery.data.value?.continueToWatchShows ?? [],
+  continueToWatchShows: continueWatchingQuery.data.value ?? [],
   randomShows: showsQuery.data.value?.randomShows ?? [],
   ...showsQuery.data.value?.categoryShows,
 }));
 
-const isLoading = computed<boolean>(() => settingStore.isLoading || showsQuery.isFetching.value);
+/** Refetches of the continue watching list keep its cards visible, so only its first load counts. */
+const isLoading = computed<boolean>(
+  () => settingStore.isLoading || showsQuery.isFetching.value || continueWatchingQuery.isLoading.value,
+);
 
 /** Banner cards don't play previews; the banner itself plays the hovered show's video. */
 const latestBannerShows = computed<Show[]>(() =>
@@ -234,11 +250,13 @@ watch(
             <v-skeleton-loader type="image" v-if="isLoading" />
 
             <show-carousel
+              :play-on-click="section.playOnClick"
               :selected-show="selectedShow"
               :shows="showMap[section.dataKey] ?? []"
               :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
               drag-class="pl-12 pr-12"
               @click:show="isShowDrawerVisible = true"
+              @play:show="playShow"
               @playing-video="onPlayingVideoUpdate"
               @update:selected-show="(show: Show | null | undefined) => (selectedShow = deepClone(show ?? null))"
               v-else
@@ -246,7 +264,7 @@ watch(
 
             <div class="d-flex" v-if="!isLoading && (showMap[section.dataKey]?.length ?? 0) === 0">
               <v-alert class="flex-0-0" type="info">
-                <p class="text-no-wrap">There are no shows in this category</p>
+                <p class="text-no-wrap">{{ section.emptyText ?? 'There are no shows in this category' }}</p>
               </v-alert>
             </div>
           </titled-section>

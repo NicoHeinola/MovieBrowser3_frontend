@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import type { CombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
 import { computed, ref, watch } from 'vue';
@@ -8,22 +9,35 @@ import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchSta
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { getCombinedWatchStatus, MIXED_WATCH_STATUS } from '@/utils/show/getCombinedWatchStatus';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
+import { useSelectedShowPlayback } from './useSelectedShowPlayback';
 
 const props = defineProps<{
-  entries?: ShowEntry[] | null;
   isShown: boolean;
 }>();
+
+const show = defineModel<Show | null>('show', { required: true });
 
 const selectedEntry = ref<ShowEntry | null>(null);
 const isSavingStatus = ref<boolean>(false);
 
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 const { saveWatchStatus } = useShowEntryWatchStatus();
+const {
+  isContinuing,
+  isStartingPlayback,
+  isStartingTarget,
+  resumeEpisode,
+  startingEpisodeId,
+  watchEpisode,
+  watchTarget,
+} = useSelectedShowPlayback(show, selectedEntry);
+
+const entries = computed<ShowEntry[]>(() => show.value?.entries ?? []);
 
 /** The selected entry, or every entry when none is selected. */
 const targetEntries = computed<ShowEntry[]>(() => {
   if (selectedEntry.value) return [selectedEntry.value];
-  return props.entries ?? [];
+  return entries.value;
 });
 
 const targetStatus = computed<CombinedWatchStatus>(() => getCombinedWatchStatus(targetEntries.value));
@@ -62,7 +76,7 @@ const setWatchStatus = async (status: CombinedWatchStatus): Promise<void> => {
   }
 };
 
-watch([() => props.entries, () => props.isShown], () => {
+watch([() => show.value?.entries, () => props.isShown], () => {
   selectedEntry.value = null;
 });
 </script>
@@ -70,7 +84,7 @@ watch([() => props.entries, () => props.isShown], () => {
 <template>
   <v-row>
     <v-col class="d-flex ga-6 align-center" cols="12">
-      <show-entry-select v-model="selectedEntry" :entries="props.entries" clearable />
+      <show-entry-select v-model="selectedEntry" :entries="entries" clearable />
     </v-col>
     <v-col cols="6">
       <watch-status-button
@@ -82,7 +96,15 @@ watch([() => props.entries, () => props.isShown], () => {
       />
     </v-col>
     <v-col cols="6">
-      <v-btn :disabled="!selectedEntry" append-icon="mdi-play" block> Watch Season </v-btn>
+      <v-btn
+        :disabled="!resumeEpisode || (isStartingPlayback && !isStartingTarget)"
+        :loading="isStartingTarget"
+        append-icon="mdi-play"
+        block
+        @click="watchTarget"
+      >
+        {{ isContinuing ? 'Continue watching' : 'Start watching' }}
+      </v-btn>
     </v-col>
   </v-row>
 
@@ -99,7 +121,14 @@ watch([() => props.entries, () => props.isShown], () => {
       <div style="min-width: 40px">
         <v-chip class="flex-0-1">{{ index + 1 }}</v-chip>
       </div>
-      <v-btn append-icon="mdi-play" class="flex-1-1 max-width-button text-truncate justify-start">
+      <v-btn
+        :active="episode.id === show?.watch_progress?.episode_id"
+        :disabled="isStartingPlayback && startingEpisodeId !== episode.id"
+        :loading="startingEpisodeId === episode.id"
+        append-icon="mdi-play"
+        class="flex-1-1 max-width-button text-truncate justify-start"
+        @click="watchEpisode(episode)"
+      >
         <span class="text-truncate">
           {{ getEpisodeName(episode) }}
         </span>

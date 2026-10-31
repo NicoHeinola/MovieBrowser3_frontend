@@ -3,7 +3,6 @@ import type { Show } from '@/interfaces/api/models/Show';
 
 export interface HomeShowsResponse {
   latestShows: Show[];
-  continueToWatchShows: Show[];
   randomShows: Show[];
   categorySections: HomepageSection[];
   categoryShows: Record<string, Show[]>;

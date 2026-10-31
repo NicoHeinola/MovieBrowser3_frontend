@@ -5,4 +5,6 @@ export interface HomepageSection {
   iconColor: string;
   dataKey: string;
   lazyLoad?: boolean;
+  playOnClick?: boolean;
+  emptyText?: string;
 }

@@ -8,6 +8,8 @@ export const homepageSections: HomepageSection[] = [
     iconColor: 'warning',
     dataKey: 'continueToWatchShows',
     lazyLoad: false,
+    playOnClick: true,
+    emptyText: 'Nothing in progress yet. Start a show to see it here.',
   },
   {
     title: 'Random',

@@ -3,6 +3,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 import { computed, onBeforeUnmount, ref } from 'vue';
 
 import { YouTubePlayer } from '@/components/common/youtube-player';
+import { useLongPress } from '@/composables/pointer/useLongPress';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getShowWatchStatusColor } from '@/utils/show/getShowWatchStatusColor';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
@@ -13,21 +14,29 @@ const props = withDefaults(
     imageToUse?: 'card' | 'banner';
     width?: string | number;
     height?: string | number;
+    /** Shows a play hint, since a click starts playback instead of opening the show. */
+    playOnClick?: boolean;
   }>(),
   {
     imageToUse: 'banner',
     width: '300px',
     height: '400px',
+    playOnClick: false,
   },
 );
 
 const emit = defineEmits<{
   (e: 'playing-video', value: boolean): void;
+  (e: 'hold'): void;
 }>();
 
 const isHovered = ref(false);
 const showVideo = ref(false);
 let hoverTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const longPressHandlers = useLongPress(() => emit('hold'));
+
+const playHint = 'Clicking the card starts playback. Hold the card to open the show instead.';
 
 const cardImage = computed<string>(() => {
   if (props.imageToUse === 'card') return props.show.card_image_url;
@@ -82,6 +91,7 @@ onBeforeUnmount(() => {
     :width="props.width"
     border="sm"
     class="show-card"
+    v-on="props.playOnClick ? longPressHandlers : {}"
     @mouseenter="onMouseEnter"
     @mouseleave="onMouseLeave"
   >
@@ -104,6 +114,15 @@ onBeforeUnmount(() => {
         {{ primaryTitle }}
       </p>
     </div>
+    <v-fade-transition>
+      <v-icon
+        class="position-absolute top-0 right-0 ma-2"
+        icon="mdi-play-circle"
+        size="x-large"
+        v-tooltip:top="playHint"
+        v-if="props.playOnClick && isHovered"
+      />
+    </v-fade-transition>
     <div
       :class="`bg-${watchStatusColor}`"
       class="position-absolute bottom-0 w-100"

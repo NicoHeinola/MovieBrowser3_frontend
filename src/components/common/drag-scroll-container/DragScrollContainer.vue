@@ -143,6 +143,13 @@ const handlePointerMove = (event: PointerEvent) => {
     return;
   }
 
+  /** The release can land outside the container, e.g. on a drawer opened by a long press, so end the drag here. */
+  if ((event.buttons & 1) === 0) {
+    suppressClick = false;
+    endDrag(event.timeStamp);
+    return;
+  }
+
   const moveDelta = event.clientX - lastPointerX;
 
   if (!isDragging.value && Math.abs(moveDelta) <= props.dragThreshold) {
