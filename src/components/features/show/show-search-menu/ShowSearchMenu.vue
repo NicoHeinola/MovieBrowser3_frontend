@@ -1,0 +1,106 @@
+<script setup lang="ts">
+import type { Show } from '@/interfaces/api/models/Show';
+import { ref, watch } from 'vue';
+
+import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
+import { useShowSearchMenu } from './useShowSearchMenu';
+
+const emit = defineEmits<{
+  'select:show': [show: Show];
+}>();
+
+const isMenuShown = ref<boolean>(false);
+
+const { search, term, shows, totalResults, isLoading, openSearchPage } = useShowSearchMenu();
+
+/**
+ * Lists a show's category names for the suggestion subtitle.
+ * @param show - The suggested show.
+ * @returns The comma-separated category names.
+ */
+const getCategoryNames = (show: Show): string => (show.categories ?? []).map((category) => category.name).join(', ');
+
+/**
+ * Reopens the suggestions when the field is clicked with a term still in it.
+ * @returns void
+ */
+const openMenu = (): void => {
+  isMenuShown.value = term.value !== '';
+};
+
+/**
+ * Closes the menu and hands the picked show to the caller.
+ * @param show - The picked show.
+ * @returns void
+ */
+const selectShow = (show: Show): void => {
+  isMenuShown.value = false;
+  emit('select:show', show);
+};
+
+/**
+ * Closes the menu and opens the search page with the typed term.
+ * @returns void
+ */
+const submit = async (): Promise<void> => {
+  isMenuShown.value = false;
+  await openSearchPage();
+};
+
+watch(term, (value) => {
+  isMenuShown.value = value !== '';
+});
+</script>
+
+<template>
+  <v-menu v-model="isMenuShown" :open-on-click="false" location="bottom end" width="380">
+    <template #activator="{ props: activatorProps }">
+      <v-text-field
+        v-model="search"
+        v-bind="activatorProps"
+        class="glass-panel rounded-xl"
+        color="link"
+        placeholder="Search shows..."
+        prepend-inner-icon="mdi-magnify"
+        rounded="xl"
+        clearable
+        hide-details
+        @click="openMenu"
+        @keydown.enter="submit"
+        @keydown.esc="isMenuShown = false"
+      />
+    </template>
+
+    <v-card class="glass-panel mt-2" rounded="xl" border>
+      <v-list bg-color="transparent" class="overflow-y-auto" style="max-height: 440px">
+        <template v-if="isLoading">
+          <v-skeleton-loader v-for="i in 3" color="transparent" type="list-item-avatar" :key="i" />
+        </template>
+
+        <template v-else-if="shows.length > 0">
+          <v-list-item
+            v-for="show in shows"
+            :subtitle="getCategoryNames(show)"
+            :title="getPrimaryTitle(show)"
+            @click="selectShow(show)"
+            :key="show.id"
+          >
+            <template #prepend>
+              <v-img :src="show.card_image_url" class="me-4" height="52" rounded="sm" width="36" cover />
+            </template>
+          </v-list-item>
+        </template>
+
+        <v-list-item title="No matching shows" disabled v-else />
+      </v-list>
+
+      <v-divider />
+
+      <v-card-actions class="pa-4">
+        <v-btn prepend-icon="mdi-magnify" variant="flat" block @click="submit">
+          {{ totalResults > 0 && !isLoading ? `See all ${totalResults} results` : 'See all results' }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-menu>
+</template>

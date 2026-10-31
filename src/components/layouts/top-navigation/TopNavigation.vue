@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 import type { NavigationLinkItem } from './navigationLinkItem';
+import type { Show } from '@/interfaces/api/models/Show';
 
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
+import { ShowSearchMenu } from '@/components/features/show/show-search-menu';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useRouteLoading } from '@/composables/router/useRouteLoading';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
@@ -23,6 +26,9 @@ const adminLinks: NavigationLinkItem[] = [
   { label: 'Settings', routeName: 'admin-settings', icon: 'mdi-cog' },
 ];
 
+const selectedShowId = ref<number | null>(null);
+const isShowDrawerVisible = ref<boolean>(false);
+
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
@@ -30,6 +36,16 @@ const { confirm } = useConfirmDialog();
 const { isNavigating } = useRouteLoading();
 
 const isInAdminArea = computed<boolean>(() => String(route.name ?? '').startsWith('admin-'));
+
+/**
+ * Opens a show picked from the navigation search in the show drawer.
+ * @param show - The picked show.
+ * @returns void
+ */
+const selectShow = (show: Show): void => {
+  selectedShowId.value = show.id;
+  isShowDrawerVisible.value = true;
+};
 
 const logout = async (): Promise<void> => {
   const isConfirmed = await confirm({
@@ -62,6 +78,9 @@ const logout = async (): Promise<void> => {
       <v-list class="d-flex flex-row ga-6 bg-transparent position-absolute right-0 top-0 me-4">
         <v-list-item class="d-flex">
           <div class="d-flex align-center ga-4 text-grey-lighten-1">
+            <div class="d-none d-md-block" style="width: 280px" v-if="!isInAdminArea">
+              <show-search-menu @select:show="selectShow" />
+            </div>
             <span>{{ authStore.user?.username }}</span>
             <v-avatar>
               <v-menu>
@@ -97,6 +116,8 @@ const logout = async (): Promise<void> => {
       </v-list>
     </v-list>
   </v-app-bar>
+
+  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show-id="selectedShowId" />
 </template>
 
 <style lang="scss" scoped>
