@@ -80,6 +80,8 @@ const editShow = async (show: Show | null) => {
       @click:filters="isFilterDrawerVisible = true"
     />
 
+    <result-count :count="totalResults" :loading="isLoading" v-if="isLoading || shows.length > 0" />
+
     <v-row v-if="isLoading">
       <v-col v-for="i in 16" cols="auto" :key="i">
         <v-skeleton-loader type="image" width="287" />
@@ -87,8 +89,6 @@ const editShow = async (show: Show | null) => {
     </v-row>
 
     <template v-else>
-      <result-count :count="totalResults" v-if="shows.length > 0" />
-
       <v-row justify="center" v-if="shows.length > 0">
         <v-col class="d-flex justify-center" cols="12">
           <show-grid

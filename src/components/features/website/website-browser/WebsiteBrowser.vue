@@ -91,6 +91,8 @@ defineExpose({
     @click:filters="isFilterDrawerVisible = true"
   />
 
+  <result-count :count="totalResults" :loading="isLoading" v-if="isLoading || websites.length > 0" />
+
   <v-row v-if="isLoading">
     <v-col v-for="n in 8" cols="12" lg="4" sm="6" xl="3" :key="n">
       <v-skeleton-loader type="list-item-avatar-two-line, paragraph, chip" />
@@ -98,8 +100,6 @@ defineExpose({
   </v-row>
 
   <template v-else>
-    <result-count :count="totalResults" v-if="websites.length > 0" />
-
     <v-row v-if="websites.length > 0">
       <v-col v-for="website in websites" cols="12" lg="4" sm="6" xl="3" :key="website.id">
         <website-card
