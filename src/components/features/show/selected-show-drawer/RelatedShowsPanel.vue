@@ -28,37 +28,26 @@ const changeShow = (targetShowId: number): void => {
     </v-col>
 
     <v-col cols="12">
-      <v-expansion-panels color="background" variant="accordion">
-        <v-expansion-panel>
-          <v-expansion-panel-title class="text-body-2 text-medium-emphasis">
-            Related shows ({{ show?.outgoing_links?.length ?? 0 }})
-          </v-expansion-panel-title>
+      <span class="text-label-medium text-medium-emphasis text-uppercase">Related shows</span>
+    </v-col>
 
-          <v-expansion-panel-text>
-            <v-list density="compact">
-              <v-list-item
-                v-for="link in show?.outgoing_links"
-                class="d-flex ga-2 justify-space-between"
-                :key="link.id"
-              >
-                <p
-                  :class="{ link: !isLoading, 'text-medium-emphasis': isLoading }"
-                  class="text-body-medium cursor-pointer text-truncate"
-                  @click="changeShow(link.target_show!.id)"
-                >
-                  {{ getPrimaryTitle(link.target_show) }}
-                </p>
-                <template #append>
-                  <v-chip color="primary" size="small" variant="tonal">
-                    <v-icon :icon="getShowLinkTypeIcon(link.type)" start />
-                    {{ $t(`showLink.type.${link.type}`) }}
-                  </v-chip>
-                </template>
-              </v-list-item>
-            </v-list>
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-      </v-expansion-panels>
+    <v-col
+      v-for="link in show?.outgoing_links"
+      class="d-flex ga-2 align-center justify-space-between"
+      cols="12"
+      :key="link.id"
+    >
+      <p
+        :class="{ link: !isLoading, 'text-medium-emphasis': isLoading }"
+        class="text-body-medium cursor-pointer text-truncate"
+        @click="changeShow(link.target_show!.id)"
+      >
+        {{ getPrimaryTitle(link.target_show) }}
+      </p>
+      <v-chip color="primary" size="small" variant="tonal">
+        <v-icon :icon="getShowLinkTypeIcon(link.type)" start />
+        {{ $t(`showLink.type.${link.type}`) }}
+      </v-chip>
     </v-col>
   </v-row>
 </template>
