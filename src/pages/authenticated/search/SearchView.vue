@@ -8,15 +8,14 @@ import { SelectedShowDrawer } from '@/components/features/show/selected-show-dra
 import { ShowGrid } from '@/components/features/show/show-grid';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
-import { deepClone } from '@/utils/clone/deepClone';
 
-const selectedShow = ref<Show | null>(null);
+const selectedShowId = ref<number | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
 
 const { searchInput, page, shows, totalPages, totalResults, isLoading } = useShowSearch(ShowQueryKey.SearchShows);
 
 const selectShow = (show: Show | null) => {
-  selectedShow.value = deepClone(show);
+  selectedShowId.value = show?.id ?? null;
   isShowDrawerVisible.value = true;
 };
 </script>
@@ -73,5 +72,5 @@ const selectShow = (show: Show | null) => {
 
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
 
-  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show="selectedShow" />
+  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show-id="selectedShowId" />
 </template>

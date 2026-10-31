@@ -21,14 +21,13 @@ import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showSectionService } from '@/services/show/showSectionService';
 import { showService } from '@/services/show/showService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
-import { deepClone } from '@/utils/clone/deepClone';
 import { homepageSections } from './homepageSections';
 
 /** Latest shows are fetched for the widest layout and trimmed by the grid, so resizing never refetches. */
 const MAX_BANNER_COLS = 5;
 
 const selectedBannerShow = ref<Show | null>(null);
-const selectedShow = ref<Show | null>(null);
+const selectedShowId = ref<number | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
 const isPlayingCardVideo = ref<boolean>(false);
 let bannerResumeTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -172,7 +171,7 @@ watch(
   () => selectedBannerShow.value,
   () => {
     if (selectedBannerShow.value) {
-      selectedShow.value = deepClone(selectedBannerShow.value);
+      selectedShowId.value = selectedBannerShow.value.id;
     }
   },
 );
@@ -251,14 +250,13 @@ watch(
 
             <show-carousel
               :play-on-click="section.playOnClick"
-              :selected-show="selectedShow"
               :shows="showMap[section.dataKey] ?? []"
               :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
               drag-class="pl-12 pr-12"
               @click:show="isShowDrawerVisible = true"
               @play:show="playShow"
               @playing-video="onPlayingVideoUpdate"
-              @update:selected-show="(show: Show | null | undefined) => (selectedShow = deepClone(show ?? null))"
+              @update:selected-show="(show: Show | null | undefined) => (selectedShowId = show?.id ?? null)"
               v-else
             />
 
@@ -273,5 +271,5 @@ watch(
     </v-row>
   </page-container>
 
-  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show="selectedShow" />
+  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show-id="selectedShowId" />
 </template>

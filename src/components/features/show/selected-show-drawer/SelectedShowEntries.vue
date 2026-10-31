@@ -9,19 +9,22 @@ import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchSta
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { getCombinedWatchStatus, MIXED_WATCH_STATUS } from '@/utils/show/getCombinedWatchStatus';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
+import { useSelectedEntry } from './useSelectedEntry';
 import { useSelectedShowPlayback } from './useSelectedShowPlayback';
 
 const props = defineProps<{
   isShown: boolean;
+  show: Show | null;
 }>();
 
-const show = defineModel<Show | null>('show', { required: true });
-
-const selectedEntry = ref<ShowEntry | null>(null);
 const isSavingStatus = ref<boolean>(false);
+
+const entries = computed<ShowEntry[]>(() => props.show?.entries ?? []);
+const show = computed<Show | null>(() => props.show);
 
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 const { saveWatchStatus } = useShowEntryWatchStatus();
+const { clearSelectedEntry, selectedEntry } = useSelectedEntry(entries);
 const {
   isContinuing,
   isStartingPlayback,
@@ -31,8 +34,6 @@ const {
   watchEpisode,
   watchTarget,
 } = useSelectedShowPlayback(show, selectedEntry);
-
-const entries = computed<ShowEntry[]>(() => show.value?.entries ?? []);
 
 /** The selected entry, or every entry when none is selected. */
 const targetEntries = computed<ShowEntry[]>(() => {
@@ -45,6 +46,7 @@ const targetStatus = computed<CombinedWatchStatus>(() => getCombinedWatchStatus(
 /**
  * Persists a watch status for the targeted entries, overwriting any status they already have.
  * Entries that already have the status are skipped, and the rest are still saved when one of them fails.
+ * The saved statuses reach the shown show through the query cache.
  * @param status - The new watch status, or null to clear it. `mixed` is display-only and ignored.
  */
 const setWatchStatus = async (status: CombinedWatchStatus): Promise<void> => {
@@ -61,11 +63,7 @@ const setWatchStatus = async (status: CombinedWatchStatus): Promise<void> => {
   isSavingStatus.value = true;
 
   try {
-    const results = await Promise.allSettled(
-      entries.map(async (entry) => {
-        entry.watch_status = await saveWatchStatus(entry, status);
-      }),
-    );
+    const results = await Promise.allSettled(entries.map((entry) => saveWatchStatus(entry, status)));
 
     const failure = results.find((result) => result.status === 'rejected');
     if (failure) {
@@ -76,9 +74,7 @@ const setWatchStatus = async (status: CombinedWatchStatus): Promise<void> => {
   }
 };
 
-watch([() => show.value?.entries, () => props.isShown], () => {
-  selectedEntry.value = null;
-});
+watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
 </script>
 
 <template>

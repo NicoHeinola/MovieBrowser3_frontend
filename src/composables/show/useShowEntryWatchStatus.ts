@@ -7,8 +7,8 @@ import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showEntryWatchStatusService } from '@/services/show/showEntryWatchStatusService';
 import { setShowEntryWatchStatus } from '@/utils/show/setShowEntryWatchStatus';
 
-/** Cached show lists that render watch statuses and must reflect a change without refetching. */
-const showListQueryKeys = [ShowQueryKey.HomeShows, ShowQueryKey.ContinueWatchingShows, ShowQueryKey.SearchShows];
+/** Every cached query that may hold shows, including the show drawer's; queries without the entry stay untouched. */
+const showQueryKeys = Object.values(ShowQueryKey);
 
 /**
  * Saves show entry watch statuses and mirrors them onto the cached show lists.
@@ -18,7 +18,7 @@ export const useShowEntryWatchStatus = () => {
   const queryClient = useQueryClient();
 
   /**
-   * Persists a watch status for an entry and patches every cached show list that contains it.
+   * Persists a watch status for an entry and patches every cached show query that contains it.
    * The entry itself is not mutated, since it may be a readonly object from the query cache.
    * @param entry - The entry to update.
    * @param status - The new watch status, or null to clear it.
@@ -37,7 +37,7 @@ export const useShowEntryWatchStatus = () => {
       await showEntryWatchStatusService.remove(entry.id);
     }
 
-    for (const queryKey of showListQueryKeys) {
+    for (const queryKey of showQueryKeys) {
       queryClient.setQueriesData({ queryKey: [queryKey] }, (data: unknown) =>
         setShowEntryWatchStatus(data, entry.show_id, entry.id, watchStatus),
       );

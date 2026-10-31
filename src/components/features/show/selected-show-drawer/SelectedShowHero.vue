@@ -30,7 +30,7 @@ const videoId = computed<string | null>(() => getYouTubeVideoId(props.show?.prev
 const canPlayVideo = computed<boolean>(() => Boolean(props.isShown && videoId.value) && !isVideoError.value);
 const activeVideoId = computed<string>(() => videoId.value ?? 'drawer-video');
 
-watch([() => props.show, () => props.isShown], () => {
+watch([() => props.show?.id, () => props.isShown], () => {
   isVideoPlaying.value = false;
   isVideoError.value = false;
 });

@@ -4,4 +4,5 @@ export enum ShowQueryKey {
   SearchShows = 'searchShows',
   AdminShows = 'adminShows',
   ShowAutocomplete = 'showAutocomplete',
+  SelectedShow = 'selectedShow',
 }

@@ -1,34 +1,22 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
-import { ref } from 'vue';
-import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
-import { showService } from '@/services/show/showService';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getShowLinkTypeIcon } from '@/utils/show/getShowLinkTypeIcon';
 
-const show = defineModel<Show | null>('show', { required: true });
+const props = defineProps<{
+  isLoading: boolean;
+  show: Show | null;
+}>();
 
-const isLoadingNextShow = ref<boolean>(false);
-
-const { showAPIErrorSnackbar } = useCommonSnackbar();
+const showId = defineModel<number | null>('showId', { required: true });
 
 /**
- * Loads a linked show and replaces the current one with it.
- * @param showId - The id of the show to switch to.
+ * Switches the drawer to a linked show; the drawer loads it.
+ * @param targetShowId - The id of the show to switch to.
  */
-const changeShow = async (showId: number): Promise<void> => {
-  if (isLoadingNextShow.value) {
-    return;
-  }
-
-  isLoadingNextShow.value = true;
-
-  try {
-    show.value = await showService.get(showId);
-  } catch (error: unknown) {
-    showAPIErrorSnackbar(error);
-  } finally {
-    isLoadingNextShow.value = false;
+const changeShow = (targetShowId: number): void => {
+  if (!props.isLoading) {
+    showId.value = targetShowId;
   }
 };
 </script>
@@ -54,7 +42,7 @@ const changeShow = async (showId: number): Promise<void> => {
                 :key="link.id"
               >
                 <p
-                  :class="{ link: !isLoadingNextShow, 'text-medium-emphasis': isLoadingNextShow }"
+                  :class="{ link: !isLoading, 'text-medium-emphasis': isLoading }"
                   class="text-body-medium cursor-pointer text-truncate"
                   @click="changeShow(link.target_show!.id)"
                 >

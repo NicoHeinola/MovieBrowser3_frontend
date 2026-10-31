@@ -73,7 +73,7 @@ describe('useSelectedShowPlayback', () => {
     expect(isContinuing.value).toBe(true);
   });
 
-  it('marks only the clicked button as loading and stores the saved progress', async () => {
+  it('marks only the clicked button as loading', async () => {
     const deferred = createDeferred<ShowWatchProgress | null>();
     playEpisode.mockReturnValue(deferred.promise);
 
@@ -89,7 +89,6 @@ describe('useSelectedShowPlayback', () => {
     await pending;
 
     expect(startingEpisodeId.value).toBeNull();
-    expect(show.value?.watch_progress?.episode_id).toBe(101);
   });
 
   it('continues the selected entry from the main button', async () => {
@@ -104,21 +103,6 @@ describe('useSelectedShowPlayback', () => {
 
     expect(playShow).toHaveBeenCalledWith(expect.objectContaining({ id: 1 }), entry);
     expect(isStartingTarget.value).toBe(false);
-  });
-
-  it('ignores progress saved for a show that is no longer shown', async () => {
-    const deferred = createDeferred<ShowWatchProgress | null>();
-    playEpisode.mockReturnValue(deferred.promise);
-
-    const show = ref<Show | null>(createShow());
-    const { watchEpisode } = useSelectedShowPlayback(show, ref(null));
-
-    const pending = watchEpisode(createEpisode(100));
-    show.value = { ...createShow(), id: 2 };
-    deferred.resolve(createProgress(1, 100));
-    await pending;
-
-    expect(show.value.watch_progress).toBeNull();
   });
 
   it('ignores clicks while another playback is starting', async () => {

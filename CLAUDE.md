@@ -50,6 +50,7 @@ The real npm scripts (README is partly stale):
   - The caller passes `deepClone(entity)` or an empty entity (`id: 0`) and refetches when the dialog closes with `true`.
   - Snapshot the original in `onMounted` and skip the update when `getChangedObject(...)` returns `undefined`.
   - Confirm a delete with `useConfirmDialog().confirm({...})`.
+- **Show cache patches**: changes to one show (watch progress, watch status) patch every `Object.values(ShowQueryKey)` query in place instead of refetching. The show drawer takes only `v-model:show-id` and reads its show from the `SelectedShow` query, which starts from the copy in a cached list. Don't hand it a cloned show.
 - **Form rules**: a sibling `<feature>Rules.ts` exports `getRules()`, which returns `{ field: [rule, …] }` built from `src/rules/*`. Mark required inputs with `class="required"`.
 - **Pages**: `src/pages/<access>/<name>/<Name>View.vue`, where access is `guest`, `authenticated` or `admin`. Route names are `<access>-<name>` with `meta.requiresAuth`, `requiresAdmin` or `guestOnly`. Add a new admin page to `adminLinks` in `TopNavigation.vue` as well. Pages start with `<page-background />` and `<page-container>`, then lay out `titled-section`s in `v-row` and `v-col`.
 - **Template attribute order** (ESLint-enforced, alphabetical within each group): `v-for` → `v-model` → `:bound` → static → boolean → `@events` → `:key`/`ref` → `v-if`/`v-else` **last**.

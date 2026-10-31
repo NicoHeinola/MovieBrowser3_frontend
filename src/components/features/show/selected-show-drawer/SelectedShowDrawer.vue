@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import type { Show } from '@/interfaces/api/models/Show';
 import { useDisplay } from 'vuetify';
 import { SectionContainer } from '@/components/common/section-container';
 import RelatedShowsPanel from './RelatedShowsPanel.vue';
 import SelectedShowEntries from './SelectedShowEntries.vue';
 import SelectedShowHero from './SelectedShowHero.vue';
+import { useSelectedShow } from './useSelectedShow';
 
-const show = defineModel<Show | null>('show', { required: true });
+const showId = defineModel<number | null>('showId', { required: true });
 
 const isShown = defineModel<boolean>('isShown', {
   default: false,
 });
 
 const { xlAndUp } = useDisplay();
+const { isSwitchingShow, show } = useSelectedShow(showId, isShown);
 </script>
 
 <template>
@@ -26,8 +27,8 @@ const { xlAndUp } = useDisplay();
     <selected-show-hero :is-shown="isShown" :show="show" @close="isShown = false" />
 
     <section-container class="pt-0">
-      <selected-show-entries v-model:show="show" :is-shown="isShown" />
-      <related-shows-panel v-model:show="show" />
+      <selected-show-entries :is-shown="isShown" :show="show" />
+      <related-shows-panel v-model:show-id="showId" :is-loading="isSwitchingShow" :show="show" />
     </section-container>
   </v-navigation-drawer>
 </template>
