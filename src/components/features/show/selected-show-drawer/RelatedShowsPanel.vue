@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
+import { SectionLabel } from '@/components/common/section-label';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getShowLinkTypeIcon } from '@/utils/show/getShowLinkTypeIcon';
 
@@ -28,7 +29,7 @@ const changeShow = (targetShowId: number): void => {
     </v-col>
 
     <v-col cols="12">
-      <span class="text-label-medium text-medium-emphasis text-uppercase">Related shows</span>
+      <section-label title="Related shows" />
     </v-col>
 
     <v-col

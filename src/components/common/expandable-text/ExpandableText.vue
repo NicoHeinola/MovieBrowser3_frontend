@@ -3,7 +3,7 @@ import type { ExpandableTextProps } from './expandableTextProps';
 import { computed } from 'vue';
 
 const props = withDefaults(defineProps<ExpandableTextProps>(), {
-  maxChars: 150,
+  maxChars: 200,
 });
 
 const isExpanded = defineModel<boolean>({

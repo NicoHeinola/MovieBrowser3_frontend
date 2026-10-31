@@ -5,6 +5,7 @@ import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResp
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { SectionLabel } from '@/components/common/section-label';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { CategoryQueryKey } from '@/enums/query/categoryQueryKey';
 import { WatchStatus } from '@/enums/show/WatchStatus';
@@ -142,10 +143,11 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
         <v-col cols="12">
           <v-row gap="12">
             <v-col cols="12">
-              <p class="text-label-medium text-medium-emphasis text-uppercase">Watch status</p>
-              <p class="text-body-small text-medium-emphasis">
-                Matches <span class="text-primary">any</span> included, <span class="text-error">none</span> excluded.
-              </p>
+              <section-label title="Watch status">
+                <template #subtitle>
+                  Matches <span class="text-primary">any</span> included, <span class="text-error">none</span> excluded.
+                </template>
+              </section-label>
             </v-col>
             <v-col class="d-flex flex-wrap ga-3" cols="12">
               <show-filter-chip
@@ -164,10 +166,12 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
         <v-col cols="12">
           <v-row gap="12">
             <v-col cols="12">
-              <p class="text-label-medium text-medium-emphasis text-uppercase">Categories</p>
-              <p class="text-body-small text-medium-emphasis">
-                Matches <span class="text-primary">every</span> included, <span class="text-error">none</span> excluded.
-              </p>
+              <section-label title="Categories">
+                <template #subtitle>
+                  Matches <span class="text-primary">every</span> included,
+                  <span class="text-error">none</span> excluded.
+                </template>
+              </section-label>
             </v-col>
             <v-col cols="12" v-if="categoriesQuery.isPending.value">
               <v-skeleton-loader class="bg-transparent" type="chip@6" />
@@ -191,7 +195,7 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
         <v-col cols="12">
           <v-row gap="12">
             <v-col cols="12">
-              <p class="text-label-medium text-medium-emphasis text-uppercase">Preview</p>
+              <section-label title="Preview" />
             </v-col>
             <v-col cols="12">
               <v-switch

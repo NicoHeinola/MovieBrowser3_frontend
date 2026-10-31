@@ -3,6 +3,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import type { CombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
 import { computed, ref, watch } from 'vue';
+import { SectionLabel } from '@/components/common/section-label';
 import { ShowEntrySelect } from '@/components/features/show/show-entry-select';
 import { WatchStatusButton } from '@/components/features/show/watch-status-button';
 import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchStatus';
@@ -110,7 +111,7 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
     </v-col>
 
     <v-col cols="12">
-      <span class="text-label-medium text-medium-emphasis text-uppercase">Episodes</span>
+      <section-label title="Episodes" />
     </v-col>
 
     <v-col v-for="(episode, index) in selectedEntry?.episodes" class="d-flex ga-2" cols="12" :key="episode.id">
