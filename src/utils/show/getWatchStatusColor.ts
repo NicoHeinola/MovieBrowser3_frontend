@@ -1,11 +1,11 @@
 import { WatchStatus } from '@/enums/show/WatchStatus';
 
 const watchStatusColors: Record<WatchStatus, string> = {
-  [WatchStatus.Watching]: 'info',
-  [WatchStatus.PlanToWatch]: 'link',
-  [WatchStatus.Completed]: 'success',
-  [WatchStatus.OnHold]: 'warning',
-  [WatchStatus.Dropped]: 'error',
+  [WatchStatus.Watching]: 'watch-status-watching',
+  [WatchStatus.PlanToWatch]: 'watch-status-plan-to-watch',
+  [WatchStatus.Completed]: 'watch-status-completed',
+  [WatchStatus.OnHold]: 'watch-status-on-hold',
+  [WatchStatus.Dropped]: 'watch-status-dropped',
 };
 
 /**
