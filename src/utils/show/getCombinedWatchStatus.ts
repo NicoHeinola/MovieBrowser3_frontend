@@ -1,10 +1,7 @@
-import type { WatchStatus } from '@/enums/show/WatchStatus';
+import type { CombinedWatchStatus } from './CombinedWatchStatus';
 import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import { getEntryWatchStatuses } from './getEntryWatchStatuses';
-
-export const MIXED_WATCH_STATUS = 'mixed';
-
-export type CombinedWatchStatus = WatchStatus | typeof MIXED_WATCH_STATUS | null;
+import { MIXED_WATCH_STATUS } from './mixedWatchStatus';
 
 /**
  * Combines the watch statuses of several entries into one.

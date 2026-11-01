@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { CombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
+import type { CombinedWatchStatus } from '@/utils/show/CombinedWatchStatus';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { WatchStatus } from '@/enums/show/WatchStatus';
-import { MIXED_WATCH_STATUS } from '@/utils/show/getCombinedWatchStatus';
-import { MIXED_WATCH_STATUS_COLOR } from '@/utils/show/getShowWatchStatusColor';
 import { getWatchStatusColor } from '@/utils/show/getWatchStatusColor';
 import { getWatchStatusIcon } from '@/utils/show/getWatchStatusIcon';
+import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
+import { MIXED_WATCH_STATUS_COLOR } from '@/utils/show/mixedWatchStatusColor';
 
 const props = defineProps<{
   disabled?: boolean;

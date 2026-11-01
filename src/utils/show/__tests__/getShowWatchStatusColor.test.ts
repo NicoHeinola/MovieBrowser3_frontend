@@ -2,8 +2,9 @@ import type { Show } from '@/interfaces/api/models/Show';
 
 import { describe, expect, it } from 'vitest';
 import { WatchStatus } from '@/enums/show/WatchStatus';
-import { getShowWatchStatusColor, MIXED_WATCH_STATUS_COLOR } from '../getShowWatchStatusColor';
+import { getShowWatchStatusColor } from '../getShowWatchStatusColor';
 import { getWatchStatusColor } from '../getWatchStatusColor';
+import { MIXED_WATCH_STATUS_COLOR } from '../mixedWatchStatusColor';
 
 const createShow = (statuses: (WatchStatus | null)[]): Show =>
   ({

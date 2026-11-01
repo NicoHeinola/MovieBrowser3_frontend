@@ -3,6 +3,9 @@ import prettier from 'eslint-config-prettier';
 import vuetify from 'eslint-config-vuetify';
 import pluginVue from 'eslint-plugin-vue';
 
+/** Matches any export statement, for the one-export-per-file rule. */
+const exportDeclaration = ':matches(ExportNamedDeclaration, ExportDefaultDeclaration)';
+
 export default [
   ...(await vuetify()),
   prettier,
@@ -47,6 +50,26 @@ export default [
           code: 120,
           ignoreComments: true,
           ignoreUrls: true,
+        },
+      ],
+    },
+  },
+  {
+    // One exported symbol per file; barrels re-export a namespace's public surface instead.
+    files: ['src/**/*.ts'],
+    ignores: ['src/**/index.ts', 'src/**/*.d.ts', 'src/**/__tests__/**'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          // A second top-level export after the first one.
+          selector: `Program > ${exportDeclaration} ~ ${exportDeclaration}`,
+          message: 'Export one symbol per file. Move this export to a sibling file named after it.',
+        },
+        {
+          // `export const a = 1, b = 2;`
+          selector: 'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator ~ VariableDeclarator',
+          message: 'Export one symbol per file. Move this export to a sibling file named after it.',
         },
       ],
     },

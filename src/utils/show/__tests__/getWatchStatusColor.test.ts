@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { WatchStatus } from '@/enums/show/WatchStatus';
 import { MainTheme } from '@/plugins/vuetify/MainTheme';
-import { MIXED_WATCH_STATUS_COLOR } from '../getShowWatchStatusColor';
 import { getWatchStatusColor } from '../getWatchStatusColor';
+import { MIXED_WATCH_STATUS_COLOR } from '../mixedWatchStatusColor';
 
 describe('getWatchStatusColor', () => {
   it('returns a theme color for every watch status', () => {

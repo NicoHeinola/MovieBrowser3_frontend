@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EpisodeFormData } from './ShowEntriesFormData';
+import type { EpisodeFormData } from './EpisodeFormData';
 import { computed } from 'vue';
 
 import { getRules } from './showEntriesFormRules';

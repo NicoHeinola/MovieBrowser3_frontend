@@ -1,4 +1,4 @@
-import type { ObjectChangeCheckOptions } from '@/utils/object/hasObjectChanged';
+import type { ObjectChangeCheckOptions } from '@/utils/object/ObjectChangeCheckOptions';
 
 import { getSyncPlan } from './getSyncPlan';
 

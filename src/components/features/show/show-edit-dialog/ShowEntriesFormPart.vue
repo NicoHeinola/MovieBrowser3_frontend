@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { ShowEntriesFormData, ShowEntryFormData } from './ShowEntriesFormData';
+import type { ShowEntriesFormData } from './ShowEntriesFormData';
+import type { ShowEntryFormData } from './ShowEntryFormData';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { ref, useTemplateRef } from 'vue';
 import { SortableItem } from '@/components/common/sortable-item';

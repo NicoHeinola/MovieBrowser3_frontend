@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ShowEntryFormData } from './ShowEntriesFormData';
+import type { ShowEntryFormData } from './ShowEntryFormData';
 import { computed, ref } from 'vue';
 import ShowEntryEpisodesFormPart from './ShowEntryEpisodesFormPart.vue';
 import ShowEntryGeneralFormPart from './ShowEntryGeneralFormPart.vue';

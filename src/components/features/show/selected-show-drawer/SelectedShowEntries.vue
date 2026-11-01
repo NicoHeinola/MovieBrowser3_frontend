@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
-import type { CombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
+import type { CombinedWatchStatus } from '@/utils/show/CombinedWatchStatus';
 import { useStorage } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 import { CollapsibleSection } from '@/components/common/collapsible-section';
@@ -9,9 +9,10 @@ import { ShowEntryPicker } from '@/components/features/show/show-entry-picker';
 import { WatchStatusButton } from '@/components/features/show/watch-status-button';
 import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchStatus';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
-import { getCombinedWatchStatus, MIXED_WATCH_STATUS } from '@/utils/show/getCombinedWatchStatus';
+import { getCombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
 import { getWatchedEpisodeIds } from '@/utils/show/getWatchedEpisodeIds';
+import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
 import { useSelectedEntry } from './useSelectedEntry';
 import { useSelectedShowPlayback } from './useSelectedShowPlayback';
 

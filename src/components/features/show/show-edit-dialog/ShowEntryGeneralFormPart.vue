@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ShowEntryFormData } from './ShowEntriesFormData';
+import type { ShowEntryFormData } from './ShowEntryFormData';
 import { computed } from 'vue';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
 import { getRules } from './showEntriesFormRules';

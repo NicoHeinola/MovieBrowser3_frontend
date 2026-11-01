@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { WatchStatus } from '@/enums/show/WatchStatus';
-import { getCombinedWatchStatus, MIXED_WATCH_STATUS } from '../getCombinedWatchStatus';
+import { getCombinedWatchStatus } from '../getCombinedWatchStatus';
+import { MIXED_WATCH_STATUS } from '../mixedWatchStatus';
 
 const createEntries = (statuses: (WatchStatus | null)[]) =>
   statuses.map((status, index) => ({ watch_status: status ? { show_entry_id: index, status } : null }));

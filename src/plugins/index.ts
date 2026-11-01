@@ -2,7 +2,7 @@ import type { App } from 'vue';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
 
-import { configureApiClientAuth } from '@/plugins/api/apiClient';
+import { configureApiClientAuth } from '@/plugins/api/configureApiClientAuth';
 import { i18n } from '@/plugins/i18n';
 import { queryClient } from '@/plugins/query';
 import { useAuthStore } from '@/stores/auth/useAuthStore';

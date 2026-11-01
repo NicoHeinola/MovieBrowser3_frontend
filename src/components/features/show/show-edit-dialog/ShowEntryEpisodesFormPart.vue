@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { EpisodeFormData, ShowEntryFormData } from './ShowEntriesFormData';
+import type { EpisodeFormData } from './EpisodeFormData';
+import type { ShowEntryFormData } from './ShowEntryFormData';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { ref, useTemplateRef } from 'vue';
 

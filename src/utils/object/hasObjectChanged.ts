@@ -1,17 +1,4 @@
-/**
- * Options for object change detection.
- *
- * `include` / `includes` define the paths that should be compared.
- * If omitted, all paths are compared.
- *
- * `exclude` / `excludes` disable comparison for matching paths.
- */
-export type ObjectChangeCheckOptions = {
-  include?: string[];
-  includes?: string[];
-  exclude?: string[];
-  excludes?: string[];
-};
+import type { ObjectChangeCheckOptions } from './ObjectChangeCheckOptions';
 
 /** Normalize path patterns by trimming whitespace and removing empty entries. */
 const normalizePaths = (paths?: string[]): string[] => paths?.map((path) => path.trim()).filter(Boolean) ?? [];
