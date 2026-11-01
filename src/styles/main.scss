@@ -26,3 +26,8 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+// Cover the whole viewport instead of the nearest positioned ancestor (short page containers clipped the scrim).
+.v-navigation-drawer__scrim {
+  position: fixed;
+}

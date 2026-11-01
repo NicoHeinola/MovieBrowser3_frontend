@@ -8,6 +8,13 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
+    version: '1.0.1',
+    date: '2026-11-01',
+    changes: [
+      { type: ChangelogChangeType.Fixed, text: 'The filter drawer now darkens the whole page on pages with tabs.' },
+    ],
+  },
+  {
     version: '1.0.0',
     date: '2026-11-01',
     changes: [
