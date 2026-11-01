@@ -6,9 +6,8 @@ import { computed, watch } from 'vue';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
+import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
 import { findShow } from '@/utils/show/findShow';
-
-const showQueryKeys: unknown[] = Object.values(ShowQueryKey);
 
 /**
  * Reads the drawer's show from the query cache by id, so every cache patch, such as new watch progress, reaches it.
@@ -33,9 +32,7 @@ export const useSelectedShow = (showId: Ref<number | null>, isShown: Readonly<Re
       return undefined;
     }
 
-    for (const query of queryClient.getQueryCache().findAll({
-      predicate: (candidate) => showQueryKeys.includes(candidate.queryKey[0]),
-    })) {
+    for (const query of queryClient.getQueryCache().findAll(getQueryKeyFilter(ShowQueryKey))) {
       const show = findShow(query.state.data, showId.value);
       if (show) {
         return { show, updatedAt: query.state.dataUpdatedAt };

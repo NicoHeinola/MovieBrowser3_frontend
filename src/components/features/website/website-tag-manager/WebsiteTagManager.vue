@@ -5,6 +5,7 @@ import { FloatingActionButton } from '@/components/common/floating-action-button
 import { SearchToolbar } from '@/components/common/search-toolbar';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
+import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
 import { WebsiteTagCreateDialog } from '../website-tag-create-dialog';
 import { WebsiteTagTable } from '../website-tag-table';
 
@@ -25,9 +26,7 @@ const openCreateTagDialog = async (): Promise<void> => {
   });
 
   if (refresh) {
-    await Promise.all(
-      Object.values(WebsiteTagQueryKey).map((queryKey) => queryClient.invalidateQueries({ queryKey: [queryKey] })),
-    );
+    await queryClient.invalidateQueries(getQueryKeyFilter(WebsiteTagQueryKey));
   }
 };
 </script>

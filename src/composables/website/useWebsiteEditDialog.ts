@@ -7,6 +7,7 @@ import { useDialog } from '@/components/layouts/dialog-provider';
 import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { deepClone } from '@/utils/clone/deepClone';
+import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
 
 /**
  * Builds the blank website the dialog starts from when adding one.
@@ -46,12 +47,8 @@ export const useWebsiteEditDialog = () => {
     });
 
     if (refresh) {
-      /** Tag names and counts follow the websites. */
-      await Promise.all(
-        [...Object.values(WebsiteQueryKey), ...Object.values(WebsiteTagQueryKey)].map((queryKey) =>
-          queryClient.invalidateQueries({ queryKey: [queryKey] }),
-        ),
-      );
+      // Tag names and counts follow the websites.
+      await queryClient.invalidateQueries(getQueryKeyFilter(WebsiteQueryKey, WebsiteTagQueryKey));
     }
 
     return refresh ?? false;

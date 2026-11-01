@@ -4,6 +4,7 @@ import { QueryClient } from '@tanstack/vue-query';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 
+import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { websiteTagService } from '@/services/website/websiteTagService';
 import { useCreatePendingWebsiteTags } from '../useCreatePendingWebsiteTags';
@@ -58,9 +59,19 @@ describe('useCreatePendingWebsiteTags', () => {
 
     await useCreatePendingWebsiteTags().createPendingTags(tagIds, ref([{ id: -1, name: 'music' }]));
 
+    const [filters] = invalidateQueries.mock.calls[0] ?? [];
     for (const queryKey of Object.values(WebsiteTagQueryKey)) {
-      expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: [queryKey] });
+      queryClient.setQueryData([queryKey], []);
     }
+    queryClient.setQueryData([WebsiteQueryKey.AdminWebsites], []);
+
+    expect(invalidateQueries).toHaveBeenCalledOnce();
+    expect(
+      queryClient
+        .getQueryCache()
+        .findAll(filters)
+        .map((query) => query.queryKey[0]),
+    ).toEqual(Object.values(WebsiteTagQueryKey));
     expect(idsWhenReloaded.every((ids) => ids.includes(-1))).toBe(true);
     expect(tagIds.value).toEqual([20]);
     invalidateQueries.mockRestore();

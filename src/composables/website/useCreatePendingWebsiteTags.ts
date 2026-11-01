@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/vue-query';
 
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { websiteTagService } from '@/services/website/websiteTagService';
+import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
 
 /**
  * Saves the tags a form only holds as pending (see `createPendingWebsiteTag`), so tags are only created once the
@@ -39,10 +40,8 @@ export const useCreatePendingWebsiteTags = () => {
     }
 
     if (createdIds.size > 0) {
-      /** Reload the tag lists before swapping in the new ids, so the chips find the tags by name instead of by id. */
-      await Promise.all(
-        Object.values(WebsiteTagQueryKey).map((queryKey) => queryClient.invalidateQueries({ queryKey: [queryKey] })),
-      );
+      // Reload the tag lists before swapping in the new ids, so the chips find the tags by name instead of by id.
+      await queryClient.invalidateQueries(getQueryKeyFilter(WebsiteTagQueryKey));
     }
 
     tagIds.value = tagIds.value.map((tagId) => createdIds.get(tagId) ?? tagId);

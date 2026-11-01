@@ -1,11 +1,12 @@
 import type { Website } from '@/interfaces/api/models/Website';
-import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 import { useQueryClient } from '@tanstack/vue-query';
 import { ref } from 'vue';
 
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
 import { websiteService } from '@/services/website/websiteService';
+import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
+import { updateCachedObjects } from '@/utils/query/updateCachedObjects';
 
 /**
  * Stars and unstars websites from the admin websites list without reloading it.
@@ -18,8 +19,8 @@ export const useWebsiteFavoriteToggle = () => {
   const { showAPIErrorSnackbar } = useCommonSnackbar();
 
   /**
-   * Saves the flipped favorite flag and puts the saved website into the cached list in place, so the grid does not
-   * reload. The dashboard's favorites list is marked stale.
+   * Saves the flipped favorite flag and puts the saved website into every cached website list in place, so the grid
+   * does not reload. The dashboard's favorites list is marked stale, since the website may join or leave it.
    * @param website - The website to toggle.
    * @returns Nothing.
    */
@@ -29,10 +30,11 @@ export const useWebsiteFavoriteToggle = () => {
     try {
       const updatedWebsite = await websiteService.update(website.id, { is_favorite: !website.is_favorite });
 
-      queryClient.setQueriesData<PaginatedResponse<Website>>({ queryKey: [WebsiteQueryKey.AdminWebsites] }, (data) =>
-        data
-          ? { ...data, data: data.data.map((item) => (item.id === updatedWebsite.id ? updatedWebsite : item)) }
-          : data,
+      // Website tags share ids with websites but have no url, so they are never replaced.
+      queryClient.setQueriesData(getQueryKeyFilter(WebsiteQueryKey), (data: unknown) =>
+        updateCachedObjects(data, (record) =>
+          record.id === updatedWebsite.id && typeof record.url === 'string' ? { ...updatedWebsite } : record,
+        ),
       );
       await queryClient.invalidateQueries({ queryKey: [WebsiteQueryKey.AdminDashboardWebsites] });
     } catch (error: unknown) {

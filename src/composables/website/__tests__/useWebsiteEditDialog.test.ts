@@ -4,6 +4,7 @@ import { QueryClient } from '@tanstack/vue-query';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { WebsiteEditDialog } from '@/components/features/website/website-edit-dialog';
+import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { useWebsiteEditDialog } from '../useWebsiteEditDialog';
@@ -39,8 +40,23 @@ const website: Website = {
 describe('useWebsiteEditDialog', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.spyOn(queryClient, 'invalidateQueries').mockResolvedValue();
+    queryClient.clear();
+    for (const queryKey of [...Object.values(WebsiteQueryKey), ...Object.values(WebsiteTagQueryKey)]) {
+      queryClient.setQueryData([queryKey, 'page', 1], []);
+    }
+    queryClient.setQueryData([ShowQueryKey.AdminShows], []);
   });
+
+  /**
+   * Lists the cached queries that are marked stale.
+   * @returns The first key part of each invalidated query.
+   */
+  const getInvalidatedKeys = (): unknown[] =>
+    queryClient
+      .getQueryCache()
+      .findAll()
+      .filter((query) => query.state.isInvalidated)
+      .map((query) => query.queryKey[0]);
 
   it('opens a copy of the website and refreshes every website and tag cache after a save', async () => {
     showDialog.mockResolvedValueOnce(true);
@@ -51,9 +67,7 @@ describe('useWebsiteEditDialog', () => {
 
     expect(showDialog).toHaveBeenCalledWith({ component: WebsiteEditDialog, props: { website } });
     expect(showDialog.mock.calls[0]?.[0].props.website).not.toBe(website);
-    expect(vi.mocked(queryClient.invalidateQueries).mock.calls.map(([filters]) => filters?.queryKey)).toEqual(
-      [...Object.values(WebsiteQueryKey), ...Object.values(WebsiteTagQueryKey)].map((queryKey) => [queryKey]),
-    );
+    expect(getInvalidatedKeys()).toEqual([...Object.values(WebsiteQueryKey), ...Object.values(WebsiteTagQueryKey)]);
   });
 
   it('opens an empty website and leaves the caches alone when cancelled', async () => {
@@ -64,6 +78,6 @@ describe('useWebsiteEditDialog', () => {
     await expect(openWebsiteEditDialog()).resolves.toBe(false);
 
     expect(showDialog.mock.calls[0]?.[0].props.website).toMatchObject({ id: 0, url: '', is_favorite: false, tags: [] });
-    expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
+    expect(getInvalidatedKeys()).toEqual([]);
   });
 });

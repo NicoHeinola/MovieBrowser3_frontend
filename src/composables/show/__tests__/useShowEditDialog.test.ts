@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ShowEditDialog } from '@/components/features/show/show-edit-dialog';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
+import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
 import { useShowEditDialog } from '../useShowEditDialog';
 
@@ -29,8 +30,23 @@ const show = { id: 4, titles: [{ title: 'Naruto', is_primary: true }] } as unkno
 describe('useShowEditDialog', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.spyOn(queryClient, 'invalidateQueries').mockResolvedValue();
+    queryClient.clear();
+    for (const queryKey of Object.values(ShowQueryKey)) {
+      queryClient.setQueryData([queryKey, 'page', 1], []);
+    }
+    queryClient.setQueryData([WebsiteQueryKey.AdminWebsites], []);
   });
+
+  /**
+   * Lists the cached queries that are marked stale.
+   * @returns The first key part of each invalidated query.
+   */
+  const getInvalidatedKeys = (): unknown[] =>
+    queryClient
+      .getQueryCache()
+      .findAll()
+      .filter((query) => query.state.isInvalidated)
+      .map((query) => query.queryKey[0]);
 
   it('opens a copy of the show and refreshes every show cache after a save', async () => {
     showDialog.mockResolvedValueOnce(true);
@@ -42,9 +58,7 @@ describe('useShowEditDialog', () => {
     const props = showDialog.mock.calls[0]?.[0].props;
     expect(showDialog).toHaveBeenCalledWith({ component: ShowEditDialog, props: { show } });
     expect(props.show).not.toBe(show);
-    expect(vi.mocked(queryClient.invalidateQueries).mock.calls.map(([filters]) => filters?.queryKey)).toEqual(
-      Object.values(ShowQueryKey).map((queryKey) => [queryKey]),
-    );
+    expect(getInvalidatedKeys()).toEqual(Object.values(ShowQueryKey));
   });
 
   it('opens a new show with one season and leaves the caches alone when cancelled', async () => {
@@ -58,6 +72,6 @@ describe('useShowEditDialog', () => {
       titles: [{ title: '', is_primary: true }],
       entries: [{ name: 'Season 1', type: ShowEntryType.Season, sort_order: 0 }],
     });
-    expect(queryClient.invalidateQueries).not.toHaveBeenCalled();
+    expect(getInvalidatedKeys()).toEqual([]);
   });
 });

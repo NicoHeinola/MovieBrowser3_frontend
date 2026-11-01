@@ -5,10 +5,8 @@ import { useQueryClient } from '@tanstack/vue-query';
 
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showEntryWatchStatusService } from '@/services/show/showEntryWatchStatusService';
+import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
 import { setShowEntryWatchStatus } from '@/utils/show/setShowEntryWatchStatus';
-
-/** Every cached query that may hold shows, including the show drawer's; queries without the entry stay untouched. */
-const showQueryKeys = Object.values(ShowQueryKey);
 
 /**
  * Saves show entry watch statuses and mirrors them onto the cached show lists.
@@ -37,11 +35,10 @@ export const useShowEntryWatchStatus = () => {
       await showEntryWatchStatusService.remove(entry.id);
     }
 
-    for (const queryKey of showQueryKeys) {
-      queryClient.setQueriesData({ queryKey: [queryKey] }, (data: unknown) =>
-        setShowEntryWatchStatus(data, entry.show_id, entry.id, watchStatus),
-      );
-    }
+    // Every cached query that may hold shows, including the show drawer's; queries without the entry stay untouched.
+    queryClient.setQueriesData(getQueryKeyFilter(ShowQueryKey), (data: unknown) =>
+      setShowEntryWatchStatus(data, entry.show_id, entry.id, watchStatus),
+    );
 
     return watchStatus;
   };

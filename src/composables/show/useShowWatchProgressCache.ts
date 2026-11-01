@@ -3,10 +3,8 @@ import type { ShowWatchProgress } from '@/interfaces/api/models/ShowWatchProgres
 import { useQueryClient } from '@tanstack/vue-query';
 
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
+import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
 import { setShowWatchProgress } from '@/utils/show/setShowWatchProgress';
-
-/** Every cached query that may hold shows; patching one that does not contain the show leaves it untouched. */
-const showQueryKeys = Object.values(ShowQueryKey);
 
 /** The cached show list ordered by progress, refetched on a change so a show can move up or join it. */
 const progressOrderedQueryKey = ShowQueryKey.ContinueWatchingShows;
@@ -43,11 +41,10 @@ export const useShowWatchProgressCache = () => {
       .getQueriesData<Show[]>({ queryKey: [progressOrderedQueryKey] })
       .some(([, shows]) => !hasWatchProgress(shows, watchProgress));
 
-    for (const queryKey of showQueryKeys) {
-      queryClient.setQueriesData({ queryKey: [queryKey] }, (data: unknown) =>
-        setShowWatchProgress(data, watchProgress),
-      );
-    }
+    // Every cached query that may hold shows; patching one that does not contain the show leaves it untouched.
+    queryClient.setQueriesData(getQueryKeyFilter(ShowQueryKey), (data: unknown) =>
+      setShowWatchProgress(data, watchProgress),
+    );
 
     if (isOrderStale) {
       void queryClient.invalidateQueries({ queryKey: [progressOrderedQueryKey] });
@@ -59,9 +56,7 @@ export const useShowWatchProgressCache = () => {
    * @returns void
    */
   const refetchShowLists = (): void => {
-    for (const queryKey of showQueryKeys) {
-      void queryClient.invalidateQueries({ queryKey: [queryKey] });
-    }
+    void queryClient.invalidateQueries(getQueryKeyFilter(ShowQueryKey));
   };
 
   return {

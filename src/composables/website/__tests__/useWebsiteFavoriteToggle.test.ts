@@ -52,11 +52,12 @@ describe('useWebsiteFavoriteToggle', () => {
     queryClient.clear();
   });
 
-  it('saves the flipped flag, swaps the saved website into the list and marks the dashboard stale', async () => {
+  it('saves the flipped flag, swaps the saved website into every list and marks the dashboard stale', async () => {
     const website = createWebsite();
     const other = createWebsite({ id: 4, url: 'https://vuejs.org' });
     const savedWebsite = createWebsite({ is_favorite: true, updated_at: '2026-11-01T12:00:00.000000Z' });
-    queryClient.setQueryData(pageKey, createPage([website, other]));
+    const taggedWebsite = createWebsite({ id: 5, url: 'https://pinia.vuejs.org', tags: [{ id: 3, name: 'docs' }] });
+    queryClient.setQueryData(pageKey, createPage([website, other, taggedWebsite]));
     queryClient.setQueryData([WebsiteQueryKey.AdminDashboardWebsites], createPage([]));
     vi.mocked(websiteService.update).mockResolvedValueOnce(savedWebsite);
 
@@ -67,7 +68,10 @@ describe('useWebsiteFavoriteToggle', () => {
     await saving;
 
     expect(websiteService.update).toHaveBeenCalledWith(3, { is_favorite: true });
-    expect(queryClient.getQueryData<PaginatedResponse<Website>>(pageKey)?.data).toEqual([savedWebsite, other]);
+    const cachedWebsites = queryClient.getQueryData<PaginatedResponse<Website>>(pageKey)?.data;
+    expect(cachedWebsites).toEqual([savedWebsite, other, taggedWebsite]);
+    expect(cachedWebsites?.[1]).toBe(other);
+    expect(cachedWebsites?.[2]).toBe(taggedWebsite);
     expect(queryClient.getQueryState([WebsiteQueryKey.AdminDashboardWebsites])?.isInvalidated).toBe(true);
     expect(savingFavoriteIds.value).toEqual([]);
   });

@@ -7,6 +7,7 @@ import { useDialog } from '@/components/layouts/dialog-provider';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
 import { deepClone } from '@/utils/clone/deepClone';
+import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
 
 /**
  * Opens the show edit dialog and refreshes every show cache once it saves or deletes.
@@ -44,10 +45,8 @@ export const useShowEditDialog = () => {
     });
 
     if (refresh) {
-      /** Shows appear on Home, Search, the dashboard and in autocompletes too, so refresh every show cache. */
-      await Promise.all(
-        Object.values(ShowQueryKey).map((queryKey) => queryClient.invalidateQueries({ queryKey: [queryKey] })),
-      );
+      // Shows appear on Home, Search, the dashboard and in autocompletes too, so refresh every show cache.
+      await queryClient.invalidateQueries(getQueryKeyFilter(ShowQueryKey));
     }
 
     return refresh ?? false;

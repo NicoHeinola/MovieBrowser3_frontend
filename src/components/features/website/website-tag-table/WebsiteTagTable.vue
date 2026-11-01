@@ -12,6 +12,7 @@ import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { websiteTagService } from '@/services/website/websiteTagService';
+import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
 import { getWebsiteTagListQuery } from '@/utils/website/getWebsiteTagListQuery';
 import { getWebsiteTagRename } from '@/utils/website/getWebsiteTagRename';
 
@@ -89,11 +90,7 @@ const getUsageLabel = (count: number): string => `${count} website${count === 1 
  * @returns Nothing.
  */
 const invalidateTagsAndWebsites = async (): Promise<void> => {
-  await Promise.all(
-    [...Object.values(WebsiteTagQueryKey), ...Object.values(WebsiteQueryKey)].map((queryKey) =>
-      queryClient.invalidateQueries({ queryKey: [queryKey] }),
-    ),
-  );
+  await queryClient.invalidateQueries(getQueryKeyFilter(WebsiteTagQueryKey, WebsiteQueryKey));
 };
 
 /**
