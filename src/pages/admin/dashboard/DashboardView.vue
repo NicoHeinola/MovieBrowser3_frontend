@@ -1,7 +1,120 @@
 <script setup lang="ts">
+import type { Show } from '@/interfaces/api/models/Show';
+import type { Website } from '@/interfaces/api/models/Website';
+import type { DashboardStatsResponse } from '@/interfaces/api/responses/DashboardStatsResponse';
+import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
+
 import { PageBackground } from '@/components/common/page-background';
+import { PageContainer } from '@/components/common/page-container';
+import { TitledSection } from '@/components/common/titled-section';
+import { DashboardStats } from '@/components/features/dashboard/dashboard-stats';
+import { RecentShowList } from '@/components/features/show/recent-show-list';
+import { FavoriteWebsiteList } from '@/components/features/website/favorite-website-list';
+import { useAPIQuery } from '@/composables/api/useAPIQuery';
+import { useShowEditDialog } from '@/composables/show/useShowEditDialog';
+import { useWebsiteEditDialog } from '@/composables/website/useWebsiteEditDialog';
+import { DashboardQueryKey } from '@/enums/query/dashboardQueryKey';
+import { ShowQueryKey } from '@/enums/query/showQueryKey';
+import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
+import { dashboardStatsService } from '@/services/dashboard/dashboardStatsService';
+import { showService } from '@/services/show/showService';
+import { websiteService } from '@/services/website/websiteService';
+
+const RECENT_SHOW_COUNT = 8;
+
+const { openShowEditDialog } = useShowEditDialog();
+const { openWebsiteEditDialog } = useWebsiteEditDialog();
+
+const statsQuery = useAPIQuery<DashboardStatsResponse>({
+  queryKey: [DashboardQueryKey.AdminDashboardStats],
+  queryFn: async () => await dashboardStatsService.get(),
+  /** Every admin page changes these counts, so they refetch on each visit instead of being invalidated from each. */
+  staleTime: 0,
+});
+
+const favoriteWebsitesQuery = useAPIQuery<PaginatedResponse<Website>>({
+  queryKey: [WebsiteQueryKey.AdminDashboardWebsites],
+  queryFn: async () =>
+    await websiteService.list({
+      filter: { is_favorite: '1' },
+      sort: 'title',
+      page: { number: 0, size: 0 },
+    }),
+});
+
+const recentShowsQuery = useAPIQuery<PaginatedResponse<Show>>({
+  queryKey: [ShowQueryKey.AdminDashboardShows],
+  queryFn: async () => await showService.list({ sort: '-created_at', page: { size: RECENT_SHOW_COUNT } }),
+});
+
+/**
+ * Adds a show, or edits one from the recent list, and refreshes the counts after a save or delete.
+ * @param show - The show to edit; leave it out to add a show.
+ * @returns Nothing.
+ */
+const editShow = async (show?: Show): Promise<void> => {
+  if (await openShowEditDialog(show)) {
+    await statsQuery.refetch();
+  }
+};
+
+/**
+ * Adds a website and refreshes the counts once it is saved.
+ * @returns Nothing.
+ */
+const addWebsite = async (): Promise<void> => {
+  if (await openWebsiteEditDialog()) {
+    await statsQuery.refetch();
+  }
+};
 </script>
 
 <template>
   <page-background />
+
+  <page-container class="mb-12">
+    <v-row gap="48">
+      <titled-section icon="mdi-chart-box-outline" icon-color="primary" title="Overview">
+        <dashboard-stats :loading="statsQuery.isLoading.value" :stats="statsQuery.data.value" />
+
+        <template #append>
+          <div class="d-flex flex-1-1 justify-end ga-2">
+            <v-btn prepend-icon="mdi-movie-plus" @click="void editShow()">Add show</v-btn>
+            <v-btn prepend-icon="mdi-web-plus" @click="void addWebsite()">Add website</v-btn>
+          </div>
+        </template>
+      </titled-section>
+
+      <v-col cols="12" lg="6">
+        <titled-section icon="mdi-star" icon-color="primary" title="Favorite websites">
+          <favorite-website-list
+            :loading="favoriteWebsitesQuery.isLoading.value"
+            :websites="favoriteWebsitesQuery.data.value?.data ?? []"
+          />
+
+          <template #append>
+            <div class="d-flex flex-1-1 justify-end">
+              <v-btn :to="{ name: 'admin-websites' }" append-icon="mdi-arrow-right" variant="text">All websites</v-btn>
+            </div>
+          </template>
+        </titled-section>
+      </v-col>
+
+      <v-col cols="12" lg="6">
+        <titled-section icon="mdi-clock-outline" icon-color="warning" title="Recently added">
+          <recent-show-list
+            :loading="recentShowsQuery.isLoading.value"
+            :shows="recentShowsQuery.data.value?.data ?? []"
+            @click:show="editShow"
+          />
+
+          <template #append>
+            <div class="d-flex flex-1-1 justify-end">
+              <v-btn :to="{ name: 'admin-shows' }" append-icon="mdi-arrow-right" variant="text">All shows</v-btn>
+            </div>
+          </template>
+        </titled-section>
+      </v-col>
+    </v-row>
+  </page-container>
 </template>

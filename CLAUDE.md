@@ -48,6 +48,7 @@ The real npm scripts (README is partly stale):
   - Props are `defineProps<DialogComponentProps<boolean>>()`, visibility is `defineModel<boolean>({ required: true })`, and the entity is a named `defineModel`.
   - Wrap the content in `base-dialog` with `#title`, `#default` and `#actions` slots.
   - The caller passes `deepClone(entity)` or an empty entity (`id: 0`) and refetches when the dialog closes with `true`.
+  - Shows and websites are edited from more than one page, so their dialogs open through `useShowEditDialog` / `useWebsiteEditDialog`. These own the clone, the empty entity and the cache invalidation, and return whether the dialog saved.
   - Snapshot the original in `onMounted` and skip the update when `getChangedObject(...)` returns `undefined`.
   - Confirm a delete with `useConfirmDialog().confirm({...})`.
 - **Show cache patches**: changes to one show (watch progress, watch status) patch every `Object.values(ShowQueryKey)` query in place instead of refetching. The show drawer takes only `v-model:show-id` and reads its show from the `SelectedShow` query, which starts from the copy in a cached list. Don't hand it a cloned show.

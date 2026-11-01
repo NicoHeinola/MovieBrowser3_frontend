@@ -26,6 +26,7 @@ const createWebsite = (overrides: Partial<Website> = {}): Website => ({
   title: 'Vuetify',
   icon: 'mdi-vuetify',
   description: null,
+  is_favorite: false,
   tags: [{ id: 8, name: 'docs' }],
   created_at: '2026-10-31T12:00:00.000000Z',
   updated_at: '2026-10-31T12:00:00.000000Z',

@@ -1,19 +1,14 @@
 <script setup lang="ts">
-import type { Website } from '@/interfaces/api/models/Website';
-
-import { useQueryClient } from '@tanstack/vue-query';
 import { ref } from 'vue';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { ResultCount } from '@/components/common/result-count';
 import { SearchToolbar } from '@/components/common/search-toolbar';
-import { useDialog } from '@/components/layouts/dialog-provider';
+import { useWebsiteEditDialog } from '@/composables/website/useWebsiteEditDialog';
+import { useWebsiteFavoriteToggle } from '@/composables/website/useWebsiteFavoriteToggle';
 import { useWebsiteSearch } from '@/composables/website/useWebsiteSearch';
 import { websiteSortOptions } from '@/composables/website/websiteSortOptions';
-import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
-import { deepClone } from '@/utils/clone/deepClone';
 import { WebsiteCard } from '../website-card';
-import { WebsiteEditDialog } from '../website-edit-dialog';
 import { WebsiteFilterDrawer } from '../website-filter-drawer';
 
 const isFilterDrawerVisible = ref<boolean>(false);
@@ -26,45 +21,14 @@ const {
   toggleTag,
   sort,
   page,
-  query: websitesQuery,
   websites,
   totalPages,
   totalResults,
   isLoading,
 } = useWebsiteSearch();
 
-const dialog = useDialog();
-const queryClient = useQueryClient();
-
-const getEmptyWebsite = (): Website => {
-  return {
-    id: 0,
-    url: '',
-    title: null,
-    icon: null,
-    description: null,
-    tags: [],
-    created_at: '',
-    updated_at: '',
-  };
-};
-
-const openEditWebsiteDialog = async (website?: Website): Promise<void> => {
-  const refresh = await dialog.showDialog({
-    component: WebsiteEditDialog,
-    props: {
-      website: website ? deepClone(website) : getEmptyWebsite(),
-    },
-  });
-
-  if (refresh) {
-    /** Tag names and counts follow the websites. */
-    await Promise.all([
-      websitesQuery.refetch(),
-      ...Object.values(WebsiteTagQueryKey).map((queryKey) => queryClient.invalidateQueries({ queryKey: [queryKey] })),
-    ]);
-  }
-};
+const { openWebsiteEditDialog } = useWebsiteEditDialog();
+const { savingFavoriteIds, toggleFavorite } = useWebsiteFavoriteToggle();
 
 /**
  * Lists only the websites using a tag, clearing the search and other filters.
@@ -104,9 +68,11 @@ defineExpose({
       <v-col v-for="website in websites" cols="12" lg="4" sm="6" xl="3" :key="website.id">
         <website-card
           :included-tag-ids="filters.tagIds"
+          :is-saving-favorite="savingFavoriteIds.includes(website.id)"
           :website="website"
           @click:tag="toggleTag"
-          @edit="openEditWebsiteDialog"
+          @edit="openWebsiteEditDialog"
+          @toggle:favorite="toggleFavorite"
         />
       </v-col>
     </v-row>
@@ -125,7 +91,7 @@ defineExpose({
   </template>
 
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
-  <floating-action-button class="z-100" icon="mdi-plus" @click="openEditWebsiteDialog()" />
+  <floating-action-button class="z-100" icon="mdi-plus" @click="openWebsiteEditDialog()" />
 
   <website-filter-drawer
     v-model:filters="filters"

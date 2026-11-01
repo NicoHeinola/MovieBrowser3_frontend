@@ -14,10 +14,12 @@ const props = defineProps<{
   website: Website;
   /** Tag ids the page filters on, highlighted on the card. Excluded tags never reach a shown card. */
   includedTagIds?: number[];
+  isSavingFavorite?: boolean;
 }>();
 
 const emit = defineEmits<{
   edit: [website: Website];
+  'toggle:favorite': [website: Website];
   'click:tag': [tagId: number];
 }>();
 
@@ -57,13 +59,24 @@ const copyUrl = async (): Promise<void> => {
       <v-card-subtitle>{{ hostname }}</v-card-subtitle>
 
       <template #append>
-        <v-btn
-          icon="mdi-pencil"
-          size="small"
-          variant="text"
-          @click="emit('edit', props.website)"
-          v-tooltip:bottom="'Edit'"
-        />
+        <div class="d-flex ga-2">
+          <v-btn
+            :color="props.website.is_favorite ? 'primary' : 'default'"
+            :icon="props.website.is_favorite ? 'mdi-star' : 'mdi-star-outline'"
+            :loading="props.isSavingFavorite"
+            size="small"
+            variant="text"
+            @click="emit('toggle:favorite', props.website)"
+            v-tooltip:bottom="props.website.is_favorite ? 'Remove from favorites' : 'Add to favorites'"
+          />
+          <v-btn
+            icon="mdi-pencil"
+            size="small"
+            variant="text"
+            @click="emit('edit', props.website)"
+            v-tooltip:bottom="'Edit'"
+          />
+        </div>
       </template>
     </v-card-item>
 

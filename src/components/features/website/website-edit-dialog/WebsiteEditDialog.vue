@@ -78,6 +78,7 @@ const buildRequest = (): CreateWebsiteRequest => {
     title: website.value.title?.trim() || null,
     icon: resolvedIcon.value,
     description: website.value.description?.trim() || null,
+    is_favorite: website.value.is_favorite,
     tag_ids: tagIds.value.toSorted((a, b) => a - b),
   };
 };
@@ -208,6 +209,15 @@ onMounted(() => {
               label="Description"
               rows="3"
               auto-grow
+            />
+          </v-col>
+
+          <v-col cols="12">
+            <v-switch
+              v-model="website.is_favorite"
+              hint="Favorite websites are listed on the admin dashboard."
+              label="Favorite"
+              persistent-hint
             />
           </v-col>
 

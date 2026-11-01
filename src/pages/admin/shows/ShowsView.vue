@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Show } from '@/interfaces/api/models/Show';
-import { useQueryClient } from '@tanstack/vue-query';
 import { ref } from 'vue';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { FloatingPagination } from '@/components/common/floating-pagination';
@@ -8,15 +6,12 @@ import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { ResultCount } from '@/components/common/result-count';
 import { SearchToolbar } from '@/components/common/search-toolbar';
-import { ShowEditDialog } from '@/components/features/show/show-edit-dialog';
 import { ShowFilterDrawer } from '@/components/features/show/show-filter-drawer';
 import { ShowGrid } from '@/components/features/show/show-grid';
-import { useDialog } from '@/components/layouts/dialog-provider';
 import { showSortOptions } from '@/composables/show/showSortOptions';
+import { useShowEditDialog } from '@/composables/show/useShowEditDialog';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
-import { ShowEntryType } from '@/enums/show/ShowEntryType';
-import { deepClone } from '@/utils/clone/deepClone';
 
 const isFilterDrawerVisible = ref<boolean>(false);
 
@@ -33,38 +28,7 @@ const {
   isLoading,
 } = useShowSearch(ShowQueryKey.AdminShows);
 
-const dialog = useDialog();
-const queryClient = useQueryClient();
-
-const editShow = async (show: Show | null) => {
-  const refresh = await dialog.showDialog({
-    component: ShowEditDialog,
-    props: {
-      show: show
-        ? deepClone(show)
-        : {
-            titles: [{ title: '', is_primary: true }],
-            categories: [],
-            entries: [
-              {
-                name: 'Season 1',
-                type: ShowEntryType.Season,
-                sort_order: 0,
-              },
-            ],
-            outgoing_links: [],
-            incoming_links: [],
-          },
-    },
-  });
-
-  if (refresh) {
-    /** Shows appear on Home, Search and in autocompletes too, so refresh every show cache. */
-    await Promise.all(
-      Object.values(ShowQueryKey).map((queryKey) => queryClient.invalidateQueries({ queryKey: [queryKey] })),
-    );
-  }
-};
+const { openShowEditDialog } = useShowEditDialog();
 </script>
 
 <template>
@@ -96,7 +60,7 @@ const editShow = async (show: Show | null) => {
             card-height="190"
             card-width="280"
             class="d-flex justify-center flex-1-1"
-            @click:show="editShow"
+            @click:show="openShowEditDialog"
           />
         </v-col>
       </v-row>
@@ -116,7 +80,7 @@ const editShow = async (show: Show | null) => {
   </page-container>
 
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
-  <floating-action-button class="z-100" icon="mdi-plus" @click="editShow(null)" />
+  <floating-action-button class="z-100" icon="mdi-plus" @click="openShowEditDialog()" />
 
   <show-filter-drawer
     v-model:filters="filters"

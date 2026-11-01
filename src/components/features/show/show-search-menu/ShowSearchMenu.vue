@@ -4,7 +4,7 @@ import { onKeyStroke } from '@vueuse/core';
 import { ref, useTemplateRef, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 
-import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
+import { ShowListItem } from '../show-list-item';
 import { useShowSearchMenu } from './useShowSearchMenu';
 
 const emit = defineEmits<{
@@ -106,17 +106,13 @@ onKeyStroke('k', (event) => {
         </template>
 
         <template v-else-if="shows.length > 0">
-          <v-list-item
+          <show-list-item
             v-for="show in shows"
+            :show="show"
             :subtitle="getCategoryNames(show)"
-            :title="getPrimaryTitle(show)"
             @click="selectShow(show)"
             :key="show.id"
-          >
-            <template #prepend>
-              <v-img :src="show.card_image_url" class="me-4" height="52" rounded="sm" width="36" cover />
-            </template>
-          </v-list-item>
+          />
         </template>
 
         <v-list-item title="No matching shows" disabled v-else />

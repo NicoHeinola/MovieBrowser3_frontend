@@ -16,4 +16,6 @@ export interface Show {
   outgoing_links?: ShowLink[]; // Links where this show is the source (i.e. outgoing links)
   incoming_links?: ShowLink[]; // Links where this show is the target (i.e. incoming links)
   watch_progress?: ShowWatchProgress | null; // The episode the current user last started
+  created_at: string;
+  updated_at: string;
 }
