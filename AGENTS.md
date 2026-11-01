@@ -62,9 +62,8 @@ the refresh request during app startup.
 `.claude/` is the single source of truth. Copilot reads it too; `.github/copilot-instructions.md` and `.github/skills` are symlinks into it.
 
 - **Rules** (`.claude/rules/*.md`): "files matching X should look like Y". Each rule has a `paths` list and the same globs in `applyTo` for Copilot.
-- **Skills** (`.claude/skills/<name>/SKILL.md`): reusable workflows such as building a resource slice, auditing structure, wiring store and API layers, writing tests or reviewing a diff.
-- **Agents** (`.claude/agents/*.md`): `feature-planner`, `feature-researcher` and `feature-reviewer` run planning, read-only research or review in an isolated context. Use them only when the user asks for delegation; do implementation work in the main session.
-- When a change affects repository conventions, structure, ownership boundaries or workflow guidance, update the affected rules, skills or agents in the same change. A backend endpoint family that moves, splits or gains a new service concept counts.
+- **Skills** (`.claude/skills/<name>/SKILL.md`): reusable workflows such as building a resource or feature slice, writing tests or reviewing a diff.
+- When a change affects repository conventions, structure, ownership boundaries or workflow guidance, update the affected rules or skills in the same change. A backend endpoint family that moves, splits or gains a new service concept counts.
 - Keep customizations concise. Do not add cross-file reference lists when the rules already load for matching files.
 
 ## Response Style

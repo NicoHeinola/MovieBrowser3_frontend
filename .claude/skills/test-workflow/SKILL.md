@@ -1,30 +1,21 @@
 ---
 name: test-workflow
-description: Write or update Vitest-based tests for this repository. Use when adding utility tests, component tests, or regression coverage for feature work.
+description: Write or update Vitest tests for this frontend. Use when adding utility, service or component tests, or regression coverage for a change that raises behavioral risk.
 ---
 
 # Test Workflow
 
-Use this skill when testing work is part of the task or when a change increases behavioral risk.
-
-Utility coverage under `src/utils` is expected in this repository. Component tests are opt-in unless the task is explicitly about testing or the changed behavior is risky enough to justify component-level coverage.
+Utilities under `src/utils` and services always get tests. Component tests are opt-in: add them when the task asks for it or the behavior is risky.
 
 ## Workflow
 
-1. Identify the highest-risk logic or behavior introduced by the change.
-2. Place tests in the nearest `__tests__` folder adjacent to the implementation namespace.
-3. Prefer one test file per utility file.
-4. Mock only the external edges that are necessary for the test.
-5. Run the narrowest useful test command first, then widen if needed.
+1. Name the riskiest behavior the change introduced: parsing, mapping, cache updates, store state or a UI state transition.
+2. Copy the closest existing test in the nearest `__tests__` folder (services: `services/show/__tests__/showLinkService.test.ts`).
+3. Stub only the edges: `apiClient`, router, Vuetify display state, browser APIs, `import.meta.env`.
+4. Assert behavior and state transitions, not snapshots.
+5. Run `npx vitest run <path>` first, then `npm test` if shared code changed.
 
-## Repository-Specific Focus
+## Done when
 
-- Utilities in `src/utils` should have direct test coverage.
-- Component tests should focus on behavior and state transitions, not just rendered snapshots.
-- When a feature depends on router, Vuetify display state, or browser APIs, stub those edges explicitly.
-
-## Useful Commands
-
-- `npm test`
-- `npm run test:ui`
-- `npm run test:coverage`
+- The riskiest behavior has a direct assertion, including its failure branch.
+- Tests pass, and any coverage gap is stated in the hand-off.
