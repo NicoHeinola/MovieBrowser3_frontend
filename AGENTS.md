@@ -45,7 +45,8 @@ Use Conventional Commits: `type(scope): short summary`.
 
 - Lowercase `type` and `scope`. Keep the summary short, imperative and specific, with no trailing period.
 - Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`, `perf`, `build`, `ci`.
-- Add a scope when the change clearly belongs to one area, such as `auth`, `home`, `top-navigation`, `shows`, `router`, `vuetify` or `api`.
+- Work for a GitHub issue uses the issue number as its scope: `feat(#20): make show drawer sections collapsible`.
+- Other changes add an area scope when they clearly belong to one area, such as `auth`, `home`, `top-navigation`, `shows`, `router`, `vuetify` or `api`.
 - Mark a breaking change with `!` after the type or scope (`feat(api)!: rename show status filter values`) and describe the break in the body.
 - Add a body when the reason for the change is not obvious from the summary.
 
