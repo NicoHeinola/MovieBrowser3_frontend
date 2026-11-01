@@ -1,3 +1,5 @@
+import { i18n } from '@/plugins/i18n';
+
 /** Matches a short trailing file extension such as `.mkv`. */
 const extensionPattern = /\.[a-z0-9]{2,4}$/i;
 
@@ -64,5 +66,5 @@ export const getEpisodeNameFromFilename = (filename: string): string => {
     name = title === '' ? episode : `${title} - ${episode}`;
   }
 
-  return name === '' ? 'Untitled' : name;
+  return name === '' ? i18n.global.t('show.untitled') : name;
 };

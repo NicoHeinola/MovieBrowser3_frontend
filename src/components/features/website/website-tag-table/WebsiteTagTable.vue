@@ -6,6 +6,7 @@ import type { DataTableHeader } from 'vuetify';
 import { useQueryClient } from '@tanstack/vue-query';
 import { watchDebounced } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -43,19 +44,20 @@ const busyTagId = ref<number | null>(null);
 const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const queryClient = useQueryClient();
+const { t } = useI18n();
 
-const headers: Array<DataTableHeader> = [
-  { title: 'Name', key: 'name' },
-  { title: 'Websites', key: 'websites_count', align: 'end', sortable: false, width: 140 },
+const headers = computed<DataTableHeader[]>(() => [
+  { title: t('website.colName'), key: 'name' },
+  { title: t('website.colWebsites'), key: 'websites_count', align: 'end', sortable: false, width: 140 },
   { title: '', key: 'actions', align: 'end', sortable: false, width: 72 },
-];
+]);
 
-const itemsPerPageOptions = [
+const itemsPerPageOptions = computed(() => [
   { value: 25, title: '25' },
   { value: 50, title: '50' },
   { value: 100, title: '100' },
-  { value: -1, title: 'All' },
-];
+  { value: -1, title: t('website.all') },
+]);
 
 /** Searched, sorted and paged on the backend, so the table scales with the tag count. */
 const tagsQuery = useAPIQuery<PaginatedResponse<WebsiteTag>>({
@@ -83,7 +85,7 @@ const items = computed<Array<{ id: number; name: string; websites_count: number 
  * @param count - The websites count.
  * @returns For example "3 websites".
  */
-const getUsageLabel = (count: number): string => `${count} website${count === 1 ? '' : 's'}`;
+const getUsageLabel = (count: number): string => t('website.websiteCount', { count }, count);
 
 /**
  * Reloads every tag list and the websites, which show tag names.
@@ -133,7 +135,7 @@ const saveName = async (tag: { id: number; name: string }): Promise<void> => {
   try {
     await websiteTagService.update(tag.id, { name });
     await invalidateTagsAndWebsites();
-    showSuccessSnackbar(`Tag renamed to “${name}”.`);
+    showSuccessSnackbar(t('website.tagRenamed', { name }));
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {
@@ -151,12 +153,14 @@ const saveName = async (tag: { id: number; name: string }): Promise<void> => {
  * @returns Nothing.
  */
 const confirmDelete = async (tag: { id: number; name: string; websites_count: number }): Promise<void> => {
-  const usage = tag.websites_count > 0 ? ` It is removed from ${getUsageLabel(tag.websites_count)}.` : '';
   const confirmed = await confirm({
-    message: `Delete the tag “${tag.name}”?${usage} This action cannot be undone.`,
-    confirmText: 'Delete',
+    message:
+      tag.websites_count > 0
+        ? t('website.deleteTagConfirmUsed', { name: tag.name, usage: getUsageLabel(tag.websites_count) })
+        : t('website.deleteTagConfirm', { name: tag.name }),
+    confirmText: t('common.delete'),
     confirmColor: 'error',
-    cancelText: 'Cancel',
+    cancelText: t('common.cancel'),
   });
 
   if (!confirmed) {
@@ -213,7 +217,7 @@ watchDebounced(
   >
     <template #item.name="{ item }">
       <v-text-field
-        :aria-label="`Name of tag ${item.name}`"
+        :aria-label="t('website.tagNameOf', { name: item.name })"
         :disabled="busyTagId !== null && busyTagId !== item.id"
         :model-value="editedNames[item.id] ?? item.name"
         prepend-inner-icon="mdi-pencil-outline"
@@ -245,7 +249,7 @@ watchDebounced(
         size="small"
         variant="text"
         @click="confirmDelete(item)"
-        v-tooltip:bottom="'Delete tag'"
+        v-tooltip:bottom="t('website.deleteTag')"
       />
     </template>
 

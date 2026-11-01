@@ -6,6 +6,7 @@ import { ref } from 'vue';
 
 import { useShowWatchProgressCache } from '@/composables/show/useShowWatchProgressCache';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { i18n } from '@/plugins/i18n';
 import { episodePlaybackService } from '@/services/show/episodePlaybackService';
 import { getResumeEpisode } from '@/utils/show/getResumeEpisode';
 
@@ -58,7 +59,7 @@ export const useShowPlayback = () => {
     const episode = getResumeEpisode(show, entry);
 
     if (!episode) {
-      showWarningSnackbar('There are no episodes to play.');
+      showWarningSnackbar(i18n.global.t('show.noEpisodesToPlay'));
       return null;
     }
 

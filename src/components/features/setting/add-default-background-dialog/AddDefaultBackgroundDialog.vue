@@ -2,6 +2,7 @@
 import type { DialogComponentProps } from '@/components/layouts/dialog-provider';
 
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { BaseDialog } from '@/components/common/base-dialog';
 import { BaseForm } from '@/components/common/base-form';
@@ -18,6 +19,7 @@ const isSaving = ref<boolean>(false);
 
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const settingStore = useSettingStore();
+const { t } = useI18n();
 
 const formId = 'add-default-background-form';
 
@@ -40,7 +42,7 @@ const handleSubmit = async (): Promise<void> => {
 
   try {
     await settingStore.addBannerDefaultBackground(url.value);
-    showSuccessSnackbar('Background added.');
+    showSuccessSnackbar(t('settings.backgroundAdded'));
     props.close();
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
@@ -53,7 +55,7 @@ const handleSubmit = async (): Promise<void> => {
 <template>
   <base-dialog :max-width="600" :model-value="props.modelValue">
     <template #title>
-      <p>Add default background</p>
+      <p>{{ t('settings.addBackground') }}</p>
     </template>
 
     <div class="d-flex flex-column ga-4">
@@ -63,9 +65,9 @@ const handleSubmit = async (): Promise<void> => {
             <v-text-field
               v-model="url"
               :disabled="isSaving"
+              :label="t('settings.backgroundUrl')"
               :rules="rules.url"
               class="required"
-              label="Background image URL"
               prepend-inner-icon="mdi-image-outline"
               clearable
             />
@@ -75,7 +77,7 @@ const handleSubmit = async (): Promise<void> => {
     </div>
 
     <template #actions>
-      <v-btn :disabled="isSaving" color="default" @click="handleClose"> Cancel </v-btn>
+      <v-btn :disabled="isSaving" color="default" @click="handleClose"> {{ t('common.cancel') }} </v-btn>
       <v-btn
         :disabled="!isValid || isSaving"
         :form="formId"
@@ -84,7 +86,7 @@ const handleSubmit = async (): Promise<void> => {
         type="submit"
         variant="tonal"
       >
-        Add background
+        {{ t('settings.addBackgroundButton') }}
       </v-btn>
     </template>
   </base-dialog>

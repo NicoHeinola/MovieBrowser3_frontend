@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
@@ -18,6 +19,7 @@ const dialog = useDialog();
 const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const settingStore = useSettingStore();
+const { t } = useI18n();
 
 const loadSettings = async (): Promise<void> => {
   try {
@@ -30,7 +32,7 @@ const loadSettings = async (): Promise<void> => {
 const handleDeleteBackground = async (url: string): Promise<void> => {
   try {
     await settingStore.removeBannerDefaultBackground(url);
-    showSuccessSnackbar('Background removed.');
+    showSuccessSnackbar(t('settings.backgroundRemoved'));
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   }
@@ -39,7 +41,7 @@ const handleDeleteBackground = async (url: string): Promise<void> => {
 const handleDeleteVideo = async (url: string): Promise<void> => {
   try {
     await settingStore.removeBannerDefaultVideo(url);
-    showSuccessSnackbar('Video removed.');
+    showSuccessSnackbar(t('settings.videoRemoved'));
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   }
@@ -59,8 +61,8 @@ const openAddVideoDialog = async (): Promise<void> => {
 
 const confirmDeleteBackground = async (url: string): Promise<void> => {
   const isConfirmed = await confirm({
-    message: `Remove this default banner background?\n\n${url}`,
-    confirmText: 'Delete',
+    message: t('settings.removeBackgroundConfirm', { url }),
+    confirmText: t('common.delete'),
     confirmColor: 'error',
   });
 
@@ -73,8 +75,8 @@ const confirmDeleteBackground = async (url: string): Promise<void> => {
 
 const confirmDeleteVideo = async (url: string): Promise<void> => {
   const isConfirmed = await confirm({
-    message: `Remove this default banner video?\n\n${url}`,
-    confirmText: 'Delete',
+    message: t('settings.removeVideoConfirm', { url }),
+    confirmText: t('common.delete'),
     confirmColor: 'error',
   });
 
@@ -95,10 +97,7 @@ onMounted(() => {
   <page-container>
     <v-row class="position-relative">
       <v-col cols="12" lg="6">
-        <titled-section
-          subtitle="These take priority over the backgrounds and will be randomly played on the home page banner."
-          title="Default Banner Videos"
-        >
+        <titled-section :subtitle="t('settings.videosSubtitle')" :title="t('settings.videosTitle')">
           <default-video-gallery>
             <template #actions="{ url }">
               <v-btn
@@ -120,10 +119,7 @@ onMounted(() => {
       </v-col>
 
       <v-col cols="12" lg="6">
-        <titled-section
-          subtitle="These are randomly showed on the home page when there is no video available."
-          title="Default Banner Backgrounds"
-        >
+        <titled-section :subtitle="t('settings.backgroundsSubtitle')" :title="t('settings.backgroundsTitle')">
           <default-background-gallery>
             <template #actions="{ url }">
               <v-btn
@@ -145,7 +141,7 @@ onMounted(() => {
       </v-col>
 
       <v-col cols="12" lg="6">
-        <titled-section subtitle="Settings related to videos" title="Video">
+        <titled-section :subtitle="t('settings.videoSectionSubtitle')" :title="t('settings.videoSection')">
           <video-settings />
         </titled-section>
       </v-col>

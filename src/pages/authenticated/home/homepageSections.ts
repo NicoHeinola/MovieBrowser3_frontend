@@ -1,19 +1,20 @@
 import type { HomepageSection } from './HomepageSection';
 
+/** Fixed home page rows. `title`, `subtitle` and `emptyText` hold i18n keys; HomeView translates them. */
 export const homepageSections: HomepageSection[] = [
   {
-    title: 'Continue Watching',
-    subtitle: 'Pick up where you left off with your in-progress shows.',
+    title: 'home.continueWatchingTitle',
+    subtitle: 'home.continueWatchingSubtitle',
     icon: 'mdi-play-circle',
     iconColor: 'warning',
     dataKey: 'continueToWatchShows',
     lazyLoad: false,
     playOnClick: true,
-    emptyText: 'Nothing in progress yet. Start a show to see it here.',
+    emptyText: 'home.continueWatchingEmpty',
   },
   {
-    title: 'Random',
-    subtitle: 'Unexpected picks when you want the catalog to surprise you.',
+    title: 'home.randomTitle',
+    subtitle: 'home.randomSubtitle',
     icon: 'mdi-shuffle-variant',
     iconColor: 'info',
     dataKey: 'randomShows',

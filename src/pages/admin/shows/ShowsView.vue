@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
@@ -29,6 +30,7 @@ const {
 } = useShowSearch(ShowQueryKey.AdminShows);
 
 const { openShowEditDialog } = useShowEditDialog();
+const { t } = useI18n();
 </script>
 
 <template>
@@ -39,8 +41,8 @@ const { openShowEditDialog } = useShowEditDialog();
       v-model:search="searchInput"
       v-model:sort="sort"
       :active-filter-count="activeFilterCount"
+      :placeholder="t('shows.searchPlaceholder')"
       :sort-options="showSortOptions"
-      placeholder="Search shows..."
       @click:filters="isFilterDrawerVisible = true"
     />
 
@@ -68,12 +70,14 @@ const { openShowEditDialog } = useShowEditDialog();
       <v-row justify="center" v-else>
         <v-col class="d-flex justify-center" cols="12">
           <v-alert class="flex-0-1" type="info" v-if="activeFilterCount > 0">
-            No shows match these filters
+            {{ t('shows.noMatch') }}
             <template #append>
-              <v-btn color="info" size="small" variant="text" @click="clearFilters">Clear filters</v-btn>
+              <v-btn color="info" size="small" variant="text" @click="clearFilters">{{
+                t('common.clearFilters')
+              }}</v-btn>
             </template>
           </v-alert>
-          <v-alert class="flex-0-1" type="info" v-else> No shows found </v-alert>
+          <v-alert class="flex-0-1" type="info" v-else> {{ t('shows.none') }} </v-alert>
         </v-col>
       </v-row>
     </template>

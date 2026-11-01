@@ -1,3 +1,4 @@
+import { i18n } from '@/plugins/i18n';
 import { maxLengthRule } from '@/rules/maxLengthRule';
 import { requiredRule } from '@/rules/requiredRule';
 
@@ -14,6 +15,9 @@ export const getRules = (isCreating: () => boolean, getPassword: () => string) =
   return {
     username: [requiredRule, maxLengthRule(255)],
     password: [requiredWhenCreating],
-    confirmPassword: [requiredWhenCreating, (value: string) => value === getPassword() || 'Passwords must match'],
+    confirmPassword: [
+      requiredWhenCreating,
+      (value: string) => value === getPassword() || i18n.global.t('common.passwordsMustMatch'),
+    ],
   };
 };

@@ -2,6 +2,7 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import { onKeyStroke } from '@vueuse/core';
 import { ref, useTemplateRef, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
 import { ShowListItem } from '../show-list-item';
@@ -16,6 +17,7 @@ const searchField = useTemplateRef<{ focus: () => void }>('searchField');
 
 const { mdAndUp } = useDisplay();
 const { search, term, shows, totalResults, isLoading, openSearchPage } = useShowSearchMenu();
+const { t } = useI18n();
 
 /**
  * Lists a show's category names for the suggestion subtitle.
@@ -84,9 +86,9 @@ onKeyStroke('k', (event) => {
       <div v-bind="activatorProps">
         <v-text-field
           v-model="search"
+          :placeholder="t('show.searchPlaceholder')"
           class="glass-panel rounded-xl"
           color="link"
-          placeholder="Search shows..."
           prepend-inner-icon="mdi-magnify"
           rounded="xl"
           clearable
@@ -115,7 +117,7 @@ onKeyStroke('k', (event) => {
           />
         </template>
 
-        <v-list-item title="No matching shows" disabled v-else />
+        <v-list-item :title="t('show.noMatchingShows')" disabled v-else />
       </v-list>
 
       <v-divider />

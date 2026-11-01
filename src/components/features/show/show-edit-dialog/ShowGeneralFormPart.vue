@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ShowGeneralFormData } from './ShowGeneralFormData';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { CategoryAutocomplete } from '@/components/features/category-autocomplete';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
@@ -11,6 +12,7 @@ const show = defineModel<ShowGeneralFormData>('show', { required: true });
 const rules = computed(() => getRules(show.value));
 
 const { confirm } = useConfirmDialog();
+const { t } = useI18n();
 
 const getShowTitleRoundedClass = (index: number) => {
   if (index === 0) {
@@ -28,9 +30,9 @@ const removeTitle = async (index: number) => {
   const hasTitleTitle = !!show.value?.titles[index].title;
   if (hasTitleTitle) {
     const isConfirmed = await confirm({
-      message: 'Are you sure you want to remove this title?',
+      message: t('show.removeTitleConfirm'),
       confirmColor: 'error',
-      confirmText: 'Remove',
+      confirmText: t('common.remove'),
     });
 
     if (!isConfirmed) {
@@ -74,7 +76,7 @@ const googleSearch = (searchTerm: string) => {
       <v-text-field
         v-model="show!.titles[index].title"
         :class="{ required: index === 0 }"
-        :label="index === 0 ? 'Show title' : undefined"
+        :label="index === 0 ? t('show.title') : undefined"
         :rounded="getShowTitleRoundedClass(index)"
         :rules="[...rules.title, (value: string) => rules.titles(value, index)]"
         :style="{ marginTop: index === 0 ? undefined : '-1px' }"
@@ -98,19 +100,19 @@ const googleSearch = (searchTerm: string) => {
       </v-text-field>
     </v-col>
     <v-col cols="12">
-      <v-btn size="small" variant="text" @click="addTitle"> Add another title </v-btn>
+      <v-btn size="small" variant="text" @click="addTitle"> {{ t('show.addTitle') }} </v-btn>
     </v-col>
   </v-row>
 
   <v-row>
     <v-col cols="12">
-      <v-textarea v-model="show!.description" :rules="rules.description" label="Description">
+      <v-textarea v-model="show!.description" :label="t('show.description')" :rules="rules.description">
         <template #append>
           <v-btn
             icon="mdi-auto-fix"
             size="x-small"
             @click="googleSearch('Short description for show: ' + getPrimaryTitle(show))"
-            v-tooltip:bottom="'Autofill search'"
+            v-tooltip:bottom="t('show.autofill')"
           />
         </template>
       </v-textarea>
@@ -121,7 +123,7 @@ const googleSearch = (searchTerm: string) => {
     <v-col cols="12">
       <category-autocomplete
         v-model="show!.categories"
-        label="Categories"
+        :label="t('show.categories')"
         chips
         closable-chips
         multiple

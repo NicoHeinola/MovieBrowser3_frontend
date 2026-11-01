@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { loadMdiIconCatalogue } from './loadMdiIconCatalogue';
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
@@ -11,7 +14,7 @@ const props = withDefaults(
     rules?: Array<(value: string) => boolean | string>;
   }>(),
   {
-    label: 'Icon',
+    label: undefined,
     maxResults: 120,
     placeholder: '',
     rules: () => [],
@@ -106,18 +109,18 @@ const autocompleteItems = computed<MdiIconAutocompleteItem[]>(() => {
 
 const noDataText = computed<string>(() => {
   if (isLoading.value) {
-    return 'Loading icon catalogue...';
+    return t('iconSearch.loading');
   }
 
   if (allIcons.value.length === 0) {
-    return 'Open and focus to load icon catalogue';
+    return t('iconSearch.openToLoad');
   }
 
   if (search.value.trim()) {
-    return 'No matching icon found';
+    return t('iconSearch.noMatch');
   }
 
-  return `Showing first ${props.maxResults} icons. Type to narrow results.`;
+  return t('iconSearch.showingFirst', { count: props.maxResults });
 });
 </script>
 
@@ -126,7 +129,7 @@ const noDataText = computed<string>(() => {
     v-model="selectedIcon"
     v-model:search="search"
     :items="autocompleteItems"
-    :label="props.label"
+    :label="props.label ?? t('common.iconLabel')"
     :loading="isLoading"
     :no-data-text="noDataText"
     :placeholder="props.placeholder"

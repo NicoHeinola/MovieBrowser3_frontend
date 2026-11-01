@@ -4,6 +4,7 @@ import type { DialogComponentProps } from '@/components/layouts/dialog-provider'
 import type { UpdateUserRequest } from '@/interfaces/api/requests/UpdateUserRequest';
 
 import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { BaseDialog } from '@/components/common/base-dialog';
 import { BaseForm } from '@/components/common/base-form';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
@@ -30,6 +31,7 @@ const isDialogVisible = defineModel<boolean>({ required: true });
 const authStore = useAuthStore();
 const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
+const { t } = useI18n();
 const rules = getRules(
   () => !user.value.id,
   () => user.value.password,
@@ -96,7 +98,7 @@ const handleSave = async (): Promise<void> => {
   try {
     await saveUser();
 
-    showSuccessSnackbar('User saved successfully.');
+    showSuccessSnackbar(t('user.saved'));
 
     props.close(true);
   } catch (error: unknown) {
@@ -108,10 +110,10 @@ const handleSave = async (): Promise<void> => {
 
 const deleteUser = async (): Promise<void> => {
   const confirmed = await confirm({
-    message: `Are you sure you want to delete “${originalUser.value?.username}”? This action cannot be undone.`,
-    confirmText: 'Delete',
+    message: t('user.deleteConfirm', { name: originalUser.value?.username ?? '' }),
+    confirmText: t('common.delete'),
     confirmColor: 'error',
-    cancelText: 'Cancel',
+    cancelText: t('common.cancel'),
   });
 
   if (!confirmed) {
@@ -158,10 +160,10 @@ onMounted(() => {
           <v-col cols="12">
             <v-text-field
               v-model="user.username"
+              :label="t('auth.username')"
               :rules="rules.username"
               autocomplete="off"
               class="required"
-              label="Username"
             />
           </v-col>
 
@@ -169,10 +171,10 @@ onMounted(() => {
             <v-text-field
               v-model="user.password"
               :class="{ required: !user.id }"
-              :hint="user.id ? 'Leave blank to keep the current password.' : undefined"
+              :hint="user.id ? t('user.keepPasswordHint') : undefined"
+              :label="t('auth.password')"
               :rules="rules.password"
               autocomplete="new-password"
-              label="Password"
               type="password"
               persistent-hint
             />
@@ -182,9 +184,9 @@ onMounted(() => {
             <v-text-field
               v-model="user.password_confirmation"
               :class="{ required: !user.id || user.password }"
+              :label="t('auth.confirmPassword')"
               :rules="rules.confirmPassword"
               autocomplete="new-password"
-              label="Confirm password"
               type="password"
               ref="confirmPasswordField"
             />
@@ -194,9 +196,9 @@ onMounted(() => {
             <v-switch
               v-model="user.is_admin"
               :disabled="isCurrentUser"
-              :hint="isCurrentUser ? 'You cannot remove your own admin rights.' : undefined"
+              :hint="isCurrentUser ? t('user.ownAdminHint') : undefined"
+              :label="t('user.admin')"
               color="primary"
-              label="Admin"
               persistent-hint
             />
           </v-col>
@@ -213,10 +215,10 @@ onMounted(() => {
         @click="deleteUser"
         v-if="user?.id && !isCurrentUser"
       >
-        Delete
+        {{ t('common.delete') }}
       </v-btn>
       <v-spacer />
-      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> Cancel </v-btn>
+      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> {{ t('common.cancel') }} </v-btn>
       <v-btn
         :disabled="!isFormValid || isSaving"
         :loading="isSaving"
@@ -224,7 +226,7 @@ onMounted(() => {
         variant="flat"
         @click="handleSave"
       >
-        Save
+        {{ t('common.save') }}
       </v-btn>
     </template>
   </base-dialog>

@@ -2,6 +2,7 @@
 import type { DialogComponentProps } from '@/components/layouts/dialog-provider';
 
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { BaseDialog } from '@/components/common/base-dialog';
 import { BaseForm } from '@/components/common/base-form';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -17,6 +18,7 @@ const isFormValid = ref<boolean>(false);
 const isSaving = ref<boolean>(false);
 
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
+const { t } = useI18n();
 const rules = getRules();
 
 const handleSave = async (): Promise<void> => {
@@ -29,7 +31,7 @@ const handleSave = async (): Promise<void> => {
   try {
     const createdTag = await websiteTagService.create({ name: name.value.trim() });
 
-    showSuccessSnackbar(`Tag “${createdTag.name}” added.`);
+    showSuccessSnackbar(t('website.tagAdded', { name: createdTag.name }));
 
     props.close(true);
   } catch (error: unknown) {
@@ -42,15 +44,15 @@ const handleSave = async (): Promise<void> => {
 
 <template>
   <base-dialog v-model="isDialogVisible" max-width="420px">
-    <template #title> Add Tag </template>
+    <template #title> {{ t('website.addTag') }} </template>
 
     <template #default>
       <base-form v-model:is-valid="isFormValid" @submit="handleSave" id="website-tag-form">
         <v-text-field
           v-model="name"
+          :label="t('website.tagName')"
           :rules="rules.name"
           class="required"
-          label="Name"
           prepend-inner-icon="mdi-tag-outline"
           autofocus
         />
@@ -59,7 +61,7 @@ const handleSave = async (): Promise<void> => {
 
     <template #actions>
       <v-spacer />
-      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> Cancel </v-btn>
+      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> {{ t('common.cancel') }} </v-btn>
       <v-btn
         :disabled="!isFormValid || isSaving"
         :loading="isSaving"
@@ -68,7 +70,7 @@ const handleSave = async (): Promise<void> => {
         type="submit"
         variant="flat"
       >
-        Save
+        {{ t('common.save') }}
       </v-btn>
     </template>
   </base-dialog>

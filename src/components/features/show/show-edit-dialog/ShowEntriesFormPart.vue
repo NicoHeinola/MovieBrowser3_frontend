@@ -3,6 +3,7 @@ import type { ShowEntriesFormData } from './ShowEntriesFormData';
 import type { ShowEntryFormData } from './ShowEntryFormData';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { ref, useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { SortableItem } from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
@@ -14,6 +15,7 @@ const zoneRef = useTemplateRef<HTMLElement>('zone');
 const expandedEntries = ref<ShowEntryFormData[]>([]);
 
 const { confirm } = useConfirmDialog();
+const { t } = useI18n();
 
 const unsavedEntryRenderKey = Symbol('unsavedEntryRenderKey');
 
@@ -56,9 +58,9 @@ const removeEntry = async (index: number): Promise<void> => {
 
   const entryName = show.value.entries?.[index]?.name;
   const isConfirmed = await confirm({
-    message: `Are you sure you want to remove "${entryName}"?`,
+    message: t('show.removeEntryConfirm', { name: entryName }),
     confirmColor: 'error',
-    confirmText: 'Remove',
+    confirmText: t('common.remove'),
   });
 
   if (!isConfirmed) {
@@ -130,7 +132,7 @@ makeDroppable(
       </div>
     </v-col>
     <v-col cols="12">
-      <v-btn size="small" variant="text" @click="addEntry"> Add another entry </v-btn>
+      <v-btn size="small" variant="text" @click="addEntry"> {{ t('show.addEntry') }} </v-btn>
     </v-col>
   </v-row>
 </template>

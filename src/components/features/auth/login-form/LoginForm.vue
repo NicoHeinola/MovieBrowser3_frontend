@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginRequest';
 
+import { useI18n } from 'vue-i18n';
+
 import { BaseForm } from '@/components/common/base-form';
 
 import { getRules } from './loginFormRules';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   id: string;
@@ -28,19 +32,19 @@ const rules = getRules();
       <v-col cols="12">
         <v-text-field
           v-model="request.username"
+          :label="t('auth.username')"
           :rules="rules.username"
           autocomplete="username"
           class="required"
-          label="Username"
           prepend-inner-icon="mdi-account-outline"
         />
       </v-col>
       <v-col cols="12">
         <v-text-field
           v-model="request.password"
+          :label="t('auth.password')"
           :rules="rules.password"
           class="required"
-          label="Password"
           prepend-inner-icon="mdi-lock-outline"
           type="password"
         />

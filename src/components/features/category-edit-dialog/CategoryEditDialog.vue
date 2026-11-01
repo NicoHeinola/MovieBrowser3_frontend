@@ -3,6 +3,7 @@ import type { DialogComponentProps } from '@/components/layouts/dialog-provider'
 import type { Category } from '@/interfaces/api/models/Category';
 
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { BaseDialog } from '@/components/common/base-dialog';
 import { BaseForm } from '@/components/common/base-form';
 import { MdiIconAutocomplete } from '@/components/common/mdi-icon-autocomplete';
@@ -26,6 +27,7 @@ const isSaving = ref<boolean>(false);
 const isDialogVisible = defineModel<boolean>({ required: true });
 
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
+const { t } = useI18n();
 const rules = getRules();
 
 const saveCategory = async (): Promise<void> => {
@@ -60,7 +62,7 @@ const handleSave = async (): Promise<void> => {
   try {
     await saveCategory();
 
-    showSuccessSnackbar('Category saved successfully.');
+    showSuccessSnackbar(t('category.saved'));
 
     props.close(true);
   } catch (error: unknown) {
@@ -72,10 +74,10 @@ const handleSave = async (): Promise<void> => {
 
 const deleteCategory = async (): Promise<void> => {
   const confirmed = await confirm({
-    message: 'Are you sure you want to delete this category? This action cannot be undone.',
-    confirmText: 'Delete',
+    message: t('category.deleteConfirm'),
+    confirmText: t('common.delete'),
     confirmColor: 'error',
-    cancelText: 'Cancel',
+    cancelText: t('common.cancel'),
   });
 
   if (!confirmed) {
@@ -111,19 +113,19 @@ onMounted(() => {
       <base-form v-model:is-valid="isFormValid" @submit="handleSave" id="category-form">
         <v-row>
           <v-col cols="12">
-            <v-text-field v-model="category.name" :rules="rules.name" class="required" label="Name" />
+            <v-text-field v-model="category.name" :label="t('category.name')" :rules="rules.name" class="required" />
           </v-col>
 
           <v-col cols="12">
-            <v-text-field v-model="category.value" :rules="rules.value" class="required" label="Value">
+            <v-text-field v-model="category.value" :label="t('category.value')" :rules="rules.value" class="required">
               <template #prepend>
-                <v-icon icon="mdi-help-circle" v-tooltip:bottom="'Stable internal key used by backend.'" />
+                <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('category.valueHint')" />
               </template>
             </v-text-field>
           </v-col>
 
           <v-col cols="12">
-            <mdi-icon-autocomplete v-model="category.icon" :rules="rules.icon" label="Icon" />
+            <mdi-icon-autocomplete v-model="category.icon" :rules="rules.icon" />
           </v-col>
         </v-row>
       </base-form>
@@ -138,10 +140,10 @@ onMounted(() => {
         @click="deleteCategory"
         v-if="category?.id"
       >
-        Delete
+        {{ t('common.delete') }}
       </v-btn>
       <v-spacer />
-      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> Cancel </v-btn>
+      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> {{ t('common.cancel') }} </v-btn>
       <v-btn
         :disabled="!isFormValid || isSaving"
         :loading="isSaving"
@@ -149,7 +151,7 @@ onMounted(() => {
         variant="flat"
         @click="handleSave"
       >
-        Save
+        {{ t('common.save') }}
       </v-btn>
     </template>
   </base-dialog>

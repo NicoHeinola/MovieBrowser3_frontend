@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { ResultCount } from '@/components/common/result-count';
@@ -29,6 +30,7 @@ const {
 
 const { openWebsiteEditDialog } = useWebsiteEditDialog();
 const { savingFavoriteIds, toggleFavorite } = useWebsiteFavoriteToggle();
+const { t } = useI18n();
 
 /**
  * Lists only the websites using a tag, clearing the search and other filters.
@@ -50,8 +52,8 @@ defineExpose({
     v-model:search="searchInput"
     v-model:sort="sort"
     :active-filter-count="activeFilterCount"
+    :placeholder="t('websites.searchPlaceholder')"
     :sort-options="websiteSortOptions"
-    placeholder="Search websites..."
     @click:filters="isFilterDrawerVisible = true"
   />
 
@@ -80,12 +82,12 @@ defineExpose({
     <v-row justify="center" v-else>
       <v-col class="d-flex justify-center" cols="12">
         <v-alert class="flex-0-1" type="info" v-if="activeFilterCount > 0">
-          No websites match these filters
+          {{ t('websites.noMatch') }}
           <template #append>
-            <v-btn color="info" size="small" variant="text" @click="clearFilters">Clear filters</v-btn>
+            <v-btn color="info" size="small" variant="text" @click="clearFilters">{{ t('common.clearFilters') }}</v-btn>
           </template>
         </v-alert>
-        <v-alert class="flex-0-1" type="info" v-else> No websites found </v-alert>
+        <v-alert class="flex-0-1" type="info" v-else> {{ t('websites.none') }} </v-alert>
       </v-col>
     </v-row>
   </template>

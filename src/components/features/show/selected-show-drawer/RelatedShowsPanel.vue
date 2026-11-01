@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
+
 import { useStorage } from '@vueuse/core';
+import { useI18n } from 'vue-i18n';
 import { CollapsibleSection } from '@/components/common/collapsible-section';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getShowLinkTypeIcon } from '@/utils/show/getShowLinkTypeIcon';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   isLoading: boolean;
@@ -34,7 +38,7 @@ const changeShow = (targetShowId: number): void => {
       </v-col>
     </v-row>
 
-    <collapsible-section v-model="isOpen" title="Related shows">
+    <collapsible-section v-model="isOpen" :title="t('show.relatedShows')">
       <v-col
         v-for="link in show?.outgoing_links"
         class="d-flex ga-2 align-center justify-space-between"

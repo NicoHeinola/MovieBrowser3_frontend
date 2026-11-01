@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ChangelogEntry } from '@/interfaces/changelog/ChangelogEntry';
 
+import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
 import { HeadingText } from '@/components/common/heading-text';
@@ -13,6 +14,7 @@ const props = defineProps<{
 }>();
 
 const { smAndUp } = useDisplay();
+const { t } = useI18n();
 </script>
 
 <template>
@@ -37,11 +39,11 @@ const { smAndUp } = useDisplay();
         <heading-text
           :level="2"
           :subtitle="smAndUp ? undefined : formatChangelogDate(entry.date)"
-          :title="`Version ${entry.version}`"
+          :title="t('changelog.version', { version: entry.version })"
           class="mt-n2"
         >
           <template #append>
-            <v-chip color="primary" size="x-small" label v-if="index === 0">Latest</v-chip>
+            <v-chip color="primary" size="x-small" label v-if="index === 0">{{ t('changelog.latest') }}</v-chip>
           </template>
         </heading-text>
         <v-card border="sm" rounded="xl">

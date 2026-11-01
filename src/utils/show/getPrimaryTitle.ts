@@ -1,8 +1,13 @@
+import { i18n } from '@/plugins/i18n';
+
 interface HasTitles {
   titles?: { title: string; is_primary?: boolean }[] | null;
 }
 
-export const getPrimaryTitle = (source: HasTitles | null | undefined, fallbackTitle = 'Untitled'): string => {
+export const getPrimaryTitle = (
+  source: HasTitles | null | undefined,
+  fallbackTitle = i18n.global.t('show.untitled'),
+): string => {
   const titles = source?.titles ?? [];
 
   if (titles.length === 0) {

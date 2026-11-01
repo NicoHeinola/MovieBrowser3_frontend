@@ -14,7 +14,7 @@ const props = withDefaults(
     label?: string;
   }>(),
   {
-    label: 'Link type',
+    label: undefined,
   },
 );
 
@@ -38,7 +38,7 @@ const linkTypeItems = computed<Array<{ icon: string; label: string; value: ShowL
   <v-select
     v-model="selectedType"
     :items="linkTypeItems"
-    :label="props.label"
+    :label="props.label ?? t('show.linkType')"
     item-title="label"
     item-value="value"
     v-bind="attrs"

@@ -3,6 +3,7 @@ import type { ChangelogDialogProps } from './changelogDialogProps';
 import type { ChangelogEntry } from '@/interfaces/changelog/ChangelogEntry';
 
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 import { BaseDialog } from '@/components/common/base-dialog';
@@ -13,6 +14,7 @@ import { formatChangelogDate } from '@/utils/changelog/formatChangelogDate';
 const props = defineProps<ChangelogDialogProps>();
 
 const router = useRouter();
+const { t } = useI18n();
 
 /** The newest update, shown as the dialog's headline. */
 const latestEntry = computed<ChangelogEntry | undefined>(() => props.entries[0]);
@@ -38,8 +40,13 @@ const openChangelog = async (): Promise<void> => {
           <v-icon>mdi-creation</v-icon>
         </v-avatar>
         <heading-text
-          :subtitle="`Version ${latestEntry.version}, released ${formatChangelogDate(latestEntry.date)}`"
-          title="What's new"
+          :subtitle="
+            t('changelog.versionReleased', {
+              version: latestEntry.version,
+              date: formatChangelogDate(latestEntry.date),
+            })
+          "
+          :title="t('changelog.whatsNew')"
         />
       </div>
 
@@ -48,16 +55,22 @@ const openChangelog = async (): Promise<void> => {
       <template v-for="entry in olderEntries" :key="entry.version">
         <v-divider />
         <div class="d-flex flex-column ga-4">
-          <heading-text :level="2" :subtitle="formatChangelogDate(entry.date)" :title="`Version ${entry.version}`" />
+          <heading-text
+            :level="2"
+            :subtitle="formatChangelogDate(entry.date)"
+            :title="t('changelog.version', { version: entry.version })"
+          />
           <changelog-change-list :changes="entry.changes" />
         </div>
       </template>
     </div>
 
     <template #actions>
-      <v-btn append-icon="mdi-arrow-right" variant="text" @click="void openChangelog()">All updates</v-btn>
+      <v-btn append-icon="mdi-arrow-right" variant="text" @click="void openChangelog()">{{
+        t('changelog.allUpdates')
+      }}</v-btn>
       <v-spacer />
-      <v-btn color="primary" variant="flat" @click="props.close()">Got it</v-btn>
+      <v-btn color="primary" variant="flat" @click="props.close()">{{ t('changelog.gotIt') }}</v-btn>
     </template>
   </base-dialog>
 </template>

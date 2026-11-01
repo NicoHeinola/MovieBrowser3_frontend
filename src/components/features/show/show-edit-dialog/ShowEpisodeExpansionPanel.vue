@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import type { EpisodeFormData } from './EpisodeFormData';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { getRules } from './showEntriesFormRules';
+
+const { t } = useI18n();
 
 const episode = defineModel<EpisodeFormData>('episode', { required: true });
 const expanded = defineModel<boolean>('expanded', { default: false });
@@ -34,7 +37,7 @@ const updatePanelModelValue = (value: string[]): void => {
             {{ episode.name }}
           </span>
           <span class="text-medium-emphasis text-body-small text-truncate" style="max-width: 40%; min-width: 0">
-            {{ episode.file?.name || episode.filename || 'No video file exists.' }}
+            {{ episode.file?.name || episode.filename || t('show.noVideoFile') }}
           </span>
         </div>
       </template>
@@ -42,11 +45,16 @@ const updatePanelModelValue = (value: string[]): void => {
       <template #text>
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="episode.name" :rules="rules.episodeName" class="required" label="Episode name" />
+            <v-text-field
+              v-model="episode.name"
+              :label="t('show.episodeName')"
+              :rules="rules.episodeName"
+              class="required"
+            />
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-file-input v-model="episode.file" :rules="rules.episodeFile" label="File" />
+            <v-file-input v-model="episode.file" :label="t('show.file')" :rules="rules.episodeFile" />
           </v-col>
         </v-row>
       </template>

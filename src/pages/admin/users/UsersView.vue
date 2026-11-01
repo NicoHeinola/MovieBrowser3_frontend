@@ -3,6 +3,7 @@ import type { UserFormData } from '@/components/features/user/user-edit-dialog';
 import type { User } from '@/interfaces/api/models/User';
 
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
@@ -33,6 +34,7 @@ const {
 } = useUserSearch();
 
 const dialog = useDialog();
+const { t } = useI18n();
 
 /**
  * Builds the dialog form for a user, or an empty one for creating a user.
@@ -71,8 +73,8 @@ const openEditUserDialog = async (user?: User): Promise<void> => {
       v-model:search="searchInput"
       v-model:sort="sort"
       :active-filter-count="activeFilterCount"
+      :placeholder="t('users.searchPlaceholder')"
       :sort-options="userSortOptions"
-      placeholder="Search users..."
       @click:filters="isFilterDrawerVisible = true"
     />
 
@@ -88,10 +90,12 @@ const openEditUserDialog = async (user?: User): Promise<void> => {
         >
           <template #no-data>
             <div class="d-flex ga-2 align-center justify-center" v-if="activeFilterCount > 0">
-              No users match these filters
-              <v-btn color="info" size="small" variant="text" @click="clearFilters">Clear filters</v-btn>
+              {{ t('users.noMatch') }}
+              <v-btn color="info" size="small" variant="text" @click="clearFilters">{{
+                t('common.clearFilters')
+              }}</v-btn>
             </div>
-            <template v-else>No users found</template>
+            <template v-else>{{ t('users.none') }}</template>
           </template>
         </user-table>
       </v-col>

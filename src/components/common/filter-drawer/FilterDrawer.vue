@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   activeFilterCount: number;
@@ -16,7 +19,7 @@ const emit = defineEmits<{
 }>();
 
 const resultLabel = computed<string>(() => {
-  return `Show ${props.totalResults} result${props.totalResults === 1 ? '' : 's'}`;
+  return t('common.showResults', { count: props.totalResults }, props.totalResults);
 });
 </script>
 
@@ -37,7 +40,7 @@ const resultLabel = computed<string>(() => {
           </v-sheet>
         </v-col>
         <v-col>
-          <h2>Filters</h2>
+          <h2>{{ t('common.filters') }}</h2>
         </v-col>
         <v-col cols="auto">
           <v-btn color="default" icon="mdi-close" variant="text" @click="isShown = false" />
@@ -65,7 +68,7 @@ const resultLabel = computed<string>(() => {
               variant="text"
               @click="emit('clear')"
             >
-              Clear
+              {{ t('common.clear') }}
             </v-btn>
           </v-col>
           <v-col>

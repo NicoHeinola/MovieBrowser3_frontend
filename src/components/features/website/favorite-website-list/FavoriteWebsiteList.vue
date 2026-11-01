@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { Website } from '@/interfaces/api/models/Website';
 
+import { useI18n } from 'vue-i18n';
+
 import { getWebsiteDisplayName } from '@/utils/website/getWebsiteDisplayName';
 import { getWebsiteHostname } from '@/utils/website/getWebsiteHostname';
 import { WebsiteIcon } from '../website-icon';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   websites: Website[];
@@ -34,9 +38,9 @@ const props = defineProps<{
 
   <div class="d-flex" v-else>
     <v-alert class="flex-0-1" type="info">
-      No favorite websites yet. Star one on the Websites page.
+      {{ t('website.noFavorites') }}
       <template #append>
-        <v-btn :to="{ name: 'admin-websites' }" color="info" size="small" variant="text">Websites</v-btn>
+        <v-btn :to="{ name: 'admin-websites' }" color="info" size="small" variant="text">{{ t('nav.websites') }}</v-btn>
       </template>
     </v-alert>
   </div>

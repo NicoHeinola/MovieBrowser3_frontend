@@ -3,6 +3,7 @@ import type { ShowSectionFormData } from './ShowSectionFormData';
 import type { DialogComponentProps } from '@/components/layouts/dialog-provider';
 
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { BaseDialog } from '@/components/common/base-dialog';
 import { BaseForm } from '@/components/common/base-form';
 import { CategoryAutocomplete } from '@/components/features/category-autocomplete';
@@ -29,6 +30,7 @@ const isSaving = ref<boolean>(false);
 
 const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
+const { t } = useI18n();
 const rules = getRules();
 
 const saveShowSection = async (): Promise<void> => {
@@ -69,7 +71,7 @@ const handleSave = async (): Promise<void> => {
   try {
     await saveShowSection();
 
-    showSuccessSnackbar('Frontpage section saved successfully.');
+    showSuccessSnackbar(t('frontpage.saved'));
 
     props.close(true);
   } catch (error: unknown) {
@@ -81,10 +83,10 @@ const handleSave = async (): Promise<void> => {
 
 const deleteShowSection = async (): Promise<void> => {
   const confirmed = await confirm({
-    message: 'Are you sure you want to remove this category from the frontpage?',
-    confirmText: 'Delete',
+    message: t('frontpage.removeConfirm'),
+    confirmText: t('common.delete'),
     confirmColor: 'error',
-    cancelText: 'Cancel',
+    cancelText: t('common.cancel'),
   });
 
   if (!confirmed) {
@@ -129,7 +131,12 @@ onMounted(() => {
           </v-col>
 
           <v-col cols="12">
-            <v-textarea v-model="showSection.description" :rules="rules.description" label="Description" rows="2" />
+            <v-textarea
+              v-model="showSection.description"
+              :label="t('frontpage.description')"
+              :rules="rules.description"
+              rows="2"
+            />
           </v-col>
         </v-row>
       </base-form>
@@ -144,10 +151,10 @@ onMounted(() => {
         @click="deleteShowSection"
         v-if="showSection?.id"
       >
-        Delete
+        {{ t('common.delete') }}
       </v-btn>
       <v-spacer />
-      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> Cancel </v-btn>
+      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> {{ t('common.cancel') }} </v-btn>
       <v-btn
         :disabled="!isFormValid || isSaving"
         :loading="isSaving"
@@ -155,7 +162,7 @@ onMounted(() => {
         variant="flat"
         @click="handleSave"
       >
-        Save
+        {{ t('common.save') }}
       </v-btn>
     </template>
   </base-dialog>

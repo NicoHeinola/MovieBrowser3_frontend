@@ -94,9 +94,16 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
     :total-results="props.totalResults"
     @clear="emit('clear')"
   >
-    <filter-drawer-section title="Watch status">
+    <filter-drawer-section :title="t('show.watchStatusFilter')">
       <template #subtitle>
-        Matches <span class="text-primary">any</span> included, <span class="text-error">none</span> excluded.
+        <i18n-t keypath="show.filterAnyIncluded" tag="span">
+          <template #any>
+            <span class="text-primary">{{ t('filter.any') }}</span>
+          </template>
+          <template #none>
+            <span class="text-error">{{ t('filter.none') }}</span>
+          </template>
+        </i18n-t>
       </template>
       <v-col class="d-flex flex-wrap ga-2" cols="12">
         <filter-chip
@@ -111,9 +118,16 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
       </v-col>
     </filter-drawer-section>
 
-    <filter-drawer-section title="Categories">
+    <filter-drawer-section :title="t('show.categoriesFilter')">
       <template #subtitle>
-        Matches <span class="text-primary">every</span> included, <span class="text-error">none</span> excluded.
+        <i18n-t keypath="show.filterEveryIncluded" tag="span">
+          <template #every>
+            <span class="text-primary">{{ t('filter.every') }}</span>
+          </template>
+          <template #none>
+            <span class="text-error">{{ t('filter.none') }}</span>
+          </template>
+        </i18n-t>
       </template>
       <v-col cols="12" v-if="categoriesQuery.isPending.value">
         <v-skeleton-loader class="bg-transparent" type="chip@6" />
@@ -129,15 +143,15 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
         />
       </v-col>
       <v-col cols="12" v-else>
-        <p class="text-body-small text-disabled">No categories yet.</p>
+        <p class="text-body-small text-disabled">{{ t('show.noCategories') }}</p>
       </v-col>
     </filter-drawer-section>
 
-    <filter-drawer-section title="Preview">
+    <filter-drawer-section :title="t('show.previewFilter')">
       <v-col cols="12">
         <v-switch
+          :label="t('show.onlyWithPreview')"
           :model-value="filters.hasPreview"
-          label="Only shows with a preview"
           @update:model-value="updateFilters({ hasPreview: $event === true })"
         />
       </v-col>

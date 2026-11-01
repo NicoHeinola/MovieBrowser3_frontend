@@ -3,6 +3,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 import type { Website } from '@/interfaces/api/models/Website';
 import type { DashboardStatsResponse } from '@/interfaces/api/responses/DashboardStatsResponse';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
+import { useI18n } from 'vue-i18n';
 
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
@@ -24,6 +25,7 @@ const RECENT_SHOW_COUNT = 8;
 
 const { openShowEditDialog } = useShowEditDialog();
 const { openWebsiteEditDialog } = useWebsiteEditDialog();
+const { t } = useI18n();
 
 const statsQuery = useAPIQuery<DashboardStatsResponse>({
   queryKey: [DashboardQueryKey.AdminDashboardStats],
@@ -74,19 +76,19 @@ const addWebsite = async (): Promise<void> => {
 
   <page-container class="mb-12">
     <v-row gap="48">
-      <titled-section icon="mdi-chart-box-outline" icon-color="primary" title="Overview">
+      <titled-section :title="t('dashboard.overview')" icon="mdi-chart-box-outline" icon-color="primary">
         <dashboard-stats :loading="statsQuery.isLoading.value" :stats="statsQuery.data.value" />
 
         <template #append>
           <div class="d-flex flex-1-1 justify-end ga-2">
-            <v-btn prepend-icon="mdi-movie-plus" @click="void editShow()">Add show</v-btn>
-            <v-btn prepend-icon="mdi-web-plus" @click="void addWebsite()">Add website</v-btn>
+            <v-btn prepend-icon="mdi-movie-plus" @click="void editShow()">{{ t('dashboard.addShow') }}</v-btn>
+            <v-btn prepend-icon="mdi-web-plus" @click="void addWebsite()">{{ t('dashboard.addWebsite') }}</v-btn>
           </div>
         </template>
       </titled-section>
 
       <v-col cols="12" lg="6">
-        <titled-section icon="mdi-star" icon-color="primary" title="Favorite websites">
+        <titled-section :title="t('dashboard.favoriteWebsites')" icon="mdi-star" icon-color="primary">
           <favorite-website-list
             :loading="favoriteWebsitesQuery.isLoading.value"
             :websites="favoriteWebsitesQuery.data.value?.data ?? []"
@@ -94,14 +96,16 @@ const addWebsite = async (): Promise<void> => {
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn :to="{ name: 'admin-websites' }" append-icon="mdi-arrow-right" variant="text">All websites</v-btn>
+              <v-btn :to="{ name: 'admin-websites' }" append-icon="mdi-arrow-right" variant="text">{{
+                t('dashboard.allWebsites')
+              }}</v-btn>
             </div>
           </template>
         </titled-section>
       </v-col>
 
       <v-col cols="12" lg="6">
-        <titled-section icon="mdi-clock-outline" icon-color="warning" title="Recently added">
+        <titled-section :title="t('dashboard.recentlyAdded')" icon="mdi-clock-outline" icon-color="warning">
           <recent-show-list
             :loading="recentShowsQuery.isLoading.value"
             :shows="recentShowsQuery.data.value?.data ?? []"
@@ -110,7 +114,9 @@ const addWebsite = async (): Promise<void> => {
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn :to="{ name: 'admin-shows' }" append-icon="mdi-arrow-right" variant="text">All shows</v-btn>
+              <v-btn :to="{ name: 'admin-shows' }" append-icon="mdi-arrow-right" variant="text">{{
+                t('dashboard.allShows')
+              }}</v-btn>
             </div>
           </template>
         </titled-section>

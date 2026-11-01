@@ -3,6 +3,7 @@ import type { Category } from '@/interfaces/api/models/Category';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 
 import { computed, useAttrs } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { CategoryQueryKey } from '@/enums/query/categoryQueryKey';
 import { categoryService } from '@/services/show/categoryService';
@@ -18,7 +19,7 @@ const props = withDefaults(
     disabledIds?: number[];
   }>(),
   {
-    label: 'Category',
+    label: undefined,
     disabledIds: () => [],
   },
 );
@@ -26,6 +27,7 @@ const props = withDefaults(
 const selected = defineModel<T>();
 
 const attrs = useAttrs();
+const { t } = useI18n();
 
 const categoriesQuery = useAPIQuery<PaginatedResponse<Category>>({
   queryKey: [CategoryQueryKey.CategoryAutocomplete],
@@ -45,7 +47,7 @@ const categories = computed<Category[]>(() => categoriesQuery.data.value?.data ?
   <v-autocomplete
     v-model="selected"
     :items="categories"
-    :label="props.label"
+    :label="props.label ?? t('category.label')"
     :loading="categoriesQuery.isFetching.value"
     item-title="name"
     item-value="id"

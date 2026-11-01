@@ -3,17 +3,20 @@ import type { RegisterRequest } from '@/components/features/auth/register-form';
 import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginRequest';
 
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 import { HeadingText } from '@/components/common/heading-text';
 import { LoginForm } from '@/components/features/auth/login-form';
 import { RegisterForm } from '@/components/features/auth/register-form';
+import { LanguageMenu } from '@/components/features/locale/language-menu';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
 const authStore = useAuthStore();
 const router = useRouter();
 const { showSuccessSnackbar, showAPIErrorSnackbar } = useCommonSnackbar();
+const { t } = useI18n();
 
 const loginFormId = 'login-form';
 const registerFormId = 'register-form';
@@ -42,7 +45,7 @@ const submitLogin = async (): Promise<void> => {
 
   try {
     await authStore.login(loginRequest.value);
-    showSuccessSnackbar('Logged in successfully.');
+    showSuccessSnackbar(t('auth.loggedIn'));
     void router.push({ name: 'authenticated-home' });
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
@@ -56,7 +59,7 @@ const submitRegister = async (): Promise<void> => {
 
   try {
     await authStore.register(registerRequest.value);
-    showSuccessSnackbar('Account created successfully.');
+    showSuccessSnackbar(t('auth.accountCreated'));
     void router.push({ name: 'authenticated-home' });
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
@@ -74,37 +77,32 @@ const submitRegister = async (): Promise<void> => {
       class="position-absolute w-100 h-100"
       style="background-image: url('/backgrounds/movie-background.jpg'); background-size: cover"
     ></div>
+    <div class="position-absolute" style="top: 16px; right: 16px">
+      <language-menu />
+    </div>
     <v-row align="center" class="position-relative" gap="64" justify="center">
       <v-col cols="12" lg="6">
         <div class="d-flex flex-column align-start ga-4">
           <v-chip color="secondary" variant="flat">MovieBrowser 3</v-chip>
-          <heading-text
-            subtitle="View trailers, watch shows, rate movies, and get personalized recommendations. All in one place."
-            title="Your movie library — at your fingertips."
-          />
+          <heading-text :subtitle="t('auth.heroSubtitle')" :title="t('auth.heroTitle')" />
         </div>
       </v-col>
       <v-col cols="12" lg="5">
         <v-card border="sm" color="rgba(var(--v-theme-surface), 0.88)" rounded="xl" style="backdrop-filter: blur(5px)">
           <v-card-text class="pa-8 d-flex flex-column ga-6">
             <v-btn-toggle v-model="mode" color="secondary" mandatory>
-              <v-btn value="login">Login</v-btn>
-              <v-btn value="register">Register</v-btn>
+              <v-btn value="login">{{ t('auth.login') }}</v-btn>
+              <v-btn value="register">{{ t('auth.register') }}</v-btn>
             </v-btn-toggle>
 
             <div style="max-width: 450px">
               <heading-text
                 :level="2"
-                subtitle="Sign in to continue browsing your library and picks."
-                title="Welcome back"
+                :subtitle="t('auth.welcomeSubtitle')"
+                :title="t('auth.welcomeTitle')"
                 v-if="mode === 'login'"
               />
-              <heading-text
-                :level="2"
-                subtitle="Register to start building your movie library."
-                title="Create your account"
-                v-else
-              />
+              <heading-text :level="2" :subtitle="t('auth.createSubtitle')" :title="t('auth.createTitle')" v-else />
             </div>
 
             <template v-if="mode === 'login'">
@@ -121,7 +119,7 @@ const submitRegister = async (): Promise<void> => {
                 color="primary"
                 type="submit"
               >
-                Login
+                {{ t('auth.login') }}
               </v-btn>
             </template>
 
@@ -139,7 +137,7 @@ const submitRegister = async (): Promise<void> => {
                 color="primary"
                 type="submit"
               >
-                Register
+                {{ t('auth.register') }}
               </v-btn>
             </template>
           </v-card-text>

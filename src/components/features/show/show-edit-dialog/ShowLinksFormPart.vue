@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowLink } from '@/interfaces/api/models/ShowLink';
+import { useI18n } from 'vue-i18n';
 
 import { ShowAutocomplete } from '@/components/features/show/show-autocomplete';
 import { ShowLinkTypeSelect } from '@/components/features/show/show-link-type-select';
@@ -21,6 +22,7 @@ const outgoingLinks = defineModel<ShowLink[]>('outgoingLinks', {
 const rules = getRules();
 
 const { confirm } = useConfirmDialog();
+const { t } = useI18n();
 
 const unsavedLinkRenderKey = Symbol('unsavedLinkRenderKey');
 
@@ -56,11 +58,9 @@ const removeLink = async (index: number): Promise<void> => {
   const linkedShowName = getPrimaryTitle(outgoingLinks.value[index]?.target_show);
 
   const isConfirmed = await confirm({
-    message: linkedShowName
-      ? `Are you sure you want to remove the link to "${linkedShowName}"?`
-      : 'Are you sure you want to remove this link?',
+    message: linkedShowName ? t('show.removeLinkNamed', { name: linkedShowName }) : t('show.removeLink'),
     confirmColor: 'error',
-    confirmText: 'Remove',
+    confirmText: t('common.remove'),
   });
 
   if (!isConfirmed) {
@@ -80,10 +80,10 @@ const removeLink = async (index: number): Promise<void> => {
     <v-col class="d-flex align-center ga-5" cols="6">
       <show-autocomplete
         :exclude-ids="props.showId ? [props.showId] : []"
+        :label="t('show.linkedShow')"
         :model-value="link.target_show ?? null"
         :rules="rules.linkedShow"
         class="required"
-        label="Linked show"
         @update:model-value="updateLinkedShow(link, $event)"
       />
       <v-btn color="error" icon="mdi-trash-can" size="x-small" @click="removeLink(index)" />
@@ -92,7 +92,7 @@ const removeLink = async (index: number): Promise<void> => {
 
   <v-row class="mt-0">
     <v-col cols="12">
-      <v-btn size="small" variant="text" @click="addLink"> Add another link </v-btn>
+      <v-btn size="small" variant="text" @click="addLink"> {{ t('show.addLink') }} </v-btn>
     </v-col>
   </v-row>
 </template>

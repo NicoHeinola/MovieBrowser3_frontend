@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
@@ -12,6 +13,8 @@ import { ShowGrid } from '@/components/features/show/show-grid';
 import { showSortOptions } from '@/composables/show/showSortOptions';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
+
+const { t } = useI18n();
 
 const selectedShowId = ref<number | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
@@ -44,8 +47,8 @@ const selectShow = (show: Show | null) => {
       v-model:search="searchInput"
       v-model:sort="sort"
       :active-filter-count="activeFilterCount"
+      :placeholder="t('shows.searchPlaceholder')"
       :sort-options="showSortOptions"
-      placeholder="Search shows..."
       @click:filters="isFilterDrawerVisible = true"
     />
 
@@ -73,12 +76,14 @@ const selectShow = (show: Show | null) => {
       <v-row justify="center" v-else>
         <v-col class="d-flex justify-center" cols="12">
           <v-alert class="flex-0-1" type="info" v-if="activeFilterCount > 0">
-            No shows match these filters
+            {{ t('shows.noMatch') }}
             <template #append>
-              <v-btn color="info" size="small" variant="text" @click="clearFilters">Clear filters</v-btn>
+              <v-btn color="info" size="small" variant="text" @click="clearFilters">{{
+                t('common.clearFilters')
+              }}</v-btn>
             </template>
           </v-alert>
-          <v-alert class="flex-0-1" type="info" v-else> No shows found </v-alert>
+          <v-alert class="flex-0-1" type="info" v-else> {{ t('shows.none') }} </v-alert>
         </v-col>
       </v-row>
     </template>

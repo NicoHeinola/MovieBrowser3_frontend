@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
 
-import { formatTimeAgo } from '@vueuse/core';
+import { formatTimeAgoIntl } from '@vueuse/core';
+import { useI18n } from 'vue-i18n';
 
 import { ShowListItem } from '../show-list-item';
+
+const { t, locale } = useI18n();
 
 const props = defineProps<{
   shows: Show[];
@@ -19,7 +22,8 @@ const emit = defineEmits<{
  * @param show - The show.
  * @returns The subtitle text.
  */
-const getAddedText = (show: Show): string => `Added ${formatTimeAgo(new Date(show.created_at))}`;
+const getAddedText = (show: Show): string =>
+  t('show.added', { time: formatTimeAgoIntl(new Date(show.created_at), { locale: locale.value }) });
 </script>
 
 <template>
@@ -38,6 +42,6 @@ const getAddedText = (show: Show): string => `Added ${formatTimeAgo(new Date(sho
   </v-card>
 
   <div class="d-flex" v-else>
-    <v-alert class="flex-0-1" type="info">No shows have been added yet.</v-alert>
+    <v-alert class="flex-0-1" type="info">{{ t('home.noShows') }}</v-alert>
   </div>
 </template>

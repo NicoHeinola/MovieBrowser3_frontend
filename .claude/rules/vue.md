@@ -220,7 +220,11 @@ const save = async (): Promise<void> => {
 
 ## i18n
 
-- `vue-i18n` (`src/plugins/i18n/en.json`) is used mainly for enum labels, such as `showEntry.type.*` and `showLink.type.*`. Most UI copy is still inline English.
+- All UI copy goes through `vue-i18n`: messages live in `src/plugins/i18n/en.json` and `fi.json`, which must have the same keys (a test checks it). Add a key to both files.
+- In components use `const { t } = useI18n();` and `t('area.key')`. In plain `.ts` files (rules, utils, option lists) use `i18n.global.t(...)` at call time, not at module load, so the text follows the active language. Constant lists store i18n keys (`titleKey`) and the component that shows them calls `t()`. Arrays of translated texts inside a component (table headers, select items) are `computed`, so they update when the language changes.
+- Use `i18n-t` with named slots for messages that contain markup, and the plural form (`t(key, { count }, count)`) for counts.
+- Language state lives in `useLocale` (`src/composables/locale`); the choice is stored in `localStorage`. Add new languages to `AppLocale`, `languageOptions` and a new locale file.
+- The changelog entries in `src/data/changelog` are English only.
 
 ## Component Interfaces
 

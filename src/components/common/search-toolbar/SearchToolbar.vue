@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { SortOption } from '@/components/common/sort-menu';
 
+import { useI18n } from 'vue-i18n';
+
 import { SortMenu } from '@/components/common/sort-menu';
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
@@ -12,7 +16,7 @@ const props = withDefaults(
     sortOptions?: SortOption[];
   }>(),
   {
-    placeholder: 'Search...',
+    placeholder: undefined,
     activeFilterCount: undefined,
     sortOptions: undefined,
   },
@@ -31,7 +35,7 @@ const emit = defineEmits<{
     <v-col class="d-flex ga-2 align-center" cols="12" lg="8" md="10" xl="6">
       <v-text-field
         v-model="search"
-        :placeholder="props.placeholder"
+        :placeholder="props.placeholder ?? t('common.searchPlaceholder')"
         prepend-inner-icon="mdi-magnify"
         rounded="xl"
         variant="solo-filled"
@@ -51,7 +55,7 @@ const emit = defineEmits<{
           icon="mdi-tune-variant"
           size="small"
           @click="emit('click:filters')"
-          v-tooltip:bottom="'Filters'"
+          v-tooltip:bottom="t('common.filters')"
         />
       </v-badge>
     </v-col>

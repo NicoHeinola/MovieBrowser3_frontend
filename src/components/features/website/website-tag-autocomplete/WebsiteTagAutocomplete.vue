@@ -3,6 +3,7 @@ import type { WebsiteTag } from '@/interfaces/api/models/WebsiteTag';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 
 import { computed, ref, useAttrs, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { websiteTagService } from '@/services/website/websiteTagService';
@@ -19,7 +20,7 @@ const props = withDefaults(
     label?: string;
   }>(),
   {
-    label: 'Tags',
+    label: undefined,
   },
 );
 
@@ -32,6 +33,7 @@ const pendingTags = defineModel<WebsiteTag[]>('pendingTags', { required: true })
 const search = ref<string>('');
 
 const attrs = useAttrs();
+const { t } = useI18n();
 
 const tagsQuery = useAPIQuery<PaginatedResponse<WebsiteTag>>({
   queryKey: [WebsiteTagQueryKey.WebsiteTagAutocomplete],
@@ -48,9 +50,9 @@ const tags = computed<WebsiteTag[]>(() => [...(tagsQuery.data.value?.data ?? [])
 const searchState = computed(() => getWebsiteTagSearchState(search.value, tags.value, selectedIds.value));
 
 const noDataText = computed<string>(() => {
-  if (searchState.value.exactMatch) return `“${searchState.value.exactMatch.name}” is already added.`;
-  if (tags.value.length > 0) return 'Every tag is already added. Type a name to create one.';
-  return 'No tags yet. Type a name to create one.';
+  if (searchState.value.exactMatch) return t('website.tagAlreadyAdded', { name: searchState.value.exactMatch.name });
+  if (tags.value.length > 0) return t('website.allTagsAdded');
+  return t('website.noTagsType');
 });
 
 /**
@@ -100,10 +102,10 @@ watch(selectedIds, (ids) => {
   <v-autocomplete
     v-model="selectedIds"
     v-model:search="search"
+    :hint="t('website.tagsHint')"
     :items="tags"
-    :label="props.label"
+    :label="props.label ?? t('website.tagsLabel')"
     :loading="tagsQuery.isFetching.value"
-    hint="Pick tags, or type a new one and press Enter."
     item-title="name"
     item-value="id"
     prepend-inner-icon="mdi-tag-multiple-outline"
@@ -119,14 +121,14 @@ watch(selectedIds, (ids) => {
       <v-chip v-bind="chipProps" :prepend-icon="isPendingWebsiteTag(item) ? 'mdi-plus' : undefined">
         {{ item.name }}
         <v-tooltip activator="parent" location="top" v-if="isPendingWebsiteTag(item)">
-          New tag, created when you save
+          {{ t('website.newTagTooltip') }}
         </v-tooltip>
       </v-chip>
     </template>
 
     <template #no-data>
       <v-list-item
-        :title="`Create tag “${searchState.name}”`"
+        :title="t('website.createTag', { name: searchState.name })"
         base-color="primary"
         prepend-icon="mdi-plus"
         @click="addPendingTag"
@@ -137,7 +139,7 @@ watch(selectedIds, (ids) => {
 
     <template #append-item v-if="searchState.canCreate && searchState.hasVisibleMatches">
       <v-list-item
-        :title="`Create tag “${searchState.name}”`"
+        :title="t('website.createTag', { name: searchState.name })"
         base-color="primary"
         prepend-icon="mdi-plus"
         @click="addPendingTag"

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
 const settingStore = useSettingStore();
+const { t } = useI18n();
 
 const items = computed<Array<{ url: string }>>(() => {
   return settingStore.bannerDefaultBackgrounds.map((url: string) => ({ url }));
@@ -14,7 +16,7 @@ const items = computed<Array<{ url: string }>>(() => {
   <v-skeleton-loader type="card" width="390" v-if="settingStore.isLoading" />
 
   <div class="d-flex" v-else-if="items.length === 0">
-    <v-alert class="flex-0-1" type="info" border> No backgrounds available. </v-alert>
+    <v-alert class="flex-0-1" type="info" border> {{ t('settings.noBackgrounds') }} </v-alert>
   </div>
 
   <v-row v-else>

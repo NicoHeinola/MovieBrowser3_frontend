@@ -5,6 +5,7 @@ import type { WebsiteTag } from '@/interfaces/api/models/WebsiteTag';
 import type { CreateWebsiteRequest } from '@/interfaces/api/requests/CreateWebsiteRequest';
 
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { BaseDialog } from '@/components/common/base-dialog';
 import { BaseForm } from '@/components/common/base-form';
 import { MdiIconAutocomplete } from '@/components/common/mdi-icon-autocomplete';
@@ -45,13 +46,14 @@ const isSaving = ref<boolean>(false);
 const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const { createPendingTags } = useCreatePendingWebsiteTags();
+const { t } = useI18n();
 const rules = getRules();
 
-const iconKindOptions = [
-  { value: WebsiteIconKind.Favicon, label: 'Favicon', icon: 'mdi-web' },
-  { value: WebsiteIconKind.Mdi, label: 'Icon', icon: 'mdi-emoticon-outline' },
-  { value: WebsiteIconKind.Image, label: 'Image', icon: 'mdi-image-outline' },
-];
+const iconKindOptions = computed(() => [
+  { value: WebsiteIconKind.Favicon, label: t('website.iconFavicon'), icon: 'mdi-web' },
+  { value: WebsiteIconKind.Mdi, label: t('website.iconIcon'), icon: 'mdi-emoticon-outline' },
+  { value: WebsiteIconKind.Image, label: t('website.iconImage'), icon: 'mdi-image-outline' },
+]);
 
 /** Icon value saved for the chosen icon kind; null lets the site's favicon show. */
 const resolvedIcon = computed<string | null>(() => {
@@ -133,7 +135,7 @@ const handleSave = async (): Promise<void> => {
   try {
     await saveWebsite();
 
-    showSuccessSnackbar('Website saved successfully.');
+    showSuccessSnackbar(t('website.saved'));
 
     props.close(true);
   } catch (error: unknown) {
@@ -145,10 +147,10 @@ const handleSave = async (): Promise<void> => {
 
 const deleteWebsite = async (): Promise<void> => {
   const confirmed = await confirm({
-    message: `Are you sure you want to delete ${getWebsiteDisplayName(website.value)}? This action cannot be undone.`,
-    confirmText: 'Delete',
+    message: t('website.deleteConfirm', { name: getWebsiteDisplayName(website.value) }),
+    confirmText: t('common.delete'),
     confirmColor: 'error',
-    cancelText: 'Cancel',
+    cancelText: t('common.cancel'),
   });
 
   if (!confirmed) {
@@ -187,9 +189,9 @@ onMounted(() => {
             <v-text-field
               v-model="website.url"
               :autofocus="!website.id"
+              :label="t('website.url')"
               :rules="rules.url"
               class="required"
-              label="URL"
               placeholder="https://example.com"
               prepend-inner-icon="mdi-link-variant"
               type="url"
@@ -198,15 +200,15 @@ onMounted(() => {
           </v-col>
 
           <v-col cols="12">
-            <v-text-field v-model="website.title" :rules="rules.title" label="Title" />
+            <v-text-field v-model="website.title" :label="t('website.title')" :rules="rules.title" />
           </v-col>
 
           <v-col cols="12">
             <v-textarea
               v-model="website.description"
               :counter="5000"
+              :label="t('website.description')"
               :rules="rules.description"
-              label="Description"
               rows="3"
               auto-grow
             />
@@ -215,8 +217,8 @@ onMounted(() => {
           <v-col cols="12">
             <v-switch
               v-model="website.is_favorite"
-              hint="Favorite websites are listed on the admin dashboard."
-              label="Favorite"
+              :hint="t('website.favoriteHint')"
+              :label="t('website.favorite')"
               persistent-hint
             />
           </v-col>
@@ -241,20 +243,20 @@ onMounted(() => {
 
           <v-col cols="12" v-if="iconKind === WebsiteIconKind.Favicon">
             <p class="text-body-medium text-medium-emphasis">
-              The site's own favicon is shown, with a globe when the site has none.
+              {{ t('website.faviconHint') }}
             </p>
           </v-col>
 
           <v-col cols="12" v-else-if="iconKind === WebsiteIconKind.Mdi">
-            <mdi-icon-autocomplete v-model="mdiIcon" :rules="rules.mdiIcon" class="required" label="Icon" />
+            <mdi-icon-autocomplete v-model="mdiIcon" :rules="rules.mdiIcon" class="required" />
           </v-col>
 
           <v-col cols="12" v-else>
             <v-text-field
               v-model="imageUrl"
+              :label="t('website.imageUrl')"
               :rules="rules.imageUrl"
               class="required"
-              label="Image URL"
               placeholder="https://example.com/logo.png"
               type="url"
             />
@@ -272,10 +274,10 @@ onMounted(() => {
         @click="deleteWebsite"
         v-if="website?.id"
       >
-        Delete
+        {{ t('common.delete') }}
       </v-btn>
       <v-spacer />
-      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> Cancel </v-btn>
+      <v-btn :disabled="isSaving" variant="text" @click="props.close()"> {{ t('common.cancel') }} </v-btn>
       <v-btn
         :disabled="!isFormValid || isSaving"
         :loading="isSaving"
@@ -283,7 +285,7 @@ onMounted(() => {
         variant="flat"
         @click="handleSave"
       >
-        Save
+        {{ t('common.save') }}
       </v-btn>
     </template>
   </base-dialog>

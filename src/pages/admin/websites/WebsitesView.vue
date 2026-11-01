@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref, useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { WebsiteBrowser } from '@/components/features/website/website-browser';
 import { WebsiteTagManager } from '@/components/features/website/website-tag-manager';
+
+const { t } = useI18n();
 
 const tab = ref<'websites' | 'tags'>('websites');
 /** Not named `websiteBrowser`: the template would resolve `<website-browser>` to that binding instead of the component. */
@@ -27,8 +30,8 @@ const showWebsitesWithTag = (tagId: number): void => {
     <v-row class="mb-4" justify="center">
       <v-col cols="auto">
         <v-tabs v-model="tab">
-          <v-tab prepend-icon="mdi-web" value="websites">Websites</v-tab>
-          <v-tab prepend-icon="mdi-tag-multiple-outline" value="tags">Tags</v-tab>
+          <v-tab prepend-icon="mdi-web" value="websites">{{ t('nav.websites') }}</v-tab>
+          <v-tab prepend-icon="mdi-tag-multiple-outline" value="tags">{{ t('websites.tags') }}</v-tab>
         </v-tabs>
       </v-col>
     </v-row>

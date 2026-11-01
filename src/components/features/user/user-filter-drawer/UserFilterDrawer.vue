@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import type { UserSearchFilters } from '@/composables/user/UserSearchFilters';
 
+import { useI18n } from 'vue-i18n';
+
 import { FilterChip } from '@/components/common/filter-chip';
 import { FilterDrawer, FilterDrawerSection } from '@/components/common/filter-drawer';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   activeFilterCount: number;
@@ -29,15 +33,22 @@ const emit = defineEmits<{
     :total-results="props.totalResults"
     @clear="emit('clear')"
   >
-    <filter-drawer-section title="Role">
+    <filter-drawer-section :title="t('user.role')">
       <template #subtitle>
-        <span class="text-primary">Include</span> for admins only, <span class="text-error">exclude</span> for the rest.
+        <i18n-t keypath="user.roleHint" tag="span">
+          <template #include>
+            <span class="text-primary">{{ t('filter.include') }}</span>
+          </template>
+          <template #exclude>
+            <span class="text-error">{{ t('filter.exclude') }}</span>
+          </template>
+        </i18n-t>
       </template>
       <v-col class="d-flex flex-wrap ga-2" cols="12">
         <filter-chip
           :model-value="filters.admin"
+          :text="t('user.admin')"
           icon="mdi-shield-crown"
-          text="Admin"
           @update:model-value="filters = { ...filters, admin: $event }"
         />
       </v-col>

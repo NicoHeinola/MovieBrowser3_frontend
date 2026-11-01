@@ -8,6 +8,17 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
+    version: '1.1.0',
+    date: '2026-11-01',
+    changes: [
+      { type: ChangelogChangeType.Added, text: 'The app is now available in English and Finnish.' },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'A language button switches the language, and first-time visitors are asked which one to use.',
+      },
+    ],
+  },
+  {
     version: '1.0.1',
     date: '2026-11-01',
     changes: [

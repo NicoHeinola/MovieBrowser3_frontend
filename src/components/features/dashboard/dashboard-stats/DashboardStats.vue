@@ -3,6 +3,9 @@ import type { DashboardStatTile } from './dashboardStatTile';
 import type { DashboardStatsResponse } from '@/interfaces/api/responses/DashboardStatsResponse';
 
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   stats: DashboardStatsResponse | undefined;
@@ -10,22 +13,32 @@ const props = defineProps<{
 }>();
 
 const tiles = computed<DashboardStatTile[]>(() => [
-  { label: 'Shows', icon: 'mdi-movie-open', color: 'primary', value: props.stats?.shows_count ?? null },
+  { label: t('dashboard.shows'), icon: 'mdi-movie-open', color: 'primary', value: props.stats?.shows_count ?? null },
   {
-    label: 'Added in 7 days',
+    label: t('dashboard.added7'),
     icon: 'mdi-calendar-week',
     color: 'success',
     value: props.stats?.shows_added_last_7_days ?? null,
   },
   {
-    label: 'Added in 30 days',
+    label: t('dashboard.added30'),
     icon: 'mdi-calendar-month',
     color: 'info',
     value: props.stats?.shows_added_last_30_days ?? null,
   },
-  { label: 'Episodes', icon: 'mdi-filmstrip', color: 'warning', value: props.stats?.episodes_count ?? null },
-  { label: 'Websites', icon: 'mdi-web', color: 'link', value: props.stats?.websites_count ?? null },
-  { label: 'Users', icon: 'mdi-account-group', color: 'secondary', value: props.stats?.users_count ?? null },
+  {
+    label: t('dashboard.episodes'),
+    icon: 'mdi-filmstrip',
+    color: 'warning',
+    value: props.stats?.episodes_count ?? null,
+  },
+  { label: t('dashboard.websites'), icon: 'mdi-web', color: 'link', value: props.stats?.websites_count ?? null },
+  {
+    label: t('dashboard.users'),
+    icon: 'mdi-account-group',
+    color: 'secondary',
+    value: props.stats?.users_count ?? null,
+  },
 ]);
 </script>
 

@@ -3,9 +3,11 @@ import type { NavigationLinkItem } from './navigationLinkItem';
 import type { Show } from '@/interfaces/api/models/Show';
 
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 import { ChangelogVersionLink } from '@/components/features/changelog/changelog-version-link';
+import { LanguageMenu } from '@/components/features/locale/language-menu';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowSearchMenu } from '@/components/features/show/show-search-menu';
 import { useChangelogNotice } from '@/composables/changelog/useChangelogNotice';
@@ -14,20 +16,6 @@ import { useRouteLoading } from '@/composables/router/useRouteLoading';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
 import NavLinks from './NavLinks.vue';
-
-const authenticatedLinks: NavigationLinkItem[] = [
-  { label: 'Home', routeName: 'authenticated-home', icon: 'mdi-home' },
-  { label: 'Search', routeName: 'authenticated-search', icon: 'mdi-magnify' },
-];
-
-const adminLinks: NavigationLinkItem[] = [
-  { label: 'Dashboard', routeName: 'admin-dashboard', icon: 'mdi-view-dashboard' },
-  { label: 'Shows', routeName: 'admin-shows', icon: 'mdi-movie-edit' },
-  { label: 'Categories', routeName: 'admin-categories', icon: 'mdi-shape' },
-  { label: 'Websites', routeName: 'admin-websites', icon: 'mdi-web' },
-  { label: 'Users', routeName: 'admin-users', icon: 'mdi-account-group' },
-  { label: 'Settings', routeName: 'admin-settings', icon: 'mdi-cog' },
-];
 
 const selectedShowId = ref<number | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
@@ -38,6 +26,21 @@ const authStore = useAuthStore();
 const { confirm } = useConfirmDialog();
 const { isNavigating } = useRouteLoading();
 const { showUnseenChanges } = useChangelogNotice();
+const { t } = useI18n();
+
+const authenticatedLinks = computed<NavigationLinkItem[]>(() => [
+  { label: t('nav.home'), routeName: 'authenticated-home', icon: 'mdi-home' },
+  { label: t('nav.search'), routeName: 'authenticated-search', icon: 'mdi-magnify' },
+]);
+
+const adminLinks = computed<NavigationLinkItem[]>(() => [
+  { label: t('nav.dashboard'), routeName: 'admin-dashboard', icon: 'mdi-view-dashboard' },
+  { label: t('nav.shows'), routeName: 'admin-shows', icon: 'mdi-movie-edit' },
+  { label: t('nav.categories'), routeName: 'admin-categories', icon: 'mdi-shape' },
+  { label: t('nav.websites'), routeName: 'admin-websites', icon: 'mdi-web' },
+  { label: t('nav.users'), routeName: 'admin-users', icon: 'mdi-account-group' },
+  { label: t('nav.settings'), routeName: 'admin-settings', icon: 'mdi-cog' },
+]);
 
 const isInAdminArea = computed<boolean>(() => String(route.name ?? '').startsWith('admin-'));
 
@@ -53,8 +56,8 @@ const selectShow = (show: Show): void => {
 
 const logout = async (): Promise<void> => {
   const isConfirmed = await confirm({
-    message: 'Log out of your account?',
-    confirmText: 'Logout',
+    message: t('nav.logoutConfirm'),
+    confirmText: t('auth.logout'),
     confirmColor: 'error',
   });
 
@@ -100,6 +103,7 @@ onMounted(() => {
               <show-search-menu @select:show="selectShow" />
             </div>
             <span>{{ authStore.user?.username }}</span>
+            <language-menu />
             <v-avatar>
               <v-menu>
                 <template #activator="{ props }">
@@ -114,8 +118,12 @@ onMounted(() => {
                 </template>
                 <template #default>
                   <v-list>
-                    <v-list-item :to="{ name: 'authenticated-profile' }" prepend-icon="mdi-cog"> Profile </v-list-item>
-                    <v-list-item base-color="error" prepend-icon="mdi-arrow-left" @click="logout"> Logout </v-list-item>
+                    <v-list-item :to="{ name: 'authenticated-profile' }" prepend-icon="mdi-cog">
+                      {{ t('nav.profile') }}
+                    </v-list-item>
+                    <v-list-item base-color="error" prepend-icon="mdi-arrow-left" @click="logout">
+                      {{ t('auth.logout') }}
+                    </v-list-item>
                   </v-list>
                 </template>
               </v-menu>
@@ -124,7 +132,7 @@ onMounted(() => {
               <v-btn
                 :to="{ name: isInAdminArea ? 'authenticated-home' : 'admin-dashboard' }"
                 icon
-                v-tooltip:bottom="'Toggle Admin Area'"
+                v-tooltip:bottom="t('nav.toggleAdmin')"
               >
                 <v-icon :color="isInAdminArea ? 'link' : ''" class="transition-color-220"> mdi-key-variant </v-icon>
               </v-btn>

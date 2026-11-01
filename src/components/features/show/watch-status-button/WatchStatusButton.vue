@@ -36,8 +36,8 @@ const buttonIcon = computed<string>(() => {
 });
 
 const buttonLabel = computed<string>(() => {
-  if (status.value === MIXED_WATCH_STATUS) return 'Mixed';
-  return status.value ? t(`showEntry.watchStatus.${status.value}`) : 'Set status';
+  if (status.value === MIXED_WATCH_STATUS) return t('show.mixed');
+  return status.value ? t(`showEntry.watchStatus.${status.value}`) : t('show.setStatus');
 });
 </script>
 
@@ -78,7 +78,12 @@ const buttonLabel = computed<string>(() => {
 
       <template v-if="status">
         <v-divider class="my-2" />
-        <v-list-item base-color="error" prepend-icon="mdi-close" title="Clear status" @click="status = null" />
+        <v-list-item
+          :title="t('show.clearStatus')"
+          base-color="error"
+          prepend-icon="mdi-close"
+          @click="status = null"
+        />
       </template>
     </v-list>
   </v-menu>

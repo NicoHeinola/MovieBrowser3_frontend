@@ -4,6 +4,7 @@ import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import type { CombinedWatchStatus } from '@/utils/show/CombinedWatchStatus';
 import { useStorage } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { CollapsibleSection } from '@/components/common/collapsible-section';
 import { ShowEntryPicker } from '@/components/features/show/show-entry-picker';
 import { WatchStatusButton } from '@/components/features/show/watch-status-button';
@@ -32,6 +33,7 @@ const isEpisodesOpen = useStorage<boolean>('showDrawer.isEpisodesOpen', true);
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 const { saveWatchStatus } = useShowEntryWatchStatus();
 const { clearSelectedEntry, selectedEntry } = useSelectedEntry(entries);
+const { t } = useI18n();
 const {
   isContinuing,
   isStartingPlayback,
@@ -112,7 +114,7 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
         :disabled="targetEntries.length === 0"
         :loading="isSavingStatus"
         :model-value="targetStatus"
-        :suffix="selectedEntry ? '(Entry)' : '(Show)'"
+        :suffix="selectedEntry ? t('show.suffixEntry') : t('show.suffixShow')"
         @update:model-value="setWatchStatus"
       />
     </v-col>
@@ -135,13 +137,13 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
     </v-col>
   </v-row>
 
-  <collapsible-section v-model="isEpisodesOpen" title="Episodes">
+  <collapsible-section v-model="isEpisodesOpen" :title="t('show.episodes')">
     <v-col cols="12" v-if="!selectedEntry">
-      <v-alert class="flex-0-1" type="info" variant="tonal">Select an entry to see its episodes.</v-alert>
+      <v-alert class="flex-0-1" type="info" variant="tonal">{{ t('show.selectEntry') }}</v-alert>
     </v-col>
 
     <v-col cols="12" v-else-if="!selectedEntry.episodes || selectedEntry.episodes.length === 0">
-      <v-alert class="flex-0-1" type="info" variant="tonal">This entry has no episodes.</v-alert>
+      <v-alert class="flex-0-1" type="info" variant="tonal">{{ t('show.noEpisodes') }}</v-alert>
     </v-col>
 
     <v-col v-for="(episode, index) in selectedEntry?.episodes" class="d-flex ga-2" cols="12" :key="episode.id">

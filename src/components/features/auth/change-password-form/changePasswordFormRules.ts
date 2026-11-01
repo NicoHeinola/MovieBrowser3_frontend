@@ -1,3 +1,4 @@
+import { i18n } from '@/plugins/i18n';
 import { requiredRule } from '@/rules/requiredRule';
 
 /**
@@ -9,6 +10,9 @@ import { requiredRule } from '@/rules/requiredRule';
 export const getRules = (getPassword: () => string) => {
   return {
     password: [requiredRule],
-    confirmPassword: [requiredRule, (value: string) => value === getPassword() || 'Passwords must match'],
+    confirmPassword: [
+      requiredRule,
+      (value: string) => value === getPassword() || i18n.global.t('common.passwordsMustMatch'),
+    ],
   };
 };

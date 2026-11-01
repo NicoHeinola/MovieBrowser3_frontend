@@ -5,6 +5,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowSection } from '@/interfaces/api/models/ShowSection';
 
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 import { VCol, VLazy, VRow } from 'vuetify/components';
 import { MediaBanner } from '@/components/common/media-banner';
@@ -36,6 +37,7 @@ const settingStore = useSettingStore();
 const { playShow } = useShowPlayback();
 
 const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
+const { t } = useI18n();
 
 const bannerMaxCols = computed<number>(() => {
   if (xxl.value) return MAX_BANNER_COLS;
@@ -106,7 +108,12 @@ const continueWatchingQuery = useAPIQuery<Show[]>({
 });
 
 const sections = computed<HomepageSection[]>(() => [
-  ...homepageSections,
+  ...homepageSections.map((section) => ({
+    ...section,
+    title: t(section.title),
+    subtitle: t(section.subtitle),
+    emptyText: section.emptyText ? t(section.emptyText) : undefined,
+  })),
   ...(showsQuery.data.value?.categorySections ?? []),
 ]);
 
@@ -208,7 +215,7 @@ watch(
     <v-row align="center" style="max-width: 90%">
       <v-sheet border="sm" class="position-relative glass-panel" rounded="xl">
         <section-container>
-          <titled-section icon="mdi-clock-outline" icon-color="warning" title="Latest"> </titled-section>
+          <titled-section :title="t('home.latest')" icon="mdi-clock-outline" icon-color="warning"> </titled-section>
           <template v-if="isLoading">
             <div class="d-flex ga-8">
               <v-skeleton-loader v-for="i in bannerMaxCols" type="image@2, paragraph" width="300" :key="i" />
@@ -227,7 +234,7 @@ watch(
             ></show-grid>
             <div class="d-flex" v-if="(showsQuery.data.value?.latestShows?.length ?? 0) === 0">
               <v-alert class="flex-0-0" type="info">
-                <p class="text-no-wrap">No shows have been added yet.</p>
+                <p class="text-no-wrap">{{ t('home.noShows') }}</p>
               </v-alert>
             </div>
           </template>
@@ -262,7 +269,7 @@ watch(
 
             <div class="d-flex" v-if="!isLoading && (showMap[section.dataKey]?.length ?? 0) === 0">
               <v-alert class="flex-0-0" type="info">
-                <p class="text-no-wrap">{{ section.emptyText ?? 'There are no shows in this category' }}</p>
+                <p class="text-no-wrap">{{ section.emptyText ?? t('home.noShowsInCategory') }}</p>
               </v-alert>
             </div>
           </titled-section>

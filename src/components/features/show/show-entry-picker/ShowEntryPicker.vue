@@ -94,10 +94,10 @@ useResizeObserver(rail, measure);
               truncate
             />
             <v-icon
+              :title="t('show.lastWatched')"
               color="secondary"
               icon="mdi-history"
               size="small"
-              title="Last watched"
               v-if="entry.id === props.watchingEntryId"
             />
             <v-icon

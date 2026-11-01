@@ -3,6 +3,7 @@ import type { Website } from '@/interfaces/api/models/Website';
 
 import { useClipboard } from '@vueuse/core';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { ExpandableText } from '@/components/common/expandable-text';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -25,6 +26,7 @@ const emit = defineEmits<{
 
 const { copy } = useClipboard({ legacy: true });
 const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
+const { t } = useI18n();
 
 const displayName = computed<string>(() => getWebsiteDisplayName(props.website));
 const hostname = computed<string>(() => getWebsiteHostname(props.website.url));
@@ -36,9 +38,9 @@ const hostname = computed<string>(() => getWebsiteHostname(props.website.url));
 const copyUrl = async (): Promise<void> => {
   try {
     await copy(props.website.url);
-    showSuccessSnackbar('URL copied to clipboard.');
+    showSuccessSnackbar(t('website.urlCopied'));
   } catch {
-    showErrorSnackbar('Could not copy the URL.');
+    showErrorSnackbar(t('website.urlCopyFailed'));
   }
 };
 </script>
@@ -67,14 +69,14 @@ const copyUrl = async (): Promise<void> => {
             size="small"
             variant="text"
             @click="emit('toggle:favorite', props.website)"
-            v-tooltip:bottom="props.website.is_favorite ? 'Remove from favorites' : 'Add to favorites'"
+            v-tooltip:bottom="props.website.is_favorite ? t('website.removeFavorite') : t('website.addFavorite')"
           />
           <v-btn
             icon="mdi-pencil"
             size="small"
             variant="text"
             @click="emit('edit', props.website)"
-            v-tooltip:bottom="'Edit'"
+            v-tooltip:bottom="t('common.edit')"
           />
         </div>
       </template>
@@ -99,7 +101,13 @@ const copyUrl = async (): Promise<void> => {
           {{ tag.name }}
         </v-chip>
       </div>
-      <v-btn icon="mdi-content-copy" size="small" variant="text" @click="copyUrl" v-tooltip:bottom="'Copy URL'" />
+      <v-btn
+        icon="mdi-content-copy"
+        size="small"
+        variant="text"
+        @click="copyUrl"
+        v-tooltip:bottom="t('website.copyUrl')"
+      />
     </v-card-actions>
   </v-card>
 </template>

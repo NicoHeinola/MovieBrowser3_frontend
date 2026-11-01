@@ -3,6 +3,7 @@ import type { DialogComponentProps } from '@/components/layouts/dialog-provider'
 import type { Show } from '@/interfaces/api/models/Show';
 
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { BaseDialog } from '@/components/common/base-dialog';
 import { BaseForm } from '@/components/common/base-form';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
@@ -36,11 +37,12 @@ const selectedTab = ref<string[]>(['general']);
 
 const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
+const { t } = useI18n();
 
 const episodeActionMessages = {
-  create: (episodeName: string, entryName: string) => `Added episode "${episodeName}" to entry "${entryName}".`,
-  update: (episodeName: string, entryName: string) => `Updated episode "${episodeName}" for entry "${entryName}".`,
-  delete: (episodeName: string, entryName: string) => `Removed episode "${episodeName}" from entry "${entryName}".`,
+  create: (episode: string, entry: string) => t('show.episodeAdded', { episode, entry }),
+  update: (episode: string, entry: string) => t('show.episodeUpdated', { episode, entry }),
+  delete: (episode: string, entry: string) => t('show.episodeRemoved', { episode, entry }),
 };
 
 const saveShow = async (): Promise<void> => {
@@ -138,7 +140,7 @@ const saveEpisodes = async (): Promise<void> => {
         episodesLeft--;
         const message = episodeActionMessages[action](episode.name, entry.name);
 
-        showSuccessSnackbar(`${message} Episodes left: ${episodesLeft}`);
+        showSuccessSnackbar(t('show.episodesLeft', { message, count: episodesLeft }));
       },
     });
   }
@@ -175,7 +177,7 @@ const handleSave = async (): Promise<void> => {
     await saveEpisodes();
     await saveLinks();
 
-    showSuccessSnackbar('Show saved successfully.');
+    showSuccessSnackbar(t('show.saved'));
 
     props.close(true);
   } catch (error: unknown) {
@@ -187,10 +189,10 @@ const handleSave = async (): Promise<void> => {
 
 const deleteShow = async (): Promise<void> => {
   const confirmed = await confirm({
-    message: 'Are you sure you want to delete this show? This action cannot be undone.',
-    confirmText: 'Delete',
+    message: t('show.deleteConfirm'),
+    confirmText: t('common.delete'),
     confirmColor: 'error',
-    cancelText: 'Cancel',
+    cancelText: t('common.cancel'),
   });
 
   if (!confirmed) {
@@ -226,10 +228,10 @@ onMounted(() => {
     <template #default>
       <div class="d-flex ga-5 h-100">
         <v-list v-model:selected="selectedTab" class="position-sticky" color="primary" min-width="120px" mandatory>
-          <v-list-item title="General" value="general" />
-          <v-list-item title="UI" value="ui" />
-          <v-list-item title="Entries" value="entries" />
-          <v-list-item title="Links" value="links" />
+          <v-list-item :title="t('show.tabGeneral')" value="general" />
+          <v-list-item :title="t('show.tabUi')" value="ui" />
+          <v-list-item :title="t('show.tabEntries')" value="entries" />
+          <v-list-item :title="t('show.tabLinks')" value="links" />
         </v-list>
         <v-divider vertical />
         <base-form
@@ -265,10 +267,12 @@ onMounted(() => {
         @click="deleteShow"
         v-if="show?.id"
       >
-        Delete
+        {{ t('common.delete') }}
       </v-btn>
       <v-spacer />
-      <v-btn :disabled="isSaving" variant="text" @click="props.close(hasSavedChanges)"> Cancel </v-btn>
+      <v-btn :disabled="isSaving" variant="text" @click="props.close(hasSavedChanges)">
+        {{ t('common.cancel') }}
+      </v-btn>
       <v-btn
         :disabled="!isFormValid || isSaving"
         :loading="isSaving"
@@ -276,7 +280,7 @@ onMounted(() => {
         variant="flat"
         @click="handleSave"
       >
-        Save
+        {{ t('common.save') }}
       </v-btn>
     </template>
   </base-dialog>

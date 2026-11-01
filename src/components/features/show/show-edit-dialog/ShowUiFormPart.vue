@@ -2,6 +2,7 @@
 import type { ShowUiFormData } from './ShowUiFormData';
 
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { YouTubePlayer } from '@/components/common/youtube-player';
@@ -9,6 +10,8 @@ import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 
 import { getRules } from './showUiFormRules';
+
+const { t } = useI18n();
 
 const show = defineModel<ShowUiFormData>('show', { required: true });
 
@@ -41,18 +44,18 @@ const youTubeSearch = (searchTerm: string) => {
       <v-card :image="show!.banner_url" border="sm">
         <v-card-text class="d-flex align-center justify-center" style="height: 300px">
           <v-slide-y-transition>
-            <media-placeholder icon="mdi-image-off-outline" text="No banner image" v-if="!show?.banner_url" />
+            <media-placeholder :text="t('show.noBanner')" icon="mdi-image-off-outline" v-if="!show?.banner_url" />
           </v-slide-y-transition>
         </v-card-text>
         <v-card-actions>
           <v-text-field
             v-model="show!.banner_url"
+            :label="t('show.bannerUrl')"
             :rules="rules.bannerUrl"
             class="glass-panel rounded-lg required"
-            label="Banner URL"
           >
             <template #prepend-inner>
-              <v-icon icon="mdi-help-circle" v-tooltip:bottom="'Affects the large banner of the frontpage only.'" />
+              <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('show.bannerHint')" />
             </template>
           </v-text-field>
           <v-btn
@@ -61,7 +64,7 @@ const youTubeSearch = (searchTerm: string) => {
             icon="mdi-auto-fix"
             size="small"
             @click="googleSearch('Wallpaper ' + getPrimaryTitle(show) + ' show', 'l')"
-            v-tooltip:bottom="'Autofill search'"
+            v-tooltip:bottom="t('show.autofill')"
           />
         </v-card-actions>
       </v-card>
@@ -73,21 +76,22 @@ const youTubeSearch = (searchTerm: string) => {
       <v-card :image="show!.card_image_url" border="sm">
         <v-card-text class="d-flex align-center justify-center" style="height: 200px">
           <v-slide-y-transition>
-            <media-placeholder icon="mdi-image-off-outline" text="No card image" v-if="!show?.card_image_url" />
+            <media-placeholder
+              :text="t('show.noCardImage')"
+              icon="mdi-image-off-outline"
+              v-if="!show?.card_image_url"
+            />
           </v-slide-y-transition>
         </v-card-text>
         <v-card-actions>
           <v-text-field
             v-model="show!.card_image_url"
+            :label="t('show.cardImageUrl')"
             :rules="rules.cardImageUrl"
             class="glass-panel rounded-lg required"
-            label="Card Image URL"
           >
             <template #prepend-inner>
-              <v-icon
-                icon="mdi-help-circle"
-                v-tooltip:bottom="'Affects cards and any other images when displaying the show.'"
-              />
+              <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('show.cardImageHint')" />
             </template>
           </v-text-field>
           <v-btn
@@ -96,7 +100,7 @@ const youTubeSearch = (searchTerm: string) => {
             icon="mdi-auto-fix"
             size="small"
             @click="googleSearch('Cover image ' + getPrimaryTitle(show))"
-            v-tooltip:bottom="'Autofill search'"
+            v-tooltip:bottom="t('show.autofill')"
           />
         </v-card-actions>
       </v-card>
@@ -105,7 +109,7 @@ const youTubeSearch = (searchTerm: string) => {
       <v-card border="sm">
         <v-card-text class="position-relative d-flex align-center justify-center pa-0" style="height: 200px">
           <v-slide-y-transition>
-            <media-placeholder icon="mdi-youtube" text="No preview video" v-if="!youTubeVideoId" />
+            <media-placeholder :text="t('show.noPreview')" icon="mdi-youtube" v-if="!youTubeVideoId" />
             <you-tube-player
               :autoplay="false"
               :controls="true"
@@ -119,17 +123,12 @@ const youTubeSearch = (searchTerm: string) => {
         <v-card-actions>
           <v-text-field
             v-model="show!.preview_url"
+            :label="t('show.previewUrl')"
             :rules="rules.previewUrl"
             class="glass-panel rounded-lg"
-            label="Preview URL (YouTube)"
           >
             <template #prepend-inner>
-              <v-icon
-                icon="mdi-help-circle"
-                v-tooltip:bottom="
-                  'Used in same places as Card Image URL but takes priority most of the times or when hovered.'
-                "
-              />
+              <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('show.previewHint')" />
             </template>
           </v-text-field>
           <v-btn
@@ -138,7 +137,7 @@ const youTubeSearch = (searchTerm: string) => {
             icon="mdi-auto-fix"
             size="small"
             @click="youTubeSearch(getPrimaryTitle(show) + ' trailer')"
-            v-tooltip:bottom="'Autofill search'"
+            v-tooltip:bottom="t('show.autofill')"
           />
         </v-card-actions>
       </v-card>

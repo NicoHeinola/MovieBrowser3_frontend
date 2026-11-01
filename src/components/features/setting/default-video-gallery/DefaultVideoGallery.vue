@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { YouTubePlayer } from '@/components/common/youtube-player';
@@ -9,6 +10,7 @@ import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 const activeVideoUrl = ref<string | null>(null);
 
 const settingStore = useSettingStore();
+const { t } = useI18n();
 
 const items = computed<Array<{ thumbnailUrl: string | null; url: string; videoId: string | null }>>(() => {
   return settingStore.bannerDefaultVideos.map((url: string) => {
@@ -55,7 +57,7 @@ watch(items, (nextItems) => {
   <v-skeleton-loader type="card" width="390" v-if="settingStore.isLoading" />
 
   <div class="d-flex" v-else-if="items.length === 0">
-    <v-alert class="flex-0-1" type="info" border> No videos available. </v-alert>
+    <v-alert class="flex-0-1" type="info" border> {{ t('settings.noVideos') }} </v-alert>
   </div>
 
   <v-row v-else>
@@ -88,7 +90,7 @@ watch(items, (nextItems) => {
           </v-img>
 
           <v-sheet class="d-flex align-center justify-center" color="background" height="220" v-else>
-            <media-placeholder icon="mdi-youtube" text="Preview unavailable" />
+            <media-placeholder :text="t('settings.previewUnavailable')" icon="mdi-youtube" />
           </v-sheet>
         </div>
 

@@ -4,8 +4,11 @@ import type { SnackbarApi } from './SnackbarApi';
 import type { SnackbarDismissReason } from './SnackbarDismissReason';
 import type { SnackbarOptions } from './SnackbarOptions';
 import { provide, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { snackbarApiKey } from './snackbarApiKey';
+
+const { t } = useI18n();
 
 const snackbars = ref<QueuedSnackbar[]>([]);
 
@@ -35,7 +38,7 @@ provide(snackbarApiKey, snackbarApi);
 
   <v-snackbar-queue v-model="snackbars" :total-visible="10" closable>
     <template #actions="{ props }: any">
-      <v-btn color="default" v-bind="props"> Close </v-btn>
+      <v-btn color="default" v-bind="props"> {{ t('common.snackbarClose') }} </v-btn>
     </template>
   </v-snackbar-queue>
 </template>

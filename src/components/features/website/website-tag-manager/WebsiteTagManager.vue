@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useQueryClient } from '@tanstack/vue-query';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { SearchToolbar } from '@/components/common/search-toolbar';
 import { useDialog } from '@/components/layouts/dialog-provider';
@@ -18,6 +19,7 @@ const search = ref<string>('');
 
 const dialog = useDialog();
 const queryClient = useQueryClient();
+const { t } = useI18n();
 
 const openCreateTagDialog = async (): Promise<void> => {
   const refresh = await dialog.showDialog({
@@ -32,7 +34,7 @@ const openCreateTagDialog = async (): Promise<void> => {
 </script>
 
 <template>
-  <search-toolbar v-model:search="search" placeholder="Search tags..." />
+  <search-toolbar v-model:search="search" :placeholder="t('website.searchTags')" />
 
   <v-row justify="center">
     <v-col cols="12" lg="8" md="10" xl="6">

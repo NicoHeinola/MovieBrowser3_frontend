@@ -2,6 +2,7 @@
 import { DnDProvider } from '@vue-dnd-kit/core';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { LanguagePrompt } from '@/components/features/locale/language-prompt';
 import { DialogProvider } from '@/components/layouts/dialog-provider';
 import { SnackbarProvider } from '@/components/layouts/snackbar-provider';
 import { TopNavigation } from '@/components/layouts/top-navigation';
@@ -26,6 +27,7 @@ const shouldShowNavigation = computed<boolean>(() => isRouterReady.value && rout
     <DnDProvider>
       <snackbar-provider>
         <dialog-provider>
+          <language-prompt />
           <v-main class="z-10">
             <top-navigation v-if="shouldShowNavigation" />
             <router-view />

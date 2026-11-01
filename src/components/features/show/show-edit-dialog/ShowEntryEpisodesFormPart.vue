@@ -3,6 +3,7 @@ import type { EpisodeFormData } from './EpisodeFormData';
 import type { ShowEntryFormData } from './ShowEntryFormData';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { ref, useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { SortableItem } from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
@@ -18,6 +19,7 @@ const expandedEpisodes = ref<EpisodeFormData[]>([]);
 
 const { confirm } = useConfirmDialog();
 const { showSuccessSnackbar, showWarningSnackbar } = useCommonSnackbar();
+const { t } = useI18n();
 
 const preferredEpisodeFileExtensions = ['.mp4', '.m4v', '.mkv', '.webm', '.mov', '.avi', '.wmv', '.mpeg', '.mpg'];
 
@@ -55,7 +57,7 @@ const addEpisode = (): void => {
   const episodes = (entry.value.episodes ??= []);
 
   const nextEpisode: EpisodeFormData = {
-    name: 'Untitled',
+    name: t('show.untitled'),
     sequence_number: episodes.length,
   };
 
@@ -94,7 +96,7 @@ const addPickedEpisodes = (selectedFiles: File[]): void => {
   }
 
   if (nextEpisodes.length === 0) {
-    showWarningSnackbar(`No episodes were added. Duplicate filenames: ${duplicateFilenames.join(', ')}`);
+    showWarningSnackbar(t('show.noEpisodesAdded', { names: duplicateFilenames.join(', ') }));
     return;
   }
 
@@ -103,12 +105,12 @@ const addPickedEpisodes = (selectedFiles: File[]): void => {
 
   if (duplicateFilenames.length > 0) {
     showWarningSnackbar(
-      `Added ${nextEpisodes.length} episode(s). Skipped duplicate filenames: ${duplicateFilenames.join(', ')}`,
+      t('show.episodesAddedSkipped', { count: nextEpisodes.length, names: duplicateFilenames.join(', ') }),
     );
     return;
   }
 
-  showSuccessSnackbar(`Added ${nextEpisodes.length} episode(s) from files.`);
+  showSuccessSnackbar(t('show.episodesAdded', { count: nextEpisodes.length }));
 };
 
 const addEpisodesFromFilesWithInput = (): void => {
@@ -142,9 +144,9 @@ const addEpisodesFromFiles = async (): Promise<void> => {
 const removeEpisode = async (index: number): Promise<void> => {
   const episodeName = entry.value.episodes?.[index]?.name;
   const isConfirmed = await confirm({
-    message: `Are you sure you want to remove "${episodeName}"?`,
+    message: t('show.removeEntryConfirm', { name: episodeName }),
     confirmColor: 'error',
-    confirmText: 'Remove',
+    confirmText: t('common.remove'),
   });
 
   if (!isConfirmed) {
@@ -203,8 +205,8 @@ makeDroppable(
     </v-col>
 
     <v-col class="d-flex ga-2 align-center" cols="12">
-      <v-btn size="small" variant="text" @click="addEpisode"> Add another episode </v-btn>
-      <v-btn size="small" variant="text" @click="addEpisodesFromFiles"> Add episodes from files </v-btn>
+      <v-btn size="small" variant="text" @click="addEpisode"> {{ t('show.addEpisode') }} </v-btn>
+      <v-btn size="small" variant="text" @click="addEpisodesFromFiles"> {{ t('show.addEpisodesFromFiles') }} </v-btn>
     </v-col>
   </v-row>
 </template>

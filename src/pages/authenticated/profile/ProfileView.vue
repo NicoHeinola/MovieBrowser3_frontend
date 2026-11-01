@@ -3,6 +3,7 @@ import type { ChangePasswordFormRequest } from '@/components/features/auth/chang
 import type { UsernameFormRequest } from '@/components/features/auth/username-form';
 
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { FormCard } from '@/components/common/form-card';
 import { PageBackground } from '@/components/common/page-background';
@@ -15,6 +16,7 @@ import { useAuthStore } from '@/stores/auth/useAuthStore';
 
 const authStore = useAuthStore();
 const { showSuccessSnackbar, showAPIErrorSnackbar } = useCommonSnackbar();
+const { t } = useI18n();
 
 const usernameFormId = 'username-form';
 const passwordFormId = 'change-password-form';
@@ -41,7 +43,7 @@ const submitUsername = async (): Promise<void> => {
   isUsernameLoading.value = true;
   try {
     await authStore.updateUser({ username: usernameRequest.value.username });
-    showSuccessSnackbar('Username updated successfully.');
+    showSuccessSnackbar(t('profile.usernameUpdated'));
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {
@@ -60,7 +62,7 @@ const submitPassword = async (): Promise<void> => {
       password: passwordRequest.value.password,
       password_confirmation: passwordRequest.value.password_confirmation,
     });
-    showSuccessSnackbar('Password updated successfully.');
+    showSuccessSnackbar(t('profile.passwordUpdated'));
     passwordRequest.value = { password: '', password_confirmation: '' };
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
@@ -75,7 +77,7 @@ const submitPassword = async (): Promise<void> => {
   <page-container class="position-relative">
     <v-row>
       <v-col cols="12" sm="6">
-        <titled-section title="Change Password">
+        <titled-section :title="t('profile.changePassword')">
           <form-card>
             <change-password-form
               v-model:is-valid="isPasswordFormValid"
@@ -92,14 +94,14 @@ const submitPassword = async (): Promise<void> => {
                 color="primary"
                 type="submit"
               >
-                Save Password
+                {{ t('profile.savePassword') }}
               </v-btn>
             </div>
           </form-card>
         </titled-section>
       </v-col>
       <v-col cols="12" sm="6">
-        <titled-section title="Change Username">
+        <titled-section :title="t('profile.changeUsername')">
           <form-card>
             <username-form
               v-model:is-valid="isUsernameFormValid"
@@ -116,7 +118,7 @@ const submitPassword = async (): Promise<void> => {
                 color="primary"
                 type="submit"
               >
-                Save Username
+                {{ t('profile.saveUsername') }}
               </v-btn>
             </div>
           </form-card>

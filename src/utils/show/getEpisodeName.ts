@@ -1,4 +1,5 @@
 import type { Episode } from '@/interfaces/api/models/Episode';
+import { i18n } from '@/plugins/i18n';
 
 /**
  * Get an episode's display name, falling back to its 1-based position.
@@ -11,5 +12,5 @@ export const getEpisodeName = (episode: Episode): string => {
     return episode.name;
   }
 
-  return `Episode ${episode.sequence_number + 1}`;
+  return i18n.global.t('show.episodeFallback', { number: episode.sequence_number + 1 });
 };

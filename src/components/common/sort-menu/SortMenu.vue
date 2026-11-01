@@ -2,12 +2,15 @@
 import type { SortOption } from './sortOption';
 
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   options: SortOption[];
 }>();
 
 const sort = defineModel<string>({ required: true });
+
+const { t } = useI18n();
 
 const selectedOption = computed<SortOption | undefined>(() =>
   props.options.find((option) => option.value === sort.value),
@@ -21,7 +24,9 @@ const selectedOption = computed<SortOption | undefined>(() =>
         v-bind="menuProps"
         :icon="selectedOption?.icon ?? 'mdi-sort'"
         size="small"
-        v-tooltip:bottom="`Sort: ${selectedOption?.title ?? 'Default'}`"
+        v-tooltip:bottom="
+          t('common.sortBy', { option: selectedOption ? t(selectedOption.titleKey) : t('common.sortDefault') })
+        "
       />
     </template>
     <v-list>
@@ -29,7 +34,7 @@ const selectedOption = computed<SortOption | undefined>(() =>
         v-for="option in props.options"
         :active="sort === option.value"
         :prepend-icon="option.icon"
-        :title="option.title"
+        :title="t(option.titleKey)"
         @click="sort = option.value"
         :key="option.value"
       />

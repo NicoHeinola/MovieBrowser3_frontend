@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { ExpandableTextProps } from './expandableTextProps';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = withDefaults(defineProps<ExpandableTextProps>(), {
   maxChars: 200,
@@ -31,7 +34,7 @@ const toggleExpand = () => {
     <span class="text-pre-wrap text-body-large">{{ displayedText }}</span>
     <div>
       <v-btn class="pa-0" color="link" variant="text" @click="toggleExpand" v-if="shouldTruncate">
-        {{ isExpanded ? 'Show Less' : 'Show More' }}
+        {{ isExpanded ? t('common.showLess') : t('common.showMore') }}
       </v-btn>
     </div>
   </div>

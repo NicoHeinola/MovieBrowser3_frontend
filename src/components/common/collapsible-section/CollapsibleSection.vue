@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
 import { SectionLabel } from '@/components/common/section-label';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   /** The section label, also used in the toggle button's aria label. */
@@ -19,7 +23,9 @@ const isOpen = defineModel<boolean>({
       <div class="d-flex ga-2 align-center justify-space-between cursor-pointer" @click="isOpen = !isOpen">
         <section-label :title="props.title" />
         <v-btn
-          :aria-label="isOpen ? `Close ${props.title}` : `Open ${props.title}`"
+          :aria-label="
+            isOpen ? t('common.closeSection', { title: props.title }) : t('common.openSection', { title: props.title })
+          "
           :icon="isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'"
           class="text-medium-emphasis"
           color="default"

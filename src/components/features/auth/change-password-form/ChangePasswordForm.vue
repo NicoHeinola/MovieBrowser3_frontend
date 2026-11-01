@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { ChangePasswordFormRequest } from './changePasswordFormRequest';
 
+import { useI18n } from 'vue-i18n';
+
 import { BaseForm } from '@/components/common/base-form';
 
 import { getRules } from './changePasswordFormRules';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   id: string;
@@ -29,9 +33,9 @@ const rules = getRules(() => request.value.password);
       <v-col cols="12">
         <v-text-field
           v-model="request.password"
+          :label="t('auth.newPassword')"
           :rules="rules.password"
           class="required"
-          label="New password"
           prepend-inner-icon="mdi-lock-outline"
           type="password"
         />
@@ -39,9 +43,9 @@ const rules = getRules(() => request.value.password);
       <v-col cols="12">
         <v-text-field
           v-model="request.password_confirmation"
+          :label="t('auth.confirmNewPassword')"
           :rules="rules.confirmPassword"
           class="required"
-          label="Confirm new password"
           prepend-inner-icon="mdi-shield-lock-outline"
           type="password"
         />

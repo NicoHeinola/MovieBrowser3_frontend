@@ -4,11 +4,14 @@ import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResp
 
 import { refDebounced } from '@vueuse/core';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
@@ -17,7 +20,7 @@ const props = withDefaults(
   }>(),
   {
     excludeIds: () => [],
-    label: 'Show',
+    label: undefined,
   },
 );
 
@@ -63,9 +66,9 @@ const getShowTitle = (show: Show): string => {
     :item-title="getShowTitle"
     :item-value="(show: Show) => show.id"
     :items="availableShows"
-    :label="props.label"
+    :label="props.label ?? t('show.label')"
     :loading="showsQuery.isFetching.value"
-    :no-data-text="search.trim() ? 'No matching shows found' : 'No shows available'"
+    :no-data-text="search.trim() ? t('show.noMatching') : t('show.noneAvailable')"
     return-object
   >
     <template #item="{ item, props: itemProps }">

@@ -1,4 +1,5 @@
 import type { ShowGeneralFormData } from './ShowGeneralFormData';
+import { i18n } from '@/plugins/i18n';
 import { requiredRule } from '@/rules/requiredRule';
 
 export const getRules = (formData: ShowGeneralFormData | null) => {
@@ -15,7 +16,7 @@ export const getRules = (formData: ShowGeneralFormData | null) => {
         }
 
         if (formData.titles[i].title.trim() === value.trim()) {
-          return 'Title must be unique';
+          return i18n.global.t('rules.titleUnique');
         }
       }
 

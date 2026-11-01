@@ -1,3 +1,4 @@
+import { i18n } from '@/plugins/i18n';
 import { maxLengthRule } from '@/rules/maxLengthRule';
 import { requiredRule } from '@/rules/requiredRule';
 import { urlRule } from '@/rules/urlRule';
@@ -12,7 +13,7 @@ export const getRules = () => {
     url: [requiredRule, (value: string) => urlRule(normalizeWebsiteUrl(value)), maxLengthRule(2048)],
     title: [maxLengthRule(255)],
     description: [maxLengthRule(5000)],
-    tags: [(value: number[]) => value.length <= 50 || 'Use at most 50 tags'],
+    tags: [(value: number[]) => value.length <= 50 || i18n.global.t('rules.maxTags')],
     mdiIcon: [requiredRule],
     imageUrl: [requiredRule, urlRule, maxLengthRule(255)],
   };

@@ -4,6 +4,7 @@ import type { WebsiteSearchFilters } from '@/composables/website/WebsiteSearchFi
 import type { WebsiteTag } from '@/interfaces/api/models/WebsiteTag';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 import { computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { FilterChip } from '@/components/common/filter-chip';
 import { FilterDrawer, FilterDrawerSection } from '@/components/common/filter-drawer';
@@ -12,6 +13,8 @@ import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { websiteTagService } from '@/services/website/websiteTagService';
 import { getFilterState } from '@/utils/filter/getFilterState';
 import { toggleFilterValue } from '@/utils/filter/toggleFilterValue';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   activeFilterCount: number;
@@ -79,9 +82,16 @@ watch(tags, (currentTags) => {
     :total-results="props.totalResults"
     @clear="emit('clear')"
   >
-    <filter-drawer-section title="Tags">
+    <filter-drawer-section :title="t('website.tagsFilter')">
       <template #subtitle>
-        Matches <span class="text-primary">every</span> included, <span class="text-error">none</span> excluded.
+        <i18n-t keypath="website.tagMatchesEvery" tag="span">
+          <template #every>
+            <span class="text-primary">{{ t('filter.every') }}</span>
+          </template>
+          <template #none>
+            <span class="text-error">{{ t('filter.none') }}</span>
+          </template>
+        </i18n-t>
       </template>
       <v-col cols="12" v-if="tagsQuery.isPending.value">
         <v-skeleton-loader class="bg-transparent" type="chip@6" />
@@ -96,7 +106,7 @@ watch(tags, (currentTags) => {
         />
       </v-col>
       <v-col cols="12" v-else>
-        <p class="text-body-small text-disabled">No tags yet.</p>
+        <p class="text-body-small text-disabled">{{ t('website.noTags') }}</p>
       </v-col>
     </filter-drawer-section>
   </filter-drawer>

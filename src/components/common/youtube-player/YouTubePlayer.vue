@@ -2,6 +2,9 @@
 import type { YouTubePlayerInstance } from './youTubePlayerInstance';
 import type { YouTubeWindow } from './youTubeWindow';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
@@ -164,9 +167,9 @@ onUnmounted(() => {
   <div class="player-root">
     <iframe
       :src="playerSrc"
+      :title="t('common.showPreviewVideo')"
       class="player-container"
       frameborder="0"
-      title="Show preview video"
       allowfullscreen
       :id="iframeId"
       ref="iframeRef"

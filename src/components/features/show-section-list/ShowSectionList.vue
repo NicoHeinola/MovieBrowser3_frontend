@@ -3,7 +3,10 @@ import type { ShowSection } from '@/interfaces/api/models/ShowSection';
 
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { SortableItem } from '@/components/common/sortable-item';
+
+const { t } = useI18n();
 
 const props = defineProps<{
   disabled?: boolean;
@@ -51,7 +54,9 @@ makeDroppable(
               </p>
             </div>
             <v-spacer />
-            <v-btn :disabled="props.disabled" variant="text" @click="emit('edit', section)">Edit</v-btn>
+            <v-btn :disabled="props.disabled" variant="text" @click="emit('edit', section)">{{
+              t('common.edit')
+            }}</v-btn>
           </v-card-text>
         </v-card>
       </sortable-item>

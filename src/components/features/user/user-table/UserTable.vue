@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { User } from '@/interfaces/api/models/User';
 import type { DataTableHeader } from 'vuetify';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
@@ -18,13 +20,14 @@ const emit = defineEmits<{
 }>();
 
 const authStore = useAuthStore();
+const { t } = useI18n();
 
 /** Sorting goes through the page's sort menu, so the columns are not sortable. */
-const headers: Array<DataTableHeader> = [
-  { title: 'Username', key: 'username', sortable: false },
-  { title: 'Admin', key: 'is_admin', align: 'center', sortable: false, width: 120 },
+const headers = computed<DataTableHeader[]>(() => [
+  { title: t('auth.username'), key: 'username', sortable: false },
+  { title: t('user.admin'), key: 'is_admin', align: 'center', sortable: false, width: 120 },
   { title: '', key: 'actions', align: 'end', sortable: false, width: 72 },
-];
+]);
 </script>
 
 <template>
@@ -41,7 +44,7 @@ const headers: Array<DataTableHeader> = [
     <template #item.username="{ item }">
       <div class="d-flex ga-2 align-center">
         {{ item.username }}
-        <v-chip color="link" size="small" v-if="item.id === authStore.user?.id">You</v-chip>
+        <v-chip color="link" size="small" v-if="item.id === authStore.user?.id">{{ t('user.you') }}</v-chip>
       </div>
     </template>
 
@@ -57,7 +60,7 @@ const headers: Array<DataTableHeader> = [
         size="small"
         variant="text"
         @click="emit('edit', item)"
-        v-tooltip:bottom="'Edit user'"
+        v-tooltip:bottom="t('user.editUser')"
       />
     </template>
 

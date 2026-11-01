@@ -6,6 +6,7 @@ import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResp
 
 import { useQueryClient } from '@tanstack/vue-query';
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { TitledSection } from '@/components/common/titled-section';
@@ -28,6 +29,7 @@ const isSavingSectionOrder = ref<boolean>(false);
 const dialog = useDialog();
 const queryClient = useQueryClient();
 const { showAPIErrorSnackbar } = useCommonSnackbar();
+const { t } = useI18n();
 
 const categoriesQuery = useAPIQuery<PaginatedResponse<Category>>({
   queryKey: [CategoryQueryKey.AdminCategories],
@@ -170,7 +172,7 @@ watch(
   <page-container>
     <v-row class="position-relative">
       <v-col cols="12" lg="6">
-        <titled-section subtitle="These can be added to shows and movies." title="Categories">
+        <titled-section :subtitle="t('categories.subtitle')" :title="t('categories.title')">
           <v-row>
             <template v-if="categoriesQuery.isFetching.value">
               <v-col v-for="n in 6" class="d-flex" cols="12" lg="6" xl="4" :key="n">
@@ -192,7 +194,7 @@ watch(
                       </v-tooltip>
                     </p>
                     <v-spacer />
-                    <v-btn variant="text" @click="openEditCategoryDialog(category)">Edit</v-btn>
+                    <v-btn variant="text" @click="openEditCategoryDialog(category)">{{ t('common.edit') }}</v-btn>
                   </v-card-text>
                 </v-card>
               </v-col>
@@ -207,7 +209,7 @@ watch(
         </titled-section>
       </v-col>
       <v-col cols="12" lg="6">
-        <titled-section subtitle="Decide what categories appear on the frontpage." title="Frontpage categories">
+        <titled-section :subtitle="t('categories.frontpageSubtitle')" :title="t('categories.frontpageTitle')">
           <v-row>
             <template v-if="showSectionsQuery.isFetching.value && !isSavingSectionOrder">
               <v-col v-for="n in 4" class="d-flex" cols="12" :key="n">
@@ -228,7 +230,7 @@ watch(
               </v-col>
 
               <v-col class="d-flex" cols="12" v-else>
-                <v-alert class="flex-0-1" type="info">No categories have been added to the frontpage yet.</v-alert>
+                <v-alert class="flex-0-1" type="info">{{ t('categories.frontpageEmpty') }}</v-alert>
               </v-col>
             </template>
           </v-row>

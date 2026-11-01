@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import type { ShowEntryFormData } from './ShowEntryFormData';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import ShowEntryEpisodesFormPart from './ShowEntryEpisodesFormPart.vue';
 import ShowEntryGeneralFormPart from './ShowEntryGeneralFormPart.vue';
+
+const { t } = useI18n();
 
 const entry = defineModel<ShowEntryFormData>('entry', { required: true });
 const expanded = defineModel<boolean>('expanded', { default: false });
@@ -32,9 +35,9 @@ const updatePanelModelValue = (value: string[]): void => {
           <span class="font-weight-medium text-truncate" style="flex: 1 1 auto; min-width: 0">
             {{ entry.name }}
           </span>
-          <span class="text-medium-emphasis text-body-small text-no-wrap"
-            >{{ entry.episodes?.length ?? 0 }} Episodes</span
-          >
+          <span class="text-medium-emphasis text-body-small text-no-wrap">{{
+            t('show.episodeCount', { count: entry.episodes?.length ?? 0 })
+          }}</span>
         </div>
       </template>
 
@@ -42,8 +45,8 @@ const updatePanelModelValue = (value: string[]): void => {
         <v-row>
           <v-col cols="12">
             <v-tabs v-model="selectedTab" color="primary">
-              <v-tab text="General" value="general" />
-              <v-tab text="Episodes" value="episodes" />
+              <v-tab :text="t('show.tabGeneral')" value="general" />
+              <v-tab :text="t('show.episodes')" value="episodes" />
             </v-tabs>
           </v-col>
 
