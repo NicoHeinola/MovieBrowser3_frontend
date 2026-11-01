@@ -55,12 +55,15 @@ const watchedEpisodeIds = computed<Set<number>>(() => getWatchedEpisodeIds(props
 
 /**
  * Resolves how an episode's number chip shows its progress.
+ * The last watched episode wins over watched, so it stays findable inside a completed entry.
  * @param episodeId - The episode to look up.
- * @returns The chip color and icon: watched, playing, or neither.
+ * @returns The chip color, icon and variant: last watched, watched, or neither.
  */
-const getEpisodeChipProps = (episodeId: number): { color?: string; prependIcon?: string } => {
+const getEpisodeChipProps = (episodeId: number): { color?: string; prependIcon?: string; variant?: 'flat' } => {
+  if (episodeId === props.show?.watch_progress?.episode_id) {
+    return { color: 'secondary', prependIcon: 'mdi-play-circle', variant: 'flat' };
+  }
   if (watchedEpisodeIds.value.has(episodeId)) return { color: 'success', prependIcon: 'mdi-check' };
-  if (episodeId === props.show?.watch_progress?.episode_id) return { color: 'secondary', prependIcon: 'mdi-play' };
   return {};
 };
 
@@ -148,7 +151,11 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
 
     <v-col v-for="(episode, index) in selectedEntry?.episodes" class="d-flex ga-2" cols="12" :key="episode.id">
       <div style="min-width: 60px">
-        <v-chip v-bind="getEpisodeChipProps(episode.id)" class="flex-0-1">
+        <v-chip
+          v-bind="getEpisodeChipProps(episode.id)"
+          :title="episode.id === show?.watch_progress?.episode_id ? t('show.lastWatched') : undefined"
+          class="flex-0-1"
+        >
           {{ index + 1 }}
         </v-chip>
       </div>

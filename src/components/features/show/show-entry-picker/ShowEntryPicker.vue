@@ -32,17 +32,6 @@ const { arrivedState, measure } = useScroll(rail);
 const isOverflowing = computed<boolean>(() => !(arrivedState.left && arrivedState.right));
 
 /**
- * Resolves a card's color: primary when selected, secondary when it is the entry being watched.
- * @param entry - The card's entry.
- * @returns The Vuetify color, or undefined for the default outline.
- */
-const getCardColor = (entry: ShowEntry): string | undefined => {
-  if (entry.id === selectedEntry.value?.id) return 'primary';
-  if (entry.id === props.watchingEntryId) return 'secondary';
-  return undefined;
-};
-
-/**
  * Selects the entry, or clears the selection when it is already selected.
  * @param entry - The clicked entry.
  */
@@ -77,7 +66,7 @@ useResizeObserver(rail, measure);
       <drag-scroll-container class="d-flex ga-2 overflow-x-auto" ref="container">
         <v-card
           v-for="entry in entries"
-          :color="getCardColor(entry)"
+          :color="entry.id === selectedEntry?.id ? 'primary' : undefined"
           :variant="entry.id === selectedEntry?.id ? 'tonal' : 'outlined'"
           class="flex-shrink-0"
           style="max-width: 240px"
@@ -96,7 +85,7 @@ useResizeObserver(rail, measure);
             <v-icon
               :title="t('show.lastWatched')"
               color="secondary"
-              icon="mdi-history"
+              icon="mdi-play-circle"
               size="small"
               v-if="entry.id === props.watchingEntryId"
             />

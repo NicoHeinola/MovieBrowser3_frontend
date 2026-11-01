@@ -8,6 +8,24 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
+    version: '1.2.1',
+    date: '2026-11-01',
+    changes: [
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The red accent color is now a calm blue, so highlights no longer look like errors.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'In the show drawer, the season you last watched has a play marker instead of a red outline.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'The episode you last watched stays marked in the episode list, even when its season is completed.',
+      },
+    ],
+  },
+  {
     version: '1.2.0',
     date: '2026-11-01',
     changes: [

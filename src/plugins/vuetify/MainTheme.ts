@@ -4,7 +4,9 @@ export const MainTheme: ThemeDefinition = {
   dark: true,
   colors: {
     primary: '#f8d125',
-    secondary: '#ff6c6c',
+    /** Calm blue accent that complements the yellow primary without reading as an error. */
+    secondary: '#7FA8FF',
+    'on-secondary': '#0F131B',
     background: '#0F131B',
     'background-lighten-1': '#171E2B',
     surface: '#171E2B',
