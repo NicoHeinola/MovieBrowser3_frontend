@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<BaseDialogProps>(), {
 
 const slots = useSlots();
 const hasTitleSlot = computed(() => !!slots.title);
+const hasActionsSlot = computed(() => !!slots.actions);
 </script>
 
 <template>
@@ -23,7 +24,7 @@ const hasTitleSlot = computed(() => !!slots.title);
       <v-card-text class="pa-5 overflow-scroll">
         <slot />
       </v-card-text>
-      <v-card-actions class="position-relative">
+      <v-card-actions class="position-relative" v-if="hasActionsSlot">
         <div class="w-100 h-100 position-absolute left-0 top-0" style="background: rgba(0, 0, 0, 0.2)"></div>
         <slot name="actions" />
       </v-card-actions>
