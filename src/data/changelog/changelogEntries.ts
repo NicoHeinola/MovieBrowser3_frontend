@@ -8,6 +8,20 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
+    version: '1.3.0',
+    date: '2026-11-01',
+    changes: [
+      {
+        type: ChangelogChangeType.Added,
+        text: 'New admins get a short setup that picks the video folder and finds VLC, so videos play right away.',
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Admins can run the setup again from the Settings page.',
+      },
+    ],
+  },
+  {
     version: '1.2.2',
     date: '2026-11-01',
     changes: [

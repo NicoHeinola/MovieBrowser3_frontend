@@ -151,7 +151,8 @@
     "videoSectionSubtitle": "Settings related to videos",
     "removeBackgroundConfirm": "Remove this default banner background?\n\n{url}",
     "removeVideoConfirm": "Remove this default banner video?\n\n{url}",
-    "favoritesLink": "Websites"
+    "favoritesLink": "Websites",
+    "openSetup": "Run setup again"
   },
   "frontpage": {
     "saved": "Frontpage section saved successfully.",
@@ -357,5 +358,38 @@
     "deleteTagConfirmUsed": "Delete the tag “{name}”? It is removed from {usage}. This action cannot be undone.",
     "tagNameOf": "Name of tag {name}",
     "deleteTag": "Delete tag"
+  },
+  "setup": {
+    "welcomeStep": "Welcome",
+    "videoFolderStep": "Video folder",
+    "vlcStep": "VLC",
+    "doneStep": "Done",
+    "welcomeTitle": "Welcome to MovieBrowser 3",
+    "welcomeSubtitle": "Two quick steps and your videos are ready to play. It takes about a minute.",
+    "welcomeVideoFolder": "Pick the folder where the app keeps your videos",
+    "welcomeVlc": "Tell the app where VLC is, so it can play them",
+    "notNow": "Not now",
+    "start": "Get started",
+    "back": "Back",
+    "next": "Next",
+    "saveAnyway": "Save anyway",
+    "checkFailed": "This path didn't pass the check.",
+    "checkFailedHint": "Fix the path, or save it anyway if you're sure it's right.",
+    "videoFolderTitle": "Where should videos go?",
+    "videoFolderSubtitle": "Videos you add are stored here, in sub-folders per show. Pick a folder inside one of your media folders so VLC can open them. Click a suggestion to use it.",
+    "videoFolderMoveWarning": "If videos are already stored in {path}, saving moves them to this folder. With many videos this can take a while.",
+    "vlcTitle": "Where is VLC?",
+    "vlcSubtitle": "The app opens your videos in VLC Media Player. Enter the full path to vlc.exe, such as /mnt/c/Program Files/VideoLAN/VLC/vlc.exe.",
+    "vlcDetected": "Found VLC at {path}. If that's the one you use, just click Next.",
+    "vlcNotDetected": "VLC wasn't found in the usual places. If it isn't installed yet, install it first, then enter its path here.",
+    "vlcDownload": "Download VLC",
+    "doneTitle": "All set",
+    "doneSubtitle": "Your videos can play now. Next, add your first show. You can change these paths any time in Admin, Settings.",
+    "goHome": "Go to home",
+    "addShows": "Add shows",
+    "completed": "Setup finished.",
+    "loadFailed": "The setup couldn't load",
+    "loadFailedText": "MovieBrowser didn't answer. It may still be starting up, so wait a moment and try again.",
+    "retry": "Try again"
   }
 }

@@ -153,6 +153,14 @@ onMounted(() => {
       <v-col cols="12" lg="6">
         <titled-section :subtitle="t('settings.videoSectionSubtitle')" :title="t('settings.videoSection')">
           <video-settings />
+
+          <template #append>
+            <div class="d-flex flex-1-1 justify-end">
+              <v-btn :to="{ name: 'admin-setup' }" prepend-icon="mdi-auto-fix" variant="tonal">
+                {{ t('settings.openSetup') }}
+              </v-btn>
+            </div>
+          </template>
         </titled-section>
       </v-col>
     </v-row>

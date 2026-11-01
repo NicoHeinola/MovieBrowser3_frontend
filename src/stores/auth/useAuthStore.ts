@@ -9,6 +9,7 @@ import { computed, ref } from 'vue';
 import { queryClient } from '@/plugins/query';
 import { authService } from '@/services/auth/authService';
 import { userService } from '@/services/user/userService';
+import { useSetupStore } from '@/stores/setup/useSetupStore';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = useStorage<string | null>('auth.token', null);
@@ -36,6 +37,8 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null;
     // Drop cached responses so the next user in this tab never sees the previous user's data.
     queryClient.clear();
+    // A skipped setup belongs to this admin; the next one to log in here should still get the wizard.
+    useSetupStore().reset();
   };
 
   const register = async (request: AuthRegisterRequest): Promise<void> => {

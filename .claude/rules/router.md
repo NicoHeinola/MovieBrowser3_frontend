@@ -27,7 +27,8 @@ Example:
 
 - Pages live at `src/pages/<access>/<name>/<Name>View.vue`, where access is `guest`, `authenticated` or `admin`.
 - Route names are `<access>-<name>`. Set `meta.requiresAuth`, `meta.requiresAdmin` or `meta.guestOnly` to match the access folder.
-- A new admin route also needs an entry in `adminLinks` in `TopNavigation.vue`.
+- A new admin route also needs an entry in `adminLinks` in `TopNavigation.vue`, unless it is a full-screen flow with `meta.hideNavigation` (such as `admin-setup`) that a page links to instead.
+- Admins are sent to `admin-setup` by the `beforeEach` guard until the backend reports setup as completed or they skip it for the session. Keep new guard checks above that redirect.
 
 ## Structure
 

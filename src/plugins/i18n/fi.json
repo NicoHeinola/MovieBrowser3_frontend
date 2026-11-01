@@ -151,7 +151,8 @@
     "videoSectionSubtitle": "Videoihin liittyvät asetukset",
     "removeBackgroundConfirm": "Poistetaanko tämä bannerin oletustausta?\n\n{url}",
     "removeVideoConfirm": "Poistetaanko tämä bannerin oletusvideo?\n\n{url}",
-    "favoritesLink": "Verkkosivut"
+    "favoritesLink": "Verkkosivut",
+    "openSetup": "Käy käyttöönotto uudelleen"
   },
   "frontpage": {
     "saved": "Etusivun osio tallennettu.",
@@ -357,5 +358,38 @@
     "deleteTagConfirmUsed": "Poistetaanko tunniste “{name}”? Se poistetaan {usage}. Tätä ei voi perua.",
     "tagNameOf": "Tunnisteen {name} nimi",
     "deleteTag": "Poista tunniste"
+  },
+  "setup": {
+    "welcomeStep": "Tervetuloa",
+    "videoFolderStep": "Videokansio",
+    "vlcStep": "VLC",
+    "doneStep": "Valmis",
+    "welcomeTitle": "Tervetuloa MovieBrowser 3:een",
+    "welcomeSubtitle": "Kaksi nopeaa vaihetta, niin videosi ovat valmiita toistettaviksi. Tämä vie noin minuutin.",
+    "welcomeVideoFolder": "Valitse kansio, johon sovellus tallentaa videosi",
+    "welcomeVlc": "Kerro sovellukselle, missä VLC on, jotta se voi toistaa ne",
+    "notNow": "Ei nyt",
+    "start": "Aloita",
+    "back": "Takaisin",
+    "next": "Seuraava",
+    "saveAnyway": "Tallenna silti",
+    "checkFailed": "Polku ei läpäissyt tarkistusta.",
+    "checkFailedHint": "Korjaa polku tai tallenna se silti, jos olet varma, että se on oikein.",
+    "videoFolderTitle": "Minne videot tallennetaan?",
+    "videoFolderSubtitle": "Lisäämäsi videot tallennetaan tänne, jokainen sarja omaan alikansioonsa. Valitse kansio jonkin mediakansiosi sisältä, jotta VLC voi avata ne. Käytä ehdotusta klikkaamalla sitä.",
+    "videoFolderMoveWarning": "Jos kansiossa {path} on jo videoita, tallennus siirtää ne tähän kansioon. Jos videoita on paljon, tämä voi kestää hetken.",
+    "vlcTitle": "Missä VLC on?",
+    "vlcSubtitle": "Sovellus avaa videosi VLC Media Playerissa. Anna vlc.exe-tiedoston koko polku, esimerkiksi /mnt/c/Program Files/VideoLAN/VLC/vlc.exe.",
+    "vlcDetected": "VLC löytyi polusta {path}. Jos käytät sitä, klikkaa vain Seuraava.",
+    "vlcNotDetected": "VLC:tä ei löytynyt tavallisista paikoista. Jos sitä ei ole vielä asennettu, asenna se ensin ja anna sitten sen polku tähän.",
+    "vlcDownload": "Lataa VLC",
+    "doneTitle": "Valmista",
+    "doneSubtitle": "Voit nyt toistaa videoitasi. Lisää seuraavaksi ensimmäinen sarjasi. Voit muuttaa näitä polkuja milloin tahansa kohdassa Ylläpito, Asetukset.",
+    "goHome": "Etusivulle",
+    "addShows": "Lisää sarjoja",
+    "completed": "Käyttöönotto valmis.",
+    "loadFailed": "Käyttöönottoa ei voitu ladata",
+    "loadFailedText": "MovieBrowser ei vastannut. Se saattaa vielä käynnistyä, joten odota hetki ja yritä uudelleen.",
+    "retry": "Yritä uudelleen"
   }
 }
