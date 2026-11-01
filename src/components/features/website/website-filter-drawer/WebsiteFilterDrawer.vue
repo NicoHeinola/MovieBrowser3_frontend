@@ -90,7 +90,7 @@ watch(tags, (currentTags) => {
         <filter-chip
           v-for="tag in tags"
           :model-value="getFilterState(filters.tagIds, filters.excludedTagIds, tag.id)"
-          :text="tag.websites_count === undefined ? tag.name : `${tag.name} · ${tag.websites_count}`"
+          :text="tag.websites_count === undefined ? tag.name : `${tag.name} (${tag.websites_count})`"
           @update:model-value="setTagState(tag.id, $event)"
           :key="tag.id"
         />
