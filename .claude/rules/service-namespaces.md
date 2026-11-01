@@ -1,0 +1,60 @@
+---
+description: Service namespace rules for TypeScript service files under src/services. Use when adding or refactoring API wrapper services, service-local helpers, backend-facing modules, or platform integrations.
+paths:
+  - 'src/services/**/*.ts'
+applyTo: 'src/services/**/*.ts'
+---
+
+# Service Namespace Rules
+
+## Ownership
+
+- Put backend-facing and platform-facing service wrappers in `src/services/<domain>/` namespaces.
+- Keep stores, pages, and components consuming services rather than defining service wrappers inside those namespaces.
+- Reuse an existing service domain folder when the new file talks to the same backend or platform area.
+
+## File Shape
+
+- Name each service file after the single service concept it exports, such as `authService.ts`.
+- Keep one primary exported service per file.
+- Declare `const list/get/create/update/remove` arrow functions, then export them as one object: `export const xService = { list, get, create, update, remove }`. Use `remove`, not `delete`.
+- Use relative paths without a leading slash (`'categories'`, `` `episodes/${id}` ``) and return `response.data`.
+- List methods take `ApiQueryParams` and pass it as `params`. Paginated endpoints return `PaginatedResponse<T>`.
+- File uploads go through `toFormData(request)` with a `multipart/form-data` header.
+- Do not add `index.ts` barrels to service namespaces unless a deliberate public boundary is needed by multiple external consumers.
+- When a backend sub-resource has its own endpoint family, split it into a sibling service file instead of adding it to the parent resource service. For example, keep `showService.ts` focused on `/shows` endpoints and move `/shows/:showId/titles` plus `/titles/:titleId` into `showTitleService.ts`.
+
+### Example: Service Module
+
+```typescript
+// src/services/setting/settingService.ts
+import type { UpdateSettingRequest } from '@/interfaces/api/requests/UpdateSettingRequest';
+import type { SettingsResponse } from '@/interfaces/api/responses/SettingsResponse';
+
+import { apiClient } from '@/plugins/api/apiClient';
+
+const list = async (): Promise<SettingsResponse> => {
+  const response = await apiClient.get<SettingsResponse>('settings');
+
+  return response.data;
+};
+
+const update = async <T>(key: string, request: UpdateSettingRequest<T>): Promise<void> => {
+  await apiClient.patch(`settings/${key}`, request);
+};
+
+export const settingService = {
+  list,
+  update,
+};
+```
+
+## Boundaries
+
+- Service files may depend on shared API clients, request and response interfaces, and closely related service-local helpers.
+- Server-Sent Event streams cannot use the axios `apiClient`; open them with `fetchEventSource` from `@microsoft/fetch-event-source`, take the bearer token and an `AbortSignal` from the caller, set `openWhenHidden: true` so the caller owns tab-visibility handling, and pass parsed events to callbacks (see `watchProgressStreamService.ts`).
+- Do not move backend contract definitions into services; import them from `src/interfaces/api`.
+- Return backend fetch payloads as received. Do not normalize paginated responses into keyed maps, flatten wrapper objects, or reshape data for one consumer inside a service.
+- Keep UI state, persistence decisions, and view-specific formatting in stores or components rather than in service modules.
+- Method names should be clear and domain-focused (e.g., `login` instead of `authPost`).
+- Avoid catch-all resource services that accumulate unrelated endpoint groups. If two endpoint groups can evolve independently, give them separate service concepts even when they live in the same namespace folder.

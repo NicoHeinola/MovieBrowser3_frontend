@@ -32,12 +32,14 @@ APP_PORT=4173 npm run dev
 npm run dev            # start the development server
 npm run build          # type-check and build for production
 npm run preview        # preview the production build
-npm run type-check     # run TypeScript checks
-npm run lint           # run ESLint
-npm run lint:fix       # fix lint issues when possible
-npm test               # run tests
+npm run check          # types, lint, format and tests
+npm run check:types    # run TypeScript checks
+npm run check:lint     # run ESLint
+npm run check:format   # check formatting with Prettier
+npm run fix            # fix lint and formatting issues
+npm test               # run tests once
+npm run test:watch     # run tests in watch mode
 npm run test:coverage  # run tests with coverage
-npm run format         # format the project with Prettier
 ```
 
 ## Project Structure
@@ -48,6 +50,17 @@ npm run format         # format the project with Prettier
 - `src/plugins` contains app plugin setup such as Vuetify
 - `src/router` contains Vue Router setup
 - `src/utils` contains small tested helpers
+
+## AI Assistants
+
+Agent guidance lives in `.claude/` and works for both Claude Code and Copilot:
+
+- `AGENTS.md`: repo-wide guidance. `CLAUDE.md` imports it, and `.github/copilot-instructions.md` is a symlink to it.
+- `.claude/rules/`: file-specific rules. Claude loads them through `paths`, Copilot through `applyTo`.
+- `.claude/skills/`: workflows. `.github/skills` is a symlink to it.
+- `.claude/agents/`: planner, researcher and reviewer agents.
+
+In VS Code, Copilot loads `AGENTS.md` by default (`chat.useAgentsMdFile`). If it doesn't pick up the rules, add `.claude/rules` to `chat.instructionsFilesLocations` in your user settings.
 
 ## Tech Stack
 
