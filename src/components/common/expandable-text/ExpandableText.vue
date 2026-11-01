@@ -28,7 +28,7 @@ const toggleExpand = () => {
 
 <template>
   <div>
-    <span class="text-pre-wrap text-body-1">{{ displayedText }}</span>
+    <span class="text-pre-wrap text-body-large">{{ displayedText }}</span>
     <div>
       <v-btn class="pa-0" color="link" variant="text" @click="toggleExpand" v-if="shouldTruncate">
         {{ isExpanded ? 'Show Less' : 'Show More' }}

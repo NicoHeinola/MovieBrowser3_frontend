@@ -56,11 +56,12 @@ export default [
     rules: {
       'vue/padding-line-between-tags': 'off',
       // Spacing utilities (margin, padding, gap) use even steps, plus 5 (20px), which matches Vuetify's dialog and
-      // toolbar insets.
+      // toolbar insets. Typography uses the MD3 scale, because Vuetify 4 no longer ships the MD2 classes.
       'vue/no-restricted-class': [
         'error',
         '/^[mp][atrblsexy]?-n?(1|3|7|9|11|13|15)$/', // margin and padding, such as ma-1, px-3, mt-n7
         '/^g[acr]-(1|3|7|9|11|13|15)$/', // gap, such as ga-1, gr-3
+        '/^text-(h[1-6]|subtitle-[12]|body-[12]|caption|overline|button)$/', // MD2 typography, such as text-caption
       ],
       'vue/max-len': [
         'error',

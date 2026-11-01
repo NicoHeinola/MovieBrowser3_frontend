@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 
+import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
@@ -87,10 +88,7 @@ watch(items, (nextItems) => {
           </v-img>
 
           <v-sheet class="d-flex align-center justify-center" color="background" height="220" v-else>
-            <div class="d-flex flex-column align-center ga-2 text-medium-emphasis">
-              <v-icon icon="mdi-youtube" size="40" />
-              <span class="text-body-medium">Preview unavailable</span>
-            </div>
+            <media-placeholder icon="mdi-youtube" text="Preview unavailable" />
           </v-sheet>
         </div>
 

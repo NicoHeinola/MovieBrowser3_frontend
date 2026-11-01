@@ -244,6 +244,7 @@ components/
 - Prefer moving reusable visual tokens to shared styles or the Vuetify theme instead of hard-coding them per component.
 - Do not repeat local `density` or similar shared visual props in feature components. Recurring defaults live in `src/plugins/vuetify/ComponentDefaults.ts`.
 - Spacing utilities (margin, padding and gap, such as `pa-*`, `mt-*`, `ga-*`) use even steps such as 2 and 4, plus 5 (20px), which matches Vuetify's dialog and toolbar insets (`base-dialog` uses `pa-5`). Never use 1, 3, 7 or other odd steps. ESLint enforces this with `vue/no-restricted-class`.
+- Typography uses Vuetify 4's MD3 scale (`text-body-*`, `text-label-*`, `text-title-*`). MD2 classes such as `text-caption`, `text-body-1` and `text-h6` no longer exist, and ESLint rejects them. Style single-class text with plain utilities (`text-medium-emphasis`, `text-truncate`). Use `heading-text` for a heading with a muted subtitle and `media-placeholder` for an icon-and-text stand-in where an image or video is missing.
 - For async loading UI, use a Vuetify component's built-in `loading` prop when available; otherwise use `v-skeleton-loader`.
 - Exception: the route-change loader in `top-navigation` uses `v-progress-linear`, because `v-app-bar` has no `loading` prop.
 - Do not introduce any other loading treatment in Vue components or pages, including custom spinner components, custom shimmer markup, standalone progress indicators, or bespoke overlays.

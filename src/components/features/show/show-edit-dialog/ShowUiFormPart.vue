@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { ShowUiFormData } from './ShowUiFormData';
+
 import { computed } from 'vue';
+
+import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
+
 import { getRules } from './showUiFormRules';
 
 const show = defineModel<ShowUiFormData>('show', { required: true });
@@ -37,10 +41,7 @@ const youTubeSearch = (searchTerm: string) => {
       <v-card :image="show!.banner_url" border="sm">
         <v-card-text class="d-flex align-center justify-center" style="height: 300px">
           <v-slide-y-transition>
-            <div class="d-flex flex-column align-center text-medium-emphasis" v-if="!show?.banner_url">
-              <v-icon icon="mdi-image-off-outline" size="32" />
-              <span class="text-caption">No banner image</span>
-            </div>
+            <media-placeholder icon="mdi-image-off-outline" text="No banner image" v-if="!show?.banner_url" />
           </v-slide-y-transition>
         </v-card-text>
         <v-card-actions>
@@ -72,10 +73,7 @@ const youTubeSearch = (searchTerm: string) => {
       <v-card :image="show!.card_image_url" border="sm">
         <v-card-text class="d-flex align-center justify-center" style="height: 200px">
           <v-slide-y-transition>
-            <div class="d-flex flex-column align-center text-medium-emphasis" v-if="!show?.card_image_url">
-              <v-icon icon="mdi-image-off-outline" size="32" />
-              <span class="text-caption">No card image</span>
-            </div>
+            <media-placeholder icon="mdi-image-off-outline" text="No card image" v-if="!show?.card_image_url" />
           </v-slide-y-transition>
         </v-card-text>
         <v-card-actions>
@@ -107,10 +105,7 @@ const youTubeSearch = (searchTerm: string) => {
       <v-card border="sm">
         <v-card-text class="position-relative d-flex align-center justify-center pa-0" style="height: 200px">
           <v-slide-y-transition>
-            <div class="d-flex flex-column align-center text-medium-emphasis" v-if="!youTubeVideoId">
-              <v-icon icon="mdi-youtube" size="32" />
-              <span class="text-caption">No preview video</span>
-            </div>
+            <media-placeholder icon="mdi-youtube" text="No preview video" v-if="!youTubeVideoId" />
             <you-tube-player
               :autoplay="false"
               :controls="true"

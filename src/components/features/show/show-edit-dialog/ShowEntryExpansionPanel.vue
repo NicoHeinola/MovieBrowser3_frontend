@@ -32,7 +32,9 @@ const updatePanelModelValue = (value: string[]): void => {
           <span class="font-weight-medium text-truncate" style="flex: 1 1 auto; min-width: 0">
             {{ entry.name }}
           </span>
-          <span class="text-medium-emphasis text-caption text-no-wrap">{{ entry.episodes?.length ?? 0 }} Episodes</span>
+          <span class="text-medium-emphasis text-body-small text-no-wrap"
+            >{{ entry.episodes?.length ?? 0 }} Episodes</span
+          >
         </div>
       </template>
 

@@ -5,6 +5,7 @@ import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginReques
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+import { HeadingText } from '@/components/common/heading-text';
 import { LoginForm } from '@/components/features/auth/login-form';
 import { RegisterForm } from '@/components/features/auth/register-form';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -77,12 +78,10 @@ const submitRegister = async (): Promise<void> => {
       <v-col cols="12" lg="6">
         <div class="d-flex flex-column align-start ga-4">
           <v-chip color="secondary" variant="flat">MovieBrowser 3</v-chip>
-          <div>
-            <h1>Your movie library — at your fingertips.</h1>
-            <p class="text-medium-emphasis">
-              View trailers, watch shows, rate movies, and get personalized recommendations. All in one place.
-            </p>
-          </div>
+          <heading-text
+            subtitle="View trailers, watch shows, rate movies, and get personalized recommendations. All in one place."
+            title="Your movie library — at your fingertips."
+          />
         </div>
       </v-col>
       <v-col cols="12" lg="5">
@@ -94,14 +93,18 @@ const submitRegister = async (): Promise<void> => {
             </v-btn-toggle>
 
             <div style="max-width: 450px">
-              <template v-if="mode === 'login'">
-                <h2>Welcome back</h2>
-                <p class="text-medium-emphasis">Sign in to continue browsing your library and picks.</p>
-              </template>
-              <template v-else>
-                <h2>Create your account</h2>
-                <p class="text-medium-emphasis">Register to start building your movie library.</p>
-              </template>
+              <heading-text
+                :level="2"
+                subtitle="Sign in to continue browsing your library and picks."
+                title="Welcome back"
+                v-if="mode === 'login'"
+              />
+              <heading-text
+                :level="2"
+                subtitle="Register to start building your movie library."
+                title="Create your account"
+                v-else
+              />
             </div>
 
             <template v-if="mode === 'login'">

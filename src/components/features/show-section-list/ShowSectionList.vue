@@ -46,7 +46,7 @@ makeDroppable(
             <v-icon>{{ section.category.icon }}</v-icon>
             <div class="text-truncate">
               <p class="text-truncate">{{ section.category.name }}</p>
-              <p class="text-caption text-medium-emphasis text-truncate" v-if="section.description">
+              <p class="text-body-small text-medium-emphasis text-truncate" v-if="section.description">
                 {{ section.description }}
               </p>
             </div>
