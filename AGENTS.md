@@ -39,6 +39,13 @@ The app version lives in `package.json`, and `src/data/changelog/changelogEntrie
 - Write each line for users, in plain words: "Show cards show the primary title in a tooltip.", not "feat(show-card): add tooltip".
 - When the newest version is already on `origin/main`, start a new entry at the top instead, dated today: bump the minor version for features, the patch version for fix-only changes, and set the same version in `package.json`.
 
+## Production
+
+Production runs on the user's own machine, not a server or registry. The backend repo's install script builds this repo with `npm run build`, and the backend's web server serves `dist/` next to the API on the same address, so production builds call the relative `/api/v1` from `.env.production`.
+
+- A new `VITE_*` variable needs a production value in `.env.production`, or the production build fails on it.
+- Keep `npm run build` working without a `.env` file: production builds have only `.env.production`.
+
 ## Commit Messages
 
 Use Conventional Commits: `type(scope): short summary`.

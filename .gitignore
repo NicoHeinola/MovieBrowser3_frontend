@@ -35,6 +35,7 @@ pnpm-debug.log*
 *.sw?
 
 *.d.ts
+!env.d.ts
 
 node_modules/
 

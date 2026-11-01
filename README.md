@@ -6,7 +6,7 @@ Right now the project is an early frontend scaffold with a public home page, reu
 
 ## Requirements
 
-- Node.js 22 or newer
+- Node.js 24 or newer
 - npm
 
 ## Quick Start
@@ -41,6 +41,13 @@ npm test               # run tests once
 npm run test:watch     # run tests in watch mode
 npm run test:coverage  # run tests with coverage
 ```
+
+## Production
+
+Production runs on your own machine. The backend repo's install script clones this repo, builds it with `npm run build` in a throwaway Node container, and the backend's web server serves the result next to the API on the same address. You don't build or serve it by hand.
+
+- **API URL**: production builds use `.env.production`, which points the app at `/api/v1` on its own address.
+- **Install, update, ports**: see the backend repo's `deploy/README.md`.
 
 ## Project Structure
 
