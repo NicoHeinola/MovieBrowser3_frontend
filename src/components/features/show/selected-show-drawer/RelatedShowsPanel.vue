@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
-import { SectionLabel } from '@/components/common/section-label';
+import { useStorage } from '@vueuse/core';
+import { CollapsibleSection } from '@/components/common/collapsible-section';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getShowLinkTypeIcon } from '@/utils/show/getShowLinkTypeIcon';
 
@@ -10,6 +11,9 @@ const props = defineProps<{
 }>();
 
 const showId = defineModel<number | null>('showId', { required: true });
+
+/** Whether the related show list is open, remembered across drawers and reloads. */
+const isOpen = useStorage<boolean>('showDrawer.isRelatedShowsOpen', true);
 
 /**
  * Switches the drawer to a linked show; the drawer loads it.
@@ -23,32 +27,32 @@ const changeShow = (targetShowId: number): void => {
 </script>
 
 <template>
-  <v-row v-if="(show?.outgoing_links?.length ?? 0) > 0">
-    <v-col cols="12">
-      <v-divider></v-divider>
-    </v-col>
+  <template v-if="(show?.outgoing_links?.length ?? 0) > 0">
+    <v-row>
+      <v-col cols="12">
+        <v-divider></v-divider>
+      </v-col>
+    </v-row>
 
-    <v-col cols="12">
-      <section-label title="Related shows" />
-    </v-col>
-
-    <v-col
-      v-for="link in show?.outgoing_links"
-      class="d-flex ga-2 align-center justify-space-between"
-      cols="12"
-      :key="link.id"
-    >
-      <p
-        :class="{ link: !isLoading, 'text-medium-emphasis': isLoading }"
-        class="text-body-medium cursor-pointer text-truncate"
-        @click="changeShow(link.target_show!.id)"
+    <collapsible-section v-model="isOpen" title="Related shows">
+      <v-col
+        v-for="link in show?.outgoing_links"
+        class="d-flex ga-2 align-center justify-space-between"
+        cols="12"
+        :key="link.id"
       >
-        {{ getPrimaryTitle(link.target_show) }}
-      </p>
-      <v-chip color="primary" size="small" variant="tonal">
-        <v-icon :icon="getShowLinkTypeIcon(link.type)" start />
-        {{ $t(`showLink.type.${link.type}`) }}
-      </v-chip>
-    </v-col>
-  </v-row>
+        <p
+          :class="{ link: !isLoading, 'text-medium-emphasis': isLoading }"
+          class="text-body-medium cursor-pointer text-truncate"
+          @click="changeShow(link.target_show!.id)"
+        >
+          {{ getPrimaryTitle(link.target_show) }}
+        </p>
+        <v-chip color="primary" size="small" variant="tonal">
+          <v-icon :icon="getShowLinkTypeIcon(link.type)" start />
+          {{ $t(`showLink.type.${link.type}`) }}
+        </v-chip>
+      </v-col>
+    </collapsible-section>
+  </template>
 </template>

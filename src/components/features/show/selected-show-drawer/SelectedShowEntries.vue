@@ -2,8 +2,9 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import type { CombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
+import { useStorage } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
-import { SectionLabel } from '@/components/common/section-label';
+import { CollapsibleSection } from '@/components/common/collapsible-section';
 import { ShowEntryPicker } from '@/components/features/show/show-entry-picker';
 import { WatchStatusButton } from '@/components/features/show/watch-status-button';
 import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchStatus';
@@ -23,6 +24,9 @@ const isSavingStatus = ref<boolean>(false);
 
 const entries = computed<ShowEntry[]>(() => props.show?.entries ?? []);
 const show = computed<Show | null>(() => props.show);
+
+/** Whether the episode list is open, remembered across drawers and reloads. */
+const isEpisodesOpen = useStorage<boolean>('showDrawer.isEpisodesOpen', true);
 
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 const { saveWatchStatus } = useShowEntryWatchStatus();
@@ -128,11 +132,9 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
     <v-col cols="12">
       <v-divider></v-divider>
     </v-col>
+  </v-row>
 
-    <v-col cols="12">
-      <section-label title="Episodes" />
-    </v-col>
-
+  <collapsible-section v-model="isEpisodesOpen" title="Episodes">
     <v-col cols="12" v-if="!selectedEntry">
       <v-alert class="flex-0-1" type="info" variant="tonal">Select an entry to see its episodes.</v-alert>
     </v-col>
@@ -160,5 +162,5 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
         <v-spacer />
       </v-btn>
     </v-col>
-  </v-row>
+  </collapsible-section>
 </template>
