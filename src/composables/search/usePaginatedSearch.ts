@@ -95,7 +95,7 @@ export const usePaginatedSearch = <TItem, TFilters>(options: PaginatedSearchOpti
       const term = (value ?? '').trim();
       isSearchPending.value = false;
 
-      /** A state restored from the URL already set the term and its page. */
+      // A state restored from the URL already set the term and its page.
       if (term === searchTerm.value) {
         return;
       }
@@ -109,7 +109,7 @@ export const usePaginatedSearch = <TItem, TFilters>(options: PaginatedSearchOpti
   );
 
   watch(totalPages, (lastPage) => {
-    /** Step back when removing the last item of the last page leaves it past the end. */
+    // Step back when removing the last item of the last page leaves it past the end.
     if (page.value > lastPage) {
       page.value = lastPage;
     }

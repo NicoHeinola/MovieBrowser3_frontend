@@ -47,7 +47,7 @@ export const useSelectedShow = (showId: Ref<number | null>, isShown: Readonly<Re
     queryFn: () => showService.get(showId.value as number),
     enabled: computed<boolean>(() => isShown.value && showId.value !== null),
     initialData: () => findCachedShow()?.show,
-    /** The copy is as old as the list it came from, so it refetches once that list would. */
+    // The copy is as old as the list it came from, so it refetches once that list would.
     initialDataUpdatedAt: () => findCachedShow()?.updatedAt,
     placeholderData: keepPreviousData,
   });
@@ -68,7 +68,7 @@ export const useSelectedShow = (showId: Ref<number | null>, isShown: Readonly<Re
   watch(
     () => showQuery.isError.value,
     (isError) => {
-      /** The previous show is kept only while loading, so after an error the drawer would otherwise go blank. */
+      // The previous show is kept only while loading, so after an error the drawer would otherwise go blank.
       if (isError && loadedShowId !== null && loadedShowId !== showId.value) {
         showId.value = loadedShowId;
       }

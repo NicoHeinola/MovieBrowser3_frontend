@@ -210,7 +210,7 @@ const deleteShow = async (): Promise<void> => {
 };
 
 onMounted(() => {
-  /** Snapshot the original values for change detection. */
+  // Snapshot the original values for change detection.
   if (show.value?.id) {
     originalShow.value = deepClone<Show>(show.value);
   }

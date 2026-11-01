@@ -127,7 +127,7 @@ export const useDragScroll = (
       return;
     }
 
-    /** The release can land outside the element, e.g. on a drawer opened by a long press, so end the drag here. */
+    // The release can land outside the element, e.g. on a drawer opened by a long press, so end the drag here.
     if ((event.buttons & 1) === 0) {
       endDrag(event.timeStamp, false);
       return;

@@ -48,7 +48,7 @@ export const usePaginatedSearchRouteSync = <TFilters>(
   watch(
     () => route.query,
     () => {
-      /** Leaving the page also changes the query; that is not a new search. */
+      // Leaving the page also changes the query; that is not a new search.
       if (route.name !== routeName) {
         return;
       }

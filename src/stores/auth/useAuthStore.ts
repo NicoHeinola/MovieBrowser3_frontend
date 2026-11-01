@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = (): void => {
     token.value = null;
     user.value = null;
-    /** Drop cached responses so the next user in this tab never sees the previous user's data. */
+    // Drop cached responses so the next user in this tab never sees the previous user's data.
     queryClient.clear();
   };
 

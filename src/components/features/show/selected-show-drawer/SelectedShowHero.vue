@@ -47,7 +47,7 @@ watch(
       return;
     }
 
-    /** Wait until the drawer close animation finishes. */
+    // Wait until the drawer close animation finishes.
     hideTimeoutId = setTimeout(() => {
       isVideoPlaying.value = false;
       isVideoError.value = false;

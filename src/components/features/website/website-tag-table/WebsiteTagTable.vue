@@ -178,7 +178,7 @@ const confirmDelete = async (tag: { id: number; name: string; websites_count: nu
 watch(
   () => tagsQuery.data.value?.meta.last_page,
   (lastPage) => {
-    /** Step back when deleting the last tag of the last page leaves it empty. */
+    // Step back when deleting the last tag of the last page leaves it empty.
     if (lastPage && page.value > lastPage) {
       page.value = lastPage;
     }

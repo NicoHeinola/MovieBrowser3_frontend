@@ -28,7 +28,7 @@ const { openWebsiteEditDialog } = useWebsiteEditDialog();
 const statsQuery = useAPIQuery<DashboardStatsResponse>({
   queryKey: [DashboardQueryKey.AdminDashboardStats],
   queryFn: async () => await dashboardStatsService.get(),
-  /** Every admin page changes these counts, so they refetch on each visit instead of being invalidated from each. */
+  // Every admin page changes these counts, so they refetch on each visit instead of being invalidated from each.
   staleTime: 0,
 });
 

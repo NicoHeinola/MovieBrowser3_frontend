@@ -46,7 +46,7 @@ export const useScrollMomentum = (element: Readonly<Ref<HTMLElement | null>>) =>
       return;
     }
 
-    /** The first frame only records its timestamp, since there is no elapsed time to move by yet. */
+    // The first frame only records its timestamp, since there is no elapsed time to move by yet.
     if (lastTimestamp === null || timestamp <= lastTimestamp) {
       lastTimestamp ??= timestamp;
       frameId = requestAnimationFrame(step);

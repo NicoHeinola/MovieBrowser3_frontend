@@ -56,7 +56,7 @@ const setTagState = (tagId: number, state: FilterChipState): void => {
 };
 
 watch(tags, (currentTags) => {
-  /** Stop filtering on tags that were deleted, which would otherwise hide every website without a visible chip. */
+  // Stop filtering on tags that were deleted, which would otherwise hide every website without a visible chip.
   const tagIds = new Set(currentTags.map((tag) => tag.id));
   const { tagIds: included, excludedTagIds: excluded } = filters.value;
 

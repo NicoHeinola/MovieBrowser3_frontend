@@ -53,8 +53,30 @@ const totalCount = computed(() => items.value.length);
 
 ## Comments
 
-- When adding source-code comments in `.ts` files, use proper JSDoc block comments (`/** ... */`) instead of `//` comments.
+- Use JSDoc (`/** ... */`) for declarations: functions (at any level), props, emits, types and their fields, enum members, and state or constants declared at the top level of a module, `<script setup>` or composable.
 - JSDoc should describe purpose and include `@param` tags for each parameter plus an `@returns` tag when the function returns a value or explicitly returns `void`.
+- Use `//` for comments inside logic: before statements (`if`, `await`, calls, assignments), on locals inside callbacks, handlers and watchers, and on keys of option objects passed to a call.
+- In non-obvious logic (recursion, reference-equality tricks, early returns with a hidden reason), add a short `//` before each step saying what it does and why. Step comments also split the code into readable sections. Skip them for obvious code.
+
+```ts
+/**
+ * Walks one value of the cached data.
+ * @param value - The value to walk.
+ * @returns The same reference when nothing changed, otherwise a copy.
+ */
+const patch = (value: unknown): unknown => {
+  // Lists: patch every item, but only build a new array when one actually changed.
+  if (Array.isArray(value)) {
+    // ...
+  }
+};
+
+useAPIQuery({
+  queryKey: [DashboardQueryKey.AdminDashboardStats],
+  // Every admin page changes these counts, so refetch them on each visit.
+  staleTime: 0,
+});
+```
 
 ## Export Surface
 

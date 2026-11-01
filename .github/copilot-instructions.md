@@ -11,7 +11,7 @@
 ## Working Rules
 
 - Prefer extending an existing feature, page, component, utility, or plugin namespace before creating a new top-level namespace.
-- When adding source-code comments, use proper JSDoc block comments (`/** ... */`) instead of `//` comments. JSDoc should describe purpose and include `@param` and `@returns` tags when applicable.
+- Document declarations with JSDoc (`/** ... */`) that describes their purpose, with `@param` and `@returns` tags on functions. Write comments inside logic as `//`, and add short step comments to non-obvious logic. See `.github/instructions/typescript.instructions.md` (Comments).
 - Keep backend-facing API shapes in `src/interfaces/api` and preserve backend field names exactly unless a dedicated mapping layer is introduced.
 - When adapting a backend contract into a small consumer shape such as a keyed lookup `Record`, keep that mapped type local to the service or consumer unless it is reused broadly; do not create one-line support files for simple aliases.
 - Keep API-calling service modules in `src/services` and have stores or pages consume them rather than defining service wrappers inside those namespaces.

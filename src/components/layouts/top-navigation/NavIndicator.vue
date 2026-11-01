@@ -37,7 +37,7 @@ const updatePosition = (animate: boolean) => {
   width.value = linkRect.width;
 
   if (!initialized.value) {
-    /** Wait one tick so the position is applied before enabling transitions. */
+    // Wait one tick so the position is applied before enabling transitions.
     nextTick(() => {
       initialized.value = true;
     });
@@ -45,7 +45,7 @@ const updatePosition = (animate: boolean) => {
   }
 
   if (animate) {
-    /** Reset the squish animation so it can re-trigger even if already playing. */
+    // Reset the squish animation so it can re-trigger even if already playing.
     isSquishing.value = false;
     nextTick(() => {
       isSquishing.value = true;

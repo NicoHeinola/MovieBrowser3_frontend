@@ -29,7 +29,7 @@ const subscribe = async (options: {
   await fetchEventSource(`${getEnvString('VITE_API_URL')}/watch-progress/stream`, {
     headers: { Authorization: `Bearer ${options.token}` },
     signal: options.signal,
-    /** The library's own hidden-tab handling can leave an untracked second stream open, so callers handle visibility. */
+    // The library's own hidden-tab handling can leave an untracked second stream open, so callers handle visibility.
     openWhenHidden: true,
     onopen: async (response: Response): Promise<void> => {
       if (response.status === 401) {
@@ -49,7 +49,7 @@ const subscribe = async (options: {
       }
     },
     onclose: (): void => {
-      /** The backend ends streams after a while; throwing hands the close to `onerror`, which reconnects. */
+      // The backend ends streams after a while; throwing hands the close to `onerror`, which reconnects.
       throw new Error('The watch progress stream was closed by the server.');
     },
     onerror: (error: unknown): number => {

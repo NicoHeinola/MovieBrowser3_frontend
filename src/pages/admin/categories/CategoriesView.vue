@@ -78,7 +78,7 @@ const openEditCategoryDialog = async (category?: Category): Promise<void> => {
   });
 
   if (refresh) {
-    /** Deleting a category also removes its frontpage section on the backend. */
+    // Deleting a category also removes its frontpage section on the backend.
     await Promise.all([categoriesQuery.refetch(), showSectionsQuery.refetch(), invalidateHomeShows()]);
   }
 };
@@ -137,12 +137,12 @@ const saveShowSectionOrder = async (sections: ShowSection[]): Promise<void> => {
       }),
     );
 
-    /** Bring the cache in line with the saved order; the paused watch keeps the screen as-is. */
+    // Bring the cache in line with the saved order; the paused watch keeps the screen as-is.
     await showSectionsQuery.refetch();
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
 
-    /** Assign directly: the watch is paused while saving, and an unchanged result keeps the same reference. */
+    // Assign directly: the watch is paused while saving, and an unchanged result keeps the same reference.
     const { data } = await showSectionsQuery.refetch();
     showSections.value = deepClone(data?.data ?? []);
   } finally {
@@ -154,7 +154,7 @@ const saveShowSectionOrder = async (sections: ShowSection[]): Promise<void> => {
 watch(
   () => showSectionsQuery.data.value,
   (data) => {
-    /** Keep the dragged order on screen until its saves finish. */
+    // Keep the dragged order on screen until its saves finish.
     if (isSavingSectionOrder.value) {
       return;
     }

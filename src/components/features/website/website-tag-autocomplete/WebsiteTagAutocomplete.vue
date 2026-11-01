@@ -89,7 +89,7 @@ const onEnter = (): void => {
 };
 
 watch(selectedIds, (ids) => {
-  /** A removed pending chip should not linger as a listed tag. */
+  // A removed pending chip should not linger as a listed tag.
   if (pendingTags.value.some((tag) => !ids.includes(tag.id))) {
     pendingTags.value = pendingTags.value.filter((tag) => ids.includes(tag.id));
   }

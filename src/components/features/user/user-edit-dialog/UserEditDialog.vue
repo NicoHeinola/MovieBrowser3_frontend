@@ -70,7 +70,7 @@ const saveUser = async (): Promise<void> => {
 
     const updatedUser = await userService.update(user.value.id, request);
 
-    /** Keep the navigation and profile in sync when admins edit themselves here. */
+    // Keep the navigation and profile in sync when admins edit themselves here.
     if (isCurrentUser.value) {
       authStore.user = updatedUser;
     }
@@ -133,10 +133,8 @@ const deleteUser = async (): Promise<void> => {
 watch(
   () => user.value.password,
   () => {
-    /**
-     * The confirmation only re-checks its own input, so a new password would otherwise leave a blank confirmation
-     * valid. Stay silent until it is typed into so the error does not appear while the password is being entered.
-     */
+    // The confirmation only re-checks its own input, so a new password would otherwise leave a blank confirmation
+    // valid. Stay silent until it is typed into so the error does not appear while the password is being entered.
     void confirmPasswordField.value?.validate(!user.value.password_confirmation);
   },
 );

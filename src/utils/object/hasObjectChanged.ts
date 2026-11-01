@@ -25,17 +25,17 @@ const pathMatches = (path: string, patterns: string[]): boolean =>
 
 /** Decide whether a given property path should be compared. */
 const shouldComparePath = (path: string, includePatterns: string[], excludePatterns: string[]): boolean => {
-  /** Excluded paths always take precedence. */
+  // Excluded paths always take precedence.
   if (excludePatterns.length > 0 && pathMatches(path, excludePatterns)) {
     return false;
   }
 
-  /** If no include list is defined, compare everything that is not excluded. */
+  // If no include list is defined, compare everything that is not excluded.
   if (includePatterns.length === 0) {
     return true;
   }
 
-  /** Root-level comparison remains enabled when include patterns exist. */
+  // Root-level comparison remains enabled when include patterns exist.
   if (path === '') {
     return true;
   }

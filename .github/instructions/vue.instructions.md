@@ -195,7 +195,7 @@ components/
 ## Styling
 
 - Keep styles `scoped` unless the component is intentionally providing global styling.
-- When adding source-code comments in `.vue` files, use proper JSDoc block comments (`/** ... */`) instead of `//` comments. JSDoc should describe purpose and include `@param` and `@returns` tags when applicable.
+- Comments follow the TypeScript comment rules (`typescript.instructions.md`, Comments). JSDoc (`/** ... */`) goes on props, emits, functions and top-level `<script setup>` state, with `@param` and `@returns` on functions. `//` goes inside logic: statements, callback and watcher bodies, and option keys.
 - Prefer moving reusable visual tokens to shared styles or the Vuetify theme instead of hard-coding them per component.
 - For async loading UI, use a Vuetify component's built-in `loading` prop when available; otherwise use `v-skeleton-loader`.
 - Exception: the route-change loader in `top-navigation` uses `v-progress-linear`, because `v-app-bar` has no `loading` prop.

@@ -61,7 +61,7 @@ export const useWatchProgressStream = (): void => {
           token,
           signal: controller.signal,
           onOpen: () => {
-            /** Changes made while disconnected are not replayed, so a reconnect refetches what they may have touched. */
+            // Changes made while disconnected are not replayed, so a reconnect refetches what they may have touched.
             if (streamedToken === token) {
               refetchShowLists();
             }
@@ -70,7 +70,7 @@ export const useWatchProgressStream = (): void => {
           onWatchProgress: applyWatchProgress,
         })
         .catch(() => {
-          /** A rejected token ends the stream; the API client's 401 handling logs the user out on the next request. */
+          // A rejected token ends the stream; the API client's 401 handling logs the user out on the next request.
         });
     },
     { immediate: true },
