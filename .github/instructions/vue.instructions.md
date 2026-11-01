@@ -197,6 +197,7 @@ components/
 - Keep styles `scoped` unless the component is intentionally providing global styling.
 - Comments follow the TypeScript comment rules (`typescript.instructions.md`, Comments). JSDoc (`/** ... */`) goes on props, emits, functions and top-level `<script setup>` state, with `@param` and `@returns` on functions. `//` goes inside logic: statements, callback and watcher bodies, and option keys.
 - Prefer moving reusable visual tokens to shared styles or the Vuetify theme instead of hard-coding them per component.
+- Spacing utilities (margin, padding and gap, such as `pa-*`, `mt-*`, `ga-*`) use even steps such as 2 and 4, plus 5 (20px), which matches Vuetify's dialog and toolbar insets (`base-dialog` uses `pa-5`). Never use 1, 3, 7 or other odd steps. ESLint enforces this with `vue/no-restricted-class`.
 - For async loading UI, use a Vuetify component's built-in `loading` prop when available; otherwise use `v-skeleton-loader`.
 - Exception: the route-change loader in `top-navigation` uses `v-progress-linear`, because `v-app-bar` has no `loading` prop.
 - Do not introduce any other loading treatment in Vue components or pages, including custom spinner components, custom shimmer markup, standalone progress indicators, or bespoke overlays.

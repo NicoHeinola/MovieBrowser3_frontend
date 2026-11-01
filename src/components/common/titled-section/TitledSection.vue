@@ -13,7 +13,7 @@ const props = defineProps<{
       <v-col class="z-10" cols="12">
         <div class="d-flex ga-4 align-center">
           <slot name="prepend" />
-          <v-sheet border="white sm" class="px-2 py-1" color="surface" rounded="lg" v-if="props.icon">
+          <v-sheet border="white sm" class="pa-2" color="surface" rounded="lg" v-if="props.icon">
             <v-icon :color="props.iconColor" size="small">{{ props.icon }}</v-icon>
           </v-sheet>
           <h1>{{ props.title }}</h1>

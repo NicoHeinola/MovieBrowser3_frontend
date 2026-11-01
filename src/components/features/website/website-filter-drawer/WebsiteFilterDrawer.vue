@@ -86,7 +86,7 @@ watch(tags, (currentTags) => {
       <v-col cols="12" v-if="tagsQuery.isPending.value">
         <v-skeleton-loader class="bg-transparent" type="chip@6" />
       </v-col>
-      <v-col class="d-flex flex-wrap ga-3" cols="12" v-else-if="tags.length > 0">
+      <v-col class="d-flex flex-wrap ga-2" cols="12" v-else-if="tags.length > 0">
         <filter-chip
           v-for="tag in tags"
           :model-value="getFilterState(filters.tagIds, filters.excludedTagIds, tag.id)"

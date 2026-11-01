@@ -33,7 +33,7 @@ const emit = defineEmits<{
       <template #subtitle>
         <span class="text-primary">Include</span> for admins only, <span class="text-error">exclude</span> for the rest.
       </template>
-      <v-col class="d-flex flex-wrap ga-3" cols="12">
+      <v-col class="d-flex flex-wrap ga-2" cols="12">
         <filter-chip
           :model-value="filters.admin"
           icon="mdi-shield-crown"

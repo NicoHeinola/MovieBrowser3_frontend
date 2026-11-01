@@ -28,7 +28,7 @@ makeDroppable(
 </script>
 
 <template>
-  <div class="d-flex ga-3 flex-column" ref="zone">
+  <div class="d-flex ga-2 flex-column" ref="zone">
     <transition-group name="show-section">
       <sortable-item
         v-for="(section, i) in sections"

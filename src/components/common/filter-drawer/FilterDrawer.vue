@@ -32,7 +32,7 @@ const resultLabel = computed<string>(() => {
     <v-container>
       <v-row align="center">
         <v-col cols="auto">
-          <v-sheet border="white sm" class="px-2 py-1" color="surface" rounded="lg">
+          <v-sheet border="white sm" class="pa-2" color="surface" rounded="lg">
             <v-icon color="primary" size="small">mdi-tune-variant</v-icon>
           </v-sheet>
         </v-col>

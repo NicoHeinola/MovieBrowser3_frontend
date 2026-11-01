@@ -47,11 +47,11 @@ const updatePanelModelValue = (value: string[]): void => {
 
           <v-col cols="12">
             <v-tabs-window :model-value="selectedTab">
-              <v-tabs-window-item class="pa-1" value="general" eager>
+              <v-tabs-window-item class="pa-2" value="general" eager>
                 <show-entry-general-form-part v-model:entry="entry" />
               </v-tabs-window-item>
 
-              <v-tabs-window-item class="pa-1" value="episodes" eager>
+              <v-tabs-window-item class="pa-2" value="episodes" eager>
                 <show-entry-episodes-form-part v-model:entry="entry" />
               </v-tabs-window-item>
             </v-tabs-window>

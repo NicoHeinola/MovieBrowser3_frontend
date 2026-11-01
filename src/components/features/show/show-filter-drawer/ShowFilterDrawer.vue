@@ -98,7 +98,7 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
       <template #subtitle>
         Matches <span class="text-primary">any</span> included, <span class="text-error">none</span> excluded.
       </template>
-      <v-col class="d-flex flex-wrap ga-3" cols="12">
+      <v-col class="d-flex flex-wrap ga-2" cols="12">
         <filter-chip
           v-for="status in watchStatuses"
           :color="getWatchStatusColor(status)"
@@ -118,7 +118,7 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
       <v-col cols="12" v-if="categoriesQuery.isPending.value">
         <v-skeleton-loader class="bg-transparent" type="chip@6" />
       </v-col>
-      <v-col class="d-flex flex-wrap ga-3" cols="12" v-else-if="categories.length > 0">
+      <v-col class="d-flex flex-wrap ga-2" cols="12" v-else-if="categories.length > 0">
         <filter-chip
           v-for="category in categories"
           :icon="category.icon"

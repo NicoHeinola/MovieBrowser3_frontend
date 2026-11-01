@@ -239,16 +239,16 @@ onMounted(() => {
           id="show-form"
         >
           <v-tabs-window :model-value="selectedTab[0]" class="flex-1-1">
-            <v-tabs-window-item class="pa-1" value="general" eager>
+            <v-tabs-window-item class="pa-2" value="general" eager>
               <show-general-form-part v-model:show="show" />
             </v-tabs-window-item>
-            <v-tabs-window-item class="pa-1" value="ui" eager>
+            <v-tabs-window-item class="pa-2" value="ui" eager>
               <show-ui-form-part v-model:show="show" />
             </v-tabs-window-item>
-            <v-tabs-window-item class="pa-1" value="entries" eager>
+            <v-tabs-window-item class="pa-2" value="entries" eager>
               <show-entries-form-part v-model:show="show" />
             </v-tabs-window-item>
-            <v-tabs-window-item class="pa-1" value="links" eager>
+            <v-tabs-window-item class="pa-2" value="links" eager>
               <show-links-form-part v-model:outgoing-links="show.outgoing_links" :show-id="show.id" />
             </v-tabs-window-item>
           </v-tabs-window>

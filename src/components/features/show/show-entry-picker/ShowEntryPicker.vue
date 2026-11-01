@@ -64,7 +64,7 @@ useResizeObserver(rail, measure);
 </script>
 
 <template>
-  <div class="d-flex align-center ga-1">
+  <div class="d-flex align-center ga-2">
     <v-btn
       :disabled="arrivedState.left"
       icon="mdi-chevron-left"
@@ -84,7 +84,7 @@ useResizeObserver(rail, measure);
           @click="toggle(entry)"
           :key="entry.id"
         >
-          <v-card-text class="d-flex align-center ga-3">
+          <v-card-text class="d-flex align-center ga-4">
             <v-icon :icon="entry.id === selectedEntry?.id ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'" />
             <section-label
               :subtitle="t(`showEntry.type.${entry.type}`)"

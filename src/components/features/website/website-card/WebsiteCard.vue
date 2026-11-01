@@ -86,8 +86,8 @@ const copyUrl = async (): Promise<void> => {
 
     <v-spacer />
 
-    <v-card-actions class="align-end ga-2 px-4 pb-3">
-      <div class="d-flex flex-wrap ga-1 flex-1-1">
+    <v-card-actions class="align-end ga-2 px-4 pb-4">
+      <div class="d-flex flex-wrap ga-2 flex-1-1">
         <v-chip
           v-for="tag in props.website.tags"
           :color="props.includedTagIds?.includes(tag.id) ? 'primary' : undefined"

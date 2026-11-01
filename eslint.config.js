@@ -55,6 +55,13 @@ export default [
     files: ['**/*.vue'],
     rules: {
       'vue/padding-line-between-tags': 'off',
+      // Spacing utilities (margin, padding, gap) use even steps, plus 5 (20px), which matches Vuetify's dialog and
+      // toolbar insets.
+      'vue/no-restricted-class': [
+        'error',
+        '/^[mp][atrblsexy]?-n?(1|3|7|9|11|13|15)$/', // margin and padding, such as ma-1, px-3, mt-n7
+        '/^g[acr]-(1|3|7|9|11|13|15)$/', // gap, such as ga-1, gr-3
+      ],
       'vue/max-len': [
         'error',
         {

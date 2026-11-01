@@ -54,8 +54,10 @@ const buttonLabel = computed<string>(() => {
         block
         v-bind="menuProps"
       >
-        {{ buttonLabel }}
-        <span class="text-medium-emphasis ml-1" v-if="props.suffix">{{ props.suffix }}</span>
+        <span class="d-flex ga-2">
+          {{ buttonLabel }}
+          <span class="text-medium-emphasis" v-if="props.suffix">{{ props.suffix }}</span>
+        </span>
       </v-btn>
     </template>
 
@@ -75,7 +77,7 @@ const buttonLabel = computed<string>(() => {
       </v-list-item>
 
       <template v-if="status">
-        <v-divider class="my-1" />
+        <v-divider class="my-2" />
         <v-list-item base-color="error" prepend-icon="mdi-close" title="Clear status" @click="status = null" />
       </template>
     </v-list>

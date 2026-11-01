@@ -56,11 +56,11 @@ watch(
 
 <template>
   <div class="d-inline-flex" data-testid="volume-control" @mouseenter="expand" @mouseleave="collapse">
-    <v-sheet class="d-inline-flex align-center overflow-hidden border px-2 py-1" rounded="pill">
+    <v-sheet class="d-inline-flex align-center ga-2 overflow-hidden border pa-2" rounded="pill">
       <v-btn :icon="volumeIcon" color="default" size="small" variant="text" @click="toggleMuted" />
 
       <v-expand-x-transition>
-        <div class="d-flex align-center ms-1 overflow-hidden" style="width: 116px" v-if="isExpanded">
+        <div class="d-flex align-center overflow-hidden" style="width: 116px" v-if="isExpanded">
           <v-slider v-model="volume" max="100" min="0" step="1" thumb-size="12" hide-details />
         </div>
       </v-expand-x-transition>
