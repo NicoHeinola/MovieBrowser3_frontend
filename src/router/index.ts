@@ -31,6 +31,14 @@ const router = createRouter({
       component: () => import('@/pages/authenticated/profile/ProfileView.vue'),
     },
     {
+      path: '/changelog',
+      name: 'authenticated-changelog',
+      meta: {
+        requiresAuth: true,
+      },
+      component: () => import('@/pages/authenticated/changelog/ChangelogView.vue'),
+    },
+    {
       path: '/search',
       name: 'authenticated-search',
       meta: {

@@ -20,6 +20,8 @@ export const MainTheme: ThemeDefinition = {
     'watch-status-dropped': '#FF8A8A',
     /** A show whose entries have different watch statuses, or only some have one. */
     'watch-status-mixed': '#8A93A6',
+    /** Dots of older versions on the changelog timeline; the latest uses `primary`. */
+    'changelog-dot': '#616161',
     'pattern-start': '#6B4FCC',
     'pattern-end': '#2A7A8A',
   },

@@ -2,11 +2,13 @@
 import type { NavigationLinkItem } from './navigationLinkItem';
 import type { Show } from '@/interfaces/api/models/Show';
 
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
+import { ChangelogVersionLink } from '@/components/features/changelog/changelog-version-link';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowSearchMenu } from '@/components/features/show/show-search-menu';
+import { useChangelogNotice } from '@/composables/changelog/useChangelogNotice';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useRouteLoading } from '@/composables/router/useRouteLoading';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
@@ -35,6 +37,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 const { confirm } = useConfirmDialog();
 const { isNavigating } = useRouteLoading();
+const { showUnseenChanges } = useChangelogNotice();
 
 const isInAdminArea = computed<boolean>(() => String(route.name ?? '').startsWith('admin-'));
 
@@ -62,6 +65,16 @@ const logout = async (): Promise<void> => {
   authStore.logout();
   await router.push({ name: 'guest-auth' });
 };
+
+onMounted(() => {
+  // Unknown URLs show the navigation to guests too, and they shouldn't use up the popup before logging in.
+  if (!authStore.isAuthenticated) {
+    return;
+  }
+
+  // The navigation mounts once a logged-in page opens, so this runs on every visit and after each login.
+  void showUnseenChanges();
+});
 </script>
 
 <template>
@@ -73,6 +86,10 @@ const logout = async (): Promise<void> => {
       height="1"
       indeterminate
     />
+    <!-- Hidden on phones, where it would crowd the centered links. -->
+    <div class="position-absolute left-0 top-0 h-100 d-none d-sm-flex align-center ms-6 z-10">
+      <changelog-version-link />
+    </div>
     <v-list class="d-flex flex-row ga-6 bg-transparent justify-center px-4 w-100">
       <nav-links :links="adminLinks" v-if="isInAdminArea" />
       <nav-links :links="authenticatedLinks" v-else />

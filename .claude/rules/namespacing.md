@@ -3,6 +3,7 @@ description: Source tree namespacing rules for namespaced files and folders unde
 paths:
   - 'src/components/**'
   - 'src/composables/**'
+  - 'src/data/**'
   - 'src/enums/**'
   - 'src/interfaces/**'
   - 'src/pages/**'
@@ -12,7 +13,7 @@ paths:
   - 'src/services/**'
   - 'src/stores/**'
   - 'src/utils/**'
-applyTo: 'src/components/**,src/composables/**,src/enums/**,src/interfaces/**,src/pages/**,src/plugins/**,src/router/**,src/rules/**,src/services/**,src/stores/**,src/utils/**'
+applyTo: 'src/components/**,src/composables/**,src/data/**,src/enums/**,src/interfaces/**,src/pages/**,src/plugins/**,src/router/**,src/rules/**,src/services/**,src/stores/**,src/utils/**'
 ---
 
 # Naming and Structure Rules
@@ -51,6 +52,11 @@ applyTo: 'src/components/**,src/composables/**,src/enums/**,src/interfaces/**,sr
 - Keep shared enum files inside a namespaced folder under `src/enums` that reflects the concern they support.
 - Name each enum file after the single enum it exports, such as `settingQueryKey.ts`.
 - Do not add `index.ts` barrels to enum namespaces.
+
+## Static Data
+
+- Content that ships with the frontend instead of coming from the backend lives in `src/data/<domain>/`, one exported constant per file (`src/data/changelog/changelogEntries.ts`).
+- Type it with interfaces in `src/interfaces/<domain>/`, not `src/interfaces/api`, and cover its invariants (order, uniqueness, formats) in an adjacent `__tests__` file.
 
 ## Utilities
 

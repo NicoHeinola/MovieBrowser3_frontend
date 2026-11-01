@@ -1,4 +1,12 @@
 {
+  "changelog": {
+    "changeType": {
+      "added": "Added",
+      "changed": "Changed",
+      "fixed": "Fixed",
+      "removed": "Removed"
+    }
+  },
   "showEntry": {
     "type": {
       "movie": "Movie",
