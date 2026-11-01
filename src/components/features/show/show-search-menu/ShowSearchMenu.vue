@@ -123,8 +123,12 @@ onKeyStroke('k', (event) => {
       <v-divider />
 
       <v-card-actions class="pa-4">
-        <v-btn prepend-icon="mdi-magnify" variant="flat" block @click="submit">
-          {{ totalResults > 0 && !isLoading ? `See all ${totalResults} results` : 'See all results' }}
+        <v-btn color="primary" prepend-icon="mdi-magnify" variant="flat" block @click="submit">
+          {{
+            totalResults > 0 && !isLoading
+              ? t('show.seeAllResultsCount', { count: totalResults })
+              : t('show.seeAllResults')
+          }}
         </v-btn>
       </v-card-actions>
     </v-card>

@@ -32,7 +32,7 @@ const isEpisodesOpen = useStorage<boolean>('showDrawer.isEpisodesOpen', true);
 
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 const { saveWatchStatus } = useShowEntryWatchStatus();
-const { clearSelectedEntry, selectedEntry } = useSelectedEntry(entries);
+const { resetSelectedEntry, selectedEntry } = useSelectedEntry(entries);
 const { t } = useI18n();
 const {
   isContinuing,
@@ -54,7 +54,7 @@ const targetEntries = computed<ShowEntry[]>(() => {
 const watchedEpisodeIds = computed<Set<number>>(() => getWatchedEpisodeIds(props.show));
 
 /**
- * Resolves how an episode's number chip shows its progress.
+ * Resolves how an episode's number chip shows its progress. The episode's button shares the chip color.
  * The last watched episode wins over watched, so it stays findable inside a completed entry.
  * @param episodeId - The episode to look up.
  * @returns The chip color, icon and variant: last watched, watched, or neither.
@@ -100,7 +100,10 @@ const setWatchStatus = async (status: CombinedWatchStatus): Promise<void> => {
   }
 };
 
-watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
+watch([() => props.show?.id, () => props.isShown], () => {
+  // Open on the last watched entry, so its episodes and the last played one show straight away.
+  resetSelectedEntry(props.show?.watch_progress?.show_entry_id ?? null);
+});
 </script>
 
 <template>
@@ -117,7 +120,11 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
         :disabled="targetEntries.length === 0"
         :loading="isSavingStatus"
         :model-value="targetStatus"
-        :suffix="selectedEntry ? t('show.suffixEntry') : t('show.suffixShow')"
+        :suffix="
+          selectedEntry
+            ? t('show.suffixEntry', { type: t(`showEntry.type.${selectedEntry.type}`) })
+            : t('show.suffixShow')
+        "
         @update:model-value="setWatchStatus"
       />
     </v-col>
@@ -126,10 +133,11 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
         :disabled="!resumeEpisode || (isStartingPlayback && !isStartingTarget)"
         :loading="isStartingTarget"
         append-icon="mdi-play"
+        color="primary"
         block
         @click="watchTarget"
       >
-        {{ isContinuing ? 'Continue watching' : 'Start watching' }}
+        {{ isContinuing ? t('show.continueWatching') : t('show.startWatching') }}
       </v-btn>
     </v-col>
   </v-row>
@@ -149,28 +157,35 @@ watch([() => props.show?.id, () => props.isShown], clearSelectedEntry);
       <v-alert class="flex-0-1" type="info" variant="tonal">{{ t('show.noEpisodes') }}</v-alert>
     </v-col>
 
-    <v-col v-for="(episode, index) in selectedEntry?.episodes" class="d-flex ga-2" cols="12" :key="episode.id">
-      <div style="min-width: 60px">
+    <!-- A grid keeps the number column as wide as its widest chip, so every row lines up. -->
+    <v-col
+      class="gc-2 gr-6 align-center"
+      cols="12"
+      style="display: grid; grid-template-columns: auto minmax(0, 1fr)"
+      v-if="selectedEntry?.episodes?.length"
+    >
+      <template v-for="(episode, index) in selectedEntry.episodes" :key="episode.id">
         <v-chip
           v-bind="getEpisodeChipProps(episode.id)"
-          :title="episode.id === show?.watch_progress?.episode_id ? t('show.lastWatched') : undefined"
-          class="flex-0-1"
+          style="justify-self: start"
+          v-tooltip:top="episode.id === show?.watch_progress?.episode_id ? t('show.lastWatched') : undefined"
         >
           {{ index + 1 }}
         </v-chip>
-      </div>
-      <v-btn
-        :disabled="isStartingPlayback && startingEpisodeId !== episode.id"
-        :loading="startingEpisodeId === episode.id"
-        append-icon="mdi-play"
-        class="flex-1-1 max-width-button text-truncate justify-start"
-        @click="watchEpisode(episode)"
-      >
-        <span class="text-truncate">
-          {{ getEpisodeName(episode) }}
-        </span>
-        <v-spacer />
-      </v-btn>
+        <v-btn
+          :color="getEpisodeChipProps(episode.id).color"
+          :disabled="isStartingPlayback && startingEpisodeId !== episode.id"
+          :loading="startingEpisodeId === episode.id"
+          append-icon="mdi-play"
+          class="max-width-button text-truncate justify-start"
+          @click="watchEpisode(episode)"
+        >
+          <span class="text-truncate">
+            {{ getEpisodeName(episode) }}
+          </span>
+          <v-spacer />
+        </v-btn>
+      </template>
     </v-col>
   </collapsible-section>
 </template>

@@ -92,7 +92,7 @@ const copyUrl = async (): Promise<void> => {
       <div class="d-flex flex-wrap ga-2 flex-1-1">
         <v-chip
           v-for="tag in props.website.tags"
-          :color="props.includedTagIds?.includes(tag.id) ? 'primary' : undefined"
+          :color="props.includedTagIds?.includes(tag.id) ? 'secondary' : undefined"
           size="small"
           label
           @click="emit('click:tag', tag.id)"

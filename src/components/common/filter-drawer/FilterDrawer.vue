@@ -36,7 +36,7 @@ const resultLabel = computed<string>(() => {
       <v-row align="center">
         <v-col cols="auto">
           <v-sheet border="white sm" class="pa-2" color="surface" rounded="lg">
-            <v-icon color="primary" size="small">mdi-tune-variant</v-icon>
+            <v-icon color="secondary" size="small">mdi-tune-variant</v-icon>
           </v-sheet>
         </v-col>
         <v-col>
@@ -72,7 +72,7 @@ const resultLabel = computed<string>(() => {
             </v-btn>
           </v-col>
           <v-col>
-            <v-btn :loading="props.isLoading" variant="flat" block @click="isShown = false">
+            <v-btn :loading="props.isLoading" color="primary" variant="flat" block @click="isShown = false">
               {{ resultLabel }}
             </v-btn>
           </v-col>

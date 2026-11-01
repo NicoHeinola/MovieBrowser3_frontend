@@ -81,8 +81,12 @@ const addWebsite = async (): Promise<void> => {
 
         <template #append>
           <div class="d-flex flex-1-1 justify-end ga-2">
-            <v-btn prepend-icon="mdi-movie-plus" @click="void editShow()">{{ t('dashboard.addShow') }}</v-btn>
-            <v-btn prepend-icon="mdi-web-plus" @click="void addWebsite()">{{ t('dashboard.addWebsite') }}</v-btn>
+            <v-btn color="primary" prepend-icon="mdi-movie-plus" @click="void editShow()">{{
+              t('dashboard.addShow')
+            }}</v-btn>
+            <v-btn color="primary" prepend-icon="mdi-web-plus" @click="void addWebsite()">{{
+              t('dashboard.addWebsite')
+            }}</v-btn>
           </div>
         </template>
       </titled-section>

@@ -39,11 +39,21 @@ describe('useSelectedEntry', () => {
 
   it('clears the selection', () => {
     const entries = ref<ShowEntry[]>([createEntry(1)]);
-    const { clearSelectedEntry, selectedEntry } = useSelectedEntry(entries);
+    const { resetSelectedEntry, selectedEntry } = useSelectedEntry(entries);
 
     selectedEntry.value = entries.value[0]!;
-    clearSelectedEntry();
+    resetSelectedEntry();
 
     expect(selectedEntry.value).toBeNull();
+  });
+
+  it('resets the selection to the given entry', () => {
+    const entries = ref<ShowEntry[]>([createEntry(1), createEntry(2)]);
+    const { resetSelectedEntry, selectedEntry } = useSelectedEntry(entries);
+
+    selectedEntry.value = entries.value[0]!;
+    resetSelectedEntry(2);
+
+    expect(selectedEntry.value?.id).toBe(2);
   });
 });

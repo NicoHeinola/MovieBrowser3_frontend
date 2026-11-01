@@ -85,6 +85,7 @@ const googleSearch = (searchTerm: string) => {
           <div class="d-flex ga-2">
             <v-btn
               :icon="title.is_primary ? 'mdi-star' : 'mdi-star-outline'"
+              color="primary"
               size="x-small"
               @click="setPrimaryTitle(index)"
             ></v-btn>

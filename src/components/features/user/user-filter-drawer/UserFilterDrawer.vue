@@ -37,7 +37,7 @@ const emit = defineEmits<{
       <template #subtitle>
         <i18n-t keypath="user.roleHint" tag="span">
           <template #include>
-            <span class="text-primary">{{ t('filter.include') }}</span>
+            <span class="text-secondary">{{ t('filter.include') }}</span>
           </template>
           <template #exclude>
             <span class="text-error">{{ t('filter.exclude') }}</span>

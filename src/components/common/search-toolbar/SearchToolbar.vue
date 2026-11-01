@@ -51,6 +51,7 @@ const emit = defineEmits<{
         v-if="props.activeFilterCount !== undefined"
       >
         <v-btn
+          :color="props.activeFilterCount > 0 ? 'secondary' : undefined"
           :variant="props.activeFilterCount > 0 ? 'flat' : 'tonal'"
           icon="mdi-tune-variant"
           size="small"

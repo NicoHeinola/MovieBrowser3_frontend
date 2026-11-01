@@ -112,7 +112,12 @@ onMounted(() => {
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn :loading="settingStore.isLoading" icon="mdi-plus" @click="void openAddVideoDialog()" />
+              <v-btn
+                :loading="settingStore.isLoading"
+                color="primary"
+                icon="mdi-plus"
+                @click="void openAddVideoDialog()"
+              />
             </div>
           </template>
         </titled-section>
@@ -134,7 +139,12 @@ onMounted(() => {
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn :loading="settingStore.isLoading" icon="mdi-plus" @click="void openAddBackgroundDialog()" />
+              <v-btn
+                :loading="settingStore.isLoading"
+                color="primary"
+                icon="mdi-plus"
+                @click="void openAddBackgroundDialog()"
+              />
             </div>
           </template>
         </titled-section>

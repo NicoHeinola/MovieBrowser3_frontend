@@ -7,7 +7,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div :class="{ 'text-truncate': props.truncate }" :title="props.truncate ? props.title : undefined">
+  <div :class="{ 'text-truncate': props.truncate }" v-tooltip:top="props.truncate ? props.title : undefined">
     <p :class="{ 'text-truncate': props.truncate }" class="text-label-medium text-medium-emphasis text-uppercase">
       {{ props.title }}
     </p>

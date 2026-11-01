@@ -8,6 +8,40 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
+    version: '1.2.2',
+    date: '2026-11-01',
+    changes: [
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Buttons are calmer: only the main action on a screen is yellow.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Episodes match their progress color: watched ones are green and the one you last watched is blue.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Filters you turn on are now blue, so they are easy to tell apart from buttons.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The show drawer opens on the season you last watched, with its episodes ready.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The watch status button names what it changes, such as "Season" or "Whole show".',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Hover a shortened season name in the show drawer to read it in full.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'The watch buttons and the show search results button are now translated to Finnish.',
+      },
+    ],
+  },
+  {
     version: '1.2.1',
     date: '2026-11-01',
     changes: [

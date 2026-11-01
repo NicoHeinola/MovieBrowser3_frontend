@@ -16,7 +16,7 @@ const state = defineModel<FilterChipState>({
 });
 
 const stateColor = computed<string | undefined>(() => {
-  if (state.value === 'include') return props.color ?? 'primary';
+  if (state.value === 'include') return props.color ?? 'secondary';
   if (state.value === 'exclude') return 'error';
   return undefined;
 });

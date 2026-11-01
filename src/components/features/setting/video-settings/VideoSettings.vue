@@ -48,7 +48,7 @@ watch(
             <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.videoBasePathHint')" />
           </template>
         </v-text-field>
-        <v-btn @click="updateSetting('video_base_path', videoBasePath)"> {{ t('common.save') }} </v-btn>
+        <v-btn color="primary" @click="updateSetting('video_base_path', videoBasePath)"> {{ t('common.save') }} </v-btn>
       </template>
     </v-col>
     <v-col class="d-flex ga-2 align-center" cols="12">
@@ -63,7 +63,9 @@ watch(
             <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.vlcPathHint')" />
           </template>
         </v-text-field>
-        <v-btn @click="updateSetting('vlc_media_player_path', vlcMediaPlayerPath)"> {{ t('common.save') }} </v-btn>
+        <v-btn color="primary" @click="updateSetting('vlc_media_player_path', vlcMediaPlayerPath)">
+          {{ t('common.save') }}
+        </v-btn>
       </template>
     </v-col>
   </v-row>

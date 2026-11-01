@@ -98,7 +98,7 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
       <template #subtitle>
         <i18n-t keypath="show.filterAnyIncluded" tag="span">
           <template #any>
-            <span class="text-primary">{{ t('filter.any') }}</span>
+            <span class="text-secondary">{{ t('filter.any') }}</span>
           </template>
           <template #none>
             <span class="text-error">{{ t('filter.none') }}</span>
@@ -122,7 +122,7 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
       <template #subtitle>
         <i18n-t keypath="show.filterEveryIncluded" tag="span">
           <template #every>
-            <span class="text-primary">{{ t('filter.every') }}</span>
+            <span class="text-secondary">{{ t('filter.every') }}</span>
           </template>
           <template #none>
             <span class="text-error">{{ t('filter.none') }}</span>

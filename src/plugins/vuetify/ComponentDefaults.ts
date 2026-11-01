@@ -37,8 +37,8 @@ export const ComponentDefaults = {
     density: 'compact',
     color: 'primary',
   },
+  /** Neutral by default; the main action on a screen opts into `color="primary"`. */
   VBtn: {
-    color: 'primary',
     variant: 'tonal',
   },
   VBtnGroup: {

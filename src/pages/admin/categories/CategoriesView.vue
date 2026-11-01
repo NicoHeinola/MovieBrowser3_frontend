@@ -203,7 +203,7 @@ watch(
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn icon="mdi-plus" @click="void openEditCategoryDialog()" />
+              <v-btn color="primary" icon="mdi-plus" @click="void openEditCategoryDialog()" />
             </div>
           </template>
         </titled-section>
@@ -237,7 +237,12 @@ watch(
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
-              <v-btn :disabled="isSavingSectionOrder" icon="mdi-plus" @click="void openEditShowSectionDialog()" />
+              <v-btn
+                :disabled="isSavingSectionOrder"
+                color="primary"
+                icon="mdi-plus"
+                @click="void openEditShowSectionDialog()"
+              />
             </div>
           </template>
         </titled-section>
