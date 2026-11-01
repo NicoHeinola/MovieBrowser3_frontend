@@ -41,7 +41,7 @@
   "locale": {
     "change": "Change language",
     "dialogTitle": "Choose your language",
-    "dialogSubtitle": "You can change it later from the language button."
+    "dialogSubtitle": "You can change it later."
   },
   "common": {
     "cancel": "Cancel",

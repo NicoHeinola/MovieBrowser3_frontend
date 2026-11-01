@@ -8,6 +8,16 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
+    version: '1.2.0',
+    date: '2026-11-01',
+    changes: [
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Your username and the language picker moved into the account menu, keeping the top bar tidier.',
+      },
+    ],
+  },
+  {
     version: '1.1.0',
     date: '2026-11-01',
     changes: [

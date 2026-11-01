@@ -41,7 +41,7 @@
   "locale": {
     "change": "Vaihda kieli",
     "dialogTitle": "Valitse kieli",
-    "dialogSubtitle": "Voit vaihtaa sen myöhemmin kielipainikkeesta."
+    "dialogSubtitle": "Voit vaihtaa sen myöhemmin."
   },
   "common": {
     "cancel": "Peruuta",
