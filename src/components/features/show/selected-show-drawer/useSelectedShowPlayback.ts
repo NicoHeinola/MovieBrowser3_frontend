@@ -6,6 +6,7 @@ import { computed, ref } from 'vue';
 
 import { useShowPlayback } from '@/composables/show/useShowPlayback';
 import { getResumeEpisode } from '@/utils/show/getResumeEpisode';
+import { getResumePosition } from '@/utils/show/getResumePosition';
 
 /**
  * Drawer playback for the shown show: picks where "watch" starts and tracks which button started a playback.
@@ -31,8 +32,16 @@ export const useSelectedShowPlayback = (
     () => resumeEpisode.value !== null && resumeEpisode.value.id === show.value?.watch_progress?.episode_id,
   );
 
-  /** Continues the selected entry, or the whole show when none is selected. */
-  const watchTarget = async (): Promise<void> => {
+  /** Where "watch" resumes inside the continued episode in seconds, or null when it starts from the beginning. */
+  const resumePosition = computed<number | null>(() =>
+    isContinuing.value ? getResumePosition(show.value?.watch_progress) : null,
+  );
+
+  /**
+   * Continues the selected entry, or the whole show when none is selected.
+   * @param fromStart - Start the episode over instead of resuming at the saved position.
+   */
+  const watchTarget = async (fromStart = false): Promise<void> => {
     if (!show.value || isStartingPlayback.value) {
       return;
     }
@@ -40,7 +49,7 @@ export const useSelectedShowPlayback = (
     isStartingTarget.value = true;
 
     try {
-      await playShow(show.value, selectedEntry.value);
+      await playShow(show.value, selectedEntry.value, { fromStart });
     } finally {
       isStartingTarget.value = false;
     }
@@ -69,6 +78,7 @@ export const useSelectedShowPlayback = (
     isStartingPlayback,
     isStartingTarget,
     resumeEpisode,
+    resumePosition,
     startingEpisodeId,
     watchEpisode,
     watchTarget,

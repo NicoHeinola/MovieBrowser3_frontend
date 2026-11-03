@@ -44,6 +44,7 @@
     "dialogSubtitle": "Voit vaihtaa sen myöhemmin."
   },
   "common": {
+    "moreOptions": "Lisää vaihtoehtoja",
     "cancel": "Peruuta",
     "confirm": "Vahvista",
     "delete": "Poista",
@@ -230,6 +231,9 @@
     "suffixShow": "(Koko sarja)",
     "continueWatching": "Jatka katsomista",
     "startWatching": "Aloita katsominen",
+    "resumeAt": "Jatka kohdasta {time}",
+    "playFromStart": "Toista alusta",
+    "moreWatchOptions": "Lisää katseluvaihtoehtoja",
     "seeAllResults": "Näytä kaikki tulokset",
     "seeAllResultsCount": "Näytä kaikki {count} tulosta",
     "episodes": "Jaksot",

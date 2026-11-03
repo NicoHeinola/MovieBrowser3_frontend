@@ -6,10 +6,12 @@ import { useStorage } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { CollapsibleSection } from '@/components/common/collapsible-section';
+import { SplitButton } from '@/components/common/split-button';
 import { ShowEntryPicker } from '@/components/features/show/show-entry-picker';
 import { WatchStatusButton } from '@/components/features/show/watch-status-button';
 import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchStatus';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { formatPlaybackTime } from '@/utils/show/formatPlaybackTime';
 import { getCombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
 import { getWatchedEpisodeIds } from '@/utils/show/getWatchedEpisodeIds';
@@ -39,6 +41,7 @@ const {
   isStartingPlayback,
   isStartingTarget,
   resumeEpisode,
+  resumePosition,
   startingEpisodeId,
   watchEpisode,
   watchTarget,
@@ -66,6 +69,34 @@ const getEpisodeChipProps = (episodeId: number): { color?: string; prependIcon?:
   if (watchedEpisodeIds.value.has(episodeId)) return { color: 'success', prependIcon: 'mdi-check' };
   return {};
 };
+
+/** How far into the last watched episode the user is, as `12:34 / 24:00` and a percentage for its progress bar. */
+const episodeProgress = computed<{ label: string; percent: number | null } | null>(() => {
+  const position = props.show?.watch_progress?.position_seconds;
+  const duration = props.show?.watch_progress?.duration_seconds;
+
+  if (!position) {
+    return null;
+  }
+
+  if (!duration) {
+    return { label: formatPlaybackTime(position), percent: null };
+  }
+
+  return {
+    label: `${formatPlaybackTime(position)} / ${formatPlaybackTime(duration)}`,
+    percent: Math.min(100, (position / duration) * 100),
+  };
+});
+
+/** The label of the main watch button: resume at a saved position, continue an episode, or start the show. */
+const watchTargetLabel = computed<string>(() => {
+  if (resumePosition.value !== null) {
+    return t('show.resumeAt', { time: formatPlaybackTime(resumePosition.value) });
+  }
+
+  return isContinuing.value ? t('show.continueWatching') : t('show.startWatching');
+});
 
 const targetStatus = computed<CombinedWatchStatus>(() => getCombinedWatchStatus(targetEntries.value));
 
@@ -129,16 +160,22 @@ watch([() => props.show?.id, () => props.isShown], () => {
       />
     </v-col>
     <v-col cols="6">
-      <v-btn
+      <!-- Starting over hides behind the arrow, so a stray click can't throw away the saved position. -->
+      <split-button
         :disabled="!resumeEpisode || (isStartingPlayback && !isStartingTarget)"
         :loading="isStartingTarget"
+        :menu-disabled="isStartingPlayback"
+        :menu-label="t('show.moreWatchOptions')"
         append-icon="mdi-play"
         color="primary"
         block
-        @click="watchTarget"
+        @click="watchTarget()"
       >
-        {{ isContinuing ? t('show.continueWatching') : t('show.startWatching') }}
-      </v-btn>
+        {{ watchTargetLabel }}
+        <template #menu v-if="resumePosition !== null">
+          <v-list-item :title="t('show.playFromStart')" prepend-icon="mdi-restart" @click="watchTarget(true)" />
+        </template>
+      </split-button>
     </v-col>
   </v-row>
 
@@ -184,6 +221,16 @@ watch([() => props.show?.id, () => props.isShown], () => {
             {{ getEpisodeName(episode) }}
           </span>
           <v-spacer />
+          <template v-if="episodeProgress && episode.id === show?.watch_progress?.episode_id">
+            <span class="text-label-small">{{ episodeProgress.label }}</span>
+            <v-progress-linear
+              :model-value="episodeProgress.percent ?? 0"
+              height="3"
+              location="bottom"
+              absolute
+              v-if="episodeProgress.percent !== null"
+            />
+          </template>
         </v-btn>
       </template>
     </v-col>

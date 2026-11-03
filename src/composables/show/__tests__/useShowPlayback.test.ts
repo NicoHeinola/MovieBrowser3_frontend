@@ -37,7 +37,14 @@ const createShow = () => ({
   watch_progress: null,
 });
 
-const progress = { show_id: 1, show_entry_id: 10, episode_id: 101, updated_at: '2026-10-30' };
+const progress = {
+  show_id: 1,
+  show_entry_id: 10,
+  episode_id: 101,
+  position_seconds: null,
+  duration_seconds: null,
+  updated_at: '2026-10-30',
+};
 
 describe('useShowPlayback', () => {
   beforeEach(() => {
@@ -53,7 +60,7 @@ describe('useShowPlayback', () => {
     const { playEpisode, isStartingPlayback } = useShowPlayback();
 
     await expect(playEpisode({ id: 101 })).resolves.toEqual(progress);
-    expect(episodePlaybackService.play).toHaveBeenCalledWith(101);
+    expect(episodePlaybackService.play).toHaveBeenCalledWith(101, {});
     expect(isStartingPlayback.value).toBe(false);
     const homeShows = queryClient.getQueryData<{ randomShows: CachedShow[] }>([ShowQueryKey.HomeShows]);
     const searchShows = queryClient.getQueryData<{ data: CachedShow[] }>([ShowQueryKey.SearchShows, 'term', 1]);
@@ -78,7 +85,16 @@ describe('useShowPlayback', () => {
     const { playShow } = useShowPlayback();
     await playShow({ ...createShow(), watch_progress: progress });
 
-    expect(episodePlaybackService.play).toHaveBeenCalledWith(101);
+    expect(episodePlaybackService.play).toHaveBeenCalledWith(101, {});
+  });
+
+  it('starts the saved episode over when asked to', async () => {
+    vi.mocked(episodePlaybackService.play).mockResolvedValue(progress);
+
+    const { playShow } = useShowPlayback();
+    await playShow({ ...createShow(), watch_progress: progress }, null, { fromStart: true });
+
+    expect(episodePlaybackService.play).toHaveBeenCalledWith(101, { from_start: true });
   });
 
   it('warns instead of playing when the show has no episodes', async () => {

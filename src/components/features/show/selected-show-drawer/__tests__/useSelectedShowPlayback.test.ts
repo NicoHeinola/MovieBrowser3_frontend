@@ -26,10 +26,17 @@ const entry: ShowEntry = {
   episodes: [createEpisode(100), createEpisode(101)],
 };
 
-const createProgress = (showId: number, episodeId: number): ShowWatchProgress => ({
+const createProgress = (
+  showId: number,
+  episodeId: number,
+  positionSeconds: number | null = null,
+  durationSeconds: number | null = null,
+): ShowWatchProgress => ({
   show_id: showId,
   show_entry_id: 10,
   episode_id: episodeId,
+  position_seconds: positionSeconds,
+  duration_seconds: durationSeconds,
   updated_at: '2026-10-31',
 });
 
@@ -101,8 +108,30 @@ describe('useSelectedShowPlayback', () => {
     expect(isStartingTarget.value).toBe(true);
     await pending;
 
-    expect(playShow).toHaveBeenCalledWith(expect.objectContaining({ id: 1 }), entry);
+    expect(playShow).toHaveBeenCalledWith(expect.objectContaining({ id: 1 }), entry, { fromStart: false });
     expect(isStartingTarget.value).toBe(false);
+  });
+
+  it('resumes at the saved position of the continued episode only', () => {
+    const show = ref<Show | null>(createShow(createProgress(1, 101, 754, 1440)));
+    const selectedEntry = ref<ShowEntry | null>(null);
+    const { resumePosition } = useSelectedShowPlayback(show, selectedEntry);
+
+    expect(resumePosition.value).toBe(754);
+
+    // Another entry starts from its first episode, so there is nothing to resume.
+    selectedEntry.value = { ...entry, id: 11, episodes: [createEpisode(110)] };
+
+    expect(resumePosition.value).toBeNull();
+  });
+
+  it('starts the target over from the restart button', async () => {
+    playShow.mockResolvedValue(createProgress(1, 101));
+
+    const { watchTarget } = useSelectedShowPlayback(ref(createShow(createProgress(1, 101, 754))), ref(null));
+    await watchTarget(true);
+
+    expect(playShow).toHaveBeenCalledWith(expect.objectContaining({ id: 1 }), null, { fromStart: true });
   });
 
   it('ignores clicks while another playback is starting', async () => {

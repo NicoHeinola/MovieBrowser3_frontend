@@ -9,9 +9,17 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
-    version: '1.0.1',
+    version: '1.1.0',
     date: null,
     changes: [
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Episodes continue where you stopped in VLC. The arrow on the resume button plays from the start.',
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'The episode you are watching shows how far in you are, and updates live while VLC plays.',
+      },
       {
         type: ChangelogChangeType.Fixed,
         text: 'The "What\'s new" popup no longer appears the first time you sign in.',

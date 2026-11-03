@@ -44,6 +44,7 @@
     "dialogSubtitle": "You can change it later."
   },
   "common": {
+    "moreOptions": "More options",
     "cancel": "Cancel",
     "confirm": "Confirm",
     "delete": "Delete",
@@ -230,6 +231,9 @@
     "suffixShow": "(Whole show)",
     "continueWatching": "Continue watching",
     "startWatching": "Start watching",
+    "resumeAt": "Resume at {time}",
+    "playFromStart": "Play from start",
+    "moreWatchOptions": "More watch options",
     "seeAllResults": "See all results",
     "seeAllResultsCount": "See all {count} results",
     "episodes": "Episodes",

@@ -4,7 +4,14 @@ import { setShowWatchProgress } from '../setShowWatchProgress';
 
 const createShow = (id: number) => ({ id, entries: [], watch_progress: null });
 
-const progress = { show_id: 1, show_entry_id: 10, episode_id: 100, updated_at: '2026-10-30' };
+const progress = {
+  show_id: 1,
+  show_entry_id: 10,
+  episode_id: 100,
+  position_seconds: null,
+  duration_seconds: null,
+  updated_at: '2026-10-30',
+};
 
 describe('setShowWatchProgress', () => {
   it('updates the show in every list that contains it and keeps other shows untouched', () => {

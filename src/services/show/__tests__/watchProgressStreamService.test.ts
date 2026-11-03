@@ -10,7 +10,14 @@ vi.mock('@microsoft/fetch-event-source', async (importOriginal) => ({
   fetchEventSource: vi.fn(),
 }));
 
-const progress = { show_id: 12, show_entry_id: 40, episode_id: 913, updated_at: '2026-10-31T20:14:03.000000Z' };
+const progress = {
+  show_id: 12,
+  show_entry_id: 40,
+  episode_id: 913,
+  position_seconds: null,
+  duration_seconds: null,
+  updated_at: '2026-10-31T20:14:03.000000Z',
+};
 
 const createMessage = (event: string, data: string): EventSourceMessage => ({ id: '', event, data });
 

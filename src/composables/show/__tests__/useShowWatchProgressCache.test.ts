@@ -18,7 +18,14 @@ interface CachedShow {
 
 const createShow = () => ({ id: 1, entries: [], watch_progress: null });
 
-const progress = { show_id: 1, show_entry_id: 10, episode_id: 101, updated_at: '2026-10-31' };
+const progress = {
+  show_id: 1,
+  show_entry_id: 10,
+  episode_id: 101,
+  position_seconds: null,
+  duration_seconds: null,
+  updated_at: '2026-10-31',
+};
 
 describe('useShowWatchProgressCache', () => {
   beforeEach(() => {
@@ -45,12 +52,30 @@ describe('useShowWatchProgressCache', () => {
     expect(queryClient.getQueryState([ShowQueryKey.ContinueWatchingShows])?.isInvalidated).toBe(true);
   });
 
-  it('leaves continue watching alone when it already holds the progress', () => {
+  it('leaves continue watching alone when the show already leads it on the same episode', () => {
     queryClient.setQueryData([ShowQueryKey.ContinueWatchingShows], [{ ...createShow(), watch_progress: progress }]);
 
-    useShowWatchProgressCache().applyWatchProgress({ ...progress });
+    // A position update while watching only moves the timestamp forward.
+    const positionUpdate = { ...progress, position_seconds: 300, duration_seconds: 1440, updated_at: '2026-11-01' };
+    useShowWatchProgressCache().applyWatchProgress(positionUpdate);
 
+    const continueWatching = queryClient.getQueryData<CachedShow[]>([ShowQueryKey.ContinueWatchingShows]);
+    expect(continueWatching?.[0]?.watch_progress).toEqual(positionUpdate);
     expect(queryClient.getQueryState([ShowQueryKey.ContinueWatchingShows])?.isInvalidated).toBe(false);
+  });
+
+  it('refetches continue watching when the show is not first yet', () => {
+    queryClient.setQueryData(
+      [ShowQueryKey.ContinueWatchingShows],
+      [
+        { ...createShow(), id: 2 },
+        { ...createShow(), watch_progress: progress },
+      ],
+    );
+
+    useShowWatchProgressCache().applyWatchProgress({ ...progress, updated_at: '2026-11-01' });
+
+    expect(queryClient.getQueryState([ShowQueryKey.ContinueWatchingShows])?.isInvalidated).toBe(true);
   });
 
   it('refetches every show list and nothing else', () => {

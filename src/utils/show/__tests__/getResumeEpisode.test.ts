@@ -20,6 +20,8 @@ const progress = (entryId: number, episodeId: number) => ({
   show_id: 1,
   show_entry_id: entryId,
   episode_id: episodeId,
+  position_seconds: null,
+  duration_seconds: null,
   updated_at: '2026-10-30',
 });
 
