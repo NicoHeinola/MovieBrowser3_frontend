@@ -1,29 +1,33 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { getEnvString } from '../getEnvString';
 
-const mockEnv = {
-  VITE_TEST_STRING: 'test-value',
-  VITE_TEST_EMPTY: '',
-};
-
-vi.mock('@/utils/env/getEnvString', () => ({
-  getEnvString: vi.fn((key: string) => {
-    const value = mockEnv[key as keyof typeof mockEnv];
-    if (value === undefined || value === '') throw new Error(`Missing environment variable: ${key}`);
-    return String(value);
-  }),
-}));
-
 describe('getEnvString', () => {
-  it('should return the string value when it exists', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('returns the value when it exists', () => {
+    vi.stubEnv('VITE_TEST_STRING', 'test-value');
+
     expect(getEnvString('VITE_TEST_STRING')).toBe('test-value');
+    expect(getEnvString('VITE_TEST_STRING', 'fallback')).toBe('test-value');
   });
 
-  it('should throw an error when the variable is missing', () => {
-    expect(() => getEnvString('MISSING')).toThrow('Missing environment variable: MISSING');
+  it('throws when a required variable is missing', () => {
+    expect(() => getEnvString('VITE_TEST_MISSING')).toThrow('Missing environment variable: VITE_TEST_MISSING');
   });
 
-  it('should throw an error when the variable is empty', () => {
+  it('throws when a required variable is empty', () => {
+    vi.stubEnv('VITE_TEST_EMPTY', '');
+
     expect(() => getEnvString('VITE_TEST_EMPTY')).toThrow('Missing environment variable: VITE_TEST_EMPTY');
+  });
+
+  it('returns the fallback for a missing or empty optional variable', () => {
+    vi.stubEnv('VITE_TEST_EMPTY', '');
+
+    expect(getEnvString('VITE_TEST_MISSING', '')).toBe('');
+    expect(getEnvString('VITE_TEST_EMPTY', 'fallback')).toBe('fallback');
   });
 });

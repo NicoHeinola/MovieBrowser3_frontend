@@ -3,11 +3,13 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
-import { changelogEntries } from '@/data/changelog/changelogEntries';
-import { getReleasedChangelogEntries } from '@/utils/changelog/getReleasedChangelogEntries';
+import { getEnvString } from '@/utils/env/getEnvString';
 
-/** The newest released version. */
-const latestVersion: string | undefined = getReleasedChangelogEntries(changelogEntries)[0]?.version;
+/** The running version, so dev builds of `main` show the upcoming version instead of the last release. */
+const appVersion: string = __APP_VERSION__;
+
+/** Text after the version, such as `-dev`. Empty in production. */
+const appVersionSuffix: string = getEnvString('VITE_APP_VERSION_SUFFIX', '');
 
 const route = useRoute();
 const { t } = useI18n();
@@ -24,8 +26,7 @@ const isOnChangelog = computed<boolean>(() => route.name === 'authenticated-chan
     class="text-none font-weight-regular"
     size="small"
     v-tooltip:bottom="t('nav.changelog')"
-    v-if="latestVersion"
   >
-    v{{ latestVersion }}
+    v{{ appVersion }}<span class="text-secondary">{{ appVersionSuffix }}</span>
   </v-btn>
 </template>

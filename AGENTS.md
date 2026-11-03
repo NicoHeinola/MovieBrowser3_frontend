@@ -47,6 +47,7 @@ Production runs on the user's own machine, not a server or registry. The backend
 
 - A new `VITE_*` variable needs a production value in `.env.production`, or the production build fails on it.
 - Keep `npm run build` working without a `.env` file: production builds have only `.env.production`.
+- Optional `VITE_*` variables, such as `VITE_APP_VERSION_SUFFIX`, are read with a fallback (`getEnvString(key, '')`) and still listed in `.env.production`, empty when production wants none.
 
 ## Commit Messages
 

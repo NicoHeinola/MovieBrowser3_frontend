@@ -28,6 +28,14 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Fixed,
         text: 'The "What\'s new" popup no longer appears the first time you sign in.',
       },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'Show search finds titles regardless of upper and lower case.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The version in the top left shows the version you are running.',
+      },
     ],
   },
   {
