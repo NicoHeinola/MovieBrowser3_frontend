@@ -10,7 +10,7 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
 export const changelogEntries: ChangelogEntry[] = [
   {
     version: '1.1.0',
-    date: null,
+    date: '2026-11-03',
     changes: [
       {
         type: ChangelogChangeType.Added,
