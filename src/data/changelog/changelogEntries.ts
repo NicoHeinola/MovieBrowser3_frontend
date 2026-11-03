@@ -21,6 +21,10 @@ export const changelogEntries: ChangelogEntry[] = [
         text: 'The episode you are watching shows how far in you are, and updates live while VLC plays.',
       },
       {
+        type: ChangelogChangeType.Added,
+        text: 'Admins see an "Update available" button when a new version is out, with the update command and links.',
+      },
+      {
         type: ChangelogChangeType.Fixed,
         text: 'The "What\'s new" popup no longer appears the first time you sign in.',
       },

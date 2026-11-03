@@ -68,7 +68,10 @@
     "iconLabel": "Kuvake",
     "showPreviewVideo": "Esikatseluvideo",
     "snackbarClose": "Sulje",
-    "clear": "Tyhjennä"
+    "clear": "Tyhjennä",
+    "copy": "Kopioi",
+    "copied": "Kopioitu leikepöydälle.",
+    "copyFailed": "Leikepöydälle kopioiminen epäonnistui."
   },
   "iconSearch": {
     "loading": "Ladataan kuvakeluetteloa...",
@@ -395,5 +398,12 @@
     "loadFailed": "Käyttöönottoa ei voitu ladata",
     "loadFailedText": "MovieBrowser ei vastannut. Se saattaa vielä käynnistyä, joten odota hetki ja yritä uudelleen.",
     "retry": "Yritä uudelleen"
+  },
+  "update": {
+    "available": "Päivitys saatavilla",
+    "versionAvailable": "MovieBrowser3 {version} on valmis asennettavaksi.",
+    "runCommand": "Suorita tämä koneella, jolla MovieBrowser3 toimii:",
+    "backendRelease": "Taustapalvelun julkaisutiedot",
+    "frontendRelease": "Käyttöliittymän julkaisutiedot"
   }
 }

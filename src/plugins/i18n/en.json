@@ -68,7 +68,10 @@
     "iconLabel": "Icon",
     "showPreviewVideo": "Show preview video",
     "snackbarClose": "Close",
-    "clear": "Clear"
+    "clear": "Clear",
+    "copy": "Copy",
+    "copied": "Copied to clipboard.",
+    "copyFailed": "Could not copy to the clipboard."
   },
   "iconSearch": {
     "loading": "Loading icon catalogue...",
@@ -395,5 +398,12 @@
     "loadFailed": "The setup couldn't load",
     "loadFailedText": "MovieBrowser didn't answer. It may still be starting up, so wait a moment and try again.",
     "retry": "Try again"
+  },
+  "update": {
+    "available": "Update available",
+    "versionAvailable": "MovieBrowser3 {version} is ready to install.",
+    "runCommand": "Run this on the machine that hosts MovieBrowser3:",
+    "backendRelease": "Backend release notes",
+    "frontendRelease": "Frontend release notes"
   }
 }

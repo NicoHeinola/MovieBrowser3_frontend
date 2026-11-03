@@ -10,6 +10,7 @@ import { ChangelogVersionLink } from '@/components/features/changelog/changelog-
 import { LanguageMenu } from '@/components/features/locale/language-menu';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowSearchMenu } from '@/components/features/show/show-search-menu';
+import { UpdateNotice } from '@/components/features/version/update-notice';
 import { useChangelogNotice } from '@/composables/changelog/useChangelogNotice';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useRouteLoading } from '@/composables/router/useRouteLoading';
@@ -90,11 +91,12 @@ onMounted(() => {
     />
     <!-- The side columns share the leftover width equally, so the links stay centered in both areas. -->
     <div class="d-flex align-center ga-4 w-100 px-4">
-      <div class="flex-1-1-0 d-flex align-center">
+      <div class="flex-1-1-0 d-flex align-center ga-2">
         <!-- Hidden on phones, where it would crowd the centered links. -->
         <div class="d-none d-sm-flex">
           <changelog-version-link />
         </div>
+        <update-notice v-if="authStore.isAdmin" />
       </div>
 
       <v-list class="d-flex flex-row ga-6 bg-transparent position-relative">
