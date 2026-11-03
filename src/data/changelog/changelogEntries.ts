@@ -11,7 +11,12 @@ export const changelogEntries: ChangelogEntry[] = [
   {
     version: '1.0.1',
     date: null,
-    changes: [],
+    changes: [
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'The "What\'s new" popup no longer appears the first time you sign in.',
+      },
+    ],
   },
   {
     version: '1.0.0',

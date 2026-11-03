@@ -14,6 +14,7 @@ const MAX_SHOWN_ENTRIES = 3;
 
 /**
  * Shows the "What's new" dialog for updates released since the user's last visit in this browser.
+ * A first visit only records the latest release, so new users are not greeted with a changelog.
  * @returns `showUnseenChanges`.
  */
 export const useChangelogNotice = () => {
@@ -28,7 +29,17 @@ export const useChangelogNotice = () => {
    * @returns Nothing.
    */
   const showUnseenChanges = async (): Promise<void> => {
-    const entries = getUnseenChangelogEntries(getReleasedChangelogEntries(changelogEntries), lastSeenVersion.value);
+    const releasedEntries = getReleasedChangelogEntries(changelogEntries);
+
+    // First visit in this browser: nothing is "new" to someone who just arrived, so remember the latest release
+    // without the dialog. Later releases still show it.
+    if (lastSeenVersion.value === null) {
+      lastSeenVersion.value = releasedEntries[0]?.version ?? null;
+
+      return;
+    }
+
+    const entries = getUnseenChangelogEntries(releasedEntries, lastSeenVersion.value);
     const latestEntry = entries[0];
 
     if (latestEntry === undefined) {

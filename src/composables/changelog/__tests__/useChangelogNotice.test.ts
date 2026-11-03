@@ -69,11 +69,19 @@ afterEach(() => {
 });
 
 describe('useChangelogNotice', () => {
-  it('shows the latest update on a first visit and remembers it', async () => {
+  it('skips the dialog on a first visit and remembers the latest release', async () => {
+    await setup().showUnseenChanges();
+
+    expect(showDialog).not.toHaveBeenCalled();
+    expect(localStorage.getItem(storageKey)).toBe('1.4.0');
+  });
+
+  it('shows only the latest update when the seen version is no longer listed', async () => {
+    localStorage.setItem(storageKey, '0.9.0');
+
     await setup().showUnseenChanges();
 
     expect(getShownVersions(0)).toEqual(['1.4.0']);
-    expect(localStorage.getItem(storageKey)).toBe('1.4.0');
   });
 
   it('shows every update newer than the last seen version', async () => {
@@ -94,6 +102,7 @@ describe('useChangelogNotice', () => {
   });
 
   it('does not open the dialog again once the latest update was seen', async () => {
+    localStorage.setItem(storageKey, '1.3.0');
     const { showUnseenChanges } = setup();
 
     await showUnseenChanges();
@@ -104,6 +113,7 @@ describe('useChangelogNotice', () => {
 
   it('marks updates as seen without the dialog on the changelog page', async () => {
     route.name = 'authenticated-changelog';
+    localStorage.setItem(storageKey, '1.3.0');
 
     await setup().showUnseenChanges();
 
