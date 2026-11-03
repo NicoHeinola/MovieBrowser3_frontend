@@ -1,11 +1,11 @@
-import type { ChangelogEntry } from '@/interfaces/changelog/ChangelogEntry';
+import type { ReleasedChangelogEntry } from '@/interfaces/changelog/ReleasedChangelogEntry';
 import { describe, expect, it } from 'vitest';
 
 import { getUnseenChangelogEntries } from '../getUnseenChangelogEntries';
 
-const createEntry = (version: string): ChangelogEntry => ({ version, date: '2026-01-01', changes: [] });
+const createEntry = (version: string): ReleasedChangelogEntry => ({ version, date: '2026-01-01', changes: [] });
 
-const entries: ChangelogEntry[] = [createEntry('1.2.0'), createEntry('1.1.0'), createEntry('1.0.0')];
+const entries: ReleasedChangelogEntry[] = [createEntry('1.2.0'), createEntry('1.1.0'), createEntry('1.0.0')];
 
 describe('getUnseenChangelogEntries', () => {
   it('returns the entries newer than the last seen version', () => {

@@ -22,6 +22,8 @@ vi.mock('@/components/features/changelog/changelog-dialog', () => ({
 
 vi.mock('@/data/changelog/changelogEntries', () => ({
   changelogEntries: [
+    // Unreleased: never shown or remembered, so every test below sees 1.4.0 as the latest update.
+    { version: '1.5.0', date: null, changes: [] },
     { version: '1.4.0', date: '2026-05-01', changes: [] },
     { version: '1.3.0', date: '2026-04-01', changes: [] },
     { version: '1.2.0', date: '2026-03-01', changes: [] },

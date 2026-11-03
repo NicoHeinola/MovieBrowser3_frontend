@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ChangelogDialogProps } from './changelogDialogProps';
-import type { ChangelogEntry } from '@/interfaces/changelog/ChangelogEntry';
+import type { ReleasedChangelogEntry } from '@/interfaces/changelog/ReleasedChangelogEntry';
 
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -17,10 +17,10 @@ const router = useRouter();
 const { t } = useI18n();
 
 /** The newest update, shown as the dialog's headline. */
-const latestEntry = computed<ChangelogEntry | undefined>(() => props.entries[0]);
+const latestEntry = computed<ReleasedChangelogEntry | undefined>(() => props.entries[0]);
 
 /** Older unseen updates, listed below the newest one. */
-const olderEntries = computed<ChangelogEntry[]>(() => props.entries.slice(1));
+const olderEntries = computed<ReleasedChangelogEntry[]>(() => props.entries.slice(1));
 
 /**
  * Closes the dialog and opens the full changelog.

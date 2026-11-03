@@ -4,9 +4,10 @@ import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
 import { changelogEntries } from '@/data/changelog/changelogEntries';
+import { getReleasedChangelogEntries } from '@/utils/changelog/getReleasedChangelogEntries';
 
 /** The newest released version. */
-const latestVersion: string | undefined = changelogEntries[0]?.version;
+const latestVersion: string | undefined = getReleasedChangelogEntries(changelogEntries)[0]?.version;
 
 const route = useRoute();
 const { t } = useI18n();

@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router';
 import { ChangelogDialog } from '@/components/features/changelog/changelog-dialog';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { changelogEntries } from '@/data/changelog/changelogEntries';
+import { getReleasedChangelogEntries } from '@/utils/changelog/getReleasedChangelogEntries';
 import { getUnseenChangelogEntries } from '@/utils/changelog/getUnseenChangelogEntries';
 
 /** Most updates the dialog lists at once; "All updates" covers the rest. */
@@ -27,7 +28,7 @@ export const useChangelogNotice = () => {
    * @returns Nothing.
    */
   const showUnseenChanges = async (): Promise<void> => {
-    const entries = getUnseenChangelogEntries(changelogEntries, lastSeenVersion.value);
+    const entries = getUnseenChangelogEntries(getReleasedChangelogEntries(changelogEntries), lastSeenVersion.value);
     const latestEntry = entries[0];
 
     if (latestEntry === undefined) {

@@ -1,4 +1,4 @@
-import type { ChangelogEntry } from '@/interfaces/changelog/ChangelogEntry';
+import type { ReleasedChangelogEntry } from '@/interfaces/changelog/ReleasedChangelogEntry';
 
 /**
  * Picks the changelog entries released after the version the user last saw.
@@ -7,9 +7,9 @@ import type { ChangelogEntry } from '@/interfaces/changelog/ChangelogEntry';
  * @returns The unseen entries, newest first.
  */
 export const getUnseenChangelogEntries = (
-  entries: ChangelogEntry[],
+  entries: ReleasedChangelogEntry[],
   lastSeenVersion: string | null,
-): ChangelogEntry[] => {
+): ReleasedChangelogEntry[] => {
   const lastSeenIndex = entries.findIndex((entry) => entry.version === lastSeenVersion);
 
   // First visit, or the seen version is no longer listed: show only the latest update instead of the whole history.

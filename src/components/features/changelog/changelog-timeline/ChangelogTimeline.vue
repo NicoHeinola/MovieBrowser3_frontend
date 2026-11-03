@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ChangelogEntry } from '@/interfaces/changelog/ChangelogEntry';
+import type { ReleasedChangelogEntry } from '@/interfaces/changelog/ReleasedChangelogEntry';
 
 import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
@@ -10,7 +10,7 @@ import { formatChangelogDate } from '@/utils/changelog/formatChangelogDate';
 
 const props = defineProps<{
   /** Every update, newest first. */
-  entries: ChangelogEntry[];
+  entries: ReleasedChangelogEntry[];
 }>();
 
 const { smAndUp } = useDisplay();
