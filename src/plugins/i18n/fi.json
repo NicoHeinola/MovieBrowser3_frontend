@@ -12,7 +12,9 @@
     "version": "Versio {version}",
     "allUpdates": "Kaikki päivitykset",
     "gotIt": "Selvä",
-    "latest": "Uusin"
+    "latest": "Uusin",
+    "upcoming": "Tulossa",
+    "notReleased": "Ei vielä julkaistu"
   },
   "showEntry": {
     "type": {

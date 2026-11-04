@@ -4,8 +4,8 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
 
 /**
  * Every version, newest first. The top entry may be the next, unreleased version (`date: null`): its lines collect
- * there until the release dates it. Users who have not seen a released version get the "What's new" popup on their
- * next visit.
+ * there until the release dates it, and the changelog page lists them as upcoming. Users who have not seen a released
+ * version get the "What's new" popup on their next visit.
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
@@ -51,6 +51,10 @@ export const changelogEntries: ChangelogEntry[] = [
       {
         type: ChangelogChangeType.Changed,
         text: 'Show search also checks descriptions, categories, season and movie names, and can mix words from each.',
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'The changelog shows what is coming in the next version, and still marks the latest released one.',
       },
     ],
   },

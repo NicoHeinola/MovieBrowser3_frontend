@@ -6,10 +6,10 @@ import { PageContainer } from '@/components/common/page-container';
 import { TitledSection } from '@/components/common/titled-section';
 import { ChangelogTimeline } from '@/components/features/changelog/changelog-timeline';
 import { changelogEntries } from '@/data/changelog/changelogEntries';
-import { getReleasedChangelogEntries } from '@/utils/changelog/getReleasedChangelogEntries';
+import { getVisibleChangelogEntries } from '@/utils/changelog/getVisibleChangelogEntries';
 
-/** Released updates only: the next version's lines stay hidden until it ships. */
-const releasedEntries = getReleasedChangelogEntries(changelogEntries);
+/** Released updates, plus the next version once it has lines. */
+const visibleEntries = getVisibleChangelogEntries(changelogEntries);
 
 const { t } = useI18n();
 </script>
@@ -21,7 +21,7 @@ const { t } = useI18n();
     <v-row>
       <v-col cols="12" lg="8" xl="6">
         <titled-section :title="t('changelog.title')" icon="mdi-update" icon-color="primary">
-          <changelog-timeline :entries="releasedEntries" />
+          <changelog-timeline :entries="visibleEntries" />
         </titled-section>
       </v-col>
     </v-row>

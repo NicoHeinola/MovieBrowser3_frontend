@@ -12,7 +12,9 @@
     "version": "Version {version}",
     "allUpdates": "All updates",
     "gotIt": "Got it",
-    "latest": "Latest"
+    "latest": "Latest",
+    "upcoming": "Upcoming",
+    "notReleased": "Not released yet"
   },
   "showEntry": {
     "type": {

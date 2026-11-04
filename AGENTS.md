@@ -35,7 +35,7 @@ Guidance for AI coding agents (Claude Code and Copilot). File-specific rules liv
 
 Releases are `vX.Y.Z` git tags with a GitHub release; production installs build the newest tag, never `main`. The app version lives in `package.json`, and `src/data/changelog/changelogEntries.ts` lists every version, newest first. Tests keep the newest entry's version equal to `package.json` and every version one step above the one below it.
 
-- Between releases, the top entry is the next version with `date: null`. The app hides it until it is released.
+- Between releases, the top entry is the next version with `date: null`. The changelog page lists it as upcoming once it has lines, the "What's new" popup only after it is released. Production builds a tag, whose top entry is dated, so only builds of `main` show it.
 - Every user-facing change (new feature, visible change, bug fix, removal) adds a line to that entry in the same change. Skip refactors, tests, docs and tooling. The backend has no changelog, so its user-visible changes get a line here too.
 - Write each line for users, in plain words: "Show cards show the primary title in a tooltip.", not "feat(show-card): add tooltip".
 - Size the version from the last release, never from the current unreleased number: fixes and small changes keep the patch step, a new feature raises it to the next minor (`1.0.1` becomes `1.1.0`), a breaking or removed feature to the next major (`2.0.0`). Never step twice: after `1.0.0`, the next release is `1.0.1`, `1.1.0` or `2.0.0`. Set the same version in `package.json`.
