@@ -48,6 +48,10 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Changed,
         text: 'Error messages from the server now appear in your language.',
       },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Show search also checks descriptions, categories, season and movie names, and can mix words from each.',
+      },
     ],
   },
   {
