@@ -9,18 +9,8 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
-    version: '2.0.1',
-    date: null,
-    changes: [
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'Error messages from the server now appear in your language.',
-      },
-    ],
-  },
-  {
     version: '2.0.0',
-    date: '2026-11-04',
+    date: null,
     changes: [
       {
         type: ChangelogChangeType.Changed,
@@ -53,6 +43,10 @@ export const changelogEntries: ChangelogEntry[] = [
       {
         type: ChangelogChangeType.Changed,
         text: 'The loading bar at the top is thicker, so it is easier to see.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Error messages from the server now appear in your language.',
       },
     ],
   },
