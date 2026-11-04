@@ -3,7 +3,7 @@ import type { ChangelogEntry } from '@/interfaces/changelog/ChangelogEntry';
 import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
 
 /**
- * Every version, newest first. The top entry may be the next, unreleased version (`date: '2026-11-04'`): its lines collect
+ * Every version, newest first. The top entry may be the next, unreleased version (`date: null`): its lines collect
  * there until the release dates it. Users who have not seen a released version get the "What's new" popup on their
  * next visit.
  */
@@ -11,7 +11,7 @@ export const changelogEntries: ChangelogEntry[] = [
   { version: '2.0.1', date: null, changes: [] },
   {
     version: '2.0.0',
-    date: null,
+    date: '2026-11-04',
     changes: [
       {
         type: ChangelogChangeType.Changed,
