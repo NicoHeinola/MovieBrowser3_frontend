@@ -3,7 +3,7 @@ import type { ChangelogEntry } from '@/interfaces/changelog/ChangelogEntry';
 import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
 
 /**
- * Every version, newest first. The top entry may be the next, unreleased version (`date: null`): its lines collect
+ * Every version, newest first. The top entry may be the next, unreleased version (`date: '2026-11-04'`): its lines collect
  * there until the release dates it. Users who have not seen a released version get the "What's new" popup on their
  * next visit.
  */
