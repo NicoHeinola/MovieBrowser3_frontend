@@ -60,6 +60,10 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Added,
         text: 'The changelog shows what is coming in the next version, and still marks the latest released one.',
       },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Loading placeholders only appear when a page takes a moment to load, so fast pages no longer flicker.',
+      },
     ],
   },
   {

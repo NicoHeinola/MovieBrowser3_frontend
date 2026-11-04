@@ -31,3 +31,15 @@ a {
 .v-navigation-drawer__scrim {
   position: fixed;
 }
+
+// Skeletons stay invisible for their first 200ms, so a fast load shows nothing instead of a flash. Only slow loads fade
+// them in. They keep their space while hidden, so the page does not jump. `backwards` holds the 0% frame during the delay.
+.v-skeleton-loader {
+  animation: skeleton-delayed-fade-in 150ms ease 200ms backwards;
+}
+
+@keyframes skeleton-delayed-fade-in {
+  from {
+    opacity: 0;
+  }
+}
