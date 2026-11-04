@@ -35,7 +35,7 @@ const shouldShowNavigation = computed<boolean>(() => isRouterReady.value && rout
               :active="isNavigating"
               class="position-fixed top-0 left-0 w-100"
               color="secondary"
-              height="1"
+              height="3"
               style="z-index: 1100"
               indeterminate
             />

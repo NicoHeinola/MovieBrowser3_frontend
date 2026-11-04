@@ -40,6 +40,10 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Changed,
         text: 'The login page has a new glass look, and main buttons look the same across the app.',
       },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The loading bar at the top is thicker, so it is easier to see.',
+      },
     ],
   },
   {
