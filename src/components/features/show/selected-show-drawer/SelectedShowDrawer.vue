@@ -20,6 +20,7 @@ const { isSwitchingShow, show } = useSelectedShow(showId, isShown);
   <v-navigation-drawer
     v-model="isShown"
     :width="xlAndUp ? 600 : 400"
+    class="glass-panel high"
     location="right"
     style="height: 100vh !important; top: 0; z-index: 2000"
     temporary

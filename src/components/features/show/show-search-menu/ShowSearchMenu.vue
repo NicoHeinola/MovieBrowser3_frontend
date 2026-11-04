@@ -101,7 +101,7 @@ onKeyStroke('k', (event) => {
       </div>
     </template>
 
-    <v-card class="glass-panel mt-2" rounded="xl" border>
+    <v-card class="glass-panel high mt-2" rounded="xl" border>
       <v-list bg-color="transparent" class="overflow-y-auto" style="max-height: 440px">
         <template v-if="isLoading">
           <v-skeleton-loader v-for="i in 3" color="transparent" type="list-item-avatar" :key="i" />

@@ -11,6 +11,22 @@
   backdrop-filter: blur(10px);
 }
 
+// The menu selectors cover every menu and dropdown: selects and autocompletes set their own content class, so a
+// Vuetify default cannot reach them. Plain menus hold a list directly, those dropdowns wrap it in a sheet.
+.glass-panel.high,
+.v-menu > .v-overlay__content > .v-list,
+.v-menu > .v-overlay__content > .v-sheet {
+  background: rgb(var(--v-theme-surface), 0.8);
+  backdrop-filter: blur(20px);
+}
+
+// The wrapping sheet carries the glass, so the solid list inside it has to go. Subheaders inherit the list background,
+// which would stack a second layer of glass into a darker band.
+.v-menu > .v-overlay__content > .v-sheet > .v-list,
+.v-menu .v-list-subheader {
+  background: transparent;
+}
+
 .transition-color-220 {
   transition: color 220ms ease;
 }

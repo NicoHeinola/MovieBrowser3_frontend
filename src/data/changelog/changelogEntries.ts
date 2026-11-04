@@ -42,6 +42,10 @@ export const changelogEntries: ChangelogEntry[] = [
       },
       {
         type: ChangelogChangeType.Changed,
+        text: 'Side drawers, menus and dropdowns have a new glass look.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
         text: 'The loading bar at the top is thicker, so it is easier to see.',
       },
       {

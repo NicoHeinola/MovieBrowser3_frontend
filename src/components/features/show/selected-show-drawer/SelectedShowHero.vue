@@ -59,30 +59,32 @@ watch(
 
 <template>
   <div class="h-50 position-relative overflow-hidden w-100">
-    <v-fade-transition>
-      <div class="youtube-video-container position-absolute top-0 left-0 w-100 h-100" v-if="canPlayVideo">
-        <you-tube-player
-          :muted="isMuted"
-          :video-id="activeVideoId"
-          :volume="volume"
-          @error="isVideoError = true"
-          @playing="isVideoPlaying = true"
+    <div class="hero-media position-absolute w-100 h-100 top-0 left-0">
+      <v-fade-transition>
+        <div class="youtube-video-container position-absolute top-0 left-0 w-100 h-100" v-if="canPlayVideo">
+          <you-tube-player
+            :muted="isMuted"
+            :video-id="activeVideoId"
+            :volume="volume"
+            @error="isVideoError = true"
+            @playing="isVideoPlaying = true"
+          />
+        </div>
+      </v-fade-transition>
+
+      <v-fade-transition>
+        <v-img
+          :src="props.show?.card_image_url || props.show?.banner_url"
+          class="w-100 h-100"
+          cover
+          v-if="
+            ((props.show?.card_image_url || props.show?.banner_url) && (!canPlayVideo || !isVideoPlaying)) || !videoId
+          "
         />
-      </div>
-    </v-fade-transition>
+      </v-fade-transition>
+    </div>
 
-    <v-fade-transition>
-      <v-img
-        :src="props.show?.card_image_url || props.show?.banner_url"
-        class="w-100 h-100"
-        cover
-        v-if="
-          ((props.show?.card_image_url || props.show?.banner_url) && (!canPlayVideo || !isVideoPlaying)) || !videoId
-        "
-      />
-    </v-fade-transition>
-
-    <div class="image-shadow position-absolute w-100 h-100 top-0 left-0">
+    <div class="position-absolute w-100 h-100 top-0 left-0">
       <section-container class="d-flex flex-column justify-end h-100">
         <div class="d-flex ga-2">
           <v-tooltip v-for="category in props.show?.categories" :key="category.value">
@@ -134,7 +136,9 @@ watch(
   }
 }
 
-.image-shadow {
-  background: linear-gradient(to top, rgb(var(--v-theme-surface)) 0%, rgb(var(--v-theme-surface), 0.4) 100%);
+// Fade the media itself instead of painting surface color over it: the drawer is see-through glass, so a solid color
+// would leave a hard line where the hero ends.
+.hero-media {
+  mask-image: linear-gradient(to top, transparent 0%, rgb(0 0 0 / 60%) 100%);
 }
 </style>

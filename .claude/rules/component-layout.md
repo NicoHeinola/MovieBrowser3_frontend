@@ -19,6 +19,15 @@ applyTo: 'src/components/**/*.vue,src/pages/**/*.vue'
 - Native CSS grid or flex is acceptable when the component is rendering a specialized layout primitive, such as a card rail, overlay, or measured grid that Vuetify grid components do not model cleanly.
 - When using a native grid or flex container, keep the exception local and obvious in the component instead of mixing multiple layout systems across the same section.
 
+## Glass Surfaces
+
+Only make a surface see-through when there is something behind it worth seeing. On the calm page background, glass just darkens the surface.
+
+- Solid (the default): dialogs, whose dark backdrop hides the glass and only darkens them, and in-page cards and tables on `<page-background />`, such as statistics, form cards and show or website grids.
+- `glass-panel`: over an image or video where the background is meant to be seen (login, setup, the Home banner, image previews), and small floating controls.
+- `glass-panel high`: overlays above busy content, so text stays readable. The drawers and every `v-menu` already have it.
+- Fade media into a glass surface with `mask-image`, not a gradient of surface color, which leaves a hard line.
+
 ## Loading Layout
 
 - When a layout section is waiting on async data, keep the intended Vuetify layout structure in place and render loading with built-in `loading` props or `v-skeleton-loader`.

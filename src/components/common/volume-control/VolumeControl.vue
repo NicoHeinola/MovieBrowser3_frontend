@@ -56,7 +56,7 @@ watch(
 
 <template>
   <div class="d-inline-flex" data-testid="volume-control" @mouseenter="expand" @mouseleave="collapse">
-    <v-sheet class="d-inline-flex align-center ga-2 overflow-hidden border pa-2" rounded="pill">
+    <v-sheet class="glass-panel d-inline-flex align-center ga-2 overflow-hidden border pa-2" rounded="pill">
       <v-btn :icon="volumeIcon" color="default" size="small" variant="text" @click="toggleMuted" />
 
       <v-expand-x-transition>
