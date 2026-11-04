@@ -46,6 +46,7 @@ const list = async (): Promise<Setting[]> => { ... }
 ## User-Facing Text
 
 - The backend sends codes, not sentences. Give a code field an enum in `src/enums/<domain>` and keep its messages in i18n (`SetupCheckResult`, `setup.checkCodes`).
+- API errors are `{ code, params }` (`ApiErrorResponse`). A new code goes in `ApiErrorCode` and `apiErrors.codes`; `getApiErrorMessage` translates it and never shows a response's `message`.
 
 ## Safety
 

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { ApiErrorCode } from '@/enums/api/ApiErrorCode';
 import { SetupCheckCode } from '@/enums/setup/SetupCheckCode';
 
 import enMessages from '../en.json';
@@ -28,6 +29,10 @@ describe('i18n messages', () => {
 
   it('has a message for every setup check code', () => {
     expect(Object.keys(enMessages.setup.checkCodes).toSorted()).toEqual(Object.values(SetupCheckCode).toSorted());
+  });
+
+  it('has a message for every API error code', () => {
+    expect(Object.keys(enMessages.apiErrors.codes).toSorted()).toEqual(Object.values(ApiErrorCode).toSorted());
   });
 
   it('has no empty messages', () => {

@@ -3,9 +3,9 @@ import type {
   SnackbarDismissReason,
   SnackbarPresetOptions,
 } from '@/components/layouts/snackbar-provider';
-import { isAxiosError } from 'axios';
 
 import { useSnackbar } from '@/components/layouts/snackbar-provider';
+import { getApiErrorMessage } from '@/utils/api/getApiErrorMessage';
 
 export const useCommonSnackbar = () => {
   const { showSnackbar } = useSnackbar();
@@ -35,25 +35,7 @@ export const useCommonSnackbar = () => {
     showPresetSnackbar('warning', 4000, message, overrides);
 
   const showAPIErrorSnackbar = (error: unknown): string => {
-    let message = 'Something went wrong. Please try again.';
-
-    if (isAxiosError(error)) {
-      const responseData = error.response?.data;
-
-      if (typeof responseData === 'object' && responseData !== null && 'message' in responseData) {
-        const potentialMessage = responseData.message;
-
-        if (typeof potentialMessage === 'string' && potentialMessage !== '') {
-          message = potentialMessage;
-        }
-      } else if (error.response?.status === 401) {
-        message = 'Your session is no longer valid. Please log in again.';
-      } else if ((error.response?.status ?? 0) >= 500) {
-        message = 'The server could not process your request. Please try again.';
-      }
-    } else if (error instanceof Error && error.message !== '') {
-      message = error.message;
-    }
+    const message = getApiErrorMessage(error);
 
     showErrorSnackbar(message);
 
