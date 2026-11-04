@@ -16,7 +16,7 @@ applyTo: 'src/pages/**/*.vue'
 ## Layout
 
 - Pages live at `src/pages/<access>/<name>/<Name>View.vue`, where access is `guest`, `authenticated` or `admin`.
-- Start with `<page-background />` and `<page-container>`, then lay out `titled-section`s in `v-row` and `v-col`.
+- Start with `<page-background />` and `<page-container>`, then lay out `titled-section`s in `v-row` and `v-col`. Pages without navigation (login, setup) use `<movie-background />` instead of `<page-background />`, so their `glass-panel` cards have something to show through.
 
 ## File Boundaries
 

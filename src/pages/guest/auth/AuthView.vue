@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 import { HeadingText } from '@/components/common/heading-text';
+import { MovieBackground } from '@/components/common/movie-background';
 import { LoginForm } from '@/components/features/auth/login-form';
 import { RegisterForm } from '@/components/features/auth/register-form';
 import { LanguageMenu } from '@/components/features/locale/language-menu';
@@ -73,10 +74,7 @@ const submitRegister = async (): Promise<void> => {
     style="height: 100vh; z-index: 1"
     fluid
   >
-    <div
-      class="position-absolute w-100 h-100"
-      style="background-image: url('/backgrounds/movie-background.jpg'); background-size: cover"
-    ></div>
+    <movie-background />
     <div class="position-absolute" style="top: 16px; right: 16px">
       <language-menu />
     </div>
@@ -88,7 +86,7 @@ const submitRegister = async (): Promise<void> => {
         </div>
       </v-col>
       <v-col cols="12" lg="5">
-        <v-card border="sm" color="rgba(var(--v-theme-surface), 0.88)" rounded="xl" style="backdrop-filter: blur(5px)">
+        <v-card border="sm" class="glass-panel" rounded="xl">
           <v-card-text class="pa-8 d-flex flex-column ga-6">
             <v-btn-toggle v-model="mode" color="secondary" mandatory>
               <v-btn value="login">{{ t('auth.login') }}</v-btn>
@@ -118,6 +116,7 @@ const submitRegister = async (): Promise<void> => {
                 :loading="authStore.isLoading"
                 color="primary"
                 type="submit"
+                variant="flat"
               >
                 {{ t('auth.login') }}
               </v-btn>
@@ -136,6 +135,7 @@ const submitRegister = async (): Promise<void> => {
                 :loading="authStore.isLoading"
                 color="primary"
                 type="submit"
+                variant="flat"
               >
                 {{ t('auth.register') }}
               </v-btn>

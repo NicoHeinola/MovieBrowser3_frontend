@@ -3,6 +3,7 @@ import type { SetupStatus } from '@/interfaces/api/models/SetupStatus';
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { SetupCheckCode } from '@/enums/setup/SetupCheckCode';
 import { apiClient } from '@/plugins/api/apiClient';
 
 import { setupService } from '../setupService';
@@ -38,7 +39,7 @@ describe('setupService', () => {
 
   it('checks only the paths it is given', async () => {
     const checks: SetupChecks = {
-      vlc_media_player_path: { ok: false, message: 'VLC was not found.' },
+      vlc_media_player_path: { ok: false, code: SetupCheckCode.VlcNotFound, params: { path: '/usr/bin/vlc' } },
     };
 
     vi.mocked(apiClient.post).mockResolvedValueOnce(createResponse(checks));

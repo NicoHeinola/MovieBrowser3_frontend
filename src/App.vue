@@ -6,12 +6,14 @@ import { LanguagePrompt } from '@/components/features/locale/language-prompt';
 import { DialogProvider } from '@/components/layouts/dialog-provider';
 import { SnackbarProvider } from '@/components/layouts/snackbar-provider';
 import { TopNavigation } from '@/components/layouts/top-navigation';
+import { useRouteLoading } from '@/composables/router/useRouteLoading';
 import { useWatchProgressStream } from '@/composables/show/useWatchProgressStream';
 
 const isRouterReady = ref<boolean>(false);
 
 const route = useRoute();
 const router = useRouter();
+const { isNavigating } = useRouteLoading();
 useWatchProgressStream();
 
 onMounted(async () => {
@@ -29,6 +31,14 @@ const shouldShowNavigation = computed<boolean>(() => isRouterReady.value && rout
         <dialog-provider>
           <language-prompt />
           <v-main class="z-10">
+            <v-progress-linear
+              :active="isNavigating"
+              class="position-fixed top-0 left-0 w-100"
+              color="secondary"
+              height="1"
+              style="z-index: 1100"
+              indeterminate
+            />
             <top-navigation v-if="shouldShowNavigation" />
             <router-view />
           </v-main>

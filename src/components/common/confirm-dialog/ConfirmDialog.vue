@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<ConfirmDialogProps>(), {
         <v-btn color="default" @click="props.close(false)">
           {{ props.cancelText ?? t('common.cancel') }}
         </v-btn>
-        <v-btn :color="props.confirmColor" variant="tonal" @click="props.close(true)">
+        <v-btn :color="props.confirmColor" variant="flat" @click="props.close(true)">
           {{ props.confirmText ?? t('common.confirm') }}
         </v-btn>
       </v-row>

@@ -84,7 +84,7 @@ const handleSubmit = async (): Promise<void> => {
         :loading="isSaving"
         color="primary"
         type="submit"
-        variant="tonal"
+        variant="flat"
       >
         {{ t('settings.addVideoButton') }}
       </v-btn>

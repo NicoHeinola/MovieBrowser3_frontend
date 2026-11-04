@@ -3,7 +3,9 @@ import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-import { PageBackground } from '@/components/common/page-background';
+import { CardActionBar } from '@/components/common/card-action-bar';
+import { HeadingText } from '@/components/common/heading-text';
+import { MovieBackground } from '@/components/common/movie-background';
 import { PageContainer } from '@/components/common/page-container';
 import { SetupWizard } from '@/components/features/setup/setup-wizard';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -36,15 +38,14 @@ const load = async (): Promise<void> => {
 };
 
 /**
- * Marks setup as done and opens the page the admin picked.
- * @param routeName - Where to go next.
+ * Marks setup as done and opens the home page.
  * @returns Nothing.
  */
-const finish = async (routeName: string): Promise<void> => {
+const finish = async (): Promise<void> => {
   try {
     await setupStore.complete();
     showSuccessSnackbar(t('setup.completed'));
-    await router.push({ name: routeName });
+    await router.push({ name: 'authenticated-home' });
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   }
@@ -61,10 +62,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <page-background />
-  <page-container>
+  <movie-background />
+  <page-container class="d-flex align-center justify-center" style="min-height: 100vh">
     <v-row class="position-relative" justify="center">
-      <v-col cols="12" lg="8" xl="6">
+      <v-col cols="12" style="max-width: 720px">
         <setup-wizard
           :loading="setupStore.isLoading"
           :status="setupStore.status"
@@ -72,20 +73,27 @@ onMounted(() => {
           @skip="skip"
           v-if="isReady && setupStore.status"
         />
-        <v-card border="sm" rounded="xl" v-else-if="hasLoadFailed">
-          <v-empty-state :text="t('setup.loadFailedText')" :title="t('setup.loadFailed')" icon="mdi-cloud-off-outline">
-            <template #actions>
-              <v-btn variant="text" @click="void skip()">{{ t('setup.notNow') }}</v-btn>
-              <v-btn
-                :loading="setupStore.isLoading || settingStore.isLoading"
-                color="primary"
-                prepend-icon="mdi-refresh"
-                @click="void load()"
-              >
-                {{ t('setup.retry') }}
-              </v-btn>
-            </template>
-          </v-empty-state>
+        <v-card border="sm" class="glass-panel" rounded="xl" v-else-if="hasLoadFailed">
+          <div class="d-flex flex-column align-center ga-6 pa-8">
+            <v-avatar color="warning" size="x-large" variant="tonal">
+              <v-icon icon="mdi-cloud-off-outline" size="large" />
+            </v-avatar>
+
+            <heading-text :subtitle="t('setup.loadFailedText')" :title="t('setup.loadFailed')" centered />
+          </div>
+
+          <card-action-bar>
+            <v-spacer />
+            <v-btn variant="text" @click="void skip()">{{ t('setup.notNow') }}</v-btn>
+            <v-btn
+              :loading="setupStore.isLoading || settingStore.isLoading"
+              color="primary"
+              variant="flat"
+              @click="void load()"
+            >
+              {{ t('setup.retry') }}
+            </v-btn>
+          </card-action-bar>
         </v-card>
         <v-skeleton-loader rounded="xl" type="heading, paragraph, actions" v-else />
       </v-col>

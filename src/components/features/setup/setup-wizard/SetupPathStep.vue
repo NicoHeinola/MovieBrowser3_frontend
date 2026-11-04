@@ -7,12 +7,14 @@ import { useI18n } from 'vue-i18n';
 
 import { BaseForm } from '@/components/common/base-form';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
-import { setupService } from '@/services/setup/setupService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
+import { useSetupStore } from '@/stores/setup/useSetupStore';
 
 const props = defineProps<{
   /** The setting this step saves; the backend checks it under the same key. */
   settingKey: keyof SetupChecks;
+  /** Id of the step's form, which the wizard's footer button submits. */
+  formId: string;
   label: string;
   rules: ((value: string) => true | string)[];
   /** Paths offered as one-click chips under the field. */
@@ -20,62 +22,50 @@ const props = defineProps<{
 }>();
 
 const path = defineModel<string>('path', { required: true });
+/** Whether the path passes the field's rules, so the wizard's footer button can be enabled. */
+const isValid = defineModel<boolean>('isValid', { default: false });
+/** Whether the path is being checked and saved, so the wizard's footer button can show it. */
+const isSubmitting = defineModel<boolean>('isSubmitting', { default: false });
 
 const emit = defineEmits<{
-  back: [];
-  next: [];
+  /** The path passed its check and is saved. */
+  saved: [];
 }>();
 
-const formId = `setup-${props.settingKey}-form`;
-
-const isValid = ref<boolean>(false);
-const isSubmitting = ref<boolean>(false);
 const checkResult = ref<SetupCheckResult | null>(null);
 
 const settingStore = useSettingStore();
+const setupStore = useSetupStore();
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 const { t } = useI18n();
 
 const savedPath = computed<string>(() => settingStore.getSetting<string>(props.settingKey) ?? '');
 const trimmedPath = computed<string>(() => path.value.trim());
-const hasFailedCheck = computed<boolean>(() => checkResult.value?.ok === false);
 const isChangingSavedPath = computed<boolean>(() => savedPath.value !== '' && trimmedPath.value !== savedPath.value);
 
-/**
- * Saves the path when it changed and moves on to the next step.
- * @returns Nothing.
- */
-const save = async (): Promise<void> => {
-  if (trimmedPath.value !== savedPath.value) {
-    await settingStore.updateSetting(props.settingKey, trimmedPath.value);
-  }
-
-  emit('next');
-};
+/** Why the last check failed, or `null` while there is nothing to report. */
+const checkFailedMessage = computed<string | null>(() =>
+  checkResult.value?.ok === false ? t(`setup.checkCodes.${checkResult.value.code}`, checkResult.value.params) : null,
+);
 
 /**
- * Checks the path, then saves it. A failed check shows its reason instead, and the button then offers to save anyway,
- * because the backend can't see every setup (VLC outside the usual folders, a drive mounted later).
+ * Checks the path, saves it when it passes and moves on. Every submit checks again, so the admin can retry after
+ * fixing what the check complained about outside the app, such as a stopped VLC bridge.
  * @returns Nothing.
  */
 const submit = async (): Promise<void> => {
-  if (!isValid.value) {
+  // Enter still submits while the button shows as loading, and a second run would save the path twice.
+  if (!isValid.value || isSubmitting.value) {
     return;
   }
 
   isSubmitting.value = true;
   try {
-    if (!hasFailedCheck.value) {
-      const checks = await setupService.check({ [props.settingKey]: trimmedPath.value });
+    checkResult.value = await setupStore.checkAndSavePath(props.settingKey, trimmedPath.value);
 
-      checkResult.value = checks[props.settingKey] ?? null;
-
-      if (hasFailedCheck.value) {
-        return;
-      }
+    if (checkResult.value?.ok !== false) {
+      emit('saved');
     }
-
-    await save();
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {
@@ -83,7 +73,7 @@ const submit = async (): Promise<void> => {
   }
 };
 
-// An edited path hasn't been checked yet, so drop the old result and the "save anyway" offer with it.
+// An edited path hasn't been checked yet, so the old reason no longer applies.
 watch(path, () => {
   checkResult.value = null;
 });
@@ -96,7 +86,7 @@ watch(path, () => {
     </v-col>
 
     <v-col cols="12">
-      <base-form v-model:is-valid="isValid" @submit="submit" :id="formId">
+      <base-form v-model:is-valid="isValid" @submit="submit" :id="props.formId">
         <v-text-field
           v-model="path"
           :label="props.label"
@@ -116,30 +106,11 @@ watch(path, () => {
           {{ suggestion }}
         </v-chip>
       </div>
-    </v-col>
 
-    <v-col cols="12" v-if="isChangingSavedPath && $slots.changed">
-      <slot :saved-path="savedPath" name="changed" />
-    </v-col>
-
-    <v-col cols="12" v-if="hasFailedCheck">
-      <v-alert type="warning">
-        {{ checkResult?.message ?? t('setup.checkFailed') }}
-        <div class="mt-2">{{ t('setup.checkFailedHint') }}</div>
-      </v-alert>
-    </v-col>
-
-    <v-col class="d-flex ga-2 justify-end" cols="12">
-      <v-btn variant="text" @click="emit('back')">{{ t('setup.back') }}</v-btn>
-      <v-btn
-        :color="hasFailedCheck ? 'warning' : 'primary'"
-        :disabled="!isValid"
-        :form="formId"
-        :loading="isSubmitting"
-        type="submit"
-      >
-        {{ hasFailedCheck ? t('setup.saveAnyway') : t('setup.next') }}
-      </v-btn>
+      <!-- Notices stay below the field: they come and go while typing, and must not push the field around. -->
+      <v-alert class="mt-4" type="error" v-if="checkFailedMessage">{{ checkFailedMessage }}</v-alert>
+      <slot :saved-path="savedPath" name="changed" v-if="isChangingSavedPath" />
+      <slot name="notices" />
     </v-col>
   </v-row>
 </template>

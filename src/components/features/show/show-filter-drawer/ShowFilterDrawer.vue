@@ -8,6 +8,7 @@ import { useI18n } from 'vue-i18n';
 
 import { FilterChip } from '@/components/common/filter-chip';
 import { FilterDrawer, FilterDrawerSection } from '@/components/common/filter-drawer';
+import { HighlightText } from '@/components/common/highlight-text';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { CategoryQueryKey } from '@/enums/query/categoryQueryKey';
 import { WatchStatus } from '@/enums/show/WatchStatus';
@@ -98,10 +99,10 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
       <template #subtitle>
         <i18n-t keypath="show.filterAnyIncluded" tag="span">
           <template #any>
-            <span class="text-secondary">{{ t('filter.any') }}</span>
+            <highlight-text color="secondary">{{ t('filter.any') }}</highlight-text>
           </template>
           <template #none>
-            <span class="text-error">{{ t('filter.none') }}</span>
+            <highlight-text color="error">{{ t('filter.none') }}</highlight-text>
           </template>
         </i18n-t>
       </template>
@@ -122,10 +123,10 @@ const updateFilters = (changes: Partial<ShowSearchFilters>): void => {
       <template #subtitle>
         <i18n-t keypath="show.filterEveryIncluded" tag="span">
           <template #every>
-            <span class="text-secondary">{{ t('filter.every') }}</span>
+            <highlight-text color="secondary">{{ t('filter.every') }}</highlight-text>
           </template>
           <template #none>
-            <span class="text-error">{{ t('filter.none') }}</span>
+            <highlight-text color="error">{{ t('filter.none') }}</highlight-text>
           </template>
         </i18n-t>
       </template>

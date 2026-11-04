@@ -9,9 +9,38 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
-    version: '1.1.1',
+    version: '2.0.0',
     date: null,
-    changes: [],
+    changes: [
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'First-time setup has a new centered look, and its last step takes you straight to the home page.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Setup suggests a video folder on a Windows drive, so VLC can open your videos.',
+      },
+      {
+        type: ChangelogChangeType.Removed,
+        text: 'Setup no longer has the "Save anyway" button. Only paths that pass its check are saved.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Setup explains a failed path check in your language.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: String.raw`Windows paths such as G:\Videos are no longer accepted. Use /mnt/g/Videos instead.`,
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'The loading bar now sits at the top of every page, including login and setup.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The login page has a new glass look, and main buttons look the same across the app.',
+      },
+    ],
   },
   {
     version: '1.1.0',

@@ -13,7 +13,6 @@ import { ShowSearchMenu } from '@/components/features/show/show-search-menu';
 import { UpdateNotice } from '@/components/features/version/update-notice';
 import { useChangelogNotice } from '@/composables/changelog/useChangelogNotice';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
-import { useRouteLoading } from '@/composables/router/useRouteLoading';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
 import NavLinks from './NavLinks.vue';
@@ -25,7 +24,6 @@ const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 const { confirm } = useConfirmDialog();
-const { isNavigating } = useRouteLoading();
 const { showUnseenChanges } = useChangelogNotice();
 const { t } = useI18n();
 
@@ -82,13 +80,6 @@ onMounted(() => {
 
 <template>
   <v-app-bar class="navigation-bar" color="transparent" flat>
-    <v-progress-linear
-      :active="isNavigating"
-      class="position-absolute bottom-0 left-0 w-100"
-      color="secondary"
-      height="1"
-      indeterminate
-    />
     <!-- The side columns share the leftover width equally, so the links stay centered in both areas. -->
     <div class="d-flex align-center ga-4 w-100 px-4">
       <div class="flex-1-1-0 d-flex align-center ga-2">

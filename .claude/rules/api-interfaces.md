@@ -43,6 +43,10 @@ const list = async (): Promise<Setting[]> => { ... }
 - Always create dedicated files for complex response objects (e.g., `SettingsResponse.ts`) even when they are simple `Record` or wrapper types, as long as they represent a distinct API contract.
 - Use sibling files for nested reusable contracts instead of inlining large anonymous object types repeatedly.
 
+## User-Facing Text
+
+- The backend sends codes, not sentences. Give a code field an enum in `src/enums/<domain>` and keep its messages in i18n (`SetupCheckResult`, `setup.checkCodes`).
+
 ## Safety
 
 - Represent nullable backend fields explicitly with `null` in the type.

@@ -3,7 +3,10 @@ import type { SetupStatus } from '@/interfaces/api/models/SetupStatus';
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { SetupCheckCode } from '@/enums/setup/SetupCheckCode';
+import { settingService } from '@/services/setting/settingService';
 import { setupService } from '@/services/setup/setupService';
+import { useSettingStore } from '@/stores/setting/useSettingStore';
 
 import { useSetupStore } from '../useSetupStore';
 
@@ -12,6 +15,13 @@ vi.mock('@/services/setup/setupService', () => ({
     get: vi.fn(),
     check: vi.fn(),
     complete: vi.fn(),
+  },
+}));
+
+vi.mock('@/services/setting/settingService', () => ({
+  settingService: {
+    list: vi.fn(),
+    update: vi.fn(),
   },
 }));
 
@@ -66,6 +76,51 @@ describe('useSetupStore', () => {
 
       await expect(setupStore.isSetupDue()).rejects.toThrow('Network Error');
       expect(setupStore.isLoading).toBe(false);
+    });
+  });
+
+  describe('checkAndSavePath', () => {
+    const PATH = '/mnt/g/New_Vid';
+
+    beforeEach(() => {
+      vi.mocked(settingService.list).mockResolvedValue({ data: [] } as never);
+    });
+
+    it('saves a path that passes its check', async () => {
+      const result = { ok: true, code: null, params: {} };
+
+      vi.mocked(setupService.check).mockResolvedValue({ video_base_path: result });
+
+      await expect(useSetupStore().checkAndSavePath('video_base_path', PATH)).resolves.toEqual(result);
+      expect(setupService.check).toHaveBeenCalledWith({ video_base_path: PATH });
+      expect(settingService.update).toHaveBeenCalledWith('video_base_path', { value: PATH });
+    });
+
+    it('never saves a path that fails its check', async () => {
+      const result = { ok: false, code: SetupCheckCode.PathNotAbsolute, params: {} };
+
+      vi.mocked(setupService.check).mockResolvedValue({ video_base_path: result });
+
+      await expect(useSetupStore().checkAndSavePath('video_base_path', String.raw`G:\Videos`)).resolves.toEqual(result);
+      expect(settingService.update).not.toHaveBeenCalled();
+    });
+
+    it('does not save a path that has not changed', async () => {
+      vi.mocked(setupService.check).mockResolvedValue({ video_base_path: { ok: true, code: null, params: {} } });
+      useSettingStore().settings = {
+        video_base_path: { key: 'video_base_path', value: PATH, type: 'string' },
+      } as never;
+
+      await useSetupStore().checkAndSavePath('video_base_path', PATH);
+
+      expect(settingService.update).not.toHaveBeenCalled();
+    });
+
+    it('passes a failed check request on to the caller, without saving', async () => {
+      vi.mocked(setupService.check).mockRejectedValue(new Error('Network Error'));
+
+      await expect(useSetupStore().checkAndSavePath('video_base_path', PATH)).rejects.toThrow('Network Error');
+      expect(settingService.update).not.toHaveBeenCalled();
     });
   });
 

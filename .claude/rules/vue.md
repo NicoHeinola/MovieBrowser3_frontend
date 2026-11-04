@@ -253,15 +253,16 @@ components/
 - Keep styles `scoped` unless the component is intentionally providing global styling.
 - Comments: JSDoc (`/** ... */`) goes on props, emits, functions and top-level `<script setup>` state, with `@param` and `@returns` on functions. `//` goes inside logic: statements, callback and watcher bodies, and option keys.
 - Prefer moving reusable visual tokens to shared styles or the Vuetify theme instead of hard-coding them per component.
+- A primary button that finishes what the user is in (dialog Save, wizard Next, filter drawer results, login) is `variant="flat"`. Primary buttons that are just available on a page stay tonal, the app default. Inside `v-card-actions` and `card-action-bar` buttons default to `text`, so always set a variant there.
 - Do not repeat local `density` or similar shared visual props in feature components. Recurring defaults live in `src/plugins/vuetify/ComponentDefaults.ts`.
 - Spacing utilities (margin, padding and gap, such as `pa-*`, `mt-*`, `ga-*`) use even steps such as 2 and 4, plus 5 (20px), which matches Vuetify's dialog and toolbar insets (`base-dialog` uses `pa-5`). Never use 1, 3, 7 or other odd steps. ESLint enforces this with `vue/no-restricted-class`.
 - Space siblings with a flex container and gap (`d-flex ga-2 align-center`), not margins on a child (`ml-2`, `mr-4`). Use margins only when there is no shared parent to flex.
 - Empty and info `v-alert`s shrink to their content with `class="flex-0-1"`; never let them stretch across the row.
 - `v-icon` uses a named size (`x-small`, `small`, `default`, `large`, `x-large`), never a pixel number like `size="20"`. Named sizes scale with the font, so icons that must match sit outside `text-*` classes.
 - Never use "·" as a separator in UI copy. Write it out ("Version 1.0.0, released 1.11.2026") or split it into separate elements.
-- Typography uses Vuetify 4's MD3 scale (`text-body-*`, `text-label-*`, `text-title-*`). MD2 classes such as `text-caption`, `text-body-1` and `text-h6` no longer exist, and ESLint rejects them. Style single-class text with plain utilities (`text-medium-emphasis`, `text-truncate`). Use `heading-text` for a heading with a muted subtitle and `media-placeholder` for an icon-and-text stand-in where an image or video is missing.
+- Typography uses Vuetify 4's MD3 scale (`text-body-*`, `text-label-*`, `text-title-*`). MD2 classes such as `text-caption`, `text-body-1` and `text-h6` no longer exist, and ESLint rejects them. Style single-class text with plain utilities (`text-medium-emphasis`, `text-truncate`). Use `heading-text` for a heading with a muted subtitle, `highlight-text` for colored bold words inside a sentence and `media-placeholder` for an icon-and-text stand-in where an image or video is missing.
 - For async loading UI, use a Vuetify component's built-in `loading` prop when available; otherwise use `v-skeleton-loader`.
-- Exception: the route-change loader in `top-navigation` uses `v-progress-linear`, because `v-app-bar` has no `loading` prop.
+- Exception: the route-change loader in `App.vue` uses `v-progress-linear`, because it belongs to no component with a `loading` prop.
 - Do not introduce any other loading treatment in Vue components or pages, including custom spinner components, custom shimmer markup, standalone progress indicators, or bespoke overlays.
 - Prefer existing Vuetify utility classes, component props, and built-in transitions before adding custom SCSS in Vue components.
 - Do not add local `<style>` blocks or named CSS classes in Vue files unless Vuetify props, existing utility classes, and inline `style` or `:style` bindings cannot express the requirement cleanly.

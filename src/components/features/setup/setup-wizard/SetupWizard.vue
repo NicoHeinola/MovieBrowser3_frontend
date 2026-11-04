@@ -4,30 +4,49 @@ import type { SetupStatus } from '@/interfaces/api/models/SetupStatus';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { CardActionBar } from '@/components/common/card-action-bar';
 import { HeadingText } from '@/components/common/heading-text';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
+import { getInitialVideoBasePath } from './getInitialVideoBasePath';
+import { getVideoFolderSuggestions } from './getVideoFolderSuggestions';
+import SetupHighlightText from './SetupHighlightText.vue';
 import SetupPathStep from './SetupPathStep.vue';
 import { getRules } from './setupWizardRules';
 
-/** Folder created inside a media folder for the videos the app stores. */
-const VIDEO_FOLDER_NAME = 'MovieBrowser3';
-
 const VLC_DOWNLOAD_URL = 'https://www.videolan.org/vlc/';
+
+/** What the welcome step says is coming, as icons and i18n keys. */
+const WELCOME_ITEMS = [
+  { icon: 'mdi-folder-play-outline', textKey: 'setup.welcomeVideoFolder' },
+  { icon: 'mdi-play-circle-outline', textKey: 'setup.welcomeVlc' },
+];
+
+const VIDEO_FOLDER_FORM_ID = 'setup-video-folder-form';
+const VLC_FORM_ID = 'setup-vlc-form';
+
+/** The form of each path step, keyed by step number, so the footer's Next button submits the step on screen. */
+const PATH_STEP_FORM_IDS: Record<number, string> = {
+  2: VIDEO_FOLDER_FORM_ID,
+  3: VLC_FORM_ID,
+};
 
 const props = defineProps<{
   status: SetupStatus;
-  /** Shows the finish buttons as loading while setup is being marked done. */
+  /** Shows the finish button as loading while setup is being marked done. */
   loading?: boolean;
 }>();
 
 const emit = defineEmits<{
-  /** The admin finished setup and picked where to go next. */
-  finish: [routeName: 'admin-shows' | 'authenticated-home'];
+  /** The admin finished setup. */
+  finish: [];
   skip: [];
 }>();
 
 const step = ref<number>(1);
+/** Whether each path step's form is valid, keyed by step number: both are mounted while the steps slide past. */
+const validPathSteps = ref<Record<number, boolean>>({});
+const isSubmittingPath = ref<boolean>(false);
 
 const settingStore = useSettingStore();
 const { t } = useI18n();
@@ -41,31 +60,18 @@ const stepTitles = computed<string[]>(() => [
   t('setup.doneStep'),
 ]);
 
+const activeFormId = computed<string | undefined>(() => PATH_STEP_FORM_IDS[step.value]);
+
 /** Media folders without trailing slashes, so paths can be built and compared on whole folder names. */
 const mediaFolders = computed<string[]>(() =>
   props.status.media_folders.map((folder: string) => folder.replace(/[\\/]+$/, '')),
 );
 
-const videoFolderSuggestions = computed<string[]>(() =>
-  mediaFolders.value.map((folder: string) => `${folder}/${VIDEO_FOLDER_NAME}`),
+const videoFolderSuggestions = computed<string[]>(() => getVideoFolderSuggestions(mediaFolders.value));
+
+const videoBasePath = ref<string>(
+  getInitialVideoBasePath(settingStore.getSetting<string>('video_base_path') ?? '', mediaFolders.value),
 );
-
-/**
- * Picks the video folder to start from. The backend's default folder isn't visible to VLC in an installed app, so a
- * folder outside every media folder is swapped for the first suggestion.
- * @returns The path to prefill.
- */
-const getInitialVideoBasePath = (): string => {
-  const current = settingStore.getSetting<string>('video_base_path') ?? '';
-  // Compare whole folder names, so /mnt/g/New_Vid2 doesn't count as inside /mnt/g/New_Vid.
-  const isInMediaFolder = mediaFolders.value.some(
-    (folder: string) => current === folder || current.startsWith(`${folder}/`),
-  );
-
-  return isInMediaFolder ? current : (videoFolderSuggestions.value[0] ?? current);
-};
-
-const videoBasePath = ref<string>(getInitialVideoBasePath());
 // A path the admin already saved wins over the detected one.
 const vlcMediaPlayerPath = ref<string>(
   settingStore.getSetting<string>('vlc_media_player_path') || props.status.detected_vlc_media_player_path || '',
@@ -85,83 +91,139 @@ const vlcSuggestions = computed<string[]>(() =>
 </script>
 
 <template>
-  <v-stepper v-model="step" :items="stepTitles" border="sm" mobile-breakpoint="sm" rounded="xl" hide-actions>
-    <template #item.1>
-      <v-row>
-        <v-col cols="12">
-          <heading-text :subtitle="t('setup.welcomeSubtitle')" :title="t('setup.welcomeTitle')" />
-        </v-col>
-        <v-col cols="12">
-          <v-list bg-color="transparent" density="compact">
-            <v-list-item :title="t('setup.welcomeVideoFolder')" prepend-icon="mdi-folder-play-outline" />
-            <v-list-item :title="t('setup.welcomeVlc')" prepend-icon="mdi-play-circle-outline" />
-          </v-list>
-        </v-col>
-        <v-col class="d-flex ga-2 justify-end" cols="12">
-          <v-btn variant="text" @click="emit('skip')">{{ t('setup.notNow') }}</v-btn>
-          <v-btn color="primary" @click="step = 2">{{ t('setup.start') }}</v-btn>
-        </v-col>
-      </v-row>
-    </template>
+  <v-stepper v-model="step" border="sm" class="glass-panel" mobile-breakpoint="sm" rounded="xl">
+    <v-stepper-header>
+      <template v-for="(title, index) in stepTitles" :key="title">
+        <v-divider v-if="index > 0" />
+        <v-stepper-item :complete="step > index + 1" :title="title" :value="index + 1" color="primary" />
+      </template>
+    </v-stepper-header>
 
-    <template #item.2>
-      <setup-path-step
-        v-model:path="videoBasePath"
-        :label="t('settings.videoBasePath')"
-        :rules="rules.videoBasePath"
-        :suggestions="videoFolderSuggestions"
-        setting-key="video_base_path"
-        @back="step = 1"
-        @next="step = 3"
-      >
-        <heading-text :level="2" :subtitle="t('setup.videoFolderSubtitle')" :title="t('setup.videoFolderTitle')" />
+    <v-stepper-window class="ma-0">
+      <v-stepper-window-item :value="1" class="pa-8">
+        <div class="d-flex flex-column align-center ga-6">
+          <v-img alt="" aspect-ratio="1" class="flex-0-0" src="/icons/logo.svg" width="72" />
 
-        <template #changed="{ savedPath }">
-          <v-alert type="info" variant="tonal">{{ t('setup.videoFolderMoveWarning', { path: savedPath }) }}</v-alert>
-        </template>
-      </setup-path-step>
-    </template>
-
-    <template #item.3>
-      <setup-path-step
-        v-model:path="vlcMediaPlayerPath"
-        :label="t('settings.vlcPath')"
-        :rules="rules.vlcMediaPlayerPath"
-        :suggestions="vlcSuggestions"
-        setting-key="vlc_media_player_path"
-        @back="step = 2"
-        @next="step = 4"
-      >
-        <heading-text :level="2" :subtitle="t('setup.vlcSubtitle')" :title="t('setup.vlcTitle')" />
-        <v-alert class="mt-4" type="success" variant="tonal" v-if="isUsingDetectedVlc">
-          {{ t('setup.vlcDetected', { path: props.status.detected_vlc_media_player_path }) }}
-        </v-alert>
-        <v-alert class="mt-4" type="info" variant="tonal" v-else-if="!props.status.detected_vlc_media_player_path">
-          {{ t('setup.vlcNotDetected') }}
-          <a :href="VLC_DOWNLOAD_URL" class="text-link" rel="noopener" target="_blank">{{ t('setup.vlcDownload') }}</a>
-        </v-alert>
-      </setup-path-step>
-    </template>
-
-    <template #item.4>
-      <v-row>
-        <v-col cols="12">
-          <heading-text :subtitle="t('setup.doneSubtitle')" :title="t('setup.doneTitle')">
-            <template #prepend>
-              <v-icon color="success" icon="mdi-check-circle" size="large" />
+          <heading-text :title="t('setup.welcomeTitle')" centered>
+            <template #subtitle>
+              <setup-highlight-text highlight-key="setup.welcomeHighlight" keypath="setup.welcomeSubtitle" />
             </template>
           </heading-text>
-        </v-col>
-        <v-col class="d-flex flex-wrap ga-2 justify-end" cols="12">
-          <v-btn variant="text" @click="step = 3">{{ t('setup.back') }}</v-btn>
-          <v-btn :loading="props.loading" variant="tonal" @click="emit('finish', 'authenticated-home')">
-            {{ t('setup.goHome') }}
-          </v-btn>
-          <v-btn :loading="props.loading" color="primary" @click="emit('finish', 'admin-shows')">
-            {{ t('setup.addShows') }}
-          </v-btn>
-        </v-col>
-      </v-row>
-    </template>
+
+          <v-row class="w-100">
+            <v-col v-for="item in WELCOME_ITEMS" cols="12" sm="6" :key="item.textKey">
+              <v-sheet
+                border="sm"
+                class="d-flex flex-column align-center ga-2 pa-4 h-100 text-center"
+                color="transparent"
+                rounded="lg"
+              >
+                <v-icon :icon="item.icon" color="primary" />
+                <span class="text-body-medium">{{ t(item.textKey) }}</span>
+              </v-sheet>
+            </v-col>
+          </v-row>
+        </div>
+      </v-stepper-window-item>
+
+      <v-stepper-window-item :value="2" class="pa-8">
+        <setup-path-step
+          v-model:is-submitting="isSubmittingPath"
+          v-model:is-valid="validPathSteps[2]"
+          v-model:path="videoBasePath"
+          :form-id="VIDEO_FOLDER_FORM_ID"
+          :label="t('settings.videoBasePath')"
+          :rules="rules.videoBasePath"
+          :suggestions="videoFolderSuggestions"
+          setting-key="video_base_path"
+          @saved="step = 3"
+        >
+          <heading-text :level="2" :title="t('setup.videoFolderTitle')">
+            <template #subtitle>
+              <setup-highlight-text highlight-key="setup.videoFolderHighlight" keypath="setup.videoFolderSubtitle" />
+            </template>
+          </heading-text>
+
+          <template #changed="{ savedPath }">
+            <v-alert class="mt-4" type="info" variant="tonal">
+              {{ t('setup.videoFolderMoveWarning', { path: savedPath }) }}
+            </v-alert>
+          </template>
+        </setup-path-step>
+      </v-stepper-window-item>
+
+      <v-stepper-window-item :value="3" class="pa-8">
+        <setup-path-step
+          v-model:is-submitting="isSubmittingPath"
+          v-model:is-valid="validPathSteps[3]"
+          v-model:path="vlcMediaPlayerPath"
+          :form-id="VLC_FORM_ID"
+          :label="t('settings.vlcPath')"
+          :rules="rules.vlcMediaPlayerPath"
+          :suggestions="vlcSuggestions"
+          setting-key="vlc_media_player_path"
+          @saved="step = 4"
+        >
+          <heading-text :level="2" :title="t('setup.vlcTitle')">
+            <template #subtitle>
+              <setup-highlight-text highlight-key="setup.vlcHighlight" keypath="setup.vlcSubtitle" />
+            </template>
+          </heading-text>
+
+          <template #notices>
+            <v-alert class="mt-4" type="success" variant="tonal" v-if="isUsingDetectedVlc">
+              {{ t('setup.vlcDetected') }}
+            </v-alert>
+            <v-alert class="mt-4" type="info" variant="tonal" v-else-if="!props.status.detected_vlc_media_player_path">
+              {{ t('setup.vlcNotDetected') }}
+              <a :href="VLC_DOWNLOAD_URL" class="text-link" rel="noopener" target="_blank">
+                {{ t('setup.vlcDownload') }}
+              </a>
+            </v-alert>
+          </template>
+        </setup-path-step>
+      </v-stepper-window-item>
+
+      <v-stepper-window-item :value="4" class="pa-8">
+        <div class="d-flex flex-column align-center ga-6">
+          <v-scale-transition appear>
+            <v-avatar color="success" size="x-large" variant="tonal">
+              <v-icon icon="mdi-check-bold" size="large" />
+            </v-avatar>
+          </v-scale-transition>
+
+          <heading-text :title="t('setup.doneTitle')" centered>
+            <template #subtitle>
+              <setup-highlight-text highlight-key="setup.doneHighlight" keypath="setup.doneSubtitle" />
+            </template>
+          </heading-text>
+        </div>
+      </v-stepper-window-item>
+    </v-stepper-window>
+
+    <card-action-bar>
+      <v-spacer />
+
+      <v-btn variant="text" @click="emit('skip')" v-if="step === 1">{{ t('setup.notNow') }}</v-btn>
+      <v-btn :disabled="isSubmittingPath || props.loading" variant="text" @click="step--" v-else>
+        {{ t('setup.back') }}
+      </v-btn>
+
+      <v-btn color="primary" variant="flat" @click="step = 2" v-if="step === 1">{{ t('setup.start') }}</v-btn>
+      <v-btn
+        :disabled="!validPathSteps[step]"
+        :form="activeFormId"
+        :loading="isSubmittingPath"
+        color="primary"
+        type="submit"
+        variant="flat"
+        v-else-if="activeFormId"
+      >
+        {{ t('setup.next') }}
+      </v-btn>
+      <v-btn :loading="props.loading" color="primary" variant="flat" @click="emit('finish')" v-else>
+        {{ t('setup.goHome') }}
+      </v-btn>
+    </card-action-bar>
   </v-stepper>
 </template>

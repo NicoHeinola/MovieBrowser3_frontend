@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 
 import { FilterChip } from '@/components/common/filter-chip';
 import { FilterDrawer, FilterDrawerSection } from '@/components/common/filter-drawer';
+import { HighlightText } from '@/components/common/highlight-text';
 
 const { t } = useI18n();
 
@@ -37,10 +38,10 @@ const emit = defineEmits<{
       <template #subtitle>
         <i18n-t keypath="user.roleHint" tag="span">
           <template #include>
-            <span class="text-secondary">{{ t('filter.include') }}</span>
+            <highlight-text color="secondary">{{ t('filter.include') }}</highlight-text>
           </template>
           <template #exclude>
-            <span class="text-error">{{ t('filter.exclude') }}</span>
+            <highlight-text color="error">{{ t('filter.exclude') }}</highlight-text>
           </template>
         </i18n-t>
       </template>

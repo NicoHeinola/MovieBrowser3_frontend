@@ -8,6 +8,7 @@ import { useI18n } from 'vue-i18n';
 
 import { FilterChip } from '@/components/common/filter-chip';
 import { FilterDrawer, FilterDrawerSection } from '@/components/common/filter-drawer';
+import { HighlightText } from '@/components/common/highlight-text';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { websiteTagService } from '@/services/website/websiteTagService';
@@ -86,10 +87,10 @@ watch(tags, (currentTags) => {
       <template #subtitle>
         <i18n-t keypath="website.tagMatchesEvery" tag="span">
           <template #every>
-            <span class="text-secondary">{{ t('filter.every') }}</span>
+            <highlight-text color="secondary">{{ t('filter.every') }}</highlight-text>
           </template>
           <template #none>
-            <span class="text-error">{{ t('filter.none') }}</span>
+            <highlight-text color="error">{{ t('filter.none') }}</highlight-text>
           </template>
         </i18n-t>
       </template>

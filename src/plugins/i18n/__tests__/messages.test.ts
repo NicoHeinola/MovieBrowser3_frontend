@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { SetupCheckCode } from '@/enums/setup/SetupCheckCode';
+
 import enMessages from '../en.json';
 import fiMessages from '../fi.json';
 
@@ -22,6 +24,10 @@ const getKeys = (messages: Record<string, unknown>, prefix = ''): string[] => {
 describe('i18n messages', () => {
   it('has the same keys in every language', () => {
     expect(getKeys(fiMessages)).toEqual(getKeys(enMessages));
+  });
+
+  it('has a message for every setup check code', () => {
+    expect(Object.keys(enMessages.setup.checkCodes).toSorted()).toEqual(Object.values(SetupCheckCode).toSorted());
   });
 
   it('has no empty messages', () => {

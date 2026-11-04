@@ -3,6 +3,8 @@ import type { BaseDialogProps } from './baseDialogProps';
 
 import { computed, useSlots } from 'vue';
 
+import { CardActionBar } from '@/components/common/card-action-bar';
+
 const props = withDefaults(defineProps<BaseDialogProps>(), {
   maxWidth: 420,
   persistent: true,
@@ -24,10 +26,9 @@ const hasActionsSlot = computed(() => !!slots.actions);
       <v-card-text class="pa-5 overflow-scroll">
         <slot />
       </v-card-text>
-      <v-card-actions class="position-relative" v-if="hasActionsSlot">
-        <div class="w-100 h-100 position-absolute left-0 top-0" style="background: rgba(0, 0, 0, 0.2)"></div>
+      <card-action-bar v-if="hasActionsSlot">
         <slot name="actions" />
-      </v-card-actions>
+      </card-action-bar>
     </v-card>
   </v-dialog>
 </template>
