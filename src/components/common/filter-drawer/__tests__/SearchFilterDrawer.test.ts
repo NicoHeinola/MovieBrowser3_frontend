@@ -24,6 +24,7 @@ import { WatchStatus } from '@/enums/show/WatchStatus';
 import enMessages from '@/plugins/i18n/en.json';
 import { categoryService } from '@/services/show/categoryService';
 import { websiteTagService } from '@/services/website/websiteTagService';
+import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
 import SearchFilterDrawer from '../SearchFilterDrawer.vue';
 
 interface TestFilters {
@@ -258,7 +259,8 @@ describe('SearchFilterDrawer', () => {
 
     it('shows the show filters and keeps only values that have a chip', async () => {
       const filters = ref<ShowSearchFilters>({
-        watchStatus: { included: ['binged'], excluded: [WatchStatus.Completed] },
+        watchStatus: { included: ['binged', MIXED_WATCH_STATUS], excluded: [WatchStatus.Completed] },
+        entryWatchStatus: { included: [WatchStatus.Watching, MIXED_WATCH_STATUS], excluded: [] },
         category: { included: ['anime', 'deleted'], excluded: [] },
         hasPreview: false,
       });
@@ -268,16 +270,19 @@ describe('SearchFilterDrawer', () => {
 
       for (const text of [
         enMessages.show.watchStatusFilter,
+        enMessages.show.entryWatchStatusFilter,
         enMessages.show.categoriesFilter,
         enMessages.show.previewFilter,
         enMessages.show.onlyWithPreview,
         enMessages.showEntry.watchStatus.completed,
+        enMessages.show.mixed,
         'Anime',
       ]) {
         expect(wrapper.text()).toContain(text);
       }
 
-      expect(filters.value.watchStatus).toEqual({ included: [], excluded: [WatchStatus.Completed] });
+      expect(filters.value.watchStatus).toEqual({ included: [MIXED_WATCH_STATUS], excluded: [WatchStatus.Completed] });
+      expect(filters.value.entryWatchStatus).toEqual({ included: [WatchStatus.Watching], excluded: [] });
       expect(filters.value.category).toEqual({ included: ['anime'], excluded: [] });
     });
 

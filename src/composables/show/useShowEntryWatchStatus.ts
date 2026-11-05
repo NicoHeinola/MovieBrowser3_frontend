@@ -8,9 +8,12 @@ import { showEntryWatchStatusService } from '@/services/show/showEntryWatchStatu
 import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
 import { setShowEntryWatchStatus } from '@/utils/show/setShowEntryWatchStatus';
 
+/** The show lists whose results depend on watch status. */
+const filteredShowListKeys = [ShowQueryKey.SearchShows, ShowQueryKey.AdminShows, ShowQueryKey.HomeShows];
+
 /**
  * Saves show entry watch statuses and mirrors them onto the cached show lists.
- * @returns The save function.
+ * @returns The save function, and the function to call once after saving.
  */
 export const useShowEntryWatchStatus = () => {
   const queryClient = useQueryClient();
@@ -43,7 +46,20 @@ export const useShowEntryWatchStatus = () => {
     return watchStatus;
   };
 
+  /**
+   * Marks the show lists that filter on watch status as stale, because patching a cached list cannot add or remove a
+   * show. They are not refetched now: a show the user just changed stays visible, and the lists update on the next
+   * search, filter change or visit. Call it once after saving, not per entry.
+   * @returns void
+   */
+  const markFilteredShowListsStale = (): void => {
+    for (const queryKey of filteredShowListKeys) {
+      void queryClient.invalidateQueries({ queryKey: [queryKey], refetchType: 'none' });
+    }
+  };
+
   return {
     saveWatchStatus,
+    markFilteredShowListsStale,
   };
 };

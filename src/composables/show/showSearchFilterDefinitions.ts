@@ -12,12 +12,15 @@ import { WatchStatus } from '@/enums/show/WatchStatus';
 import { categoryService } from '@/services/show/categoryService';
 import { getWatchStatusColor } from '@/utils/show/getWatchStatusColor';
 import { getWatchStatusIcon } from '@/utils/show/getWatchStatusIcon';
+import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
+import { MIXED_WATCH_STATUS_COLOR } from '@/utils/show/mixedWatchStatusColor';
+import { MIXED_WATCH_STATUS_ICON } from '@/utils/show/mixedWatchStatusIcon';
 
 /**
  * Provides a chip for every watch status.
  * @returns The options.
  */
-const useWatchStatusOptions = () => {
+const useEntryWatchStatusOptions = () => {
   const { t } = useI18n();
 
   return {
@@ -29,6 +32,27 @@ const useWatchStatusOptions = () => {
         color: getWatchStatusColor(status),
       })),
     ),
+  };
+};
+
+/**
+ * Provides the watch status chips of a whole show, which adds one for shows whose entries differ.
+ * @returns The options.
+ */
+const useShowWatchStatusOptions = () => {
+  const { t } = useI18n();
+  const { options } = useEntryWatchStatusOptions();
+
+  return {
+    options: computed(() => [
+      ...options.value,
+      {
+        value: MIXED_WATCH_STATUS,
+        text: t('show.mixed'),
+        icon: MIXED_WATCH_STATUS_ICON,
+        color: MIXED_WATCH_STATUS_COLOR,
+      },
+    ]),
   };
 };
 
@@ -69,7 +93,16 @@ export const showSearchFilterDefinitions: SearchFilterDefinition<keyof ShowSearc
     title: 'show.watchStatusFilter',
     hint: { keypath: 'show.filterAnyIncluded', include: 'any', exclude: 'none' },
     api: { include: 'watch_status', exclude: 'exclude_watch_status' },
-    useOptions: useWatchStatusOptions,
+    useOptions: useShowWatchStatusOptions,
+  },
+  {
+    key: 'entryWatchStatus',
+    type: SearchFilterType.Chips,
+    param: 'entry_watch_status',
+    title: 'show.entryWatchStatusFilter',
+    hint: { keypath: 'show.filterAnyIncluded', include: 'any', exclude: 'none' },
+    api: { include: 'entry_watch_status', exclude: 'exclude_entry_watch_status' },
+    useOptions: useEntryWatchStatusOptions,
   },
   {
     key: 'category',

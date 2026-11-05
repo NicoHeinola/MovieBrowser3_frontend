@@ -64,6 +64,18 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Changed,
         text: 'Loading placeholders only appear when a page takes a moment to load, so fast pages no longer flicker.',
       },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Shows you have completed no longer appear in the Random row, and the search page hides them by default.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Filter by the status of a whole show or any entry. The new Mixed option finds partly watched shows.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'Your next search or filter reflects a watch status you just changed, instead of up to a minute later.',
+      },
     ],
   },
   {

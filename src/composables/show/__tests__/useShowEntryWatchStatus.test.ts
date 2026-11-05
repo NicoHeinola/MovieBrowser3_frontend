@@ -59,6 +59,25 @@ describe('useShowEntryWatchStatus', () => {
     );
   });
 
+  it('marks the filtered lists stale without refetching them', () => {
+    const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries');
+    queryClient.setQueryData([ShowQueryKey.HomeShows], {});
+    queryClient.setQueryData([ShowQueryKey.SearchShows, 'term', 1], {});
+    queryClient.setQueryData([ShowQueryKey.AdminShows, 'term', 1], {});
+    queryClient.setQueryData([ShowQueryKey.SelectedShow, 1], {});
+
+    useShowEntryWatchStatus().markFilteredShowListsStale();
+
+    expect(queryClient.getQueryState([ShowQueryKey.SearchShows, 'term', 1])?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState([ShowQueryKey.AdminShows, 'term', 1])?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState([ShowQueryKey.HomeShows])?.isInvalidated).toBe(true);
+    expect(queryClient.getQueryState([ShowQueryKey.SelectedShow, 1])?.isInvalidated).toBe(false);
+
+    for (const [filters] of invalidateQueries.mock.calls) {
+      expect(filters).toMatchObject({ refetchType: 'none' });
+    }
+  });
+
   it('removes the status when cleared', async () => {
     const dropped = { show_entry_id: 10, status: WatchStatus.Dropped };
     queryClient.setQueryData([ShowQueryKey.HomeShows], [createShow(dropped)]);

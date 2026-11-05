@@ -14,6 +14,7 @@ import { showSearchFilterDefinitions } from '@/composables/show/showSearchFilter
 import { showSortOptions } from '@/composables/show/showSortOptions';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
+import { WATCHED_SHOW_STATUSES } from '@/utils/show/watchedShowStatuses';
 
 const { t } = useI18n();
 
@@ -32,7 +33,7 @@ const {
   totalPages,
   totalResults,
   isLoading,
-} = useShowSearch(ShowQueryKey.SearchShows);
+} = useShowSearch(ShowQueryKey.SearchShows, { watchStatus: { included: [], excluded: WATCHED_SHOW_STATUSES } });
 
 const selectShow = (show: Show | null) => {
   selectedShowId.value = show?.id ?? null;

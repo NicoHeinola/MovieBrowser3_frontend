@@ -9,6 +9,7 @@ import { createMemoryHistory, createRouter } from 'vue-router';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { WatchStatus } from '@/enums/show/WatchStatus';
 import { showService } from '@/services/show/showService';
+import { useShowEntryWatchStatus } from '../useShowEntryWatchStatus';
 import { useShowSearch } from '../useShowSearch';
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -48,7 +49,7 @@ const setupSearch = async (url = '/search', defaultFilters: Partial<ShowSearchFi
   const search = app.runWithContext(() => scope.run(() => useShowSearch(ShowQueryKey.SearchShows, defaultFilters)))!;
   await flushPromises();
 
-  return { ...search, router };
+  return { ...search, router, app };
 };
 
 describe('useShowSearch', () => {
@@ -80,6 +81,7 @@ describe('useShowSearch', () => {
 
     filters.value = {
       watchStatus: { included: [WatchStatus.Watching], excluded: [WatchStatus.Dropped] },
+      entryWatchStatus: { included: [WatchStatus.OnHold], excluded: [WatchStatus.PlanToWatch] },
       category: { included: ['anime'], excluded: ['horror'] },
       hasPreview: true,
     };
@@ -90,9 +92,52 @@ describe('useShowSearch', () => {
       exclude_categories: ['horror'],
       watch_status: [WatchStatus.Watching],
       exclude_watch_status: [WatchStatus.Dropped],
+      entry_watch_status: [WatchStatus.OnHold],
+      exclude_entry_watch_status: [WatchStatus.PlanToWatch],
       preview_url: 'not_null',
     });
-    expect(activeFilterCount.value).toBe(5);
+    expect(activeFilterCount.value).toBe(7);
+  });
+
+  it('keeps a default whole show exclusion next to an any entry filter', async () => {
+    await setupSearch('/search?entry_watch_status=watching', {
+      watchStatus: { included: [], excluded: [WatchStatus.Completed] },
+    });
+
+    expect(vi.mocked(showService.list).mock.lastCall?.[0].filter).toEqual({
+      exclude_watch_status: [WatchStatus.Completed],
+      entry_watch_status: [WatchStatus.Watching],
+    });
+  });
+
+  it('keeps the open list after a watch status change and refetches on the next filter change', async () => {
+    const { app, filters } = await setupSearch();
+    const { markFilteredShowListsStale } = app.runWithContext(() => useShowEntryWatchStatus());
+    const noFilters = filters.value;
+
+    // Both lists are cached and fresh, so switching between them would normally not fetch.
+    filters.value = { ...noFilters, watchStatus: { included: [WatchStatus.Completed], excluded: [] } };
+    await flushPromises();
+    filters.value = noFilters;
+    await flushPromises();
+    vi.mocked(showService.list).mockClear();
+
+    markFilteredShowListsStale();
+    await flushPromises();
+
+    expect(showService.list).not.toHaveBeenCalled();
+
+    filters.value = { ...noFilters, watchStatus: { included: [WatchStatus.Completed], excluded: [] } };
+    await flushPromises();
+
+    expect(showService.list).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(showService.list).mock.lastCall?.[0].filter).toEqual({ watch_status: [WatchStatus.Completed] });
+  });
+
+  it('sends the mixed status like any other watch status', async () => {
+    await setupSearch('/search?watch_status=mixed');
+
+    expect(vi.mocked(showService.list).mock.lastCall?.[0].filter).toEqual({ watch_status: ['mixed'] });
   });
 
   it('keeps the filters in the URL query', async () => {

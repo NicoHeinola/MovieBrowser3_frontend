@@ -8,6 +8,7 @@ import { getWatchStatusColor } from '@/utils/show/getWatchStatusColor';
 import { getWatchStatusIcon } from '@/utils/show/getWatchStatusIcon';
 import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
 import { MIXED_WATCH_STATUS_COLOR } from '@/utils/show/mixedWatchStatusColor';
+import { MIXED_WATCH_STATUS_ICON } from '@/utils/show/mixedWatchStatusIcon';
 
 const props = defineProps<{
   disabled?: boolean;
@@ -31,7 +32,7 @@ const buttonColor = computed<string | undefined>(() => {
 });
 
 const buttonIcon = computed<string>(() => {
-  if (status.value === MIXED_WATCH_STATUS) return 'mdi-tag-multiple';
+  if (status.value === MIXED_WATCH_STATUS) return MIXED_WATCH_STATUS_ICON;
   return status.value ? getWatchStatusIcon(status.value) : 'mdi-tag-outline';
 });
 

@@ -22,6 +22,7 @@ import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showSectionService } from '@/services/show/showSectionService';
 import { showService } from '@/services/show/showService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
+import { WATCHED_SHOW_STATUSES } from '@/utils/show/watchedShowStatuses';
 import { homepageSections } from './homepageSections';
 
 /** Latest shows are fetched for the widest layout and trimmed by the grid, so resizing never refetches. */
@@ -52,7 +53,7 @@ const showsQuery = useAPIQuery<HomeShowsResponse>({
   queryFn: async () => {
     const [latest, random, sections] = await Promise.all([
       showService.list({ sort: '-created_at', page: { size: MAX_BANNER_COLS } }),
-      showService.list({ sort: 'random', page: { size: 20 } }),
+      showService.list({ filter: { exclude_watch_status: WATCHED_SHOW_STATUSES }, sort: 'random', page: { size: 20 } }),
       showSectionService.list({ sort: 'sort_order', page: { number: 0, size: 0 } }),
     ]);
 
