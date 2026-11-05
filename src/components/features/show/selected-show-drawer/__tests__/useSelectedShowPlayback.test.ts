@@ -15,7 +15,14 @@ vi.mock('@/composables/show/useShowPlayback', () => ({
   useShowPlayback: () => ({ isStartingPlayback, playEpisode, playShow }),
 }));
 
-const createEpisode = (id: number) => ({ id, show_entry_id: 10, name: '', filename: '', sequence_number: 0 });
+const createEpisode = (id: number) => ({
+  id,
+  show_entry_id: 10,
+  name: '',
+  filename: '',
+  has_video_file: true,
+  sequence_number: 0,
+});
 
 const entry: ShowEntry = {
   id: 10,

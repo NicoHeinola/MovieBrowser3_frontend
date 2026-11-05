@@ -74,6 +74,12 @@ export enum ApiErrorCode {
   InvalidCredentials = 'invalid_credentials',
   /** The episode has no video file. */
   NoVideoFile = 'no_video_file',
+  /** The video folder can't be reached or is empty, so video files can't be checked. */
+  VideoBasePathUnavailable = 'video_base_path_unavailable',
+  /** A video file check is already running, so a new one wasn't started. */
+  VideoFileCheckRunning = 'video_file_check_running',
+  /** The last video file check crashed, so its results may be partial. */
+  VideoFileCheckFailed = 'video_file_check_failed',
   /** A show's only primary title can't be deleted. */
   OnlyPrimaryTitle = 'only_primary_title',
   /** Catch-all for any validation rule without its own code. */

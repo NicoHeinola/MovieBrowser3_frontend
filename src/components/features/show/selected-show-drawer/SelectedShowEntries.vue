@@ -7,6 +7,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { CollapsibleSection } from '@/components/common/collapsible-section';
 import { SplitButton } from '@/components/common/split-button';
+import { MissingVideoFileChip } from '@/components/features/show/missing-video-file-chip';
 import { ShowEntryPicker } from '@/components/features/show/show-entry-picker';
 import { WatchStatusButton } from '@/components/features/show/watch-status-button';
 import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchStatus';
@@ -15,6 +16,7 @@ import { formatPlaybackTime } from '@/utils/show/formatPlaybackTime';
 import { getCombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
 import { getWatchedEpisodeIds } from '@/utils/show/getWatchedEpisodeIds';
+import { isEpisodeVideoMissing } from '@/utils/show/isEpisodeVideoMissing';
 import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
 import { useSelectedEntry } from './useSelectedEntry';
 import { useSelectedShowPlayback } from './useSelectedShowPlayback';
@@ -224,6 +226,7 @@ watch([() => props.show?.id, () => props.isShown], () => {
             {{ getEpisodeName(episode) }}
           </span>
           <v-spacer />
+          <missing-video-file-chip class="ml-2" v-if="isEpisodeVideoMissing(episode)" />
           <template v-if="episodeProgress && episode.id === show?.watch_progress?.episode_id">
             <span class="text-label-small">{{ episodeProgress.label }}</span>
             <v-progress-linear

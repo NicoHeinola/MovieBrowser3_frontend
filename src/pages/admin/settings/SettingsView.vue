@@ -9,9 +9,11 @@ import { AddDefaultBackgroundDialog } from '@/components/features/setting/add-de
 import { AddDefaultVideoDialog } from '@/components/features/setting/add-default-video-dialog';
 import { DefaultBackgroundGallery } from '@/components/features/setting/default-background-gallery';
 import { DefaultVideoGallery } from '@/components/features/setting/default-video-gallery';
+import { VideoFileCheck } from '@/components/features/setting/video-file-check';
 import { VideoSettings } from '@/components/features/setting/video-settings';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
+import { useVideoFileCheck } from '@/composables/setting/useVideoFileCheck';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
@@ -20,6 +22,7 @@ const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const settingStore = useSettingStore();
 const { t } = useI18n();
+const { isPending, isRunning, isStarting, startCheck, statusAlert } = useVideoFileCheck();
 
 const loadSettings = async (): Promise<void> => {
   try {
@@ -158,6 +161,26 @@ onMounted(() => {
             <div class="d-flex flex-1-1 justify-end">
               <v-btn :to="{ name: 'admin-setup' }" prepend-icon="mdi-auto-fix" variant="tonal">
                 {{ t('settings.openSetup') }}
+              </v-btn>
+            </div>
+          </template>
+        </titled-section>
+      </v-col>
+
+      <v-col cols="12" lg="6">
+        <titled-section :subtitle="t('settings.videoFilesSectionSubtitle')" :title="t('settings.videoFilesSection')">
+          <video-file-check :alert="statusAlert" :loading="isPending" />
+
+          <template #append>
+            <div class="d-flex flex-1-1 justify-end">
+              <v-btn
+                :disabled="isRunning"
+                :loading="isStarting || isRunning"
+                prepend-icon="mdi-file-search-outline"
+                variant="tonal"
+                @click="void startCheck()"
+              >
+                {{ t('settings.checkVideoFiles') }}
               </v-btn>
             </div>
           </template>

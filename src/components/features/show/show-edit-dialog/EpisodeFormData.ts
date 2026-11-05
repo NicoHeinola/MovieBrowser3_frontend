@@ -3,5 +3,6 @@ export interface EpisodeFormData {
   name: string;
   file?: File;
   filename?: string;
+  has_video_file?: boolean;
   sequence_number: number;
 }
