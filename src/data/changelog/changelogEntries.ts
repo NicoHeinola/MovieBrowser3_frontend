@@ -85,7 +85,6 @@ export const changelogEntries: ChangelogEntry[] = [
         text: 'Your next search or filter reflects a watch status you just changed, instead of up to a minute later.',
       },
       {
-<<<<<<< HEAD
         type: ChangelogChangeType.Changed,
         text: 'Reordering the frontpage categories now confirms when the new order is saved.',
       },
@@ -96,14 +95,14 @@ export const changelogEntries: ChangelogEntry[] = [
       {
         type: ChangelogChangeType.Fixed,
         text: 'The set status and watch buttons in the show drawer fit their text, also on smaller screens.',
-=======
+      },
+      {
         type: ChangelogChangeType.Added,
         text: 'Episodes without a video file show a "No video file" label in the show drawer and the edit dialog.',
       },
       {
         type: ChangelogChangeType.Added,
         text: 'Missing video files are looked for once a day, or right away with a new button in Settings.',
->>>>>>> 7e5594d (feat(#41): label episodes with missing video files)
       },
     ],
   },
