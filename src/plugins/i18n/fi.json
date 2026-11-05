@@ -206,6 +206,7 @@
   },
   "frontpage": {
     "saved": "Etusivun osio tallennettu.",
+    "orderSaved": "Etusivun järjestys tallennettu.",
     "removeConfirm": "Haluatko varmasti poistaa tämän kategorian etusivulta?",
     "description": "Kuvaus"
   },

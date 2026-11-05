@@ -76,6 +76,10 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Fixed,
         text: 'Your next search or filter reflects a watch status you just changed, instead of up to a minute later.',
       },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Reordering the frontpage categories now confirms when the new order is saved.',
+      },
     ],
   },
   {

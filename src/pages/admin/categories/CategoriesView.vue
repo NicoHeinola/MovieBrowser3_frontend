@@ -28,7 +28,7 @@ const isSavingSectionOrder = ref<boolean>(false);
 
 const dialog = useDialog();
 const queryClient = useQueryClient();
-const { showAPIErrorSnackbar } = useCommonSnackbar();
+const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const { t } = useI18n();
 
 const categoriesQuery = useAPIQuery<PaginatedResponse<Category>>({
@@ -141,6 +141,7 @@ const saveShowSectionOrder = async (sections: ShowSection[]): Promise<void> => {
 
     // Bring the cache in line with the saved order; the paused watch keeps the screen as-is.
     await showSectionsQuery.refetch();
+    showSuccessSnackbar(t('frontpage.orderSaved'));
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
 

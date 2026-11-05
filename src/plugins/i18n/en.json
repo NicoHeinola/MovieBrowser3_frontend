@@ -206,6 +206,7 @@
   },
   "frontpage": {
     "saved": "Frontpage section saved successfully.",
+    "orderSaved": "Frontpage order saved successfully.",
     "removeConfirm": "Are you sure you want to remove this category from the frontpage?",
     "description": "Description"
   },
