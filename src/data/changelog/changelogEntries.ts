@@ -96,6 +96,14 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Fixed,
         text: 'The set status and watch buttons in the show drawer fit their text, also on smaller screens.',
       },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Episodes without a video file show a "No video file" label in the show drawer and the edit dialog.',
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Missing video files are looked for once a day, or right away with a new button in Settings.',
+      },
     ],
   },
   {

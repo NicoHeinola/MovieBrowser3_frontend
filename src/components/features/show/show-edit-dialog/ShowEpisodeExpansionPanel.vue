@@ -2,6 +2,8 @@
 import type { EpisodeFormData } from './EpisodeFormData';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { MissingVideoFileChip } from '@/components/features/show/missing-video-file-chip';
+import { isEpisodeVideoMissing } from '@/utils/show/isEpisodeVideoMissing';
 
 import { getRules } from './showEntriesFormRules';
 
@@ -11,6 +13,11 @@ const episode = defineModel<EpisodeFormData>('episode', { required: true });
 const expanded = defineModel<boolean>('expanded', { default: false });
 
 const rules = computed(() => getRules(null));
+
+/** The picked file's name, or the saved one. An unsaved episode's filename is only left over from a cleared pick. */
+const filename = computed<string | undefined>(() => {
+  return episode.value.file?.name || (episode.value.id ? episode.value.filename : undefined);
+});
 
 const panelModelValue = computed<string[]>(() => {
   return expanded.value ? ['episode'] : [];
@@ -36,9 +43,14 @@ const updatePanelModelValue = (value: string[]): void => {
           <span class="font-weight-medium text-truncate" style="flex: 1 1 auto; min-width: 0">
             {{ episode.name }}
           </span>
-          <span class="text-medium-emphasis text-body-small text-truncate" style="max-width: 40%; min-width: 0">
-            {{ episode.file?.name || episode.filename || t('show.noVideoFile') }}
+          <span
+            class="text-medium-emphasis text-body-small text-truncate"
+            style="max-width: 40%; min-width: 0"
+            v-if="filename"
+          >
+            {{ filename }}
           </span>
+          <missing-video-file-chip v-if="isEpisodeVideoMissing(episode)" />
         </div>
       </template>
 

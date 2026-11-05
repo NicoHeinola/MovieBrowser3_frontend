@@ -1,7 +1,10 @@
 import type * as VueQuery from '@tanstack/vue-query';
+import type { AxiosResponse } from 'axios';
 import { QueryClient } from '@tanstack/vue-query';
+import { AxiosError } from 'axios';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { ApiErrorCode } from '@/enums/api/ApiErrorCode';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { episodePlaybackService } from '@/services/show/episodePlaybackService';
 import { useShowPlayback } from '../useShowPlayback';
@@ -25,7 +28,14 @@ vi.mock('@/services/show/episodePlaybackService', () => ({
   },
 }));
 
-const createEpisode = (id: number) => ({ id, show_entry_id: 10, name: '', filename: '', sequence_number: 0 });
+const createEpisode = (id: number) => ({
+  id,
+  show_entry_id: 10,
+  name: '',
+  filename: '',
+  has_video_file: true,
+  sequence_number: 0,
+});
 
 interface CachedShow {
   watch_progress: unknown;
@@ -50,6 +60,27 @@ describe('useShowPlayback', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     queryClient.clear();
+  });
+
+  it('refreshes the shows when the video file turns out to be gone', async () => {
+    const response = { status: 422, data: { code: ApiErrorCode.NoVideoFile, params: {} } } as AxiosResponse;
+    const error = new AxiosError('Request failed', undefined, undefined, undefined, response);
+    const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries');
+    vi.mocked(episodePlaybackService.play).mockRejectedValue(error);
+
+    await useShowPlayback().playEpisode(createEpisode(100));
+
+    expect(showAPIErrorSnackbar).toHaveBeenCalledWith(error);
+    expect(invalidateQueries).toHaveBeenCalledOnce();
+  });
+
+  it('leaves the shows alone on other playback errors', async () => {
+    const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries');
+    vi.mocked(episodePlaybackService.play).mockRejectedValue(new Error('Boom'));
+
+    await useShowPlayback().playEpisode(createEpisode(100));
+
+    expect(invalidateQueries).not.toHaveBeenCalled();
   });
 
   it('plays an episode and patches every cached show list', async () => {

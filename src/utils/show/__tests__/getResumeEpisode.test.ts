@@ -7,6 +7,7 @@ const createEpisode = (id: number) => ({
   show_entry_id: Math.floor(id / 10),
   name: '',
   filename: '',
+  has_video_file: true,
   sequence_number: 0,
 });
 

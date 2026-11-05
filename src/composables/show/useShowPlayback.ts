@@ -6,8 +6,10 @@ import { ref } from 'vue';
 
 import { useShowWatchProgressCache } from '@/composables/show/useShowWatchProgressCache';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { ApiErrorCode } from '@/enums/api/ApiErrorCode';
 import { i18n } from '@/plugins/i18n';
 import { episodePlaybackService } from '@/services/show/episodePlaybackService';
+import { isApiErrorCode } from '@/utils/api/isApiErrorCode';
 import { getResumeEpisode } from '@/utils/show/getResumeEpisode';
 
 interface PlaybackOptions {
@@ -22,7 +24,7 @@ interface PlaybackOptions {
 export const useShowPlayback = () => {
   const isStartingPlayback = ref<boolean>(false);
 
-  const { applyWatchProgress } = useShowWatchProgressCache();
+  const { applyWatchProgress, refetchShowLists } = useShowWatchProgressCache();
   const { showAPIErrorSnackbar, showWarningSnackbar } = useCommonSnackbar();
 
   /**
@@ -50,6 +52,12 @@ export const useShowPlayback = () => {
       return watchProgress;
     } catch (error: unknown) {
       showAPIErrorSnackbar(error);
+
+      // The backend just found the file gone and stored that, so the cached shows are out of date.
+      if (isApiErrorCode(error, ApiErrorCode.NoVideoFile)) {
+        refetchShowLists();
+      }
+
       return null;
     } finally {
       isStartingPlayback.value = false;
