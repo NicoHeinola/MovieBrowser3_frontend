@@ -15,8 +15,8 @@ import { showSortOptions } from './showSortOptions';
  * @param queryKey Query key of the calling page, so each page keeps its own cache entry.
  * @param defaultFilters Filters applied until the user changes them. They count as active filters, and clearing the
  * filters removes them too.
- * @returns The search input, filter, sort and page refs, the query, the shows, and the style that sizes their
- * grid.
+ * @returns The search input, filter, sort and page refs, the query, the shows, the page size, and the style
+ * that sizes their grid.
  */
 export const useShowSearch = (queryKey: ShowQueryKey, defaultFilters: Partial<ShowSearchFilters> = {}) => {
   const { routeQuery, ...filterOptions } = createSearchFilters<ShowSearchFilters>(
@@ -27,7 +27,7 @@ export const useShowSearch = (queryKey: ShowQueryKey, defaultFilters: Partial<Sh
 
   // Read once: the page size only has to fit the screen the page opens on. The window width is the one a scrollbar
   // does not change, so the grid does not depend on whether the results overflow the page.
-  const { pageSize, width } = getShowGridLayout(window.innerWidth);
+  const { pageSize, width } = getShowGridLayout(window.innerWidth, window.innerHeight);
 
   const { items, ...search } = usePaginatedSearch<Show, ShowSearchFilters>({
     queryKey,
@@ -44,6 +44,7 @@ export const useShowSearch = (queryKey: ShowQueryKey, defaultFilters: Partial<Sh
   return {
     ...search,
     shows: items,
+    pageSize,
     gridStyle: {
       width: `${width}px`,
       // Room for a scrollbar, which must not wrap the grid, while a window made smaller still wraps the cards.

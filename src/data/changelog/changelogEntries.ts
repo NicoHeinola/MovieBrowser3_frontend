@@ -14,7 +14,7 @@ export const changelogEntries: ChangelogEntry[] = [
     changes: [
       {
         type: ChangelogChangeType.Changed,
-        text: 'The show search pages fit the number of shows per page to your screen, so full pages end on a full row.',
+        text: 'The show search pages fit the number of shows per page to your screen, so a full page fills the screen.',
       },
       {
         type: ChangelogChangeType.Changed,

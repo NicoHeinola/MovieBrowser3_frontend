@@ -10,7 +10,7 @@ const props = withDefaults(
     rows?: number;
     cols?: number;
     cardWidth?: string | number;
-    cardHeight?: string;
+    cardHeight?: string | number;
   }>(),
   {
     rows: 1,

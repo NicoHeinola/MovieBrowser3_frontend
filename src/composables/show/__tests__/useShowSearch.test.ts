@@ -69,14 +69,16 @@ describe('useShowSearch', () => {
     }
   });
 
-  it('lists the newest shows, as many per page as whole rows fit the window', async () => {
+  it('lists the newest shows, as many per page as fit the window', async () => {
     vi.stubGlobal('innerWidth', 2560);
+    vi.stubGlobal('innerHeight', 1251);
 
-    const { shows, gridStyle } = await setupSearch();
+    const { shows, pageSize, gridStyle } = await setupSearch();
 
     const expected = { filter: undefined, sort: '-created_at', page: { number: 1, size: 32 } };
     expect(showService.list).toHaveBeenCalledWith(expected);
     expect(shows.value).toEqual([]);
+    expect(pageSize).toBe(32);
     expect(gridStyle.width).toBe('2464px');
   });
 

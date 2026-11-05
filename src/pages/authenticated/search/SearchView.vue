@@ -14,6 +14,7 @@ import { showSearchFilterDefinitions } from '@/composables/show/showSearchFilter
 import { showSortOptions } from '@/composables/show/showSortOptions';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
+import { SHOW_GRID_CARD_HEIGHT } from '@/utils/show/showGridCardHeight';
 import { SHOW_GRID_CARD_WIDTH } from '@/utils/show/showGridCardWidth';
 import { WATCHED_SHOW_STATUSES } from '@/utils/show/watchedShowStatuses';
 
@@ -31,6 +32,7 @@ const {
   sort,
   page,
   shows,
+  pageSize,
   gridStyle,
   totalPages,
   totalResults,
@@ -58,16 +60,16 @@ const selectShow = (show: Show | null) => {
 
     <result-count :count="totalResults" :loading="isLoading" v-if="isLoading || shows.length > 0" />
 
-    <show-grid-skeleton :grid-style="gridStyle" v-if="isLoading" />
+    <show-grid-skeleton :count="pageSize" :grid-style="gridStyle" v-if="isLoading" />
 
     <template v-else>
       <v-row justify="center" v-if="shows.length > 0">
         <v-col class="d-flex justify-center" cols="12">
           <show-grid
+            :card-height="SHOW_GRID_CARD_HEIGHT"
             :card-width="SHOW_GRID_CARD_WIDTH"
             :shows="shows"
             :style="gridStyle"
-            card-height="190"
             class="d-flex justify-center flex-0-0"
             @click:show="selectShow"
           />

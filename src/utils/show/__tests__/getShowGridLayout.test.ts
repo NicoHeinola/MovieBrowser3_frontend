@@ -4,20 +4,16 @@ import { getShowGridLayout } from '../getShowGridLayout';
 
 describe('getShowGridLayout', () => {
   it.each([
-    { viewportWidth: 2560, pageSize: 32, width: 2464 },
-    { viewportWidth: 2559, pageSize: 35, width: 2152 },
-    { viewportWidth: 1920, pageSize: 30, width: 1528 },
-    { viewportWidth: 1366, pageSize: 32, width: 1216 },
-    { viewportWidth: 3840, pageSize: 36, width: 3712 },
-  ])('fits whole rows on a $viewportWidth pixel wide screen', ({ viewportWidth, pageSize, width }) => {
-    expect(getShowGridLayout(viewportWidth)).toEqual({ pageSize, width });
+    { name: '1440p browser window', viewportWidth: 2560, viewportHeight: 1251, pageSize: 32, width: 2464 },
+    { name: '1440p full screen', viewportWidth: 2560, viewportHeight: 1440, pageSize: 40, width: 2464 },
+    { name: '1080p browser window', viewportWidth: 1920, viewportHeight: 893, pageSize: 15, width: 1528 },
+    { name: '4K browser window', viewportWidth: 3840, viewportHeight: 1971, pageSize: 96, width: 3712 },
+    { name: 'laptop browser window', viewportWidth: 1366, viewportHeight: 625, pageSize: 8, width: 1216 },
+  ])('fits whole rows and columns in a $name', ({ viewportWidth, viewportHeight, pageSize, width }) => {
+    expect(getShowGridLayout(viewportWidth, viewportHeight)).toEqual({ pageSize, width });
   });
 
-  it('keeps one column on a screen narrower than a card', () => {
-    expect(getShowGridLayout(320)).toEqual({ pageSize: 32, width: 280 });
-  });
-
-  it('keeps at least one row on a very wide screen', () => {
-    expect(getShowGridLayout(20_000).pageSize).toBe(63);
+  it('keeps one column and two rows on a window smaller than a card', () => {
+    expect(getShowGridLayout(320, 200)).toEqual({ pageSize: 2, width: 280 });
   });
 });
