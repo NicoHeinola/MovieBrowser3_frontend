@@ -148,7 +148,8 @@ watch([() => props.show?.id, () => props.isShown], () => {
         :watching-entry-id="show?.watch_progress?.show_entry_id"
       />
     </v-col>
-    <v-col cols="6">
+    <!-- The drawer is only 400px wide below xl, too narrow for these two buttons side by side. -->
+    <v-col cols="12" xl="6">
       <watch-status-button
         :disabled="targetEntries.length === 0"
         :loading="isSavingStatus"
@@ -161,7 +162,7 @@ watch([() => props.show?.id, () => props.isShown], () => {
         @update:model-value="setWatchStatus"
       />
     </v-col>
-    <v-col cols="6">
+    <v-col cols="12" xl="6">
       <!-- Starting over hides behind the arrow, so a stray click can't throw away the saved position. -->
       <split-button
         :disabled="!resumeEpisode || (isStartingPlayback && !isStartingTarget)"

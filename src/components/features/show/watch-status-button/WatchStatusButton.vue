@@ -52,10 +52,12 @@ const buttonLabel = computed<string>(() => {
         :prepend-icon="buttonIcon"
         :variant="status ? 'tonal' : 'outlined'"
         append-icon="mdi-menu-down"
+        class="max-width-button"
         block
         v-bind="menuProps"
       >
-        <span class="d-flex ga-2">
+        <!-- Long labels, like a status with "TV Special", truncate here instead of pushing out the button's icons. -->
+        <span class="text-truncate">
           {{ buttonLabel }}
           <span class="text-medium-emphasis" v-if="props.suffix">{{ props.suffix }}</span>
         </span>

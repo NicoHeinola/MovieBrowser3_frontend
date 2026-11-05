@@ -80,6 +80,14 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Changed,
         text: 'Reordering the frontpage categories now confirms when the new order is saved.',
       },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The show drawer has smaller season cards.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'The set status and watch buttons in the show drawer fit their text, also on smaller screens.',
+      },
     ],
   },
   {

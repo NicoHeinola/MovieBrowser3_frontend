@@ -73,7 +73,7 @@ useResizeObserver(rail, measure);
           @click="toggle(entry)"
           :key="entry.id"
         >
-          <v-card-text class="d-flex align-center ga-4">
+          <v-card-text class="d-flex align-center ga-2 pa-2">
             <v-icon :icon="entry.id === selectedEntry?.id ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank-outline'" />
             <section-label
               :subtitle="t(`showEntry.type.${entry.type}`)"
