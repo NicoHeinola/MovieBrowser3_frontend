@@ -2,6 +2,7 @@
 import type { ShowGeneralFormData } from './ShowGeneralFormData';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { FormItemList } from '@/components/common/form-item-list';
 import { CategoryAutocomplete } from '@/components/features/category-autocomplete';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
@@ -71,39 +72,42 @@ const googleSearch = (searchTerm: string) => {
 </script>
 
 <template>
-  <v-row gap="0">
-    <v-col v-for="(title, index) in show?.titles" cols="12" :key="index">
-      <v-text-field
-        v-model="show!.titles[index].title"
-        :class="{ required: index === 0 }"
-        :label="index === 0 ? t('show.title') : undefined"
-        :rounded="getShowTitleRoundedClass(index)"
-        :rules="[...rules.title, (value: string) => rules.titles(value, index)]"
-        :style="{ marginTop: index === 0 ? undefined : '-1px' }"
-      >
-        <template #append>
-          <div class="d-flex ga-2">
-            <v-btn
-              :icon="title.is_primary ? 'mdi-star' : 'mdi-star-outline'"
-              color="primary"
-              size="x-small"
-              @click="setPrimaryTitle(index)"
-            ></v-btn>
-            <v-btn
-              :disabled="show!.titles.length === 1"
-              color="error"
-              icon="mdi-trash-can"
-              size="x-small"
-              @click="removeTitle(index)"
-            ></v-btn>
-          </div>
-        </template>
-      </v-text-field>
-    </v-col>
-    <v-col cols="12">
+  <form-item-list :has-items="(show?.titles.length ?? 0) > 0">
+    <v-row gap="0">
+      <v-col v-for="(title, index) in show?.titles" cols="12" :key="index">
+        <v-text-field
+          v-model="show!.titles[index].title"
+          :class="{ required: index === 0 }"
+          :label="index === 0 ? t('show.title') : undefined"
+          :rounded="getShowTitleRoundedClass(index)"
+          :rules="[...rules.title, (value: string) => rules.titles(value, index)]"
+          :style="{ marginTop: index === 0 ? undefined : '-1px' }"
+        >
+          <template #append>
+            <div class="d-flex ga-2">
+              <v-btn
+                :icon="title.is_primary ? 'mdi-star' : 'mdi-star-outline'"
+                color="primary"
+                size="x-small"
+                @click="setPrimaryTitle(index)"
+              ></v-btn>
+              <v-btn
+                :disabled="show!.titles.length === 1"
+                color="error"
+                icon="mdi-trash-can"
+                size="x-small"
+                @click="removeTitle(index)"
+              ></v-btn>
+            </div>
+          </template>
+        </v-text-field>
+      </v-col>
+    </v-row>
+
+    <template #actions>
       <v-btn size="small" variant="text" @click="addTitle"> {{ t('show.addTitle') }} </v-btn>
-    </v-col>
-  </v-row>
+    </template>
+  </form-item-list>
 
   <v-row>
     <v-col cols="12">

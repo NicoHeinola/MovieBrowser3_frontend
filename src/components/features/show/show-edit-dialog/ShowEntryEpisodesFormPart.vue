@@ -4,7 +4,7 @@ import type { ShowEntryFormData } from './ShowEntryFormData';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
-
+import { FormItemList } from '@/components/common/form-item-list';
 import { SortableItem } from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -173,42 +173,40 @@ makeDroppable(
 </script>
 
 <template>
-  <v-row gap="0">
-    <v-col cols="12">
-      <div class="d-flex ga-2 flex-column overflow-scroll justify-start" ref="episodeZone">
-        <transition-group name="task">
-          <sortable-item
-            v-for="(episode, index) in entry.episodes"
-            :drag-options="{ dragHandle: '.handle', groups: [episodeDragGroup] }"
-            :drag-payload="() => [index, entry.episodes!]"
-            class="d-flex ga-2"
-            @sorted="syncEpisodeSequenceNumbers"
-            :key="getEpisodeRenderKey(episode)"
-          >
-            <show-episode-expansion-panel
-              v-model:episode="entry.episodes![index]"
-              :expanded="expandedEpisodes.includes(episode)"
-              class="overflow-hidden"
-              style="flex: 1 1 auto; min-width: 0"
-              @update:expanded="setEpisodeExpanded(episode, $event)"
-            />
-            <v-btn
-              class="flex-shrink-0"
-              color="error"
-              icon="mdi-trash-can"
-              size="x-small"
-              @click.stop="removeEpisode(index)"
-            />
-          </sortable-item>
-        </transition-group>
-      </div>
-    </v-col>
+  <form-item-list :has-items="(entry.episodes?.length ?? 0) > 0">
+    <div class="d-flex ga-2 flex-column overflow-auto justify-start" ref="episodeZone">
+      <transition-group name="task">
+        <sortable-item
+          v-for="(episode, index) in entry.episodes"
+          :drag-options="{ dragHandle: '.handle', groups: [episodeDragGroup] }"
+          :drag-payload="() => [index, entry.episodes!]"
+          class="d-flex ga-2"
+          @sorted="syncEpisodeSequenceNumbers"
+          :key="getEpisodeRenderKey(episode)"
+        >
+          <show-episode-expansion-panel
+            v-model:episode="entry.episodes![index]"
+            :expanded="expandedEpisodes.includes(episode)"
+            class="overflow-hidden"
+            style="flex: 1 1 auto; min-width: 0"
+            @update:expanded="setEpisodeExpanded(episode, $event)"
+          />
+          <v-btn
+            class="flex-shrink-0"
+            color="error"
+            icon="mdi-trash-can"
+            size="x-small"
+            @click.stop="removeEpisode(index)"
+          />
+        </sortable-item>
+      </transition-group>
+    </div>
 
-    <v-col class="d-flex ga-2 align-center" cols="12">
+    <template #actions>
       <v-btn size="small" variant="text" @click="addEpisode"> {{ t('show.addEpisode') }} </v-btn>
       <v-btn size="small" variant="text" @click="addEpisodesFromFiles"> {{ t('show.addEpisodesFromFiles') }} </v-btn>
-    </v-col>
-  </v-row>
+    </template>
+  </form-item-list>
 </template>
 
 <style scoped>

@@ -13,6 +13,10 @@ export const changelogEntries: ChangelogEntry[] = [
     date: null,
     changes: [
       {
+        type: ChangelogChangeType.Fixed,
+        text: '"Add another" buttons in the show editor no longer sit right against the items above them.',
+      },
+      {
         type: ChangelogChangeType.Changed,
         text: 'The show search pages fit the number of shows per page to your screen, so a full page fills the screen.',
       },

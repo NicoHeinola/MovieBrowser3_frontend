@@ -4,6 +4,7 @@ import type { ShowEntryFormData } from './ShowEntryFormData';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { FormItemList } from '@/components/common/form-item-list';
 import { SortableItem } from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
@@ -102,39 +103,38 @@ makeDroppable(
 </script>
 
 <template>
-  <v-row gap="0">
-    <v-col cols="12">
-      <div class="d-flex ga-2 flex-column overflow-scroll justify-start" ref="zone">
-        <transition-group name="task">
-          <sortable-item
-            v-for="(entry, i) in show.entries"
-            :drag-options="{ dragHandle: '.handle', groups: ['show-entry'] }"
-            :drag-payload="() => [i, show.entries!]"
-            class="d-flex ga-2"
-            @sorted="syncEntrySortOrder"
-            :key="getEntryRenderKey(entry)"
-          >
-            <show-entry-expansion-panel
-              v-model:entry="show.entries![i]"
-              :expanded="expandedEntries.includes(entry)"
-              style="min-width: 0"
-              @update:expanded="setEntryExpanded(entry, $event)"
-            />
-            <v-btn
-              :disabled="(show.entries?.length ?? 0) === 1"
-              color="error"
-              icon="mdi-trash-can"
-              size="x-small"
-              @click.stop="removeEntry(i)"
-            />
-          </sortable-item>
-        </transition-group>
-      </div>
-    </v-col>
-    <v-col cols="12">
+  <form-item-list :has-items="(show.entries?.length ?? 0) > 0">
+    <div class="d-flex ga-2 flex-column overflow-auto justify-start" ref="zone">
+      <transition-group name="task">
+        <sortable-item
+          v-for="(entry, i) in show.entries"
+          :drag-options="{ dragHandle: '.handle', groups: ['show-entry'] }"
+          :drag-payload="() => [i, show.entries!]"
+          class="d-flex ga-2"
+          @sorted="syncEntrySortOrder"
+          :key="getEntryRenderKey(entry)"
+        >
+          <show-entry-expansion-panel
+            v-model:entry="show.entries![i]"
+            :expanded="expandedEntries.includes(entry)"
+            style="min-width: 0"
+            @update:expanded="setEntryExpanded(entry, $event)"
+          />
+          <v-btn
+            :disabled="(show.entries?.length ?? 0) === 1"
+            color="error"
+            icon="mdi-trash-can"
+            size="x-small"
+            @click.stop="removeEntry(i)"
+          />
+        </sortable-item>
+      </transition-group>
+    </div>
+
+    <template #actions>
       <v-btn size="small" variant="text" @click="addEntry"> {{ t('show.addEntry') }} </v-btn>
-    </v-col>
-  </v-row>
+    </template>
+  </form-item-list>
 </template>
 
 <style scoped>

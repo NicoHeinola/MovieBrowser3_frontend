@@ -2,7 +2,7 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowLink } from '@/interfaces/api/models/ShowLink';
 import { useI18n } from 'vue-i18n';
-
+import { FormItemList } from '@/components/common/form-item-list';
 import { ShowAutocomplete } from '@/components/features/show/show-autocomplete';
 import { ShowLinkTypeSelect } from '@/components/features/show/show-link-type-select';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
@@ -72,27 +72,27 @@ const removeLink = async (index: number): Promise<void> => {
 </script>
 
 <template>
-  <v-row v-for="(link, index) in outgoingLinks" align="start" :key="getLinkRenderKey(link)">
-    <v-col cols="6">
-      <show-link-type-select v-model="link.type" :rules="rules.linkType" />
-    </v-col>
+  <form-item-list :has-items="outgoingLinks.length > 0">
+    <v-row v-for="(link, index) in outgoingLinks" align="start" :key="getLinkRenderKey(link)">
+      <v-col cols="6">
+        <show-link-type-select v-model="link.type" :rules="rules.linkType" />
+      </v-col>
 
-    <v-col class="d-flex align-center ga-5" cols="6">
-      <show-autocomplete
-        :exclude-ids="props.showId ? [props.showId] : []"
-        :label="t('show.linkedShow')"
-        :model-value="link.target_show ?? null"
-        :rules="rules.linkedShow"
-        class="required"
-        @update:model-value="updateLinkedShow(link, $event)"
-      />
-      <v-btn color="error" icon="mdi-trash-can" size="x-small" @click="removeLink(index)" />
-    </v-col>
-  </v-row>
+      <v-col class="d-flex align-center ga-5" cols="6">
+        <show-autocomplete
+          :exclude-ids="props.showId ? [props.showId] : []"
+          :label="t('show.linkedShow')"
+          :model-value="link.target_show ?? null"
+          :rules="rules.linkedShow"
+          class="required"
+          @update:model-value="updateLinkedShow(link, $event)"
+        />
+        <v-btn color="error" icon="mdi-trash-can" size="x-small" @click="removeLink(index)" />
+      </v-col>
+    </v-row>
 
-  <v-row class="mt-0">
-    <v-col cols="12">
+    <template #actions>
       <v-btn size="small" variant="text" @click="addLink"> {{ t('show.addLink') }} </v-btn>
-    </v-col>
-  </v-row>
+    </template>
+  </form-item-list>
 </template>
