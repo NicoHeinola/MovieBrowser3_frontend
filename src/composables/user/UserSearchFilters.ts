@@ -1,7 +1,7 @@
-import type { FilterChipState } from '@/components/common/filter-chip';
+import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
 
 /** Filters the user search applies on top of the search term. */
 export interface UserSearchFilters {
-  /** Include lists only admins, exclude lists only regular users. */
-  admin: FilterChipState;
+  /** Including `admin` lists only admins, excluding it lists only regular users. */
+  role: ChipsFilterValue;
 }

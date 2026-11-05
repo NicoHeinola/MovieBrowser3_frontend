@@ -1,15 +1,11 @@
-import type { WatchStatus } from '@/enums/show/WatchStatus';
+import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
 
 /** Filters the show search applies on top of the search term. */
 export interface ShowSearchFilters {
-  /** Category values a show must all have. */
-  categories: string[];
-  /** Category values a show must not have any of. */
-  excludedCategories: string[];
-  /** Watch statuses of which a show needs at least one on any entry. */
-  watchStatuses: WatchStatus[];
-  /** Watch statuses no entry of a show may have. */
-  excludedWatchStatuses: WatchStatus[];
+  /** Watch statuses of which a show needs at least one on any entry, and ones no entry may have. */
+  watchStatus: ChipsFilterValue;
+  /** Category values a show must all have, and ones it must not have any of. */
+  category: ChipsFilterValue;
   /** Whether to keep only shows that have a preview video. */
   hasPreview: boolean;
 }

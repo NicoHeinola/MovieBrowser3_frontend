@@ -21,6 +21,7 @@ vi.mock('@/services/setup/setupService', () => ({
 vi.mock('@/pages/admin/users/UsersView.vue', () => ({ default: { render: () => null } }));
 vi.mock('@/pages/admin/setup/SetupView.vue', () => ({ default: { render: () => null } }));
 vi.mock('@/pages/authenticated/home/HomeView.vue', () => ({ default: { render: () => null } }));
+vi.mock('@/pages/authenticated/search/SearchView.vue', () => ({ default: { render: () => null } }));
 
 const createStatus = (completedAt: string | null): SetupStatus => ({
   completed_at: completedAt,

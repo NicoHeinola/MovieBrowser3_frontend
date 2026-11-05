@@ -81,22 +81,27 @@ describe('useUserSearch', () => {
   it('sends the admin filter as a backend param and counts it', async () => {
     const { filters, activeFilterCount } = await setupSearch();
 
-    filters.value = { admin: 'exclude' };
+    filters.value = { role: { included: [], excluded: ['admin'] } };
     await flushPromises();
 
     expect(vi.mocked(userService.list).mock.lastCall?.[0].filter).toEqual({ is_admin: '0' });
     expect(activeFilterCount.value).toBe(1);
+
+    filters.value = { role: { included: ['admin'], excluded: [] } };
+    await flushPromises();
+
+    expect(vi.mocked(userService.list).mock.lastCall?.[0].filter).toEqual({ is_admin: '1' });
   });
 
   it('keeps the admin filter and sort in the URL query', async () => {
-    const { filters, router } = await setupSearch('/admin/users?admin=1&sort=-created_at');
+    const { filters, router } = await setupSearch('/admin/users?role=admin&sort=-created_at');
 
     expect(vi.mocked(userService.list).mock.lastCall?.[0]).toMatchObject({
       filter: { is_admin: '1' },
       sort: '-created_at',
     });
 
-    filters.value = { admin: null };
+    filters.value = { role: { included: [], excluded: [] } };
     await flushPromises();
 
     expect(router.currentRoute.value.fullPath).toBe('/admin/users?sort=-created_at');

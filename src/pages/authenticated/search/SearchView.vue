@@ -2,14 +2,15 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { SearchFilterDrawer } from '@/components/common/filter-drawer';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { ResultCount } from '@/components/common/result-count';
 import { SearchToolbar } from '@/components/common/search-toolbar';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
-import { ShowFilterDrawer } from '@/components/features/show/show-filter-drawer';
 import { ShowGrid } from '@/components/features/show/show-grid';
+import { showSearchFilterDefinitions } from '@/composables/show/showSearchFilterDefinitions';
 import { showSortOptions } from '@/composables/show/showSortOptions';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
@@ -91,10 +92,11 @@ const selectShow = (show: Show | null) => {
 
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
 
-  <show-filter-drawer
+  <search-filter-drawer
     v-model:filters="filters"
     v-model:is-shown="isFilterDrawerVisible"
     :active-filter-count="activeFilterCount"
+    :definitions="showSearchFilterDefinitions"
     :is-loading="isLoading"
     :total-results="totalResults"
     @clear="clearFilters"

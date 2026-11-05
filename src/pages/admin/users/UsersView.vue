@@ -4,6 +4,7 @@ import type { User } from '@/interfaces/api/models/User';
 
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { SearchFilterDrawer } from '@/components/common/filter-drawer';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
@@ -11,9 +12,9 @@ import { PageContainer } from '@/components/common/page-container';
 import { ResultCount } from '@/components/common/result-count';
 import { SearchToolbar } from '@/components/common/search-toolbar';
 import { UserEditDialog } from '@/components/features/user/user-edit-dialog';
-import { UserFilterDrawer } from '@/components/features/user/user-filter-drawer';
 import { UserTable } from '@/components/features/user/user-table';
 import { useDialog } from '@/components/layouts/dialog-provider';
+import { userSearchFilterDefinitions } from '@/composables/user/userSearchFilterDefinitions';
 import { userSortOptions } from '@/composables/user/userSortOptions';
 import { useUserSearch } from '@/composables/user/useUserSearch';
 
@@ -104,10 +105,11 @@ const openEditUserDialog = async (user?: User): Promise<void> => {
     <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
     <floating-action-button class="z-100" icon="mdi-plus" @click="openEditUserDialog()" />
 
-    <user-filter-drawer
+    <search-filter-drawer
       v-model:filters="filters"
       v-model:is-shown="isFilterDrawerVisible"
       :active-filter-count="activeFilterCount"
+      :definitions="userSearchFilterDefinitions"
       :is-loading="isLoading"
       :total-results="totalResults"
       @clear="clearFilters"

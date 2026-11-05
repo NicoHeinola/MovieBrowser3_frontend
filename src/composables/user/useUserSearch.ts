@@ -4,9 +4,8 @@ import type { User } from '@/interfaces/api/models/User';
 import { usePaginatedSearch } from '@/composables/search/usePaginatedSearch';
 import { UserQueryKey } from '@/enums/query/userQueryKey';
 import { userService } from '@/services/user/userService';
-import { getUserSearchFilterParams } from '@/utils/user/getUserSearchFilterParams';
-import { getUserSearchFiltersFromQuery } from '@/utils/user/getUserSearchFiltersFromQuery';
-import { getUserSearchFiltersQuery } from '@/utils/user/getUserSearchFiltersQuery';
+import { createSearchFilters } from '@/utils/filter/createSearchFilters';
+import { userSearchFilterDefinitions } from './userSearchFilterDefinitions';
 import { userSortOptions } from './userSortOptions';
 
 /**
@@ -15,18 +14,20 @@ import { userSortOptions } from './userSortOptions';
  * @returns The search input, filter, sort and page refs, the query, and the users.
  */
 export const useUserSearch = () => {
+  const { routeQuery, ...filterOptions } = createSearchFilters<UserSearchFilters>(
+    userSearchFilterDefinitions,
+    'username',
+  );
+
   const { items, ...search } = usePaginatedSearch<User, UserSearchFilters>({
     queryKey: UserQueryKey.AdminUsers,
     list: userService.list,
-    createEmptyFilters: () => ({ admin: null }),
-    getFilterParams: getUserSearchFilterParams,
-    countActiveFilters: (filters) => (filters.admin === null ? 0 : 1),
+    ...filterOptions,
     defaultSort: userSortOptions[0].value,
     pageSize: 25,
     routeQuery: {
+      ...routeQuery,
       sortValues: userSortOptions.map((option) => option.value),
-      getFiltersQuery: getUserSearchFiltersQuery,
-      getFiltersFromQuery: getUserSearchFiltersFromQuery,
     },
   });
 

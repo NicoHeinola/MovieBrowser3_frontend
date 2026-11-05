@@ -86,7 +86,7 @@ describe('useWebsiteSearch', () => {
   it('sends tag filters as backend params and counts them', async () => {
     const { filters, activeFilterCount } = await setupSearch();
 
-    filters.value = { tagIds: [1], excludedTagIds: [2] };
+    filters.value = { tag: { included: ['1'], excluded: ['2'] } };
     await flushPromises();
 
     expect(vi.mocked(websiteService.list).mock.lastCall?.[0].filter).toEqual({ 'tags.id': ['1'], exclude_tags: ['2'] });
@@ -94,17 +94,26 @@ describe('useWebsiteSearch', () => {
   });
 
   it('toggles a clicked tag in and out of the included tags, leaving excluded ones alone', async () => {
-    const { filters, toggleTag } = await setupSearch();
+    const { filters, includedTagIds, toggleTag } = await setupSearch();
 
     toggleTag(1);
-    expect(filters.value).toEqual({ tagIds: [1], excludedTagIds: [] });
+    expect(filters.value.tag).toEqual({ included: ['1'], excluded: [] });
+    expect(includedTagIds.value).toEqual([1]);
 
     toggleTag(1);
-    expect(filters.value).toEqual({ tagIds: [], excludedTagIds: [] });
+    expect(filters.value.tag).toEqual({ included: [], excluded: [] });
 
-    filters.value = { tagIds: [3], excludedTagIds: [2] };
+    filters.value = { tag: { included: ['3'], excluded: ['2'] } };
     toggleTag(4);
-    expect(filters.value).toEqual({ tagIds: [3, 4], excludedTagIds: [2] });
+    expect(filters.value.tag).toEqual({ included: ['3', '4'], excluded: ['2'] });
+  });
+
+  it('replaces every tag filter when showing a single tag', async () => {
+    const { filters, showOnlyTag } = await setupSearch('/admin/websites?tag=1&exclude_tag=2');
+
+    showOnlyTag(3);
+
+    expect(filters.value.tag).toEqual({ included: ['3'], excluded: [] });
   });
 
   it('keeps the tag filters in the URL query', async () => {

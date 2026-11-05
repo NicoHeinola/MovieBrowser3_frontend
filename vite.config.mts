@@ -16,9 +16,8 @@ export default defineConfig(({ mode }) => {
       // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
       Vuetify({
         autoImport: true,
-        styles: {
-          configFile: 'src/styles/settings.scss',
-        },
+        // Vitest cannot load Vuetify's Sass imports, and tests do not need styles.
+        styles: mode === 'test' ? 'none' : { configFile: 'src/styles/settings.scss' },
       }),
     ],
     define: {

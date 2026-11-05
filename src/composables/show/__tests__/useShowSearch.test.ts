@@ -1,3 +1,4 @@
+import type { ShowSearchFilters } from '../ShowSearchFilters';
 import type { EffectScope } from 'vue';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { flushPromises } from '@vue/test-utils';
@@ -27,9 +28,10 @@ const scopes: EffectScope[] = [];
 /**
  * Runs the show search inside an app that provides the query client and a router, and waits for the first load.
  * @param url - The URL the router starts at.
+ * @param defaultFilters - The filters the search starts with.
  * @returns The show search state.
  */
-const setupSearch = async (url = '/search') => {
+const setupSearch = async (url = '/search', defaultFilters: Partial<ShowSearchFilters> = {}) => {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [{ path: '/search', component: { template: '<div />' } }],
@@ -43,7 +45,7 @@ const setupSearch = async (url = '/search') => {
   const scope = effectScope();
   scopes.push(scope);
 
-  const search = app.runWithContext(() => scope.run(() => useShowSearch(ShowQueryKey.SearchShows)))!;
+  const search = app.runWithContext(() => scope.run(() => useShowSearch(ShowQueryKey.SearchShows, defaultFilters)))!;
   await flushPromises();
 
   return { ...search, router };
@@ -77,10 +79,8 @@ describe('useShowSearch', () => {
     const { filters, activeFilterCount } = await setupSearch();
 
     filters.value = {
-      categories: ['anime'],
-      excludedCategories: ['horror'],
-      watchStatuses: [WatchStatus.Watching],
-      excludedWatchStatuses: [WatchStatus.Dropped],
+      watchStatus: { included: [WatchStatus.Watching], excluded: [WatchStatus.Dropped] },
+      category: { included: ['anime'], excluded: ['horror'] },
       hasPreview: true,
     };
     await flushPromises();
@@ -104,11 +104,49 @@ describe('useShowSearch', () => {
       preview_url: 'not_null',
     });
 
-    filters.value = { ...filters.value, excludedCategories: ['horror'], hasPreview: false };
+    filters.value = {
+      ...filters.value,
+      category: { included: ['anime'], excluded: ['horror'] },
+      hasPreview: false,
+    };
     await flushPromises();
 
     expect(router.currentRoute.value.fullPath).toBe(
-      '/search?category=anime&exclude_category=horror&watch_status=watching',
+      '/search?watch_status=watching&category=anime&exclude_category=horror',
     );
+  });
+
+  describe('with default filters', () => {
+    const defaultFilters = { watchStatus: { included: [], excluded: [WatchStatus.Completed] } };
+    const lastFilter = () => vi.mocked(showService.list).mock.lastCall?.[0].filter;
+
+    it('applies them as an active filter without touching the URL', async () => {
+      const { activeFilterCount, router } = await setupSearch('/search', defaultFilters);
+
+      expect(lastFilter()).toEqual({ exclude_watch_status: [WatchStatus.Completed] });
+      expect(activeFilterCount.value).toBe(1);
+      expect(router.currentRoute.value.fullPath).toBe('/search');
+    });
+
+    it('clears them and keeps them cleared after a reload', async () => {
+      const { clearFilters, router } = await setupSearch('/search', defaultFilters);
+
+      clearFilters();
+      await flushPromises();
+
+      expect(lastFilter()).toBeUndefined();
+      expect(router.currentRoute.value.fullPath).toBe('/search?watch_status=');
+
+      const reloaded = await setupSearch(router.currentRoute.value.fullPath, defaultFilters);
+
+      expect(lastFilter()).toBeUndefined();
+      expect(reloaded.activeFilterCount.value).toBe(0);
+    });
+
+    it('does not exclude a status the URL includes', async () => {
+      await setupSearch('/search?watch_status=completed', defaultFilters);
+
+      expect(lastFilter()).toEqual({ watch_status: [WatchStatus.Completed] });
+    });
   });
 });

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { SearchFilterDrawer } from '@/components/common/filter-drawer';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { ResultCount } from '@/components/common/result-count';
@@ -8,9 +9,9 @@ import { SearchToolbar } from '@/components/common/search-toolbar';
 import { useWebsiteEditDialog } from '@/composables/website/useWebsiteEditDialog';
 import { useWebsiteFavoriteToggle } from '@/composables/website/useWebsiteFavoriteToggle';
 import { useWebsiteSearch } from '@/composables/website/useWebsiteSearch';
+import { websiteSearchFilterDefinitions } from '@/composables/website/websiteSearchFilterDefinitions';
 import { websiteSortOptions } from '@/composables/website/websiteSortOptions';
 import { WebsiteCard } from '../website-card';
-import { WebsiteFilterDrawer } from '../website-filter-drawer';
 
 const isFilterDrawerVisible = ref<boolean>(false);
 
@@ -19,7 +20,9 @@ const {
   filters,
   activeFilterCount,
   clearFilters,
+  includedTagIds,
   toggleTag,
+  showOnlyTag,
   sort,
   page,
   websites,
@@ -39,7 +42,7 @@ const { t } = useI18n();
  */
 const showWebsitesWithTag = (tagId: number): void => {
   searchInput.value = '';
-  filters.value = { tagIds: [tagId], excludedTagIds: [] };
+  showOnlyTag(tagId);
 };
 
 defineExpose({
@@ -69,7 +72,7 @@ defineExpose({
     <v-row v-if="websites.length > 0">
       <v-col v-for="website in websites" cols="12" lg="4" sm="6" xl="3" :key="website.id">
         <website-card
-          :included-tag-ids="filters.tagIds"
+          :included-tag-ids="includedTagIds"
           :is-saving-favorite="savingFavoriteIds.includes(website.id)"
           :website="website"
           @click:tag="toggleTag"
@@ -95,10 +98,11 @@ defineExpose({
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
   <floating-action-button class="z-100" icon="mdi-plus" @click="openWebsiteEditDialog()" />
 
-  <website-filter-drawer
+  <search-filter-drawer
     v-model:filters="filters"
     v-model:is-shown="isFilterDrawerVisible"
     :active-filter-count="activeFilterCount"
+    :definitions="websiteSearchFilterDefinitions"
     :is-loading="isLoading"
     :total-results="totalResults"
     @clear="clearFilters"
