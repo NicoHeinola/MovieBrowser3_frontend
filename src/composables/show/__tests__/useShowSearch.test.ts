@@ -55,6 +55,7 @@ const setupSearch = async (url = '/search', defaultFilters: Partial<ShowSearchFi
 describe('useShowSearch', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.unstubAllGlobals();
     queryClient.clear();
     vi.mocked(showService.list).mockResolvedValue({
       data: [],
@@ -68,12 +69,15 @@ describe('useShowSearch', () => {
     }
   });
 
-  it('lists 32 newest shows per page', async () => {
-    const { shows } = await setupSearch();
+  it('lists the newest shows, as many per page as whole rows fit the window', async () => {
+    vi.stubGlobal('innerWidth', 2560);
+
+    const { shows, gridStyle } = await setupSearch();
 
     const expected = { filter: undefined, sort: '-created_at', page: { number: 1, size: 32 } };
     expect(showService.list).toHaveBeenCalledWith(expected);
     expect(shows.value).toEqual([]);
+    expect(gridStyle.width).toBe('2464px');
   });
 
   it('sends every filter as backend params and counts them, the preview switch included', async () => {

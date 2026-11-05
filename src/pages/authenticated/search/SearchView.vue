@@ -9,11 +9,12 @@ import { PageContainer } from '@/components/common/page-container';
 import { ResultCount } from '@/components/common/result-count';
 import { SearchToolbar } from '@/components/common/search-toolbar';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
-import { ShowGrid } from '@/components/features/show/show-grid';
+import { ShowGrid, ShowGridSkeleton } from '@/components/features/show/show-grid';
 import { showSearchFilterDefinitions } from '@/composables/show/showSearchFilterDefinitions';
 import { showSortOptions } from '@/composables/show/showSortOptions';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
+import { SHOW_GRID_CARD_WIDTH } from '@/utils/show/showGridCardWidth';
 import { WATCHED_SHOW_STATUSES } from '@/utils/show/watchedShowStatuses';
 
 const { t } = useI18n();
@@ -30,6 +31,7 @@ const {
   sort,
   page,
   shows,
+  gridStyle,
   totalPages,
   totalResults,
   isLoading,
@@ -56,20 +58,17 @@ const selectShow = (show: Show | null) => {
 
     <result-count :count="totalResults" :loading="isLoading" v-if="isLoading || shows.length > 0" />
 
-    <v-row v-if="isLoading">
-      <v-col v-for="i in 16" cols="auto" :key="i">
-        <v-skeleton-loader type="image" width="287" />
-      </v-col>
-    </v-row>
+    <show-grid-skeleton :grid-style="gridStyle" v-if="isLoading" />
 
     <template v-else>
       <v-row justify="center" v-if="shows.length > 0">
         <v-col class="d-flex justify-center" cols="12">
           <show-grid
+            :card-width="SHOW_GRID_CARD_WIDTH"
             :shows="shows"
+            :style="gridStyle"
             card-height="190"
-            card-width="280"
-            class="d-flex justify-center flex-1-1"
+            class="d-flex justify-center flex-0-0"
             @click:show="selectShow"
           />
         </v-col>

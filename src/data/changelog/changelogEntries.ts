@@ -14,6 +14,10 @@ export const changelogEntries: ChangelogEntry[] = [
     changes: [
       {
         type: ChangelogChangeType.Changed,
+        text: 'The show search pages fit the number of shows per page to your screen, so full pages end on a full row.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
         text: 'First-time setup has a new centered look, and its last step takes you straight to the home page.',
       },
       {
