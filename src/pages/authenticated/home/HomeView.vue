@@ -8,7 +8,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 import { VCol, VLazy, VRow } from 'vuetify/components';
-import { MediaBanner } from '@/components/common/media-banner';
+import { HOME_BANNER_HEIGHT, MediaBanner } from '@/components/common/media-banner';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { SectionContainer } from '@/components/common/section-container';
@@ -182,7 +182,7 @@ watch(
     :background-style="{
       background: [
         'linear-gradient(180deg,',
-        'rgb(var(--v-theme-background)) 74.5vh,',
+        `rgb(var(--v-theme-background)) ${HOME_BANNER_HEIGHT},`,
         'rgb(var(--v-theme-background-lighten-1)) 2000px)',
       ].join(' '),
     }"
@@ -202,8 +202,8 @@ watch(
   <media-banner
     :disable-video-playback="isShowDrawerVisible || isPlayingCardVideo"
     :image-src="bannerBackground"
+    :style="{ marginTop: '-70px', height: HOME_BANNER_HEIGHT }"
     :video-src="bannerVideo"
-    style="margin-top: -70px; height: 74.5vh"
   >
     <v-row align="center" style="max-width: 90%">
       <v-sheet border="sm" class="position-relative glass-panel" rounded="xl">
