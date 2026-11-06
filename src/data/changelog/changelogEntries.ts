@@ -14,19 +14,67 @@ export const changelogEntries: ChangelogEntry[] = [
     changes: [
       {
         type: ChangelogChangeType.Added,
-        text: 'Admins can filter shows with episodes that have no video file, or whose video file is gone.',
+        text: 'Missing video files are found and flagged.',
+        details: [
+          'Admins can filter shows with episodes that have no video file, or whose video file is gone.',
+          'Episodes without a video file show a "No video file" label in the show drawer and the edit dialog.',
+          'The admin dashboard shows how many episode files are missing.',
+          'They are looked for once a day, or right away with a button in Settings.',
+        ],
       },
       {
         type: ChangelogChangeType.Added,
-        text: 'Filter shows by their minimum and maximum episode count in the search filters.',
+        text: 'Show search has more ways to find shows.',
+        details: [
+          'It also checks descriptions, categories, season and movie names, and can mix words from each.',
+          'Filter by the status of a whole show or any entry. The new Mixed option finds partly watched shows.',
+          "Filter by a show's minimum and maximum episode count.",
+          'Completed shows no longer appear in the Random row, and the search page hides them by default.',
+          'Show pages fit the number of shows per page to your screen, so a full page fills the screen.',
+        ],
       },
       {
         type: ChangelogChangeType.Added,
-        text: 'Preview how backgrounds and videos look on the home page, before or after saving them.',
+        text: 'The home page banner reacts more.',
+        details: [
+          'It goes back to normal a while after you stop hovering a latest show.',
+          'It changes on its own when there are several default images.',
+        ],
       },
       {
         type: ChangelogChangeType.Added,
-        text: 'The home page preview can show or hide the latest shows and the navigation bar.',
+        text: 'Preview the home page backgrounds and videos, with or without the latest shows and navigation bar.',
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Continue watching cards show a loader while the video player opens.',
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Reordering the frontpage categories confirms when the new order is saved.',
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Dragging a row to the edge of a long list scrolls the list.',
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Error messages from the server appear in your language.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'First-time setup has a new centered look.',
+        details: [
+          'Its last step takes you straight to the home page.',
+          'It suggests a video folder on a Windows drive, so VLC can open your videos.',
+          'The "Save anyway" button is gone. Only paths that pass the check are saved.',
+          String.raw`Windows paths such as G:\Videos are no longer accepted. Use /mnt/g/Videos instead.`,
+        ],
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The app has a new glass look.',
+        details: ['The login page, side drawers, menus and dropdowns.', 'Main buttons look the same across the app.'],
       },
       {
         type: ChangelogChangeType.Changed,
@@ -34,127 +82,27 @@ export const changelogEntries: ChangelogEntry[] = [
       },
       {
         type: ChangelogChangeType.Changed,
-        text: 'The video file check in Settings warns you and shows how many video files are missing.',
-      },
-      {
-        type: ChangelogChangeType.Fixed,
-        text: 'The video file check also runs when the video folder is empty.',
-      },
-      {
-        type: ChangelogChangeType.Added,
-        text: 'The admin dashboard shows how many episode files are missing.',
-      },
-      {
-        type: ChangelogChangeType.Fixed,
-        text: 'Videos open in VLC when a show, entry or episode name ends in a dot or has characters Windows forbids.',
+        text: 'The show drawer has smaller season cards, and its buttons fit their text on smaller screens.',
       },
       {
         type: ChangelogChangeType.Changed,
-        text: 'The home page banner goes back to normal a while after you stop hovering a latest show.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'The home page banner changes on its own when there are several default images.',
-      },
-      {
-        type: ChangelogChangeType.Fixed,
-        text: '"Add another" buttons in the show editor no longer sit right against the items above them.',
-      },
-      {
-        type: ChangelogChangeType.Added,
-        text: 'Continue watching cards show a loader while the video player opens.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'The show search pages fit the number of shows per page to your screen, so a full page fills the screen.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'First-time setup has a new centered look, and its last step takes you straight to the home page.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'Setup suggests a video folder on a Windows drive, so VLC can open your videos.',
-      },
-      {
-        type: ChangelogChangeType.Removed,
-        text: 'Setup no longer has the "Save anyway" button. Only paths that pass its check are saved.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'Setup explains a failed path check in your language.',
-      },
-      {
-        type: ChangelogChangeType.Fixed,
-        text: String.raw`Windows paths such as G:\Videos are no longer accepted. Use /mnt/g/Videos instead.`,
-      },
-      {
-        type: ChangelogChangeType.Fixed,
-        text: 'The loading bar now sits at the top of every page, including login and setup.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'The login page has a new glass look, and main buttons look the same across the app.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'Side drawers, menus and dropdowns have a new glass look.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'The loading bar at the top is thicker, so it is easier to see.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'Error messages from the server now appear in your language.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'Show search also checks descriptions, categories, season and movie names, and can mix words from each.',
-      },
-      {
-        type: ChangelogChangeType.Added,
-        text: 'The changelog shows what is coming in the next version, and still marks the latest released one.',
+        text: 'The loading bar at the top is thicker and shows on every page, including login and setup.',
       },
       {
         type: ChangelogChangeType.Changed,
         text: 'Loading placeholders only appear when a page takes a moment to load, so fast pages no longer flicker.',
       },
       {
-        type: ChangelogChangeType.Changed,
-        text: 'Shows you have completed no longer appear in the Random row, and the search page hides them by default.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'Filter by the status of a whole show or any entry. The new Mixed option finds partly watched shows.',
+        type: ChangelogChangeType.Fixed,
+        text: 'Videos open in VLC when a show, entry or episode name ends in a dot or has characters Windows forbids.',
       },
       {
         type: ChangelogChangeType.Fixed,
         text: 'Your next search or filter reflects a watch status you just changed, instead of up to a minute later.',
       },
       {
-        type: ChangelogChangeType.Changed,
-        text: 'Reordering the frontpage categories now confirms when the new order is saved.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'The show drawer has smaller season cards.',
-      },
-      {
         type: ChangelogChangeType.Fixed,
-        text: 'The set status and watch buttons in the show drawer fit their text, also on smaller screens.',
-      },
-      {
-        type: ChangelogChangeType.Added,
-        text: 'Episodes without a video file show a "No video file" label in the show drawer and the edit dialog.',
-      },
-      {
-        type: ChangelogChangeType.Added,
-        text: 'Missing video files are looked for once a day, or right away with a new button in Settings.',
-      },
-      {
-        type: ChangelogChangeType.Changed,
-        text: 'Dragging a row to the edge of a long list now scrolls the list.',
+        text: '"Add another" buttons in the show editor no longer sit right against the items above them.',
       },
       {
         type: ChangelogChangeType.Fixed,
