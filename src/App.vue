@@ -26,7 +26,7 @@ const shouldShowNavigation = computed<boolean>(() => isRouterReady.value && rout
 
 <template>
   <v-app>
-    <DnDProvider>
+    <DnDProvider animate-changes>
       <snackbar-provider>
         <dialog-provider>
           <language-prompt />

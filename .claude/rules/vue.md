@@ -218,6 +218,13 @@ const save = async (): Promise<void> => {
 
 - Confirm a delete with `useConfirmDialog().confirm({...})` before calling the service.
 
+## Sortable Lists
+
+- Make a list sortable with `useSortableItems` on its container and render the rows it returns, each in a `SortableItem` with a `.handle` element inside. Render the returned draft, not the source list, and find a row's source index with `indexOf`, because the two differ during a drag.
+- Turn dragging off with `isDisabled`, not by removing `.handle`: without a handle the row itself takes keyboard drags.
+- Don't set a drag group: each list only trades with itself by default.
+- Keys come from the backend id, or `getUnsavedRowKey` for rows without one. Don't use `crypto.randomUUID()`: it is missing over plain HTTP on the LAN.
+
 ## i18n
 
 - All UI copy goes through `vue-i18n`: messages live in `src/plugins/i18n/en.json` and `fi.json`, which must have the same keys (a test checks it). Add a key to both files.

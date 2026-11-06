@@ -144,6 +144,14 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Added,
         text: 'Missing video files are looked for once a day, or right away with a new button in Settings.',
       },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Dragging a row to the edge of a long list now scrolls the list.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'Editing a show no longer fails when the app is opened from another device on the network.',
+      },
     ],
   },
   {
