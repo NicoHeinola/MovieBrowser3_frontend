@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import { BaseDialog } from '@/components/common/base-dialog';
 import { BaseForm } from '@/components/common/base-form';
+import { MediaPreviewCard } from '@/components/common/media-preview-card';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
@@ -62,15 +63,16 @@ const handleSubmit = async (): Promise<void> => {
       <base-form v-model:is-valid="isValid" @submit="void handleSubmit()" :id="formId">
         <v-row>
           <v-col cols="12">
-            <v-text-field
-              v-model="url"
-              :disabled="isSaving"
-              :label="t('settings.backgroundUrl')"
-              :rules="rules.url"
-              class="required"
-              prepend-inner-icon="mdi-image-outline"
-              clearable
-            />
+            <media-preview-card :image-src="isValid ? url : null" :placeholder-text="t('settings.previewUnavailable')">
+              <v-text-field
+                v-model="url"
+                :disabled="isSaving"
+                :label="t('settings.backgroundUrl')"
+                :rules="rules.url"
+                class="glass-panel rounded-lg required"
+                clearable
+              />
+            </media-preview-card>
           </v-col>
         </v-row>
       </base-form>

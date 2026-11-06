@@ -7,8 +7,7 @@ import { PageContainer } from '@/components/common/page-container';
 import { TitledSection } from '@/components/common/titled-section';
 import { AddDefaultBackgroundDialog } from '@/components/features/setting/add-default-background-dialog';
 import { AddDefaultVideoDialog } from '@/components/features/setting/add-default-video-dialog';
-import { DefaultBackgroundGallery } from '@/components/features/setting/default-background-gallery';
-import { DefaultVideoGallery } from '@/components/features/setting/default-video-gallery';
+import { DefaultMediaGallery } from '@/components/features/setting/default-media-gallery';
 import { VideoFileCheck } from '@/components/features/setting/video-file-check';
 import { VideoSettings } from '@/components/features/setting/video-settings';
 import { useDialog } from '@/components/layouts/dialog-provider';
@@ -101,9 +100,15 @@ onMounted(() => {
     <v-row class="position-relative">
       <v-col cols="12" lg="6">
         <titled-section :subtitle="t('settings.videosSubtitle')" :title="t('settings.videosTitle')">
-          <default-video-gallery>
-            <template #actions="{ url }">
+          <default-media-gallery
+            :empty-text="t('settings.noVideos')"
+            :loading="settingStore.isLoading"
+            :urls="settingStore.bannerDefaultVideos"
+            is-video
+          >
+            <template #append="{ url }">
               <v-btn
+                class="glass-panel"
                 color="error"
                 icon="mdi-trash-can"
                 size="small"
@@ -111,7 +116,7 @@ onMounted(() => {
                 @click="void confirmDeleteVideo(url)"
               />
             </template>
-          </default-video-gallery>
+          </default-media-gallery>
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">
@@ -128,9 +133,14 @@ onMounted(() => {
 
       <v-col cols="12" lg="6">
         <titled-section :subtitle="t('settings.backgroundsSubtitle')" :title="t('settings.backgroundsTitle')">
-          <default-background-gallery>
-            <template #actions="{ url }">
+          <default-media-gallery
+            :empty-text="t('settings.noBackgrounds')"
+            :loading="settingStore.isLoading"
+            :urls="settingStore.bannerDefaultBackgrounds"
+          >
+            <template #append="{ url }">
               <v-btn
+                class="glass-panel"
                 color="error"
                 icon="mdi-trash-can"
                 size="small"
@@ -138,7 +148,7 @@ onMounted(() => {
                 @click="void confirmDeleteBackground(url)"
               />
             </template>
-          </default-background-gallery>
+          </default-media-gallery>
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">

@@ -13,6 +13,14 @@ export const changelogEntries: ChangelogEntry[] = [
     date: null,
     changes: [
       {
+        type: ChangelogChangeType.Added,
+        text: 'Preview how backgrounds and videos look on the home page, before or after saving them.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Videos in the show editor and settings open a muted preview when clicked, instead of playing in place.',
+      },
+      {
         type: ChangelogChangeType.Changed,
         text: 'The video file check in Settings warns you and shows how many video files are missing.',
       },
