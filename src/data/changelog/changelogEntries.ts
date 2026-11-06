@@ -13,6 +13,10 @@ export const changelogEntries: ChangelogEntry[] = [
     date: null,
     changes: [
       {
+        type: ChangelogChangeType.Fixed,
+        text: 'Videos open in VLC when a show, entry or episode name ends in a dot or has characters Windows forbids.',
+      },
+      {
         type: ChangelogChangeType.Changed,
         text: 'The home page banner goes back to normal a while after you stop hovering a latest show.',
       },
