@@ -1,4 +1,4 @@
-import type { ShowSearchFilters } from '../ShowSearchFilters';
+import type { AdminShowSearchFilters } from '../AdminShowSearchFilters';
 import type { EffectScope } from 'vue';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { flushPromises } from '@vue/test-utils';
@@ -9,6 +9,7 @@ import { createMemoryHistory, createRouter } from 'vue-router';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { WatchStatus } from '@/enums/show/WatchStatus';
 import { showService } from '@/services/show/showService';
+import { adminShowSearchFilterDefinitions } from '../adminShowSearchFilterDefinitions';
 import { useShowEntryWatchStatus } from '../useShowEntryWatchStatus';
 import { useShowSearch } from '../useShowSearch';
 
@@ -32,7 +33,7 @@ const scopes: EffectScope[] = [];
  * @param defaultFilters - The filters the search starts with.
  * @returns The show search state.
  */
-const setupSearch = async (url = '/search', defaultFilters: Partial<ShowSearchFilters> = {}) => {
+const setupSearch = async (url = '/search', defaultFilters: Partial<AdminShowSearchFilters> = {}) => {
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [{ path: '/search', component: { template: '<div />' } }],
@@ -46,7 +47,11 @@ const setupSearch = async (url = '/search', defaultFilters: Partial<ShowSearchFi
   const scope = effectScope();
   scopes.push(scope);
 
-  const search = app.runWithContext(() => scope.run(() => useShowSearch(ShowQueryKey.SearchShows, defaultFilters)))!;
+  const search = app.runWithContext(() =>
+    scope.run(() =>
+      useShowSearch<AdminShowSearchFilters>(ShowQueryKey.SearchShows, defaultFilters, adminShowSearchFilterDefinitions),
+    ),
+  )!;
   await flushPromises();
 
   return { ...search, router, app };
@@ -91,6 +96,8 @@ describe('useShowSearch', () => {
       category: { included: ['anime'], excluded: ['horror'] },
       episodeCount: { min: 2, max: 24 },
       hasPreview: true,
+      hasMissingVideoFile: true,
+      hasLostVideoFile: true,
     };
     await flushPromises();
 
@@ -104,8 +111,10 @@ describe('useShowSearch', () => {
       min_episode_count: '2',
       max_episode_count: '24',
       preview_url: 'not_null',
+      has_missing_video_file: 'true',
+      has_lost_video_file: 'true',
     });
-    expect(activeFilterCount.value).toBe(8);
+    expect(activeFilterCount.value).toBe(10);
   });
 
   it('keeps a default whole show exclusion next to an any entry filter', async () => {
@@ -163,6 +172,8 @@ describe('useShowSearch', () => {
       category: { included: ['anime'], excluded: ['horror'] },
       episodeCount: { min: null, max: null },
       hasPreview: false,
+      hasMissingVideoFile: false,
+      hasLostVideoFile: false,
     };
     await flushPromises();
 

@@ -1,7 +1,7 @@
 import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
 import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
 import type { SearchFilterValue } from '@/composables/search/SearchFilterValue';
-import type { ShowSearchFilters } from '@/composables/show/ShowSearchFilters';
+import type { AdminShowSearchFilters } from '@/composables/show/AdminShowSearchFilters';
 import type { UserSearchFilters } from '@/composables/user/UserSearchFilters';
 import type { WebsiteSearchFilters } from '@/composables/website/WebsiteSearchFilters';
 import type { Category } from '@/interfaces/api/models/Category';
@@ -16,6 +16,7 @@ import { createVuetify } from 'vuetify';
 import * as components from 'vuetify/components';
 import { VApp } from 'vuetify/components';
 
+import { adminShowSearchFilterDefinitions } from '@/composables/show/adminShowSearchFilterDefinitions';
 import { showSearchFilterDefinitions } from '@/composables/show/showSearchFilterDefinitions';
 import { userSearchFilterDefinitions } from '@/composables/user/userSearchFilterDefinitions';
 import { websiteSearchFilterDefinitions } from '@/composables/website/websiteSearchFilterDefinitions';
@@ -258,14 +259,18 @@ describe('SearchFilterDrawer', () => {
     });
 
     it('shows the show filters and keeps only values that have a chip', async () => {
-      const filters = ref<ShowSearchFilters>({
+      const filters = ref<AdminShowSearchFilters>({
         watchStatus: { included: ['binged', MIXED_WATCH_STATUS], excluded: [WatchStatus.Completed] },
         entryWatchStatus: { included: [WatchStatus.Watching, MIXED_WATCH_STATUS], excluded: [] },
         category: { included: ['anime', 'deleted'], excluded: [] },
         episodeCount: { min: null, max: null },
         hasPreview: false,
+        hasMissingVideoFile: false,
+        hasLostVideoFile: false,
       });
-      const wrapper = mountWith<ShowSearchFilters>(showSearchFilterDefinitions, filters);
+      const wrapper = mountWith<AdminShowSearchFilters>(adminShowSearchFilterDefinitions, filters);
+
+      expect(showSearchFilterDefinitions.map(({ key }) => key)).not.toContain('hasLostVideoFile');
 
       await flushPromises();
 
@@ -278,6 +283,8 @@ describe('SearchFilterDrawer', () => {
         enMessages.show.maxEpisodes,
         enMessages.show.previewFilter,
         enMessages.show.onlyWithPreview,
+        enMessages.show.missingVideoFileFilter,
+        enMessages.show.onlyWithLostVideoFile,
         enMessages.showEntry.watchStatus.completed,
         enMessages.show.mixed,
         'Anime',

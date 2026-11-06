@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AdminShowSearchFilters } from '@/composables/show/AdminShowSearchFilters';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { SearchFilterDrawer } from '@/components/common/filter-drawer';
@@ -9,7 +10,7 @@ import { PageContainer } from '@/components/common/page-container';
 import { ResultCount } from '@/components/common/result-count';
 import { SearchToolbar } from '@/components/common/search-toolbar';
 import { ShowGrid, ShowGridSkeleton } from '@/components/features/show/show-grid';
-import { showSearchFilterDefinitions } from '@/composables/show/showSearchFilterDefinitions';
+import { adminShowSearchFilterDefinitions } from '@/composables/show/adminShowSearchFilterDefinitions';
 import { showSortOptions } from '@/composables/show/showSortOptions';
 import { useShowEditDialog } from '@/composables/show/useShowEditDialog';
 import { useShowSearch } from '@/composables/show/useShowSearch';
@@ -32,7 +33,7 @@ const {
   totalPages,
   totalResults,
   isLoading,
-} = useShowSearch(ShowQueryKey.AdminShows);
+} = useShowSearch<AdminShowSearchFilters>(ShowQueryKey.AdminShows, {}, adminShowSearchFilterDefinitions);
 
 const { openShowEditDialog } = useShowEditDialog();
 const { t } = useI18n();
@@ -92,7 +93,7 @@ const { t } = useI18n();
     v-model:filters="filters"
     v-model:is-shown="isFilterDrawerVisible"
     :active-filter-count="activeFilterCount"
-    :definitions="showSearchFilterDefinitions"
+    :definitions="adminShowSearchFilterDefinitions"
     :is-loading="isLoading"
     :total-results="totalResults"
     @clear="clearFilters"

@@ -14,6 +14,10 @@ export const changelogEntries: ChangelogEntry[] = [
     changes: [
       {
         type: ChangelogChangeType.Added,
+        text: 'Admins can filter shows with episodes that have no video file, or whose video file is gone.',
+      },
+      {
+        type: ChangelogChangeType.Added,
         text: 'Filter shows by their minimum and maximum episode count in the search filters.',
       },
       {
