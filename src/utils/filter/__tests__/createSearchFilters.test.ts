@@ -1,4 +1,5 @@
 import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
+import type { RangeFilterValue } from '@/composables/search/RangeFilterValue';
 import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
 
 import { describe, expect, it } from 'vitest';
@@ -176,6 +177,49 @@ describe('createSearchFilters', () => {
 
     it('do not treat a value named like a word as a marker', () => {
       expect(routeQuery.getFiltersFromQuery({ color: 'none' }).color.included).toEqual(['none']);
+    });
+  });
+
+  describe('range filters', () => {
+    const rangeDefinitions: SearchFilterDefinition<'episodes'>[] = [
+      {
+        key: 'episodes',
+        type: SearchFilterType.Range,
+        param: 'episodes',
+        title: 'episodes',
+        api: { min: 'min_episodes', max: 'max_episodes' },
+        minLabel: 'min',
+        maxLabel: 'max',
+      },
+    ];
+    const search = createSearchFilters<{ episodes: RangeFilterValue }>(rangeDefinitions, 'search');
+
+    it('starts empty and counts once when any bound is set', () => {
+      expect(search.createEmptyFilters()).toEqual({ episodes: { min: null, max: null } });
+      expect(search.countActiveFilters({ episodes: { min: null, max: null } })).toBe(0);
+      expect(search.countActiveFilters({ episodes: { min: 1, max: 5 } })).toBe(1);
+      expect(search.countActiveFilters({ episodes: { min: null, max: 0 } })).toBe(1);
+    });
+
+    it('sends only the set bounds, including zero', () => {
+      expect(search.getFilterParams('', { episodes: { min: 0, max: null } })).toEqual({ min_episodes: '0' });
+      expect(search.getFilterParams('', { episodes: { min: 2, max: 9 } })).toEqual({
+        min_episodes: '2',
+        max_episodes: '9',
+      });
+    });
+
+    it('writes the set bounds to the URL and reads them back', () => {
+      const { getFiltersQuery, getFiltersFromQuery } = search.routeQuery;
+
+      expect(getFiltersQuery({ episodes: { min: 3, max: null } })).toEqual({
+        episodes_min: '3',
+        episodes_max: undefined,
+      });
+      expect(getFiltersFromQuery({ episodes_min: '3' })).toEqual({ episodes: { min: 3, max: null } });
+      expect(getFiltersFromQuery({ episodes_max: 'abc' })).toEqual({ episodes: { min: null, max: null } });
+      expect(getFiltersFromQuery({})).toEqual({ episodes: { min: null, max: null } });
+      expect(getFiltersQuery({ episodes: { min: null, max: null } })).toEqual({});
     });
   });
 

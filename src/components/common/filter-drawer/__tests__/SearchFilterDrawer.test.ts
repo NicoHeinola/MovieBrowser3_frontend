@@ -262,6 +262,7 @@ describe('SearchFilterDrawer', () => {
         watchStatus: { included: ['binged', MIXED_WATCH_STATUS], excluded: [WatchStatus.Completed] },
         entryWatchStatus: { included: [WatchStatus.Watching, MIXED_WATCH_STATUS], excluded: [] },
         category: { included: ['anime', 'deleted'], excluded: [] },
+        episodeCount: { min: null, max: null },
         hasPreview: false,
       });
       const wrapper = mountWith<ShowSearchFilters>(showSearchFilterDefinitions, filters);
@@ -272,6 +273,9 @@ describe('SearchFilterDrawer', () => {
         enMessages.show.watchStatusFilter,
         enMessages.show.entryWatchStatusFilter,
         enMessages.show.categoriesFilter,
+        enMessages.show.episodeCountFilter,
+        enMessages.show.minEpisodes,
+        enMessages.show.maxEpisodes,
         enMessages.show.previewFilter,
         enMessages.show.onlyWithPreview,
         enMessages.showEntry.watchStatus.completed,

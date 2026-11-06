@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="TFilters extends Record<keyof TFilters, SearchFilterValue>">
 import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
+import type { RangeFilterValue } from '@/composables/search/RangeFilterValue';
 import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
 import type { SearchFilterValue } from '@/composables/search/SearchFilterValue';
 
@@ -10,6 +11,7 @@ import { SearchFilterType } from '@/enums/search/SearchFilterType';
 import FilterDrawer from './FilterDrawer.vue';
 import FilterDrawerSection from './FilterDrawerSection.vue';
 import SearchFilterChips from './SearchFilterChips.vue';
+import SearchFilterRange from './SearchFilterRange.vue';
 
 const props = defineProps<{
   definitions: SearchFilterDefinition<keyof TFilters & string>[];
@@ -79,6 +81,12 @@ const setFilter = (key: keyof TFilters, value: SearchFilterValue): void => {
         :model-value="filters[definition.key] as ChipsFilterValue"
         @update:model-value="setFilter(definition.key, $event)"
         v-if="definition.type === SearchFilterType.Chips"
+      />
+      <search-filter-range
+        :definition="definition"
+        :model-value="filters[definition.key] as RangeFilterValue"
+        @update:model-value="setFilter(definition.key, $event)"
+        v-else-if="definition.type === SearchFilterType.Range"
       />
       <v-col cols="12" v-else>
         <v-switch

@@ -89,6 +89,7 @@ describe('useShowSearch', () => {
       watchStatus: { included: [WatchStatus.Watching], excluded: [WatchStatus.Dropped] },
       entryWatchStatus: { included: [WatchStatus.OnHold], excluded: [WatchStatus.PlanToWatch] },
       category: { included: ['anime'], excluded: ['horror'] },
+      episodeCount: { min: 2, max: 24 },
       hasPreview: true,
     };
     await flushPromises();
@@ -100,9 +101,11 @@ describe('useShowSearch', () => {
       exclude_watch_status: [WatchStatus.Dropped],
       entry_watch_status: [WatchStatus.OnHold],
       exclude_entry_watch_status: [WatchStatus.PlanToWatch],
+      min_episode_count: '2',
+      max_episode_count: '24',
       preview_url: 'not_null',
     });
-    expect(activeFilterCount.value).toBe(7);
+    expect(activeFilterCount.value).toBe(8);
   });
 
   it('keeps a default whole show exclusion next to an any entry filter', async () => {
@@ -158,6 +161,7 @@ describe('useShowSearch', () => {
     filters.value = {
       ...filters.value,
       category: { included: ['anime'], excluded: ['horror'] },
+      episodeCount: { min: null, max: null },
       hasPreview: false,
     };
     await flushPromises();

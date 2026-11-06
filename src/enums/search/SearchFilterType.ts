@@ -4,4 +4,6 @@ export enum SearchFilterType {
   Chips = 'chips',
   /** An on/off switch. */
   Switch = 'switch',
+  /** A minimum and a maximum number, either of which can be left empty. */
+  Range = 'range',
 }

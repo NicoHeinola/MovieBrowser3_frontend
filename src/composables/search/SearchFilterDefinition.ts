@@ -45,6 +45,17 @@ interface SwitchFilterDefinition<TKey extends string> extends BaseFilterDefiniti
   label: string;
 }
 
+/** A minimum and maximum number. */
+interface RangeFilterDefinition<TKey extends string> extends BaseFilterDefinition<TKey> {
+  type: SearchFilterType.Range;
+  /** Backend params of the minimum and maximum, sent while the bound is set. */
+  api: { min: string; max: string };
+  /** i18n key of the minimum field label. */
+  minLabel: string;
+  /** i18n key of the maximum field label. */
+  maxLabel: string;
+}
+
 /** One search filter: how it is stored in the URL, sent to the backend and shown in the filter drawer. */
 export type SearchFilterDefinition<TKey extends string = string> =
-  ChipsFilterDefinition<TKey> | SwitchFilterDefinition<TKey>;
+  ChipsFilterDefinition<TKey> | SwitchFilterDefinition<TKey> | RangeFilterDefinition<TKey>;

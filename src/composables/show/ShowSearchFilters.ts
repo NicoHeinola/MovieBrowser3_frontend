@@ -1,4 +1,5 @@
 import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
+import type { RangeFilterValue } from '@/composables/search/RangeFilterValue';
 
 /** Filters the show search applies on top of the search term. */
 export interface ShowSearchFilters {
@@ -8,6 +9,8 @@ export interface ShowSearchFilters {
   entryWatchStatus: ChipsFilterValue;
   /** Category values a show must all have, and ones it must not have any of. */
   category: ChipsFilterValue;
+  /** Fewest and most episodes a show may have across all its entries. */
+  episodeCount: RangeFilterValue;
   /** Whether to keep only shows that have a preview video. */
   hasPreview: boolean;
 }

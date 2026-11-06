@@ -1,9 +1,11 @@
 import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
+import type { RangeFilterValue } from '@/composables/search/RangeFilterValue';
 import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
 import type { SearchFilterValue } from '@/composables/search/SearchFilterValue';
 import type { LocationQuery, LocationQueryRaw } from 'vue-router';
 
 import { SearchFilterType } from '@/enums/search/SearchFilterType';
+import { getQueryNumber } from '@/utils/route/getQueryNumber';
 import { getQueryString } from '@/utils/route/getQueryString';
 import { getQueryStrings } from '@/utils/route/getQueryStrings';
 
@@ -32,6 +34,18 @@ const write = (
 
   if (definition.type === SearchFilterType.Switch) {
     return value === defaultValue ? {} : { [param]: String(value) };
+  }
+
+  if (definition.type === SearchFilterType.Range) {
+    const { min, max } = value as RangeFilterValue;
+    const defaults = defaultValue as RangeFilterValue;
+
+    return min === defaults.min && max === defaults.max
+      ? {}
+      : {
+          [`${param}_min`]: min === null ? undefined : String(min),
+          [`${param}_max`]: max === null ? undefined : String(max),
+        };
   }
 
   const { included, excluded } = value as ChipsFilterValue;
@@ -69,6 +83,18 @@ const read = (
   if (definition.type === SearchFilterType.Switch) {
     const value = getQueryString(query[param]);
     return value === undefined ? defaultValue : value === 'true';
+  }
+
+  if (definition.type === SearchFilterType.Range) {
+    const minParam = `${param}_min`;
+    const maxParam = `${param}_max`;
+
+    // With neither param, the user has not changed the filter.
+    if (!(minParam in query) && !(maxParam in query)) {
+      return defaultValue;
+    }
+
+    return { min: getQueryNumber(query[minParam]), max: getQueryNumber(query[maxParam]) };
   }
 
   const excludeParam = `exclude_${param}`;

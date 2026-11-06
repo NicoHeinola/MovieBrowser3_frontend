@@ -115,6 +115,15 @@ export const showSearchFilterDefinitions: SearchFilterDefinition<keyof ShowSearc
     emptyText: 'show.noCategories',
   },
   {
+    key: 'episodeCount',
+    type: SearchFilterType.Range,
+    param: 'episodes',
+    title: 'show.episodeCountFilter',
+    api: { min: 'min_episode_count', max: 'max_episode_count' },
+    minLabel: 'show.minEpisodes',
+    maxLabel: 'show.maxEpisodes',
+  },
+  {
     key: 'hasPreview',
     type: SearchFilterType.Switch,
     param: 'has_preview',

@@ -20,16 +20,24 @@ export const createSearchFilters = <TFilters extends Record<keyof TFilters, Sear
   defaultFilters: Partial<TFilters> = {},
 ) => {
   /**
+   * Creates the value of a filter that filters nothing.
+   * @param type - The filter's type.
+   * @returns The empty value.
+   */
+  const createEmptyFilterValue = (type: SearchFilterType): SearchFilterValue => {
+    if (type === SearchFilterType.Switch) {
+      return false;
+    }
+
+    return type === SearchFilterType.Range ? { min: null, max: null } : { included: [], excluded: [] };
+  };
+
+  /**
    * Creates a filter set that filters nothing.
    * @returns The empty filters.
    */
   const createEmptyFilters = (): TFilters =>
-    Object.fromEntries(
-      definitions.map(({ key, type }) => [
-        key,
-        type === SearchFilterType.Switch ? false : { included: [], excluded: [] },
-      ]),
-    ) as TFilters;
+    Object.fromEntries(definitions.map(({ key, type }) => [key, createEmptyFilterValue(type)])) as TFilters;
 
   const defaults: TFilters = { ...createEmptyFilters(), ...defaultFilters };
 
@@ -57,7 +65,17 @@ export const createSearchFilters = <TFilters extends Record<keyof TFilters, Sear
   const countActiveFilters = (filters: TFilters): number =>
     definitions.reduce((count, { key }) => {
       const value: SearchFilterValue = filters[key];
-      return count + (typeof value === 'boolean' ? Number(value) : value.included.length + value.excluded.length);
+
+      if (typeof value === 'boolean') {
+        return count + Number(value);
+      }
+
+      // A range counts once, however many of its bounds are set.
+      if ('min' in value) {
+        return count + Number(value.min !== null || value.max !== null);
+      }
+
+      return count + value.included.length + value.excluded.length;
     }, 0);
 
   /**

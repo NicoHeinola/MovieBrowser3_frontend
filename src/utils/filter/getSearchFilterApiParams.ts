@@ -1,4 +1,5 @@
 import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
+import type { RangeFilterValue } from '@/composables/search/RangeFilterValue';
 import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
 import type { SearchFilterValue } from '@/composables/search/SearchFilterValue';
 
@@ -16,6 +17,15 @@ export const getSearchFilterApiParams = (
 ): Record<string, string | string[]> => {
   if (definition.type === SearchFilterType.Switch) {
     return value ? definition.api : {};
+  }
+
+  if (definition.type === SearchFilterType.Range) {
+    const { min, max } = value as RangeFilterValue;
+
+    return {
+      ...(min !== null && { [definition.api.min]: String(min) }),
+      ...(max !== null && { [definition.api.max]: String(max) }),
+    };
   }
 
   const chips = value as ChipsFilterValue;

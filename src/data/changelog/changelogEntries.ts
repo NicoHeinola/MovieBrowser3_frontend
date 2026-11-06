@@ -14,6 +14,10 @@ export const changelogEntries: ChangelogEntry[] = [
     changes: [
       {
         type: ChangelogChangeType.Added,
+        text: 'Filter shows by their minimum and maximum episode count in the search filters.',
+      },
+      {
+        type: ChangelogChangeType.Added,
         text: 'Preview how backgrounds and videos look on the home page, before or after saving them.',
       },
       {
