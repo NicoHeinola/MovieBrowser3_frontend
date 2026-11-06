@@ -1,9 +1,12 @@
-import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { enableAutoUnmount, mount } from '@vue/test-utils';
+import { afterEach, describe, expect, it } from 'vitest';
 import { createVuetify } from 'vuetify';
 
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import MediaBanner from '../MediaBanner.vue';
+
+// VImg polls on a timer that only unmounting clears, and it would otherwise fire after jsdom is torn down.
+enableAutoUnmount(afterEach);
 
 const video = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 

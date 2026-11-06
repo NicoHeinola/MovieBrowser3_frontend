@@ -1,5 +1,5 @@
-import { mount } from '@vue/test-utils';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { enableAutoUnmount, mount } from '@vue/test-utils';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createVuetify } from 'vuetify';
 import { VCard } from 'vuetify/components';
 
@@ -11,6 +11,9 @@ vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
 vi.mock('@/composables/dialog/useBannerPreviewDialog', () => ({
   useBannerPreviewDialog: () => ({ showBannerPreview }),
 }));
+
+// VImg polls on a timer that only unmounting clears, and it would otherwise fire after jsdom is torn down.
+enableAutoUnmount(afterEach);
 
 const video = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 
