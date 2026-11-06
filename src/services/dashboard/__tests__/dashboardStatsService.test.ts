@@ -25,6 +25,7 @@ describe('dashboardStatsService', () => {
       shows_added_last_7_days: 2,
       shows_added_last_30_days: 5,
       episodes_count: 512,
+      episodes_missing_video_file_count: 7,
       websites_count: 12,
       users_count: 3,
     };

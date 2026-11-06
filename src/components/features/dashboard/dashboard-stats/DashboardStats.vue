@@ -32,6 +32,12 @@ const tiles = computed<DashboardStatTile[]>(() => [
     color: 'warning',
     value: props.stats?.episodes_count ?? null,
   },
+  {
+    label: t('dashboard.missingEpisodeFiles'),
+    icon: 'mdi-filmstrip-off',
+    color: 'error',
+    value: props.stats?.episodes_missing_video_file_count ?? null,
+  },
   { label: t('dashboard.websites'), icon: 'mdi-web', color: 'link', value: props.stats?.websites_count ?? null },
   {
     label: t('dashboard.users'),
@@ -44,7 +50,7 @@ const tiles = computed<DashboardStatTile[]>(() => [
 
 <template>
   <v-row>
-    <v-col v-for="tile in tiles" cols="6" md="4" xl="2" :key="tile.label">
+    <v-col v-for="tile in tiles" class="flex-grow-1" cols="6" md="4" xl :key="tile.label">
       <v-skeleton-loader type="list-item-avatar-two-line" v-if="props.loading" />
       <v-card class="h-100" v-else>
         <v-card-item>

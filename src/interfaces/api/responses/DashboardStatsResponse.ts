@@ -3,6 +3,7 @@ export interface DashboardStatsResponse {
   shows_added_last_7_days: number;
   shows_added_last_30_days: number;
   episodes_count: number;
+  episodes_missing_video_file_count: number;
   websites_count: number;
   users_count: number;
 }

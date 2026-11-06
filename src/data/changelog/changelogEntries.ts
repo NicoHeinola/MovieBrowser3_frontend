@@ -13,6 +13,10 @@ export const changelogEntries: ChangelogEntry[] = [
     date: null,
     changes: [
       {
+        type: ChangelogChangeType.Added,
+        text: 'The admin dashboard shows how many episode files are missing.',
+      },
+      {
         type: ChangelogChangeType.Fixed,
         text: 'Videos open in VLC when a show, entry or episode name ends in a dot or has characters Windows forbids.',
       },
