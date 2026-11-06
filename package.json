@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "run-p check:types \"build-only {@}\" --",
     "preview": "vite preview",
+    "build:preview": "run-s build preview",
     "build-only": "vite build",
     "check:types": "vue-tsc --build --force",
     "check:lint": "eslint",

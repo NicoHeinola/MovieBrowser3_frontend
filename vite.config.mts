@@ -35,6 +35,12 @@ export default defineConfig(({ mode }) => {
     server: {
       port: env.APP_PORT ? Number(env.APP_PORT) : undefined,
     },
+    preview: {
+      port: env.APP_PORT ? Number(env.APP_PORT) : undefined,
+      // Production builds call the relative /api/v1, which the real web server proxies to the backend. Do the same
+      // here so the built app works locally. PREVIEW_API_TARGET overrides the dev backend address.
+      proxy: { '/api': env.PREVIEW_API_TARGET || 'http://localhost:8765' },
+    },
     test: {
       globals: true,
       environment: 'jsdom',
