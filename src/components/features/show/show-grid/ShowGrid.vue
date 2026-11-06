@@ -19,6 +19,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: 'click:show', value: Show | null): void;
+  (e: 'hover:show', value: boolean): void;
 }>();
 
 const selectedShow = defineModel<Show | null>('selectedShow', {
@@ -57,6 +58,7 @@ const bannerCardContainerWidth = computed(() => {
           :width="cardWidth"
           image-to-use="card"
           @click="emit('click:show', show)"
+          @hover="(isHovered: boolean) => emit('hover:show', isHovered)"
           @mouseenter="selectedShow = show"
         />
       </v-col>

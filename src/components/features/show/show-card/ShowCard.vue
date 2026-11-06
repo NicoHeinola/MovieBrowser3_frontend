@@ -26,7 +26,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: 'playing-video', value: boolean): void;
+  (e: 'playing-video' | 'hover', value: boolean): void;
   (e: 'hold'): void;
 }>();
 
@@ -50,6 +50,7 @@ const videoId = computed<string | null>(() => {
 
 const onMouseEnter = () => {
   isHovered.value = true;
+  emit('hover', true);
 
   if (!props.show.preview_url) return;
 
@@ -60,7 +61,11 @@ const onMouseEnter = () => {
 };
 
 const onMouseLeave = () => {
-  isHovered.value = false;
+  // This also runs on unmount, where a card that wasn't hovered has nothing to release.
+  if (isHovered.value) {
+    isHovered.value = false;
+    emit('hover', false);
+  }
 
   if (hoverTimeout) {
     clearTimeout(hoverTimeout);
@@ -78,7 +83,7 @@ const primaryTitle = computed<string>(() => getPrimaryTitle(props.show));
 /** Single status color, gray when statuses are mixed or incomplete, `null` when none is set. */
 const watchStatusColor = computed<string | null>(() => getShowWatchStatusColor(props.show));
 
-/** A card can unmount while hovered (e.g. on refetch); release the parent's "playing" state with it. */
+/** A card can unmount while hovered (e.g. on refetch); release the parent's hover and "playing" state with it. */
 onBeforeUnmount(() => {
   onMouseLeave();
 });

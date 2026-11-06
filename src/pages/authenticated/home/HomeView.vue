@@ -17,6 +17,7 @@ import { SelectedShowDrawer } from '@/components/features/show/selected-show-dra
 import { ShowCarousel } from '@/components/features/show/show-carousel';
 import { ShowGrid } from '@/components/features/show/show-grid';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
+import { useHomeBanner } from '@/composables/show/useHomeBanner';
 import { useShowPlayback } from '@/composables/show/useShowPlayback';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showSectionService } from '@/services/show/showSectionService';
@@ -28,7 +29,6 @@ import { homepageSections } from './homepageSections';
 /** Latest shows are fetched for the widest layout and trimmed by the grid, so resizing never refetches. */
 const MAX_BANNER_COLS = 5;
 
-const selectedBannerShow = ref<Show | null>(null);
 const selectedShowId = ref<number | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
 const isPlayingCardVideo = ref<boolean>(false);
@@ -36,6 +36,11 @@ let bannerResumeTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const settingStore = useSettingStore();
 const { playShow } = useShowPlayback();
+const {
+  selectedShow: selectedBannerShow,
+  isPointerOver: isPointerOverBannerCard,
+  background: bannerBackground,
+} = useHomeBanner(() => settingStore.bannerDefaultBackgrounds, isShowDrawerVisible);
 
 const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
 const { t } = useI18n();
@@ -147,19 +152,6 @@ const bannerVideo = computed<string | null>(() => {
   return null;
 });
 
-const bannerBackground = computed<string | null>(() => {
-  if (selectedBannerShow.value?.banner_url) {
-    return selectedBannerShow.value.banner_url;
-  }
-
-  const defaultBackgrounds = settingStore.bannerDefaultBackgrounds;
-  if (defaultBackgrounds.length > 0) {
-    return defaultBackgrounds[Math.floor(Math.random() * defaultBackgrounds.length)];
-  }
-
-  return null;
-});
-
 const onPlayingVideoUpdate = (isPlaying: boolean) => {
   if (bannerResumeTimeout) {
     clearTimeout(bannerResumeTimeout);
@@ -228,6 +220,7 @@ watch(
               :selected-show="selectedBannerShow"
               :shows="latestBannerShows"
               @click:show="isShowDrawerVisible = true"
+              @hover:show="(isHovered: boolean) => (isPointerOverBannerCard = isHovered)"
               @update:selected-show="
                 (show: Show | null) =>
                   (selectedBannerShow = showsQuery.data.value?.latestShows.find((s: Show) => s.id === show?.id) ?? null)

@@ -32,7 +32,8 @@ const shouldShowImage = computed<boolean>(
 
 const activeVideoId = computed<string>(() => videoId.value ?? '');
 
-watch([() => props.imageSrc, () => props.videoSrc, () => props.disableVideoPlayback], () => {
+// An image change must not reset this: a running player never reports `playing` again, so the image would stay on top.
+watch([() => props.videoSrc, () => props.disableVideoPlayback], () => {
   isVideoPlaying.value = false;
   isVideoError.value = false;
 });

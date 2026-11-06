@@ -13,6 +13,14 @@ export const changelogEntries: ChangelogEntry[] = [
     date: null,
     changes: [
       {
+        type: ChangelogChangeType.Changed,
+        text: 'The home page banner goes back to normal a while after you stop hovering a latest show.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The home page banner changes on its own when there are several default images.',
+      },
+      {
         type: ChangelogChangeType.Fixed,
         text: '"Add another" buttons in the show editor no longer sit right against the items above them.',
       },
