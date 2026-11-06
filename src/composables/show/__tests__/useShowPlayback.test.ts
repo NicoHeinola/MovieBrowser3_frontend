@@ -128,10 +128,57 @@ describe('useShowPlayback', () => {
     expect(episodePlaybackService.play).toHaveBeenCalledWith(101, { from_start: true });
   });
 
+  it('tracks the starting show until playback has started', async () => {
+    let finishPlay: (value: typeof progress) => void = () => {};
+    vi.mocked(episodePlaybackService.play).mockReturnValue(
+      new Promise((resolve) => {
+        finishPlay = resolve;
+      }),
+    );
+
+    const { playShow, startingShowId } = useShowPlayback();
+    const playback = playShow(createShow());
+
+    expect(startingShowId.value).toBe(1);
+
+    finishPlay(progress);
+    await playback;
+
+    expect(startingShowId.value).toBeNull();
+  });
+
+  it('keeps the first show as starting when another one is clicked meanwhile', async () => {
+    let finishPlay: (value: typeof progress) => void = () => {};
+    vi.mocked(episodePlaybackService.play).mockReturnValue(
+      new Promise((resolve) => {
+        finishPlay = resolve;
+      }),
+    );
+
+    const { playShow, startingShowId } = useShowPlayback();
+    const playback = playShow(createShow());
+
+    await expect(playShow({ ...createShow(), id: 2 })).resolves.toBeNull();
+    expect(startingShowId.value).toBe(1);
+    expect(episodePlaybackService.play).toHaveBeenCalledTimes(1);
+
+    finishPlay(progress);
+    await playback;
+  });
+
+  it('clears the starting show when playback fails', async () => {
+    vi.mocked(episodePlaybackService.play).mockRejectedValue(new Error('fail'));
+
+    const { playShow, startingShowId } = useShowPlayback();
+    await playShow(createShow());
+
+    expect(startingShowId.value).toBeNull();
+  });
+
   it('warns instead of playing when the show has no episodes', async () => {
     const { playShow } = useShowPlayback();
 
-    await expect(playShow({ entries: [] })).resolves.toBeNull();
+    await expect(playShow({ id: 1, entries: [], watch_progress: null })).resolves.toBeNull();
     expect(showWarningSnackbar).toHaveBeenCalled();
     expect(episodePlaybackService.play).not.toHaveBeenCalled();
   });

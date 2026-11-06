@@ -13,11 +13,14 @@ const props = withDefaults(
     dragStyle?: StyleValue;
     /** Clicking a card starts playback, and holding it opens the show instead. */
     playOnClick?: boolean;
+    /** The show whose card shows a loader while its playback starts. */
+    startingShowId?: number | null;
   }>(),
   {
     cardWidth: '300px',
     cardHeight: '200px',
     playOnClick: false,
+    startingShowId: null,
   },
 );
 
@@ -66,6 +69,7 @@ const onPlayingVideo = (value: boolean, show: Show | null) => {
       <show-card
         v-for="show in props.shows"
         :height="cardHeight"
+        :loading="show.id === props.startingShowId"
         :play-on-click="props.playOnClick"
         :show="show"
         :width="cardWidth"

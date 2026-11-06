@@ -35,7 +35,7 @@ const isPlayingCardVideo = ref<boolean>(false);
 let bannerResumeTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const settingStore = useSettingStore();
-const { playShow } = useShowPlayback();
+const { playShow, startingShowId } = useShowPlayback();
 const {
   selectedShow: selectedBannerShow,
   isPointerOver: isPointerOverBannerCard,
@@ -252,6 +252,7 @@ watch(
             <show-carousel
               :play-on-click="section.playOnClick"
               :shows="showMap[section.dataKey] ?? []"
+              :starting-show-id="section.playOnClick ? startingShowId : null"
               :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
               drag-class="pl-12 pr-12"
               @click:show="isShowDrawerVisible = true"

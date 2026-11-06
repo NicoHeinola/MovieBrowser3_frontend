@@ -25,6 +25,10 @@ export const changelogEntries: ChangelogEntry[] = [
         text: '"Add another" buttons in the show editor no longer sit right against the items above them.',
       },
       {
+        type: ChangelogChangeType.Added,
+        text: 'Continue watching cards show a loader while the video player opens.',
+      },
+      {
         type: ChangelogChangeType.Changed,
         text: 'The show search pages fit the number of shows per page to your screen, so a full page fills the screen.',
       },

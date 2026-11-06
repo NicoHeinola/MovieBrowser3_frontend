@@ -23,6 +23,8 @@ interface PlaybackOptions {
  */
 export const useShowPlayback = () => {
   const isStartingPlayback = ref<boolean>(false);
+  /** The show whose playback `playShow` is starting, so only its card shows a loader. */
+  const startingShowId = ref<number | null>(null);
 
   const { applyWatchProgress, refetchShowLists } = useShowWatchProgressCache();
   const { showAPIErrorSnackbar, showWarningSnackbar } = useCommonSnackbar();
@@ -72,7 +74,7 @@ export const useShowPlayback = () => {
    * @returns The saved watch progress, or null when playback did not start.
    */
   const playShow = async (
-    show: Pick<Show, 'entries' | 'watch_progress'>,
+    show: Pick<Show, 'id' | 'entries' | 'watch_progress'>,
     entry: Pick<ShowEntry, 'id' | 'episodes'> | null = null,
     options: PlaybackOptions = {},
   ): Promise<ShowWatchProgress | null> => {
@@ -83,12 +85,24 @@ export const useShowPlayback = () => {
       return null;
     }
 
-    return playEpisode(episode, options);
+    // playEpisode ignores this call while another playback starts, so that show must keep its loader.
+    if (isStartingPlayback.value) {
+      return null;
+    }
+
+    startingShowId.value = show.id;
+
+    try {
+      return await playEpisode(episode, options);
+    } finally {
+      startingShowId.value = null;
+    }
   };
 
   return {
     isStartingPlayback,
     playEpisode,
     playShow,
+    startingShowId,
   };
 };

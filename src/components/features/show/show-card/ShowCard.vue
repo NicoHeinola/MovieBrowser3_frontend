@@ -16,12 +16,15 @@ const props = withDefaults(
     height?: string | number;
     /** Shows a play hint, since a click starts playback instead of opening the show. */
     playOnClick?: boolean;
+    /** Covers the card with a loader while its playback starts. */
+    loading?: boolean;
   }>(),
   {
     imageToUse: 'banner',
     width: '300px',
     height: '400px',
     playOnClick: false,
+    loading: false,
   },
 );
 
@@ -129,8 +132,16 @@ onBeforeUnmount(() => {
         icon="mdi-play-circle"
         size="x-large"
         v-tooltip:top="playHint"
-        v-if="props.playOnClick && isHovered"
+        v-if="props.playOnClick && isHovered && !props.loading"
       />
+    </v-fade-transition>
+    <v-fade-transition>
+      <div
+        class="card-loader position-absolute top-0 left-0 h-100 w-100 d-flex align-center justify-center"
+        v-if="props.loading"
+      >
+        <v-progress-circular color="secondary" indeterminate />
+      </div>
     </v-fade-transition>
     <div
       :class="`bg-${watchStatusColor}`"
@@ -176,6 +187,11 @@ onBeforeUnmount(() => {
 
   .card-title {
     transition: color 0.3s ease-in-out;
+  }
+
+  .card-loader {
+    background: rgb(var(--v-theme-background), 0.6);
+    pointer-events: none;
   }
 
   .card-shadow {

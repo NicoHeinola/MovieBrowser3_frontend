@@ -7,16 +7,24 @@ import * as components from 'vuetify/components';
 
 import ShowCard from '../ShowCard.vue';
 
-const show = { id: 1, card_image_url: 'card.jpg', banner_url: 'banner.jpg', preview_url: null } as unknown as Show;
+const show = {
+  id: 1,
+  titles: [],
+  entries: [],
+  card_image_url: 'card.jpg',
+  banner_url: 'banner.jpg',
+  preview_url: null,
+} as unknown as Show;
 
 /**
  * Mounts a card without its video player.
+ * @param loading Whether the card's playback is starting.
  * @returns The mounted card and a spy on its hover event, which unlike `emitted()` survives the unmount.
  */
-const mountCard = () => {
+const mountCard = (loading = false) => {
   const onHover = vi.fn();
   const wrapper = mount(ShowCard, {
-    props: { show, onHover },
+    props: { show, loading, onHover },
     global: { plugins: [createVuetify({ components })], stubs: { YouTubePlayer: true } },
   });
 
@@ -48,5 +56,13 @@ describe('ShowCard', () => {
     wrapper.unmount();
 
     expect(onHover).not.toHaveBeenCalled();
+  });
+
+  it('shows a loader while its playback starts', () => {
+    expect(mountCard(true).wrapper.find('.v-progress-circular').exists()).toBe(true);
+  });
+
+  it('shows no loader otherwise', () => {
+    expect(mountCard().wrapper.find('.v-progress-circular').exists()).toBe(false);
   });
 });
