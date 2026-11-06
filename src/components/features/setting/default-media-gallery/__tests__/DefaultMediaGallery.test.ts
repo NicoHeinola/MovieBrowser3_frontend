@@ -5,7 +5,11 @@ import { createVuetify } from 'vuetify';
 import { MediaPreviewCard } from '@/components/common/media-preview-card';
 import DefaultMediaGallery from '../DefaultMediaGallery.vue';
 
-vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
+// Only useI18n is replaced: the imports below reach the real i18n plugin, which needs the rest of the package.
+vi.mock('vue-i18n', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useI18n: () => ({ t: (key: string) => key }),
+}));
 
 /**
  * Mounts the gallery with its cards stubbed, rendering their slot.

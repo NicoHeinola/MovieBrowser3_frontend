@@ -179,6 +179,10 @@
     "recentlyAdded": "Recently added",
     "allShows": "All shows"
   },
+  "bannerPreview": {
+    "latestShows": "Latest shows",
+    "navigation": "Navigation bar"
+  },
   "settings": {
     "backgroundAdded": "Background added.",
     "addBackground": "Add default background",

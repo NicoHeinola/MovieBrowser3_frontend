@@ -6,16 +6,14 @@ import type { ShowSection } from '@/interfaces/api/models/ShowSection';
 
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useDisplay } from 'vuetify';
 import { VCol, VLazy, VRow } from 'vuetify/components';
 import { HOME_BANNER_HEIGHT, MediaBanner } from '@/components/common/media-banner';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
-import { SectionContainer } from '@/components/common/section-container';
 import { TitledSection } from '@/components/common/titled-section';
+import { LATEST_SHOWS_MAX_COLS, LatestShowsPanel } from '@/components/features/show/latest-shows-panel';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowCarousel } from '@/components/features/show/show-carousel';
-import { ShowGrid } from '@/components/features/show/show-grid';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { useHomeBanner } from '@/composables/show/useHomeBanner';
 import { useShowPlayback } from '@/composables/show/useShowPlayback';
@@ -25,9 +23,6 @@ import { showService } from '@/services/show/showService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 import { WATCHED_SHOW_STATUSES } from '@/utils/show/watchedShowStatuses';
 import { homepageSections } from './homepageSections';
-
-/** Latest shows are fetched for the widest layout and trimmed by the grid, so resizing never refetches. */
-const MAX_BANNER_COLS = 5;
 
 const selectedShowId = ref<number | null>(null);
 const isShowDrawerVisible = ref<boolean>(false);
@@ -42,22 +37,13 @@ const {
   background: bannerBackground,
 } = useHomeBanner(() => settingStore.bannerDefaultBackgrounds, isShowDrawerVisible);
 
-const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
 const { t } = useI18n();
-
-const bannerMaxCols = computed<number>(() => {
-  if (xxl.value) return MAX_BANNER_COLS;
-  if (xlAndUp.value) return 4;
-  if (lgAndUp.value) return 3;
-  if (smAndUp.value) return 2;
-  return 1;
-});
 
 const showsQuery = useAPIQuery<HomeShowsResponse>({
   queryKey: [ShowQueryKey.HomeShows],
   queryFn: async () => {
     const [latest, random, sections] = await Promise.all([
-      showService.list({ sort: '-created_at', page: { size: MAX_BANNER_COLS } }),
+      showService.list({ sort: '-created_at', page: { size: LATEST_SHOWS_MAX_COLS } }),
       showService.list({ filter: { exclude_watch_status: WATCHED_SHOW_STATUSES }, sort: 'random', page: { size: 20 } }),
       showSectionService.list({ sort: 'sort_order', page: { number: 0, size: 0 } }),
     ]);
@@ -205,36 +191,17 @@ watch(
     :style="{ marginTop: '-70px', height: HOME_BANNER_HEIGHT }"
     :video-src="bannerVideo"
   >
-    <v-row align="center" style="max-width: 90%">
-      <v-sheet border="sm" class="position-relative glass-panel" rounded="xl">
-        <section-container>
-          <titled-section :title="t('home.latest')" icon="mdi-clock-outline" icon-color="warning"> </titled-section>
-          <template v-if="isLoading">
-            <div class="d-flex ga-8">
-              <v-skeleton-loader v-for="i in bannerMaxCols" type="image@2, paragraph" width="300" :key="i" />
-            </div>
-          </template>
-          <template v-else>
-            <show-grid
-              :cols="bannerMaxCols"
-              :selected-show="selectedBannerShow"
-              :shows="latestBannerShows"
-              @click:show="isShowDrawerVisible = true"
-              @hover:show="(isHovered: boolean) => (isPointerOverBannerCard = isHovered)"
-              @update:selected-show="
-                (show: Show | null) =>
-                  (selectedBannerShow = showsQuery.data.value?.latestShows.find((s: Show) => s.id === show?.id) ?? null)
-              "
-            ></show-grid>
-            <div class="d-flex" v-if="(showsQuery.data.value?.latestShows?.length ?? 0) === 0">
-              <v-alert class="flex-0-0" type="info">
-                <p class="text-no-wrap">{{ t('home.noShows') }}</p>
-              </v-alert>
-            </div>
-          </template>
-        </section-container>
-      </v-sheet>
-    </v-row>
+    <latest-shows-panel
+      :loading="isLoading"
+      :selected-show="selectedBannerShow"
+      :shows="latestBannerShows"
+      @click:show="isShowDrawerVisible = true"
+      @hover:show="(isHovered: boolean) => (isPointerOverBannerCard = isHovered)"
+      @update:selected-show="
+        (show: Show | null) =>
+          (selectedBannerShow = showsQuery.data.value?.latestShows.find((s: Show) => s.id === show?.id) ?? null)
+      "
+    />
   </media-banner>
 
   <page-container class="pr-0 pt-0" fluid>

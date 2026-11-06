@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { BannerPreviewDialog } from '@/components/common/banner-preview-dialog';
+import { BannerPreviewDialog } from '@/components/features/show/banner-preview-dialog';
 import { useBannerPreviewDialog } from '../useBannerPreviewDialog';
 
 const showDialog = vi.fn();

@@ -1,5 +1,6 @@
 export enum ShowQueryKey {
   HomeShows = 'homeShows',
+  BannerPreviewLatestShows = 'bannerPreviewLatestShows',
   ContinueWatchingShows = 'continueWatchingShows',
   SearchShows = 'searchShows',
   AdminShows = 'adminShows',

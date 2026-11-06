@@ -1,6 +1,6 @@
-import type { BannerPreviewDialogProps } from '@/components/common/banner-preview-dialog';
+import type { BannerPreviewDialogProps } from '@/components/features/show/banner-preview-dialog';
 
-import { BannerPreviewDialog } from '@/components/common/banner-preview-dialog';
+import { BannerPreviewDialog } from '@/components/features/show/banner-preview-dialog';
 import { useDialog } from '@/components/layouts/dialog-provider';
 
 /**

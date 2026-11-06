@@ -17,6 +17,10 @@ export const changelogEntries: ChangelogEntry[] = [
         text: 'Preview how backgrounds and videos look on the home page, before or after saving them.',
       },
       {
+        type: ChangelogChangeType.Added,
+        text: 'The home page preview can show or hide the latest shows and the navigation bar.',
+      },
+      {
         type: ChangelogChangeType.Changed,
         text: 'Videos in the show editor and settings open a muted preview when clicked, instead of playing in place.',
       },

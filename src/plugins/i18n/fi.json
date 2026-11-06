@@ -179,6 +179,10 @@
     "recentlyAdded": "Viimeksi lisätyt",
     "allShows": "Kaikki sarjat"
   },
+  "bannerPreview": {
+    "latestShows": "Uusimmat sarjat",
+    "navigation": "Navigaatiopalkki"
+  },
   "settings": {
     "backgroundAdded": "Tausta lisätty.",
     "addBackground": "Lisää oletustausta",
