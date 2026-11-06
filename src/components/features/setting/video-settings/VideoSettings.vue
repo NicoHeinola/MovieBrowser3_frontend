@@ -57,16 +57,16 @@ watch(
           @submit="updateSetting('video_base_path', videoBasePath)"
           :id="VIDEO_BASE_PATH_FORM_ID"
         >
-          <v-text-field v-model="videoBasePath" :label="t('settings.videoBasePath')" :rules="rules.videoBasePath">
-            <template #prepend>
-              <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.videoBasePathHint')" />
-            </template>
-            <template #append>
-              <v-btn :disabled="!isVideoBasePathValid" color="primary" type="submit">
-                {{ t('common.save') }}
-              </v-btn>
-            </template>
-          </v-text-field>
+          <div class="d-flex ga-2 align-center">
+            <v-text-field v-model="videoBasePath" :label="t('settings.videoBasePath')" :rules="rules.videoBasePath">
+              <template #prepend>
+                <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.videoBasePathHint')" />
+              </template>
+            </v-text-field>
+            <v-btn :disabled="!isVideoBasePathValid" color="primary" type="submit">
+              {{ t('common.save') }}
+            </v-btn>
+          </div>
         </base-form>
       </template>
     </v-col>
@@ -83,16 +83,16 @@ watch(
           @submit="updateSetting('vlc_media_player_path', vlcMediaPlayerPath)"
           :id="VLC_PATH_FORM_ID"
         >
-          <v-text-field v-model="vlcMediaPlayerPath" :label="t('settings.vlcPath')" :rules="rules.vlcMediaPlayerPath">
-            <template #prepend>
-              <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.vlcPathHint')" />
-            </template>
-            <template #append>
-              <v-btn :disabled="!isVlcPathValid" color="primary" type="submit">
-                {{ t('common.save') }}
-              </v-btn>
-            </template>
-          </v-text-field>
+          <div class="d-flex ga-2 align-center">
+            <v-text-field v-model="vlcMediaPlayerPath" :label="t('settings.vlcPath')" :rules="rules.vlcMediaPlayerPath">
+              <template #prepend>
+                <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.vlcPathHint')" />
+              </template>
+            </v-text-field>
+            <v-btn :disabled="!isVlcPathValid" color="primary" type="submit">
+              {{ t('common.save') }}
+            </v-btn>
+          </div>
         </base-form>
       </template>
     </v-col>

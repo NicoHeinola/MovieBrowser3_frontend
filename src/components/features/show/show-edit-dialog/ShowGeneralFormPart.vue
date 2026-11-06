@@ -75,32 +75,29 @@ const googleSearch = (searchTerm: string) => {
   <form-item-list :has-items="(show?.titles.length ?? 0) > 0">
     <v-row gap="0">
       <v-col v-for="(title, index) in show?.titles" cols="12" :key="index">
-        <v-text-field
-          v-model="show!.titles[index].title"
-          :class="{ required: index === 0 }"
-          :label="index === 0 ? t('show.title') : undefined"
-          :rounded="getShowTitleRoundedClass(index)"
-          :rules="[...rules.title, (value: string) => rules.titles(value, index)]"
-          :style="{ marginTop: index === 0 ? undefined : '-1px' }"
-        >
-          <template #append>
-            <div class="d-flex ga-2">
-              <v-btn
-                :icon="title.is_primary ? 'mdi-star' : 'mdi-star-outline'"
-                color="primary"
-                size="x-small"
-                @click="setPrimaryTitle(index)"
-              ></v-btn>
-              <v-btn
-                :disabled="show!.titles.length === 1"
-                color="error"
-                icon="mdi-trash-can"
-                size="x-small"
-                @click="removeTitle(index)"
-              ></v-btn>
-            </div>
-          </template>
-        </v-text-field>
+        <div class="d-flex ga-2 align-center">
+          <v-text-field
+            v-model="show!.titles[index].title"
+            :class="{ required: index === 0 }"
+            :label="index === 0 ? t('show.title') : undefined"
+            :rounded="getShowTitleRoundedClass(index)"
+            :rules="[...rules.title, (value: string) => rules.titles(value, index)]"
+            :style="{ marginTop: index === 0 ? undefined : '-1px' }"
+          />
+          <v-btn
+            :icon="title.is_primary ? 'mdi-star' : 'mdi-star-outline'"
+            color="primary"
+            size="x-small"
+            @click="setPrimaryTitle(index)"
+          ></v-btn>
+          <v-btn
+            :disabled="show!.titles.length === 1"
+            color="error"
+            icon="mdi-trash-can"
+            size="x-small"
+            @click="removeTitle(index)"
+          ></v-btn>
+        </div>
       </v-col>
     </v-row>
 
@@ -111,16 +108,15 @@ const googleSearch = (searchTerm: string) => {
 
   <v-row>
     <v-col cols="12">
-      <v-textarea v-model="show!.description" :label="t('show.description')" :rules="rules.description">
-        <template #append>
-          <v-btn
-            icon="mdi-auto-fix"
-            size="x-small"
-            @click="googleSearch('Short description for show: ' + getPrimaryTitle(show))"
-            v-tooltip:bottom="t('show.autofill')"
-          />
-        </template>
-      </v-textarea>
+      <div class="d-flex ga-2 align-start">
+        <v-textarea v-model="show!.description" :label="t('show.description')" :rules="rules.description" />
+        <v-btn
+          icon="mdi-auto-fix"
+          size="x-small"
+          @click="googleSearch('Short description for show: ' + getPrimaryTitle(show))"
+          v-tooltip:bottom="t('show.autofill')"
+        />
+      </div>
     </v-col>
   </v-row>
 
