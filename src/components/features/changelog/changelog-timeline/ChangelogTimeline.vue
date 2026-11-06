@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
 import { HeadingText } from '@/components/common/heading-text';
+import { ReadMoreContainer } from '@/components/common/read-more-container';
 import { ChangelogChangeList } from '@/components/features/changelog/changelog-change-list';
 import { formatChangelogDate } from '@/utils/changelog/formatChangelogDate';
 import { getReleasedChangelogEntries } from '@/utils/changelog/getReleasedChangelogEntries';
@@ -79,7 +80,9 @@ const getDateText = (entry: ChangelogEntry): string =>
         </heading-text>
         <v-card border="sm" rounded="xl">
           <v-card-text class="pa-5">
-            <changelog-change-list :changes="entry.changes" />
+            <read-more-container :default-expanded="entry.version === latestVersion">
+              <changelog-change-list :changes="entry.changes" />
+            </read-more-container>
           </v-card-text>
         </v-card>
       </div>

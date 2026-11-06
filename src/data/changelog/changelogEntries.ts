@@ -66,6 +66,10 @@ export const changelogEntries: ChangelogEntry[] = [
         text: 'Error messages from the server appear in your language.',
       },
       {
+        type: ChangelogChangeType.Added,
+        text: 'Long updates on the changelog page are shortened, with a "Read more" button to show the rest.',
+      },
+      {
         type: ChangelogChangeType.Changed,
         text: 'First-time setup has a new centered look.',
         details: [
