@@ -16,13 +16,13 @@ const props = defineProps<{
 const { t } = useI18n();
 
 /** The changes grouped by type, in enum order, leaving out types with no changes. */
-const groups = computed<{ type: ChangelogChangeType; texts: string[] }[]>(() =>
+const groups = computed<{ type: ChangelogChangeType; changes: ChangelogChange[] }[]>(() =>
   Object.values(ChangelogChangeType)
     .map((type) => ({
       type,
-      texts: props.changes.filter((change) => change.type === type).map((change) => change.text),
+      changes: props.changes.filter((change) => change.type === type),
     }))
-    .filter((group) => group.texts.length > 0),
+    .filter((group) => group.changes.length > 0),
 );
 </script>
 
@@ -38,9 +38,16 @@ const groups = computed<{ type: ChangelogChangeType; texts: string[] }[]>(() =>
       </div>
       <div class="d-flex flex-column ga-2">
         <!-- Bullets match the group icon's size, so they sit under it and the text lines up with the label. -->
-        <div v-for="text in group.texts" class="d-flex align-start ga-2" :key="text">
-          <v-icon :color="getChangelogChangeTypeColor(group.type)" icon="mdi-circle-small" size="small" />
-          <span class="text-body-medium">{{ text }}</span>
+        <div v-for="change in group.changes" class="d-flex flex-column ga-2" :key="change.text">
+          <div class="d-flex align-start ga-2">
+            <v-icon :color="getChangelogChangeTypeColor(group.type)" icon="mdi-circle-small" size="small" />
+            <span class="text-body-medium">{{ change.text }}</span>
+          </div>
+          <!-- Sub-points sit one bullet width in, under the text of their parent. -->
+          <div v-for="detail in change.details" class="d-flex align-start ga-2 ms-6" :key="detail">
+            <v-icon :color="getChangelogChangeTypeColor(group.type)" icon="mdi-circle-small" size="x-small" />
+            <span class="text-body-medium text-medium-emphasis">{{ detail }}</span>
+          </div>
         </div>
       </div>
     </div>

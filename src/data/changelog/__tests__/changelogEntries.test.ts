@@ -110,4 +110,18 @@ describe('changelogEntries', () => {
       }
     }
   });
+
+  it('has no empty or repeated sub-points', () => {
+    for (const entry of changelogEntries) {
+      for (const change of entry.changes) {
+        // Lines without sub-points leave `details` out, so only a present list is checked.
+        if (change.details === undefined) {
+          continue;
+        }
+
+        expect(change.details.length, `${entry.version}: ${change.text}`).toBeGreaterThan(0);
+        expect(new Set(change.details).size, `${entry.version}: ${change.text}`).toBe(change.details.length);
+      }
+    }
+  });
 });
