@@ -13,6 +13,14 @@ export const changelogEntries: ChangelogEntry[] = [
     date: null,
     changes: [
       {
+        type: ChangelogChangeType.Changed,
+        text: 'The video file check in Settings warns you and shows how many video files are missing.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'The video file check also runs when the video folder is empty.',
+      },
+      {
         type: ChangelogChangeType.Added,
         text: 'The admin dashboard shows how many episode files are missing.',
       },

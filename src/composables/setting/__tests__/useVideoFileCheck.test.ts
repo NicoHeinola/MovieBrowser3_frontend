@@ -30,7 +30,12 @@ vi.mock('@tanstack/vue-query', async (importOriginal) => ({
 }));
 
 vi.mock('vue-i18n', () => ({
-  useI18n: () => ({ locale: ref('en'), t: (key: string) => key, te: () => true }),
+  useI18n: () => ({
+    locale: ref('en'),
+    // Keeps the count in the text, so tests can see which number reached the message.
+    t: (key: string, named?: { count?: number }) => (named?.count === undefined ? key : `${key}:${named.count}`),
+    te: () => true,
+  }),
 }));
 
 vi.mock('@/composables/api/useAPIQuery', () => ({
@@ -57,6 +62,7 @@ const createStatus = (overrides: Partial<VideoFileCheckStatus> = {}): VideoFileC
   total: 0,
   finished_at: null,
   error: null,
+  missing_video_files_count: 0,
   ...overrides,
 });
 
@@ -81,6 +87,18 @@ describe('useVideoFileCheck', () => {
     await nextTick();
 
     expect(showSuccessSnackbar).toHaveBeenCalledWith('settings.videoFileCheckFinished');
+    expect(invalidateQueries).toHaveBeenCalledOnce();
+  });
+
+  it('warns with the count when a finished run found missing files', async () => {
+    status.value = createStatus({ running: true });
+    useVideoFileCheck();
+
+    status.value = createStatus({ finished_at: finishedAt, missing_video_files_count: 2 });
+    await nextTick();
+
+    expect(showWarningSnackbar).toHaveBeenCalledWith('settings.videoFileCheckFinishedMissing:2');
+    expect(showSuccessSnackbar).not.toHaveBeenCalled();
     expect(invalidateQueries).toHaveBeenCalledOnce();
   });
 
@@ -201,6 +219,42 @@ describe('useVideoFileCheck', () => {
     await nextTick();
 
     expect(showSuccessSnackbar).toHaveBeenCalledWith('settings.videoFileCheckFinished');
+  });
+
+  it('shows a success alert when a finished run found no missing files', () => {
+    status.value = createStatus({ finished_at: finishedAt });
+
+    const { statusAlert } = useVideoFileCheck();
+
+    expect(statusAlert.value).toEqual({ text: 'settings.videoFileCheckFinishedAt', type: 'success' });
+  });
+
+  it('shows a warning alert with the count when files are missing', () => {
+    status.value = createStatus({ finished_at: finishedAt, missing_video_files_count: 2 });
+
+    const { statusAlert } = useVideoFileCheck();
+
+    expect(statusAlert.value).toEqual({ text: 'settings.videoFileCheckFinishedAtMissing:2', type: 'warning' });
+  });
+
+  it("shows the last run's error over missing files", () => {
+    status.value = createStatus({
+      finished_at: finishedAt,
+      error: { code: ApiErrorCode.VideoFileCheckFailed, params: {} },
+      missing_video_files_count: 2,
+    });
+
+    const { statusAlert } = useVideoFileCheck();
+
+    expect(statusAlert.value.type).toBe('error');
+  });
+
+  it('shows progress over missing files', () => {
+    status.value = createStatus({ running: true, total: 900, finished_at: finishedAt, missing_video_files_count: 2 });
+
+    const { statusAlert } = useVideoFileCheck();
+
+    expect(statusAlert.value).toEqual({ text: 'settings.videoFileCheckProgress', type: 'info' });
   });
 
   it('says when nothing has been checked yet', () => {

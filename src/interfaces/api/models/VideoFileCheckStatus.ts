@@ -11,4 +11,6 @@ export interface VideoFileCheckStatus {
   finished_at: string | null;
   /** Why the last finished run failed, including the daily run. */
   error: ApiErrorDetail | null;
+  /** Episodes whose uploaded file is gone right now. Leaves out episodes that never had a file. */
+  missing_video_files_count: number;
 }

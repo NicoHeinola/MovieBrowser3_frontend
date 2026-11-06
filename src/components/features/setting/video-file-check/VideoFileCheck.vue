@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  alert: { text: string; type: 'error' | 'info' | 'success' };
+  alert: { text: string; type: 'error' | 'info' | 'success' | 'warning' };
   loading?: boolean;
 }>();
 </script>

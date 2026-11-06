@@ -62,13 +62,18 @@ export const useVideoFileCheck = () => {
   });
 
   /** The status alert. A run in progress goes first, because the last run's result stays set during a new one. */
-  const statusAlert = computed<{ text: string; type: 'error' | 'info' | 'success' }>(() => {
+  const statusAlert = computed<{ text: string; type: 'error' | 'info' | 'success' | 'warning' }>(() => {
     // The status is unknown, so neither an old result nor "not checked yet" would be true.
     if (isError.value) {
       return { text: t('apiErrors.generic'), type: 'error' };
     }
 
-    const { checked = 0, finished_at: finishedAt = null, total = 0 } = status.value ?? {};
+    const {
+      checked = 0,
+      finished_at: finishedAt = null,
+      missing_video_files_count: missingCount = 0,
+      total = 0,
+    } = status.value ?? {};
 
     if (isRunning.value) {
       const text =
@@ -83,6 +88,12 @@ export const useVideoFileCheck = () => {
 
     if (finishedAt) {
       const date = new Date(finishedAt).toLocaleString(locale.value, { dateStyle: 'medium', timeStyle: 'short' });
+
+      if (missingCount > 0) {
+        const text = t('settings.videoFileCheckFinishedAtMissing', { count: missingCount, date }, missingCount);
+
+        return { text, type: 'warning' };
+      }
 
       return { text: t('settings.videoFileCheckFinishedAt', { date }), type: 'success' };
     }
@@ -127,7 +138,13 @@ export const useVideoFileCheck = () => {
     }
 
     if (outcome === 'finished') {
-      showSuccessSnackbar(t('settings.videoFileCheckFinished'));
+      const { missing_video_files_count: count } = current;
+
+      if (count > 0) {
+        showWarningSnackbar(t('settings.videoFileCheckFinishedMissing', { count }, count));
+      } else {
+        showSuccessSnackbar(t('settings.videoFileCheckFinished'));
+      }
     }
 
     // Even a crashed run may have updated some episodes, and cached shows still hold the old flags.

@@ -11,6 +11,7 @@ const createStatus = (overrides: Partial<VideoFileCheckStatus> = {}): VideoFileC
   total: 0,
   finished_at: null,
   error: null,
+  missing_video_files_count: 0,
   ...overrides,
 });
 
