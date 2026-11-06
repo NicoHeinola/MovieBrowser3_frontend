@@ -13,6 +13,10 @@ export const changelogEntries: ChangelogEntry[] = [
     date: null,
     changes: [
       {
+        type: ChangelogChangeType.Changed,
+        text: 'Your watch progress on the episode you are watching now updates every 5 seconds instead of every 30.',
+      },
+      {
         type: ChangelogChangeType.Added,
         text: 'Missing video files are found and flagged.',
         details: [
@@ -107,6 +111,10 @@ export const changelogEntries: ChangelogEntry[] = [
       {
         type: ChangelogChangeType.Fixed,
         text: 'Editing a show no longer fails when the app is opened from another device on the network.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'Button text and icons are no longer oversized in the installed app.',
       },
     ],
   },

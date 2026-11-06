@@ -13,6 +13,11 @@
       rel="stylesheet"
     />
     <style>
+      /* Pin Vuetify's layer order. A layer ranks by where it first appears, and in production builds the lazy
+         component stylesheets can load before Vuetify's own, which put the core reset (`button { font: inherit }`)
+         above the component styles and enlarged button text and icons. */
+      @layer vuetify-core, vuetify-components, vuetify-overrides, vuetify-utilities, vuetify-final;
+
       /* Make sure users don't get flashed by white */
       html {
         color-scheme: dark;
