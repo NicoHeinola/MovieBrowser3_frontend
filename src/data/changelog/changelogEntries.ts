@@ -13,6 +13,10 @@ export const changelogEntries: ChangelogEntry[] = [
     date: null,
     changes: [
       {
+        type: ChangelogChangeType.Added,
+        text: 'Dashboard counts open their admin page: shows, websites, users, or shows with missing episode files.',
+      },
+      {
         type: ChangelogChangeType.Fixed,
         text: 'New notifications show instantly when many are on screen: the oldest ones make room.',
       },
