@@ -130,7 +130,7 @@ describe('useShowSearch', () => {
 
   it('keeps the open list after a watch status change and refetches on the next filter change', async () => {
     const { app, filters } = await setupSearch();
-    const { markFilteredShowListsStale } = app.runWithContext(() => useShowEntryWatchStatus());
+    const { setCachedWatchStatus } = app.runWithContext(() => useShowEntryWatchStatus());
     const noFilters = filters.value;
 
     // Both lists are cached and fresh, so switching between them would normally not fetch.
@@ -140,7 +140,7 @@ describe('useShowSearch', () => {
     await flushPromises();
     vi.mocked(showService.list).mockClear();
 
-    markFilteredShowListsStale();
+    setCachedWatchStatus(1, 10, null);
     await flushPromises();
 
     expect(showService.list).not.toHaveBeenCalled();

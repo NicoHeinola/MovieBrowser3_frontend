@@ -42,4 +42,5 @@ await queryClient.invalidateQueries(getQueryKeyFilter(WebsiteQueryKey, WebsiteTa
 ```
 
 - Changes to one show (watch progress, watch status) patch every `getQueryKeyFilter(ShowQueryKey)` query in place instead of refetching.
+- Watch status changes, saved here or streamed in, only mark the watch-status-filtered lists stale (`refetchType: 'none'`), so a changed show doesn't vanish under the user. The stream echoes this tab's own saves, which this keeps harmless.
 - The show drawer takes only `v-model:show-id` and reads its show from the `SelectedShow` query, which starts from the copy in a cached list. Don't hand it a cloned show.

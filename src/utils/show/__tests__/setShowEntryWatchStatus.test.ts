@@ -44,4 +44,12 @@ describe('setShowEntryWatchStatus', () => {
 
     expect(setShowEntryWatchStatus(data, 1, 10, status)).toBe(data);
   });
+
+  it('returns the same reference when the entry already has the status', () => {
+    const data = [createShow(1)];
+    const set = setShowEntryWatchStatus(data, 1, 10, status);
+
+    expect(setShowEntryWatchStatus(set, 1, 10, { ...status })).toBe(set);
+    expect(setShowEntryWatchStatus(data, 1, 10, null)).toBe(data);
+  });
 });

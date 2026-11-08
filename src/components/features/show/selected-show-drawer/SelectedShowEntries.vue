@@ -35,7 +35,7 @@ const show = computed<Show | null>(() => props.show);
 const isEpisodesOpen = useStorage<boolean>('showDrawer.isEpisodesOpen', true);
 
 const { showAPIErrorSnackbar } = useCommonSnackbar();
-const { saveWatchStatus, markFilteredShowListsStale } = useShowEntryWatchStatus();
+const { saveWatchStatus } = useShowEntryWatchStatus();
 const { resetSelectedEntry, selectedEntry } = useSelectedEntry(entries);
 const { t } = useI18n();
 const {
@@ -123,8 +123,6 @@ const setWatchStatus = async (status: CombinedWatchStatus): Promise<void> => {
 
   try {
     const results = await Promise.allSettled(entries.map((entry) => saveWatchStatus(entry, status)));
-
-    markFilteredShowListsStale();
 
     const failure = results.find((result) => result.status === 'rejected');
     if (failure) {

@@ -14,6 +14,11 @@ export const changelogEntries: ChangelogEntry[] = [
     changes: [
       {
         type: ChangelogChangeType.Added,
+        text: 'Entries are marked completed when you reach the end of their last episode.',
+        details: ['Watch status changes show up right away in every open tab.'],
+      },
+      {
+        type: ChangelogChangeType.Added,
         text: 'Dashboard counts open their admin page: shows, websites, users, or shows with missing episode files.',
       },
       {

@@ -1,3 +1,4 @@
+import type { ShowEntryWatchStatusChange } from '@/interfaces/api/models/ShowEntryWatchStatusChange';
 import type { ShowWatchProgress } from '@/interfaces/api/models/ShowWatchProgress';
 import type { EventSourceMessage } from '@microsoft/fetch-event-source';
 import { EventStreamContentType, fetchEventSource } from '@microsoft/fetch-event-source';
@@ -8,14 +9,16 @@ import { getEnvString } from '@/utils/env/getEnvString';
 const RETRY_INTERVAL_MS = 5000;
 
 /**
- * Streams the user's watch progress changes from any source, such as the media player advancing to the next episode.
+ * Streams the user's watch progress and watch status changes from any source, such as the media player advancing to
+ * the next episode or completing an entry.
  * The stream reconnects on its own and stays open while the tab is hidden; the caller decides when to close it.
- * Progress changed while disconnected is not replayed.
+ * Changes made while disconnected are not replayed.
  * @param options - The subscription options.
  * @param options.token - The bearer token of the user whose progress is streamed.
  * @param options.signal - Aborting it closes the stream for good.
  * @param options.onOpen - Called whenever the stream opens, including every reconnect.
  * @param options.onWatchProgress - Called with each changed watch progress.
+ * @param options.onWatchStatus - Called with each changed entry watch status, such as an entry completing.
  * @returns A promise that resolves once the stream is aborted, or rejects when the backend rejects the token.
  */
 const subscribe = async (options: {
@@ -23,6 +26,7 @@ const subscribe = async (options: {
   signal: AbortSignal;
   onOpen: () => void;
   onWatchProgress: (watchProgress: ShowWatchProgress) => void;
+  onWatchStatus: (change: ShowEntryWatchStatusChange) => void;
 }): Promise<void> => {
   let isUnauthorized = false;
 
@@ -46,6 +50,8 @@ const subscribe = async (options: {
     onmessage: (message: EventSourceMessage): void => {
       if (message.event === 'watch-progress') {
         options.onWatchProgress(JSON.parse(message.data) as ShowWatchProgress);
+      } else if (message.event === 'watch-status') {
+        options.onWatchStatus(JSON.parse(message.data) as ShowEntryWatchStatusChange);
       }
     },
     onclose: (): void => {

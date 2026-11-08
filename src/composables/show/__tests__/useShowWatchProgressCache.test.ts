@@ -3,6 +3,7 @@ import { QueryClient } from '@tanstack/vue-query';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
+import { WatchStatus } from '@/enums/show/WatchStatus';
 import { useShowWatchProgressCache } from '../useShowWatchProgressCache';
 
 const queryClient = new QueryClient();
@@ -90,5 +91,24 @@ describe('useShowWatchProgressCache', () => {
       expect(queryClient.getQueryState([queryKey])?.isInvalidated).toBe(true);
     }
     expect(queryClient.getQueryState(['categories'])?.isInvalidated).toBe(false);
+  });
+
+  it('patches a streamed watch status and only marks the filtered lists stale', () => {
+    const show = { id: 1, entries: [{ id: 10, show_id: 1, watch_status: null }], watch_progress: null };
+    const searchKey = [ShowQueryKey.SearchShows, 'term', 1];
+    queryClient.setQueryData(searchKey, { data: [show] });
+    queryClient.setQueryData([ShowQueryKey.ContinueWatchingShows], [show]);
+    const invalidate = vi.spyOn(queryClient, 'invalidateQueries');
+
+    useShowWatchProgressCache().applyWatchStatus({ show_id: 1, show_entry_id: 10, status: WatchStatus.Completed });
+
+    const searchShows = queryClient.getQueryData<{ data: (typeof show)[] }>(searchKey);
+    expect(searchShows?.data[0]?.entries[0]?.watch_status?.status).toBe(WatchStatus.Completed);
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: [ShowQueryKey.SearchShows], refetchType: 'none' });
+    expect(queryClient.getQueryState([ShowQueryKey.ContinueWatchingShows])?.isInvalidated).toBe(false);
+
+    useShowWatchProgressCache().applyWatchStatus({ show_id: 1, show_entry_id: 10, status: null });
+    const cleared = queryClient.getQueryData<{ data: (typeof show)[] }>(searchKey);
+    expect(cleared?.data[0]?.entries[0]?.watch_status).toBeNull();
   });
 });

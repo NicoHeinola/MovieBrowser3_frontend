@@ -27,13 +27,20 @@ const createResponse = (status: number, contentType: string): Response =>
 const subscribe = async () => {
   const onOpen = vi.fn();
   const onWatchProgress = vi.fn();
+  const onWatchStatus = vi.fn();
   const controller = new AbortController();
 
   vi.mocked(fetchEventSource).mockResolvedValue();
-  await watchProgressStreamService.subscribe({ token: 'secret', signal: controller.signal, onOpen, onWatchProgress });
+  await watchProgressStreamService.subscribe({
+    token: 'secret',
+    signal: controller.signal,
+    onOpen,
+    onWatchProgress,
+    onWatchStatus,
+  });
 
   const [url, init] = vi.mocked(fetchEventSource).mock.calls[0] as [string, FetchEventSourceInit];
-  return { url, init, controller, onOpen, onWatchProgress };
+  return { url, init, controller, onOpen, onWatchProgress, onWatchStatus };
 };
 
 describe('watchProgressStreamService', () => {
@@ -71,6 +78,16 @@ describe('watchProgressStreamService', () => {
 
     expect(onWatchProgress).toHaveBeenCalledTimes(1);
     expect(onWatchProgress).toHaveBeenCalledWith(progress);
+  });
+
+  it('passes watch status events on', async () => {
+    const { init, onWatchProgress, onWatchStatus } = await subscribe();
+    const change = { show_id: 12, show_entry_id: 40, status: 'completed' };
+
+    init.onmessage?.(createMessage('watch-status', JSON.stringify(change)));
+
+    expect(onWatchStatus).toHaveBeenCalledWith(change);
+    expect(onWatchProgress).not.toHaveBeenCalled();
   });
 
   it('stops retrying when the token is rejected', async () => {

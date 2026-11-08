@@ -7,6 +7,7 @@ import { useWatchProgressStream } from '../useWatchProgressStream';
 
 const authStore = reactive<{ token: string | null }>({ token: null });
 const applyWatchProgress = vi.fn();
+const applyWatchStatus = vi.fn();
 const refetchShowLists = vi.fn();
 
 vi.mock('@/stores/auth/useAuthStore', () => ({
@@ -14,7 +15,7 @@ vi.mock('@/stores/auth/useAuthStore', () => ({
 }));
 
 vi.mock('@/composables/show/useShowWatchProgressCache', () => ({
-  useShowWatchProgressCache: () => ({ applyWatchProgress, refetchShowLists }),
+  useShowWatchProgressCache: () => ({ applyWatchProgress, applyWatchStatus, refetchShowLists }),
 }));
 
 vi.mock('@/services/show/watchProgressStreamService', () => ({
@@ -87,6 +88,7 @@ describe('useWatchProgressStream', () => {
     const subscription = getSubscription();
     expect(subscription.token).toBe('secret');
     expect(subscription.onWatchProgress).toBe(applyWatchProgress);
+    expect(subscription.onWatchStatus).toBe(applyWatchStatus);
   });
 
   it('refetches the show lists on reconnect only', () => {

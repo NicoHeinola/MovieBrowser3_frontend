@@ -59,14 +59,14 @@ describe('useShowEntryWatchStatus', () => {
     );
   });
 
-  it('marks the filtered lists stale without refetching them', () => {
+  it('marks the filtered lists stale without refetching them when patching a status', () => {
     const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries');
     queryClient.setQueryData([ShowQueryKey.HomeShows], {});
     queryClient.setQueryData([ShowQueryKey.SearchShows, 'term', 1], {});
     queryClient.setQueryData([ShowQueryKey.AdminShows, 'term', 1], {});
     queryClient.setQueryData([ShowQueryKey.SelectedShow, 1], {});
 
-    useShowEntryWatchStatus().markFilteredShowListsStale();
+    useShowEntryWatchStatus().setCachedWatchStatus(1, 10, null);
 
     expect(queryClient.getQueryState([ShowQueryKey.SearchShows, 'term', 1])?.isInvalidated).toBe(true);
     expect(queryClient.getQueryState([ShowQueryKey.AdminShows, 'term', 1])?.isInvalidated).toBe(true);

@@ -13,10 +13,38 @@ const filteredShowListKeys = [ShowQueryKey.SearchShows, ShowQueryKey.AdminShows,
 
 /**
  * Saves show entry watch statuses and mirrors them onto the cached show lists.
- * @returns The save function, and the function to call once after saving.
+ * @returns The save function and the cache patch it uses.
  */
 export const useShowEntryWatchStatus = () => {
   const queryClient = useQueryClient();
+
+  /**
+   * Marks the show lists that filter on watch status as stale, because patching a cached list cannot add or remove a
+   * show. They are not refetched now: a show the user just changed stays visible, and the lists update on the next
+   * search, filter change or visit. It only flags the queries, so running it once per entry costs nothing.
+   * @returns void
+   */
+  const markFilteredShowListsStale = (): void => {
+    for (const queryKey of filteredShowListKeys) {
+      void queryClient.invalidateQueries({ queryKey: [queryKey], refetchType: 'none' });
+    }
+  };
+
+  /**
+   * Patches a watch status onto every cached show query that contains the entry and marks the filtered lists stale,
+   * for a save made here or one streamed in from elsewhere.
+   * @param showId - The id of the show that owns the entry.
+   * @param entryId - The id of the entry.
+   * @param watchStatus - The new watch status, or null when it was cleared.
+   * @returns void
+   */
+  const setCachedWatchStatus = (showId: number, entryId: number, watchStatus: ShowEntryWatchStatus | null): void => {
+    // Every cached query that may hold shows, including the show drawer's; queries without the entry stay untouched.
+    queryClient.setQueriesData(getQueryKeyFilter(ShowQueryKey), (data: unknown) =>
+      setShowEntryWatchStatus(data, showId, entryId, watchStatus),
+    );
+    markFilteredShowListsStale();
+  };
 
   /**
    * Persists a watch status for an entry and patches every cached show query that contains it.
@@ -38,28 +66,13 @@ export const useShowEntryWatchStatus = () => {
       await showEntryWatchStatusService.remove(entry.id);
     }
 
-    // Every cached query that may hold shows, including the show drawer's; queries without the entry stay untouched.
-    queryClient.setQueriesData(getQueryKeyFilter(ShowQueryKey), (data: unknown) =>
-      setShowEntryWatchStatus(data, entry.show_id, entry.id, watchStatus),
-    );
+    setCachedWatchStatus(entry.show_id, entry.id, watchStatus);
 
     return watchStatus;
   };
 
-  /**
-   * Marks the show lists that filter on watch status as stale, because patching a cached list cannot add or remove a
-   * show. They are not refetched now: a show the user just changed stays visible, and the lists update on the next
-   * search, filter change or visit. Call it once after saving, not per entry.
-   * @returns void
-   */
-  const markFilteredShowListsStale = (): void => {
-    for (const queryKey of filteredShowListKeys) {
-      void queryClient.invalidateQueries({ queryKey: [queryKey], refetchType: 'none' });
-    }
-  };
-
   return {
     saveWatchStatus,
-    markFilteredShowListsStale,
+    setCachedWatchStatus,
   };
 };
