@@ -31,8 +31,10 @@
     "@vue-dnd-kit/core": "^3.1.0",
     "@vueuse/core": "^15.0.0",
     "axios": "^1.21.0",
+    "echarts": "^6.1.0",
     "pinia": "^4.1.0",
     "vue": "^3.5.45",
+    "vue-echarts": "^8.3.2",
     "vue-i18n": "^11.4.18",
     "vue-router": "^5.4.0",
     "vuetify": "^4.3.2"

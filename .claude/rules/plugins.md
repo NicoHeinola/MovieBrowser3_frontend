@@ -23,6 +23,7 @@ applyTo: 'src/plugins/**/*.ts'
 
 - Do not move page markup, component rendering, or feature-specific state into plugin files.
 - Keep plugin files focused on application setup, configured instances, and integration boundaries.
+- Register heavy libraries used by a single lazy route from the component that needs them, not from `registerPlugins`, so they stay out of the main bundle. ECharts is one: the chart component calls `registerECharts()`.
 
 ## TanStack Query
 

@@ -24,6 +24,10 @@ export const MainTheme: ThemeDefinition = {
     'watch-status-mixed': '#8A93A6',
     /** Dots of older versions on the changelog timeline; the latest uses `primary`. */
     'changelog-dot': '#616161',
+    /** Free space in the dashboard storage chart: a quiet track behind the used parts. */
+    'storage-free': '#2A3242',
+    /** The shows too small for their own arc in the storage chart, grouped. */
+    'storage-other-shows': '#6B7486',
     'pattern-start': '#6B4FCC',
     'pattern-end': '#2A7A8A',
   },

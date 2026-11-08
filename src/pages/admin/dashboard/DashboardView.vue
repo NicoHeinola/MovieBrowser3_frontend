@@ -9,6 +9,7 @@ import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { TitledSection } from '@/components/common/titled-section';
 import { DashboardStats } from '@/components/features/dashboard/dashboard-stats';
+import { StorageChart } from '@/components/features/dashboard/storage-chart';
 import { RecentShowList } from '@/components/features/show/recent-show-list';
 import { FavoriteWebsiteList } from '@/components/features/website/favorite-website-list';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
@@ -22,6 +23,8 @@ import { showService } from '@/services/show/showService';
 import { websiteService } from '@/services/website/websiteService';
 
 const RECENT_SHOW_COUNT = 8;
+/** How many of the biggest shows get their own arc in the storage chart. */
+const STORAGE_SHOW_COUNT = 12;
 
 const { openShowEditDialog } = useShowEditDialog();
 const { openWebsiteEditDialog } = useWebsiteEditDialog();
@@ -42,6 +45,12 @@ const favoriteWebsitesQuery = useAPIQuery<PaginatedResponse<Website>>({
       sort: 'title',
       page: { number: 0, size: 0 },
     }),
+});
+
+const storageShowsQuery = useAPIQuery<PaginatedResponse<Show>>({
+  queryKey: [ShowQueryKey.AdminDashboardStorageShows],
+  // Only the biggest shows: the backend ranks them, and the chart groups the rest from the stats total.
+  queryFn: async () => await showService.list({ sort: '-video_files_bytes', page: { size: STORAGE_SHOW_COUNT } }),
 });
 
 const recentShowsQuery = useAPIQuery<PaginatedResponse<Show>>({
@@ -89,6 +98,15 @@ const addWebsite = async (): Promise<void> => {
             }}</v-btn>
           </div>
         </template>
+      </titled-section>
+
+      <titled-section :title="t('dashboard.storage')" icon="mdi-harddisk" icon-color="info">
+        <storage-chart
+          :loading="statsQuery.isLoading.value || storageShowsQuery.isLoading.value"
+          :shows="storageShowsQuery.data.value?.data ?? []"
+          :stats="statsQuery.data.value"
+          @click:show="editShow"
+        />
       </titled-section>
 
       <v-col cols="12" lg="6">

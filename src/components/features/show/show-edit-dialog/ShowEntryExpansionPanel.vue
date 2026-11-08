@@ -3,11 +3,13 @@ import type { ShowEntryFormData } from './ShowEntryFormData';
 import { useDropZone } from '@vueuse/core';
 import { computed, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { formatFileSize } from '@/utils/file/formatFileSize';
+import { getEntryVideoBytes } from '@/utils/show/getEntryVideoBytes';
 import { isEpisodeVideoFile } from '@/utils/show/isEpisodeVideoFile';
 import ShowEntryEpisodesFormPart from './ShowEntryEpisodesFormPart.vue';
 import ShowEntryGeneralFormPart from './ShowEntryGeneralFormPart.vue';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const entry = defineModel<ShowEntryFormData>('entry', { required: true });
 const expanded = defineModel<boolean>('expanded', { default: false });
@@ -26,6 +28,9 @@ const { isOverDropZone } = useDropZone(dropZone, {
     episodesPart.value?.addPickedEpisodes((files ?? []).filter((file) => isEpisodeVideoFile(file)));
   },
 });
+
+/** The entry's measured video files, shown beside its episode count. */
+const videoBytes = computed<number>(() => getEntryVideoBytes(entry.value));
 
 const panelModelValue = computed<string[]>(() => {
   return expanded.value ? ['entry'] : [];
@@ -64,6 +69,9 @@ const updatePanelModelValue = (value: string[]): void => {
           <v-icon class="handle cursor-grab text-medium-emphasis" icon="mdi-drag-vertical" @click.stop />
           <span class="font-weight-medium text-truncate" style="flex: 1 1 auto; min-width: 0">
             {{ entry.name }}
+          </span>
+          <span class="text-medium-emphasis text-body-small text-no-wrap" v-if="videoBytes > 0">
+            {{ formatFileSize(videoBytes, locale) }}
           </span>
           <span class="text-medium-emphasis text-body-small text-no-wrap">{{
             t('show.episodeCount', { count: entry.episodes?.length ?? 0 })

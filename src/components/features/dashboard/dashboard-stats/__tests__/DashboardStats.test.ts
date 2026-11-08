@@ -10,7 +10,7 @@ import DashboardStats from '../DashboardStats.vue';
 // The filter definitions load the i18n plugin, which needs the real `createI18n`.
 vi.mock('vue-i18n', async (importOriginal) => ({
   ...(await importOriginal<object>()),
-  useI18n: () => ({ t: (key: string) => key }),
+  useI18n: () => ({ t: (key: string) => key, locale: { value: 'en-US' } }),
 }));
 
 const stats: DashboardStatsResponse = {
@@ -21,6 +21,9 @@ const stats: DashboardStatsResponse = {
   episodes_missing_video_file_count: 4,
   websites_count: 5,
   users_count: 2,
+  video_files_total_bytes: 1024,
+  disk_total_bytes: null,
+  disk_free_bytes: null,
 };
 
 /**
@@ -57,5 +60,17 @@ describe('DashboardStats', () => {
     expect(links['dashboard.added7']).toBeUndefined();
     expect(links['dashboard.added30']).toBeUndefined();
     expect(links['dashboard.episodes']).toBeUndefined();
+  });
+
+  it('shows the video files size as a file size, not a byte count', () => {
+    const wrapper = mount(DashboardStats, {
+      props: { stats },
+      global: { plugins: [createVuetify()], stubs: { RouterLink: true } },
+    });
+    const sizeTile = wrapper
+      .findAllComponents(VCard)
+      .find((card) => card.find('.v-card-subtitle').text() === 'dashboard.videoFilesSize');
+
+    expect(sizeTile?.find('.v-card-title').text()).toBe('1.0 KB');
   });
 });

@@ -5,9 +5,10 @@ import type { DashboardStatsResponse } from '@/interfaces/api/responses/Dashboar
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { adminShowSearchFilterDefinitions } from '@/composables/show/adminShowSearchFilterDefinitions';
+import { formatFileSize } from '@/utils/file/formatFileSize';
 import { searchFilterQuery } from '@/utils/filter/searchFilterQuery';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 // Written by the filter's own definition, so the link keeps working if its URL param changes.
 const missingVideoFileFilter = adminShowSearchFilterDefinitions.find(({ key }) => key === 'hasMissingVideoFile')!;
@@ -52,6 +53,13 @@ const tiles = computed<DashboardStatTile[]>(() => [
     to: { name: 'admin-shows', query: missingVideoFileQuery },
   },
   {
+    label: t('dashboard.videoFilesSize'),
+    icon: 'mdi-harddisk',
+    color: 'info',
+    value: props.stats?.video_files_total_bytes ?? null,
+    format: (bytes) => formatFileSize(bytes, locale.value),
+  },
+  {
     label: t('dashboard.websites'),
     icon: 'mdi-web',
     color: 'link',
@@ -66,6 +74,17 @@ const tiles = computed<DashboardStatTile[]>(() => [
     to: { name: 'admin-users' },
   },
 ]);
+
+/**
+ * Formats a tile's value for display.
+ * @param tile - The tile.
+ * @returns The value as text, or a dash while it is missing.
+ */
+const formatTileValue = (tile: DashboardStatTile): string => {
+  if (tile.value === null) return '-';
+
+  return tile.format?.(tile.value) ?? tile.value.toLocaleString(locale.value);
+};
 </script>
 
 <template>
@@ -80,7 +99,7 @@ const tiles = computed<DashboardStatTile[]>(() => [
               <v-icon :icon="tile.icon" />
             </v-avatar>
           </template>
-          <v-card-title>{{ tile.value?.toLocaleString() ?? '–' }}</v-card-title>
+          <v-card-title>{{ formatTileValue(tile) }}</v-card-title>
           <v-card-subtitle>{{ tile.label }}</v-card-subtitle>
         </v-card-item>
       </v-card>

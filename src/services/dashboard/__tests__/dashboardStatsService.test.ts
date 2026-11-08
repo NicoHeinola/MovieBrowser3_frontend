@@ -28,6 +28,9 @@ describe('dashboardStatsService', () => {
       episodes_missing_video_file_count: 7,
       websites_count: 12,
       users_count: 3,
+      video_files_total_bytes: 5_000_000_000,
+      disk_total_bytes: 1_000_000_000_000,
+      disk_free_bytes: 400_000_000_000,
     };
 
     vi.mocked(apiClient.get).mockResolvedValueOnce(createResponse(stats));

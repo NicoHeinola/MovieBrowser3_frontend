@@ -19,6 +19,16 @@ export const changelogEntries: ChangelogEntry[] = [
       },
       {
         type: ChangelogChangeType.Added,
+        text: 'See how much space your videos take.',
+        details: [
+          'The dashboard shows the total size of all video files.',
+          'A storage chart shows used and free disk space and how much each show takes.',
+          'The show editor shows the size of the show, each season and each episode.',
+          'The video file check is now "Scan video files" in the settings and measures file sizes too.',
+        ],
+      },
+      {
+        type: ChangelogChangeType.Added,
         text: 'Dashboard counts open their admin page: shows, websites, users, or shows with missing episode files.',
       },
       {

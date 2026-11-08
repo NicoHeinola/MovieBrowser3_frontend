@@ -3,11 +3,12 @@ import type { EpisodeFormData } from './EpisodeFormData';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { MissingVideoFileChip } from '@/components/features/show/missing-video-file-chip';
+import { formatFileSize } from '@/utils/file/formatFileSize';
 import { isEpisodeVideoMissing } from '@/utils/show/isEpisodeVideoMissing';
 
 import { getRules } from './showEntriesFormRules';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const episode = defineModel<EpisodeFormData>('episode', { required: true });
 const expanded = defineModel<boolean>('expanded', { default: false });
@@ -49,6 +50,9 @@ const updatePanelModelValue = (value: string[]): void => {
             v-if="filename"
           >
             {{ filename }}
+          </span>
+          <span class="text-medium-emphasis text-body-small text-no-wrap" v-if="episode.video_file_size">
+            {{ formatFileSize(episode.video_file_size, locale) }}
           </span>
           <missing-video-file-chip v-if="isEpisodeVideoMissing(episode)" />
         </div>

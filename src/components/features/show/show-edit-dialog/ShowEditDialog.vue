@@ -2,7 +2,7 @@
 import type { DialogComponentProps } from '@/components/layouts/dialog-provider';
 import type { Show } from '@/interfaces/api/models/Show';
 
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BaseDialog } from '@/components/common/base-dialog';
 import { BaseForm } from '@/components/common/base-form';
@@ -15,7 +15,9 @@ import { showLinkService } from '@/services/show/showLinkService';
 import { showService } from '@/services/show/showService';
 import { showTitleService } from '@/services/show/showTitleService';
 import { deepClone } from '@/utils/clone/deepClone';
+import { formatFileSize } from '@/utils/file/formatFileSize';
 import { getChangedObject } from '@/utils/object/hasObjectChanged';
+import { getShowVideoBytes } from '@/utils/show/getShowVideoBytes';
 import { getSyncPlan } from '@/utils/sync/getSyncPlan';
 import { syncItems } from '@/utils/sync/syncItems';
 import ShowEntriesFormPart from './ShowEntriesFormPart.vue';
@@ -37,7 +39,10 @@ const selectedTab = ref<string[]>(['general']);
 
 const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
-const { t } = useI18n();
+const { t, locale } = useI18n();
+
+/** The show's measured video files, from the saved sizes; picked but unsaved files are not counted yet. */
+const videoBytes = computed<number>(() => getShowVideoBytes(show.value));
 
 const episodeActionMessages = {
   create: (episode: string, entry: string) => t('show.episodeAdded', { episode, entry }),
@@ -222,7 +227,12 @@ onMounted(() => {
 <template>
   <base-dialog v-model="isDialogVisible" :max-width="1060">
     <template #title>
-      {{ show?.id ? 'Edit Show' : 'Create Show' }}
+      <div class="d-flex align-center ga-4">
+        {{ show?.id ? 'Edit Show' : 'Create Show' }}
+        <v-chip prepend-icon="mdi-harddisk" size="small" variant="tonal">
+          {{ formatFileSize(videoBytes, locale) }}
+        </v-chip>
+      </div>
     </template>
 
     <template #default>
