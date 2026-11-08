@@ -8,7 +8,9 @@ import { SortableItem } from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { useSortableItems } from '@/composables/sortable/useSortableItems';
+import { episodeVideoFileExtensions } from '@/utils/show/episodeVideoFileExtensions';
 import { getEpisodeNameFromFilename } from '@/utils/show/getEpisodeNameFromFilename';
+import { sortFilesByName } from '@/utils/show/sortFilesByName';
 import { getUnsavedRowKey } from '@/utils/sortable/getUnsavedRowKey';
 
 import ShowEpisodeExpansionPanel from './ShowEpisodeExpansionPanel.vue';
@@ -21,8 +23,6 @@ const expandedEpisodes = ref<EpisodeFormData[]>([]);
 const { confirm } = useConfirmDialog();
 const { showSuccessSnackbar, showWarningSnackbar } = useCommonSnackbar();
 const { t } = useI18n();
-
-const preferredEpisodeFileExtensions = ['.mp4', '.m4v', '.mkv', '.webm', '.mov', '.avi', '.wmv', '.mpeg', '.mpg'];
 
 const syncEpisodeSequenceNumbers = (): void => {
   for (const [index, episode] of (entry.value.episodes ?? []).entries()) {
@@ -61,6 +61,7 @@ const addEpisode = (): void => {
   setEpisodeExpanded(nextEpisode, true);
 };
 
+/** Adds episodes for picked or dropped files, skipping duplicates. */
 const addPickedEpisodes = (selectedFiles: File[]): void => {
   if (selectedFiles.length === 0) {
     return;
@@ -75,7 +76,8 @@ const addPickedEpisodes = (selectedFiles: File[]): void => {
   const duplicateFilenames: string[] = [];
   const nextEpisodes: EpisodeFormData[] = [];
 
-  for (const file of selectedFiles) {
+  // Explorers hand over files in the order they were selected or dragged from, so order them by name first.
+  for (const file of sortFilesByName(selectedFiles)) {
     if (existingFilenames.has(file.name)) {
       duplicateFilenames.push(file.name);
       continue;
@@ -113,7 +115,7 @@ const addEpisodesFromFilesWithInput = (): void => {
   const input = document.createElement('input');
 
   input.type = 'file';
-  input.accept = preferredEpisodeFileExtensions.join(',');
+  input.accept = episodeVideoFileExtensions.join(',');
   input.multiple = true;
   input.style.display = 'none';
 
@@ -159,6 +161,8 @@ const removeEpisode = async (index: number): Promise<void> => {
   syncEpisodeSequenceNumbers();
 };
 
+defineExpose({ addPickedEpisodes });
+
 const draftEpisodes = useSortableItems<EpisodeFormData>(episodeZoneRef, {
   getItems: () => entry.value.episodes ?? [],
   getKey: getEpisodeRenderKey,
@@ -198,6 +202,10 @@ const draftEpisodes = useSortableItems<EpisodeFormData>(episodeZoneRef, {
     <template #actions>
       <v-btn size="small" variant="text" @click="addEpisode"> {{ t('show.addEpisode') }} </v-btn>
       <v-btn size="small" variant="text" @click="addEpisodesFromFiles"> {{ t('show.addEpisodesFromFiles') }} </v-btn>
+      <span class="text-medium-emphasis text-body-small d-flex align-center ga-2">
+        <v-icon icon="mdi-file-upload-outline" size="small" />
+        {{ t('show.dropEpisodeFilesHint') }}
+      </span>
     </template>
   </form-item-list>
 </template>

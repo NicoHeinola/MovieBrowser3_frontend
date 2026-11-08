@@ -328,6 +328,8 @@
     "addEntry": "Add another entry",
     "addEpisode": "Add another episode",
     "addEpisodesFromFiles": "Add episodes from files",
+    "dropEpisodeFiles": "Drop video files to add them as episodes",
+    "dropEpisodeFilesHint": "or drag video files here",
     "noEpisodesAdded": "No episodes were added. Duplicate filenames: {names}",
     "episodesAddedSkipped": "Added {count} episode(s). Skipped duplicate filenames: {names}",
     "episodesAdded": "Added {count} episode(s) from files.",

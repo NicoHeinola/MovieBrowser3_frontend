@@ -328,6 +328,8 @@
     "addEntry": "Lisää toinen osa",
     "addEpisode": "Lisää toinen jakso",
     "addEpisodesFromFiles": "Lisää jaksoja tiedostoista",
+    "dropEpisodeFiles": "Pudota videotiedostot lisätäksesi ne jaksoiksi",
+    "dropEpisodeFilesHint": "tai vedä videotiedostot tähän",
     "noEpisodesAdded": "Jaksoja ei lisätty. Päällekkäiset tiedostonimet: {names}",
     "episodesAddedSkipped": "Lisättiin {count} jakso(a). Ohitettiin päällekkäiset tiedostonimet: {names}",
     "episodesAdded": "Lisättiin {count} jakso(a) tiedostoista.",
