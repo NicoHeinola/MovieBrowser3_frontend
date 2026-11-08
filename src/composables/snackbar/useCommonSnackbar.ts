@@ -29,10 +29,10 @@ export const useCommonSnackbar = () => {
     showPresetSnackbar('success', 3000, message, overrides);
 
   const showErrorSnackbar = (message: string, overrides?: SnackbarPresetOptions) =>
-    showPresetSnackbar('error', 5000, message, overrides);
+    showPresetSnackbar('error', 8000, message, overrides);
 
   const showWarningSnackbar = (message: string, overrides?: SnackbarPresetOptions) =>
-    showPresetSnackbar('warning', 4000, message, overrides);
+    showPresetSnackbar('warning', 6000, message, overrides);
 
   const showAPIErrorSnackbar = (error: unknown): string => {
     const message = getApiErrorMessage(error);

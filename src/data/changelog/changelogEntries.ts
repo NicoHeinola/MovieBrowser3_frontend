@@ -13,6 +13,14 @@ export const changelogEntries: ChangelogEntry[] = [
     date: null,
     changes: [
       {
+        type: ChangelogChangeType.Fixed,
+        text: 'New notifications show instantly when many are on screen: the oldest ones make room.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Error and warning notifications stay on screen longer so long messages are easier to read.',
+      },
+      {
         type: ChangelogChangeType.Added,
         text: 'Admins can drag video files from a file explorer onto a show entry to add them as episodes.',
       },
