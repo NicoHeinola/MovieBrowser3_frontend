@@ -1,3 +1,5 @@
+import { overflowBlockScrollStrategy } from './overflowBlockScrollStrategy';
+
 export const ComponentDefaults = {
   VInput: {
     hideDetails: 'auto',
@@ -75,5 +77,9 @@ export const ComponentDefaults = {
   },
   VTooltip: {
     maxWidth: '300px',
+  },
+  /** Vuetify's `block` strategy hides fixed and sticky page elements in Firefox while a dialog is open. */
+  VDialog: {
+    scrollStrategy: overflowBlockScrollStrategy,
   },
 };

@@ -58,6 +58,10 @@ export const changelogEntries: ChangelogEntry[] = [
           'While saving, it shows which episode is uploading.',
         ],
       },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'In Firefox, floating buttons and bars stay visible while a dialog is open.',
+      },
     ],
   },
   {
