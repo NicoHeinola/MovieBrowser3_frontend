@@ -16,6 +16,10 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Added,
         text: 'Admins can drag video files from a file explorer onto a show entry to add them as episodes.',
       },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'No list reloads or reshuffles anymore when you play a show whose video file is missing.',
+      },
     ],
   },
   {

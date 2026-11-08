@@ -62,7 +62,7 @@ describe('useShowPlayback', () => {
     queryClient.clear();
   });
 
-  it('refreshes the shows when the video file turns out to be gone', async () => {
+  it('does not reload the shows when the video file turns out to be gone', async () => {
     const response = { status: 422, data: { code: ApiErrorCode.NoVideoFile, params: {} } } as AxiosResponse;
     const error = new AxiosError('Request failed', undefined, undefined, undefined, response);
     const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries');
@@ -71,7 +71,7 @@ describe('useShowPlayback', () => {
     await useShowPlayback().playEpisode(createEpisode(100));
 
     expect(showAPIErrorSnackbar).toHaveBeenCalledWith(error);
-    expect(invalidateQueries).toHaveBeenCalledOnce();
+    expect(invalidateQueries).not.toHaveBeenCalled();
   });
 
   it('leaves the shows alone on other playback errors', async () => {

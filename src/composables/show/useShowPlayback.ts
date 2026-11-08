@@ -6,10 +6,8 @@ import { ref } from 'vue';
 
 import { useShowWatchProgressCache } from '@/composables/show/useShowWatchProgressCache';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
-import { ApiErrorCode } from '@/enums/api/ApiErrorCode';
 import { i18n } from '@/plugins/i18n';
 import { episodePlaybackService } from '@/services/show/episodePlaybackService';
-import { isApiErrorCode } from '@/utils/api/isApiErrorCode';
 import { getResumeEpisode } from '@/utils/show/getResumeEpisode';
 
 interface PlaybackOptions {
@@ -26,7 +24,7 @@ export const useShowPlayback = () => {
   /** The show whose playback `playShow` is starting, so only its card shows a loader. */
   const startingShowId = ref<number | null>(null);
 
-  const { applyWatchProgress, refetchShowLists } = useShowWatchProgressCache();
+  const { applyWatchProgress } = useShowWatchProgressCache();
   const { showAPIErrorSnackbar, showWarningSnackbar } = useCommonSnackbar();
 
   /**
@@ -53,12 +51,8 @@ export const useShowPlayback = () => {
 
       return watchProgress;
     } catch (error: unknown) {
+      // A missing video file is not refetched: reloading every list would only flash and reshuffle them.
       showAPIErrorSnackbar(error);
-
-      // The backend just found the file gone and stored that, so the cached shows are out of date.
-      if (isApiErrorCode(error, ApiErrorCode.NoVideoFile)) {
-        refetchShowLists();
-      }
 
       return null;
     } finally {
