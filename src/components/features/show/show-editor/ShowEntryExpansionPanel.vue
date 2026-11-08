@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ShowEntryFormData } from './ShowEntryFormData';
-import { useDropZone } from '@vueuse/core';
+import type { ComponentPublicInstance } from 'vue';
+import { makeDroppable } from '@vue-dnd-kit/core';
 import { computed, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { formatFileSize } from '@/utils/file/formatFileSize';
@@ -16,18 +17,21 @@ const expanded = defineModel<boolean>('expanded', { default: false });
 
 const selectedTab = ref<string>('general');
 const episodesPart = useTemplateRef<InstanceType<typeof ShowEntryEpisodesFormPart>>('episodesPart');
-const dropZone = useTemplateRef<HTMLElement>('dropZone');
+const dropZone = useTemplateRef<ComponentPublicInstance>('dropZone');
 
-// No dataTypes filter: VueUse compares MIME types there, and the browser reports none for files like .mkv.
-// Native file drags from outside the page are not covered by the sortable library, so VueUse handles them.
+// Files dragged in from a file explorer. The library tracks the drag for the whole page, so the file inputs inside
+// (which stop drop events) can't leave the zone stuck, and those inputs are drop targets of their own that win over
+// this one. Only outside drags count: the episode rows inside are sorted with the library too.
 // The episodes part is eager, so it is mounted even while the panel is collapsed.
-const { isOverDropZone } = useDropZone(dropZone, {
-  multiple: true,
-  preventDefaultForUnhandled: true,
-  onDrop: (files) => {
-    episodesPart.value?.addPickedEpisodes((files ?? []).filter((file) => isEpisodeVideoFile(file)));
+const { isOver, isAccepting } = makeDroppable(() => dropZone.value?.$el as HTMLElement | undefined, {
+  accept: (context) => context.active.external !== undefined,
+  external: { files: true },
+  onDrop: (event) => {
+    episodesPart.value?.addPickedEpisodes((event.external?.files ?? []).filter((file) => isEpisodeVideoFile(file)));
   },
 });
+
+const isOverDropZone = computed<boolean>(() => isOver.value && isAccepting.value);
 
 /** The entry's measured video files, shown beside its episode count. */
 const videoBytes = computed<number>(() => getEntryVideoBytes(entry.value));

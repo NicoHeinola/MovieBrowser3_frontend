@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { EpisodeFormData } from './EpisodeFormData';
-import { computed } from 'vue';
+import type { ComponentPublicInstance } from 'vue';
+import { makeDroppable } from '@vue-dnd-kit/core';
+import { computed, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { MissingVideoFileChip } from '@/components/features/show/missing-video-file-chip';
 import { formatFileSize } from '@/utils/file/formatFileSize';
@@ -12,6 +14,8 @@ const { t, locale } = useI18n();
 
 const episode = defineModel<EpisodeFormData>('episode', { required: true });
 const expanded = defineModel<boolean>('expanded', { default: false });
+
+const fileInput = useTemplateRef<ComponentPublicInstance>('fileInput');
 
 const rules = computed(() => getRules(null));
 
@@ -27,6 +31,13 @@ const panelModelValue = computed<string[]>(() => {
 const updatePanelModelValue = (value: string[]): void => {
   expanded.value = value.includes('episode');
 };
+
+// A file dropped on the file input is this episode's file, which the input sets itself. As the innermost drop target
+// it takes the drop from the entry around it, which would add the file as a new episode, and hides its drop hint.
+makeDroppable(() => fileInput.value?.$el as HTMLElement | undefined, {
+  accept: (context) => context.active.external !== undefined,
+  external: { files: true },
+});
 </script>
 
 <template>
@@ -70,7 +81,7 @@ const updatePanelModelValue = (value: string[]): void => {
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-file-input v-model="episode.file" :label="t('show.file')" :rules="rules.episodeFile" />
+            <v-file-input v-model="episode.file" :label="t('show.file')" :rules="rules.episodeFile" ref="fileInput" />
           </v-col>
         </v-row>
       </template>

@@ -4,6 +4,7 @@ import type { Website } from '@/interfaces/api/models/Website';
 import type { DashboardStatsResponse } from '@/interfaces/api/responses/DashboardStatsResponse';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
@@ -13,7 +14,6 @@ import { StorageChart } from '@/components/features/dashboard/storage-chart';
 import { RecentShowList } from '@/components/features/show/recent-show-list';
 import { FavoriteWebsiteList } from '@/components/features/website/favorite-website-list';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
-import { useShowEditDialog } from '@/composables/show/useShowEditDialog';
 import { useWebsiteEditDialog } from '@/composables/website/useWebsiteEditDialog';
 import { DashboardQueryKey } from '@/enums/query/dashboardQueryKey';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
@@ -26,7 +26,7 @@ const RECENT_SHOW_COUNT = 8;
 /** How many of the biggest shows get their own arc in the storage chart. */
 const STORAGE_SHOW_COUNT = 12;
 
-const { openShowEditDialog } = useShowEditDialog();
+const router = useRouter();
 const { openWebsiteEditDialog } = useWebsiteEditDialog();
 const { t } = useI18n();
 
@@ -59,14 +59,12 @@ const recentShowsQuery = useAPIQuery<PaginatedResponse<Show>>({
 });
 
 /**
- * Adds a show, or edits one from the recent list, and refreshes the counts after a save or delete.
+ * Opens the show editor on a show, or on a new show. The counts refetch when the dashboard is shown again.
  * @param show - The show to edit; leave it out to add a show.
  * @returns Nothing.
  */
 const editShow = async (show?: Show): Promise<void> => {
-  if (await openShowEditDialog(show)) {
-    await statsQuery.refetch();
-  }
+  await router.push(show ? { name: 'admin-show-edit', params: { showId: show.id } } : { name: 'admin-show-new' });
 };
 
 /**

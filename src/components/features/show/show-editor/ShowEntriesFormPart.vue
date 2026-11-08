@@ -14,7 +14,11 @@ import ShowEntryExpansionPanel from './ShowEntryExpansionPanel.vue';
 const show = defineModel<ShowEntriesFormData>('show', { required: true });
 
 const zoneRef = useTemplateRef<HTMLElement>('zone');
-const expandedEntries = ref<ShowEntryFormData[]>([]);
+/**
+ * Keys of the open entries. Keys, not the entries: saving reloads the show into new objects, and saved entries must
+ * stay open across that.
+ */
+const expandedEntryKeys = ref<string[]>([]);
 
 const { confirm } = useConfirmDialog();
 const { t } = useI18n();
@@ -40,13 +44,19 @@ const getEntryRenderKey = (entry: ShowEntryFormData): string => {
   return entry.id == null ? getUnsavedRowKey(entry) : `entry-${entry.id}`;
 };
 
+/**
+ * Opens or closes an entry's panel.
+ *
+ * @param entry The entry.
+ * @param isExpanded Whether it should be open.
+ * @returns Nothing.
+ */
 const setEntryExpanded = (entry: ShowEntryFormData, isExpanded: boolean): void => {
-  if (isExpanded) {
-    expandedEntries.value = [...new Set([...expandedEntries.value, entry])];
-    return;
-  }
+  const key = getEntryRenderKey(entry);
 
-  expandedEntries.value = expandedEntries.value.filter((expandedEntry) => expandedEntry !== entry);
+  expandedEntryKeys.value = isExpanded
+    ? [...new Set([...expandedEntryKeys.value, key])]
+    : expandedEntryKeys.value.filter((expandedKey) => expandedKey !== key);
 };
 
 const removeEntry = async (index: number): Promise<void> => {
@@ -106,7 +116,7 @@ const draftEntries = useSortableItems<ShowEntryFormData>(zoneRef, {
       <sortable-item v-for="entry in draftEntries" :item="entry" class="d-flex ga-2" :key="getEntryRenderKey(entry)">
         <show-entry-expansion-panel
           :entry="entry"
-          :expanded="expandedEntries.includes(entry)"
+          :expanded="expandedEntryKeys.includes(getEntryRenderKey(entry))"
           style="min-width: 0"
           @update:expanded="setEntryExpanded(entry, $event)"
         />

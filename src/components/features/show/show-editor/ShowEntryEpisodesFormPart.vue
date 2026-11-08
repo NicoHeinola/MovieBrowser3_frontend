@@ -18,7 +18,11 @@ import ShowEpisodeExpansionPanel from './ShowEpisodeExpansionPanel.vue';
 const entry = defineModel<ShowEntryFormData>('entry', { required: true });
 
 const episodeZoneRef = useTemplateRef<HTMLElement>('episodeZone');
-const expandedEpisodes = ref<EpisodeFormData[]>([]);
+/**
+ * Keys of the open episodes. Keys, not the episodes: saving reloads the show into new objects, and saved episodes must
+ * stay open across that.
+ */
+const expandedEpisodeKeys = ref<string[]>([]);
 
 const { confirm } = useConfirmDialog();
 const { showSuccessSnackbar, showWarningSnackbar } = useCommonSnackbar();
@@ -40,13 +44,19 @@ const getEpisodeRenderKey = (episode: EpisodeFormData): string => {
   return episode.id == null ? getUnsavedRowKey(episode) : `episode-${episode.id}`;
 };
 
-const setEpisodeExpanded = (episode: EpisodeFormData, isExpanded: boolean): void => {
-  if (isExpanded) {
-    expandedEpisodes.value = [...new Set([...expandedEpisodes.value, episode])];
-    return;
-  }
+/**
+ * Opens or closes episode panels.
+ *
+ * @param episodes The episodes.
+ * @param isExpanded Whether they should be open.
+ * @returns Nothing.
+ */
+const setEpisodesExpanded = (episodes: EpisodeFormData[], isExpanded: boolean): void => {
+  const keys = new Set(episodes.map((episode) => getEpisodeRenderKey(episode)));
 
-  expandedEpisodes.value = expandedEpisodes.value.filter((expandedEpisode) => expandedEpisode !== episode);
+  expandedEpisodeKeys.value = isExpanded
+    ? [...new Set([...expandedEpisodeKeys.value, ...keys])]
+    : expandedEpisodeKeys.value.filter((expandedKey) => !keys.has(expandedKey));
 };
 
 const addEpisode = (): void => {
@@ -58,7 +68,7 @@ const addEpisode = (): void => {
   };
 
   episodes.push(nextEpisode);
-  setEpisodeExpanded(nextEpisode, true);
+  setEpisodesExpanded([nextEpisode], true);
 };
 
 /** Adds episodes for picked or dropped files, skipping duplicates. */
@@ -99,7 +109,7 @@ const addPickedEpisodes = (selectedFiles: File[]): void => {
   }
 
   episodes.push(...nextEpisodes);
-  expandedEpisodes.value = [...new Set([...expandedEpisodes.value, ...nextEpisodes])];
+  setEpisodesExpanded(nextEpisodes, true);
 
   if (duplicateFilenames.length > 0) {
     showWarningSnackbar(
@@ -155,7 +165,7 @@ const removeEpisode = async (index: number): Promise<void> => {
   entry.value.episodes?.splice(index, 1);
 
   if (removedEpisode) {
-    setEpisodeExpanded(removedEpisode, false);
+    setEpisodesExpanded([removedEpisode], false);
   }
 
   syncEpisodeSequenceNumbers();
@@ -184,10 +194,10 @@ const draftEpisodes = useSortableItems<EpisodeFormData>(episodeZoneRef, {
       >
         <show-episode-expansion-panel
           :episode="episode"
-          :expanded="expandedEpisodes.includes(episode)"
+          :expanded="expandedEpisodeKeys.includes(getEpisodeRenderKey(episode))"
           class="overflow-hidden"
           style="flex: 1 1 auto; min-width: 0"
-          @update:expanded="setEpisodeExpanded(episode, $event)"
+          @update:expanded="setEpisodesExpanded([episode], $event)"
         />
         <v-btn
           class="flex-shrink-0"

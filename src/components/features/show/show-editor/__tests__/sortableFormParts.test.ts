@@ -3,12 +3,15 @@ import type { ShowEntryFormData } from '../ShowEntryFormData';
 
 import { shallowMount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { computed, nextTick } from 'vue';
 import { createI18n } from 'vue-i18n';
 import { createVuetify } from 'vuetify';
 
 import { useSortableItems } from '@/composables/sortable/useSortableItems';
+import { deepClone } from '@/utils/clone/deepClone';
 import ShowEntriesFormPart from '../ShowEntriesFormPart.vue';
 import ShowEntryEpisodesFormPart from '../ShowEntryEpisodesFormPart.vue';
+import ShowEntryExpansionPanel from '../ShowEntryExpansionPanel.vue';
 
 vi.mock('@/composables/sortable/useSortableItems', () => ({
   useSortableItems: vi.fn(() => []),
@@ -73,5 +76,24 @@ describe('sortable show form parts', () => {
 
     expect(getKey?.({ id: 7 } as ShowEntryFormData)).toBe('entry-7');
     expect(getKey?.(unsaved)).toBe(getKey?.(unsaved));
+  });
+
+  it('keeps a saved entry open when the show reloads into new objects, as it does after a save', async () => {
+    // Render the rows for real, so their panels can be found.
+    vi.mocked(useSortableItems).mockImplementation((_zone, options) => computed(() => options.getItems()));
+    const show = { entries: [{ id: 1, name: 'A', sort_order: 0, episodes: [] }] as ShowEntryFormData[] };
+    const passThrough = { template: '<div><slot /></div>' };
+    const wrapper = shallowMount(ShowEntriesFormPart, {
+      props: { show },
+      global: { ...global, stubs: { FormItemList: passThrough, SortableItem: passThrough } },
+    });
+    const getPanel = () => wrapper.findComponent(ShowEntryExpansionPanel);
+
+    getPanel().vm.$emit('update:expanded', true);
+    await nextTick();
+    expect(getPanel().props('expanded')).toBe(true);
+
+    await wrapper.setProps({ show: deepClone(show) });
+    expect(getPanel().props('expanded')).toBe(true);
   });
 });

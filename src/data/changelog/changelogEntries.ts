@@ -47,6 +47,17 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Fixed,
         text: 'No list reloads or reshuffles anymore when you play a show whose video file is missing.',
       },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Admins edit and add shows on a page of their own instead of in a dialog.',
+        details: [
+          'Each show has its own link, so a reload keeps it open.',
+          'The header previews the title, images and categories as you type.',
+          'A side menu jumps between sections and marks the ones with fields to fix.',
+          'Leaving or discarding with unsaved changes asks first, and Ctrl+S saves.',
+          'While saving, it shows which episode is uploading.',
+        ],
+      },
     ],
   },
   {

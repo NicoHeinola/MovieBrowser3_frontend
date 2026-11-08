@@ -16,7 +16,8 @@ const initialized = ref(false);
 const isSquishing = ref(false);
 let resizeObserver: ResizeObserver | null = null;
 
-const activeRouteName = computed(() => String(route.name ?? ''));
+// Sub-pages such as the show editor name the link they belong under, so it stays highlighted there.
+const activeRouteName = computed(() => String(route.meta.activeNavRouteName ?? route.name ?? ''));
 const activeIndex = computed(() => props.linkRouteNames.indexOf(activeRouteName.value));
 
 /**

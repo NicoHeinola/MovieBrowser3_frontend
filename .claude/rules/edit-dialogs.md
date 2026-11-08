@@ -36,4 +36,5 @@ onMounted(() => {
 ## Opening the Dialog
 
 - The caller passes `deepClone(entity)` or an empty entity (`id: 0`) and refetches when the dialog closes with `true`.
-- Shows and websites are edited from more than one page, so their dialogs open through `useShowEditDialog` / `useWebsiteEditDialog`. These composables own the clone, the empty entity and the cache invalidation, and return whether the dialog saved.
+- Websites are edited from more than one page, so their dialog opens through `useWebsiteEditDialog`. It owns the clone, the empty entity and the cache invalidation, and returns whether the dialog saved.
+- Shows are too big for a dialog: they are edited on the `admin-show-edit` / `admin-show-new` pages (`show-editor` components, `useShowEditor`). Link there with `router.push` instead of opening a dialog.

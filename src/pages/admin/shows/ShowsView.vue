@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { AdminShowSearchFilters } from '@/composables/show/AdminShowSearchFilters';
+import type { Show } from '@/interfaces/api/models/Show';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import { SearchFilterDrawer } from '@/components/common/filter-drawer';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
 import { FloatingPagination } from '@/components/common/floating-pagination';
@@ -12,7 +14,6 @@ import { SearchToolbar } from '@/components/common/search-toolbar';
 import { ShowGrid, ShowGridSkeleton } from '@/components/features/show/show-grid';
 import { adminShowSearchFilterDefinitions } from '@/composables/show/adminShowSearchFilterDefinitions';
 import { showSortOptions } from '@/composables/show/showSortOptions';
-import { useShowEditDialog } from '@/composables/show/useShowEditDialog';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { SHOW_GRID_CARD_HEIGHT } from '@/utils/show/showGridCardHeight';
@@ -35,8 +36,17 @@ const {
   isLoading,
 } = useShowSearch<AdminShowSearchFilters>(ShowQueryKey.AdminShows, {}, adminShowSearchFilterDefinitions);
 
-const { openShowEditDialog } = useShowEditDialog();
+const router = useRouter();
 const { t } = useI18n();
+
+/**
+ * Opens the show editor on a show, or on a new show.
+ * @param show - The show to edit; leave it out to add a show.
+ * @returns Nothing.
+ */
+const editShow = async (show?: Show | null): Promise<void> => {
+  await router.push(show ? { name: 'admin-show-edit', params: { showId: show.id } } : { name: 'admin-show-new' });
+};
 </script>
 
 <template>
@@ -65,7 +75,7 @@ const { t } = useI18n();
             :shows="shows"
             :style="gridStyle"
             class="d-flex justify-center flex-0-0"
-            @click:show="openShowEditDialog"
+            @click:show="void editShow($event)"
           />
         </v-col>
       </v-row>
@@ -87,7 +97,7 @@ const { t } = useI18n();
   </page-container>
 
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
-  <floating-action-button class="z-100" icon="mdi-plus" @click="openShowEditDialog()" />
+  <floating-action-button class="z-100" icon="mdi-plus" @click="void editShow()" />
 
   <search-filter-drawer
     v-model:filters="filters"

@@ -66,6 +66,26 @@ const router = createRouter({
       component: () => import('@/pages/admin/shows/ShowsView.vue'),
     },
     {
+      path: '/admin/shows/new',
+      name: 'admin-show-new',
+      meta: {
+        requiresAuth: true,
+        requiresAdmin: true,
+        activeNavRouteName: 'admin-shows',
+      },
+      component: () => import('@/pages/admin/show-edit/ShowEditView.vue'),
+    },
+    {
+      path: String.raw`/admin/shows/:showId(\d+)`,
+      name: 'admin-show-edit',
+      meta: {
+        requiresAuth: true,
+        requiresAdmin: true,
+        activeNavRouteName: 'admin-shows',
+      },
+      component: () => import('@/pages/admin/show-edit/ShowEditView.vue'),
+    },
+    {
       path: '/admin/categories',
       name: 'admin-categories',
       meta: {
