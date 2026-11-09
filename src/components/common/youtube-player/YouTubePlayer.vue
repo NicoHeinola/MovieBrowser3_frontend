@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { YouTubePlayerInstance } from './youTubePlayerInstance';
 import type { YouTubeWindow } from './youTubeWindow';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -32,7 +31,7 @@ const emit = defineEmits<{
 const iframeRef = ref<HTMLIFrameElement | null>(null);
 const iframeId = `yt-player-${Math.random().toString(36).slice(2, 11)}`;
 
-let ytPlayer: YouTubePlayerInstance | null = null;
+let ytPlayer: YT.Player | null = null;
 
 const playerSrc = computed<string>(() => {
   const params = new URLSearchParams({
