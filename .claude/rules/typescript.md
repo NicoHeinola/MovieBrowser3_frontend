@@ -103,8 +103,8 @@ useAPIQuery({
 
 ## Export Surface
 
-- Outside `index.ts` barrel files, export one symbol per file, including interfaces, types and constants. ESLint (`no-restricted-syntax`) enforces this for `src/**/*.ts`, excluding barrels, `.d.ts` files and tests.
-- If a file needs to expose multiple exported functions, interfaces, types, or constants, split them into sibling files named after the exported symbol.
+- The one-value rule in File Exports applies to `src/**/*.ts`, excluding `index.ts` barrels, `.d.ts` files and tests; ESLint (`no-restricted-syntax`) enforces it.
+- When a file would export a second value, move that value to a sibling file named after it.
 - Keep `index.ts` focused on re-exporting a namespace's small public surface.
 
 ## Namespace Fit
