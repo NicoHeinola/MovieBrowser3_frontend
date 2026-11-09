@@ -1,6 +1,6 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import type { Ref } from 'vue';
-import { useQueryClient } from '@tanstack/vue-query';
+import { hashKey, useQueryClient } from '@tanstack/vue-query';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -28,6 +28,13 @@ const createEmptyShow = (): Show =>
     outgoing_links: [],
     incoming_links: [],
   }) as unknown as Show;
+
+/**
+ * The editor's query key for a show.
+ * @param showId - The show's id, or null for a show not created yet.
+ * @returns The key.
+ */
+const getEditorQueryKey = (showId: number | null) => [ShowQueryKey.AdminShowEditor, showId] as const;
 
 /**
  * Copies a show without the current user's watch data, which the watch streams patch into every cached show while
@@ -70,11 +77,13 @@ export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
   const isDeleting = ref<boolean>(false);
 
   const showQuery = useAPIQuery<Show>({
-    queryKey: computed(() => [ShowQueryKey.AdminShowEditor, showId.value]),
+    queryKey: computed(() => getEditorQueryKey(showId.value)),
     queryFn: () => showService.get(showId.value as number),
     enabled: computed<boolean>(() => showId.value !== null),
-    // Edits start from what the backend holds now, not from a list that may be minutes old.
-    staleTime: 0,
+    // Edits start from what the backend holds now: every open of the editor fetches. Afterwards the cache is enough,
+    // as saves put their reload in it, so a new show's switch to its own id doesn't fetch it again.
+    staleTime: Infinity,
+    refetchOnMount: 'always',
     refetchOnWindowFocus: false,
   });
 
@@ -133,14 +142,16 @@ export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
     }
 
     isSaving.value = true;
+    let isReloaded = false;
 
     try {
       await saveDraft(draft, savedShow.value);
 
       // Reload so the draft holds what the backend made of it, such as file sizes and ids of created items.
       const reloadedShow = await showService.get(draft.id);
-      queryClient.setQueryData([ShowQueryKey.AdminShowEditor, draft.id], reloadedShow);
+      queryClient.setQueryData(getEditorQueryKey(draft.id), reloadedShow);
       reset(reloadedShow);
+      isReloaded = true;
 
       showSuccessSnackbar(t('show.saved'));
 
@@ -154,7 +165,13 @@ export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
 
       // Even a failed save may have reached the backend, and shows appear on many pages and autocompletes.
       if (draft.id) {
-        void queryClient.invalidateQueries(getQueryKeyFilter(ShowQueryKey));
+        const showQueries = getQueryKeyFilter(ShowQueryKey);
+        const editorQueryHash = hashKey(getEditorQueryKey(draft.id));
+
+        void queryClient.invalidateQueries({
+          // The editor's own query holds the reload already; invalidating it would fetch the show a second time.
+          predicate: (query) => showQueries.predicate(query) && !(isReloaded && query.queryHash === editorQueryHash),
+        });
       }
     }
   };
@@ -187,7 +204,7 @@ export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
       await showService.remove(draft.id);
       // Nothing should look like it can be saved now, so a leave guard lets the user go.
       pristineShow.value = deepClone(draft);
-      queryClient.removeQueries({ queryKey: [ShowQueryKey.AdminShowEditor, draft.id] });
+      queryClient.removeQueries({ queryKey: getEditorQueryKey(draft.id) });
       void queryClient.invalidateQueries(getQueryKeyFilter(ShowQueryKey));
 
       return true;

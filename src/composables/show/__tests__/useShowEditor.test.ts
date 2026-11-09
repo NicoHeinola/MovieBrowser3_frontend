@@ -199,6 +199,33 @@ describe('useShowEditor', () => {
     expect(episodeProgress.value).toBeNull();
   });
 
+  it('fetches the show once after a save', async () => {
+    const { show, save } = await setupEditor(4);
+    vi.mocked(showService.get).mockClear();
+
+    show.value!.description = 'Pirates';
+    await save();
+    await flushPromises();
+
+    expect(showService.get).toHaveBeenCalledOnce();
+  });
+
+  it('fetches a new show once after its save, also when the editor switches to its id', async () => {
+    vi.mocked(showService.create).mockResolvedValue({ id: 9 } as Show);
+    vi.mocked(showTitleService.create).mockResolvedValue({ id: 90 } as never);
+    vi.mocked(showEntryService.create).mockResolvedValue({ id: 91 } as never);
+    vi.mocked(showService.get).mockResolvedValue({ ...createShow(), id: 9 });
+    const { show, save, id } = await setupEditor(null);
+
+    show.value!.titles[0]!.title = 'Bleach';
+    await save();
+    // The page moves to the new show's edit URL.
+    id.value = 9;
+    await flushPromises();
+
+    expect(showService.get).toHaveBeenCalledOnce();
+  });
+
   it('keeps the draft after a failed save, so saving again retries it', async () => {
     vi.mocked(showService.update).mockRejectedValueOnce(new Error('fail'));
     const { show, save, hasChanges } = await setupEditor(4);
