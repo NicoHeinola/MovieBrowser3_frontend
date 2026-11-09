@@ -12,10 +12,21 @@ import { episodeVideoFileExtensions } from '@/utils/show/episodeVideoFileExtensi
 import { getEpisodeNameFromFilename } from '@/utils/show/getEpisodeNameFromFilename';
 import { sortFilesByName } from '@/utils/show/sortFilesByName';
 import { getUnsavedRowKey } from '@/utils/sortable/getUnsavedRowKey';
+import { renumberItems } from '@/utils/sortable/renumberItems';
 
 import ShowEpisodeExpansionPanel from './ShowEpisodeExpansionPanel.vue';
 
 const entry = defineModel<ShowEntryFormData>('entry', { required: true });
+
+const { moveTargets = [] } = defineProps<{
+  /** The show's other entries, which an episode can move to. */
+  moveTargets?: ShowEntryFormData[];
+}>();
+
+const emit = defineEmits<{
+  /** The user moves an episode to another entry; the owner of all entries moves it. */
+  move: [episode: EpisodeFormData, target: ShowEntryFormData];
+}>();
 
 const episodeZoneRef = useTemplateRef<HTMLElement>('episodeZone');
 /**
@@ -29,9 +40,7 @@ const { showSuccessSnackbar, showWarningSnackbar } = useCommonSnackbar();
 const { t } = useI18n();
 
 const syncEpisodeSequenceNumbers = (): void => {
-  for (const [index, episode] of (entry.value.episodes ?? []).entries()) {
-    episode.sequence_number = index;
-  }
+  renumberItems(entry.value.episodes ?? [], 'sequence_number');
 };
 
 /**
@@ -171,6 +180,18 @@ const removeEpisode = async (index: number): Promise<void> => {
   syncEpisodeSequenceNumbers();
 };
 
+/**
+ * Hands an episode to another entry. It keeps its id, so saving moves it with its file and watch progress.
+ *
+ * @param episode The episode.
+ * @param target The entry it moves to.
+ * @returns Nothing.
+ */
+const moveEpisode = (episode: EpisodeFormData, target: ShowEntryFormData): void => {
+  setEpisodesExpanded([episode], false);
+  emit('move', episode, target);
+};
+
 defineExpose({ addPickedEpisodes });
 
 const draftEpisodes = useSortableItems<EpisodeFormData>(episodeZoneRef, {
@@ -199,6 +220,31 @@ const draftEpisodes = useSortableItems<EpisodeFormData>(episodeZoneRef, {
           style="flex: 1 1 auto; min-width: 0"
           @update:expanded="setEpisodesExpanded([episode], $event)"
         />
+        <v-menu location="bottom end">
+          <template #activator="{ props: menuProps }">
+            <v-btn
+              v-bind="menuProps"
+              :aria-label="t('show.moveEpisode')"
+              :disabled="moveTargets.length === 0"
+              :title="t('show.moveEpisode')"
+              class="flex-shrink-0"
+              icon="mdi-folder-move-outline"
+              size="x-small"
+              variant="tonal"
+              @click.stop
+            />
+          </template>
+
+          <v-list density="compact">
+            <v-list-subheader>{{ t('show.moveEpisodeTo') }}</v-list-subheader>
+            <v-list-item
+              v-for="(target, targetIndex) in moveTargets"
+              :title="target.name"
+              @click="moveEpisode(episode, target)"
+              :key="targetIndex"
+            />
+          </v-list>
+        </v-menu>
         <v-btn
           class="flex-shrink-0"
           color="error"

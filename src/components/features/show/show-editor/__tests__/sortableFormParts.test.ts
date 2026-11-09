@@ -17,6 +17,11 @@ vi.mock('@/composables/sortable/useSortableItems', () => ({
   useSortableItems: vi.fn(() => []),
 }));
 
+// The entry panel takes dropped files; without a drag provider around it, the library would throw.
+vi.mock('@vue-dnd-kit/core', () => ({
+  makeDroppable: () => ({ isOver: { value: false }, isAccepting: { value: false } }),
+}));
+
 vi.mock('@/composables/dialog/useConfirmDialog', () => ({
   useConfirmDialog: () => ({ confirm: vi.fn() }),
 }));
@@ -65,6 +70,94 @@ describe('sortable show form parts', () => {
     expect(entry.episodes).toEqual([
       { name: 'B', sequence_number: 0 },
       { id: 1, name: 'A', sequence_number: 1 },
+    ]);
+  });
+
+  it("offers the other entries in an episode's move menu and hands the episode up when one is picked", async () => {
+    vi.mocked(useSortableItems).mockImplementation((_zone, options) => computed(() => options.getItems()));
+    const episode = { id: 2, name: 'Movie', sequence_number: 0 } as EpisodeFormData;
+    const movie = { id: 4, name: 'Movie', sort_order: 1, episodes: [] } as ShowEntryFormData;
+    const passThrough = { template: '<div><slot /></div>' };
+    // The menu renders its activator and list inline, so both can be found.
+    const menu = { template: '<div><slot name="activator" :props="{}" /><slot /></div>' };
+    const wrapper = shallowMount(ShowEntryEpisodesFormPart, {
+      props: { entry: { episodes: [episode] } as ShowEntryFormData, moveTargets: [movie] },
+      global: {
+        ...global,
+        stubs: { FormItemList: passThrough, SortableItem: passThrough, VMenu: menu, VList: passThrough },
+      },
+    });
+
+    const [target] = wrapper.findAllComponents({ name: 'VListItem' });
+    expect(target!.props('title')).toBe('Movie');
+
+    target!.vm.$emit('click');
+    expect(wrapper.emitted('move')).toEqual([[episode, movie]]);
+  });
+
+  it('turns the move button off when the show has no other entry', () => {
+    vi.mocked(useSortableItems).mockImplementation((_zone, options) => computed(() => options.getItems()));
+    const passThrough = { template: '<div><slot /></div>' };
+    const menu = { template: '<div><slot name="activator" :props="{}" /><slot /></div>' };
+    const wrapper = shallowMount(ShowEntryEpisodesFormPart, {
+      props: { entry: { episodes: [{ id: 2, name: 'A', sequence_number: 0 }] } as ShowEntryFormData },
+      global: { ...global, stubs: { FormItemList: passThrough, SortableItem: passThrough, VMenu: menu } },
+    });
+
+    const moveButton = wrapper
+      .findAllComponents({ name: 'VBtn' })
+      .find((button) => button.props('icon') === 'mdi-folder-move-outline');
+    expect(moveButton!.props('disabled')).toBe(true);
+  });
+
+  it('passes an episode move from the episodes part up to the entries', () => {
+    const passThrough = { template: '<div><slot /></div>' };
+    const movie = { id: 4, name: 'Movie', sort_order: 1, episodes: [] } as ShowEntryFormData;
+    const episode = { id: 2, name: 'Movie', sequence_number: 0 } as EpisodeFormData;
+    const wrapper = shallowMount(ShowEntryExpansionPanel, {
+      props: { entry: { id: 1, name: 'Season 1', sort_order: 0, episodes: [episode] } as never, moveTargets: [movie] },
+      global: {
+        ...global,
+        // Render the panel's content, where the episodes part sits.
+        stubs: {
+          VExpansionPanels: passThrough,
+          VExpansionPanel: { template: '<div><slot name="text" /></div>' },
+          VRow: passThrough,
+          VCol: passThrough,
+          VTabsWindow: passThrough,
+          VTabsWindowItem: passThrough,
+        },
+      },
+    });
+    const episodesPart = wrapper.findComponent(ShowEntryEpisodesFormPart);
+
+    expect(episodesPart.props('moveTargets')).toEqual([movie]);
+    episodesPart.vm.$emit('move', episode, movie);
+
+    expect(wrapper.emitted('move-episode')).toEqual([[episode, movie]]);
+  });
+
+  it('moves an episode to the end of another entry and renumbers both', async () => {
+    vi.mocked(useSortableItems).mockImplementation((_zone, options) => computed(() => options.getItems()));
+    const moved = { id: 2, name: 'Movie', sequence_number: 0 } as EpisodeFormData;
+    const second = { id: 3, name: 'B', sequence_number: 1 };
+    const season = { id: 1, name: 'Season 1', sort_order: 0, episodes: [moved, second] };
+    const movie = { id: 4, name: 'Movie', sort_order: 1, episodes: [{ id: 5, name: 'C', sequence_number: 0 }] };
+    const show = { entries: [season, movie] as ShowEntryFormData[] };
+    const passThrough = { template: '<div><slot /></div>' };
+    const wrapper = shallowMount(ShowEntriesFormPart, {
+      props: { show },
+      global: { ...global, stubs: { FormItemList: passThrough, SortableItem: passThrough } },
+    });
+    const [seasonPanel] = wrapper.findAllComponents(ShowEntryExpansionPanel);
+
+    expect(seasonPanel!.props('moveTargets')).toEqual([movie]);
+    seasonPanel!.vm.$emit('move-episode', moved, movie);
+
+    expect(season.episodes).toEqual([{ id: 3, name: 'B', sequence_number: 0 }]);
+    expect(movie.episodes).toEqual([
+      { id: 5, name: 'C', sequence_number: 0 },
+      { id: 2, name: 'Movie', sequence_number: 1 },
     ]);
   });
 

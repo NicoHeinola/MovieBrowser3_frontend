@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { EpisodeFormData } from './EpisodeFormData';
 import type { ShowEntryFormData } from './ShowEntryFormData';
 import type { ComponentPublicInstance } from 'vue';
 import { makeDroppable } from '@vue-dnd-kit/core';
@@ -14,6 +15,16 @@ const { t, locale } = useI18n();
 
 const entry = defineModel<ShowEntryFormData>('entry', { required: true });
 const expanded = defineModel<boolean>('expanded', { default: false });
+
+const { moveTargets = [] } = defineProps<{
+  /** The show's other entries, which an episode can move to. */
+  moveTargets?: ShowEntryFormData[];
+}>();
+
+const emit = defineEmits<{
+  /** The user moves one of this entry's episodes to another entry. */
+  'move-episode': [episode: EpisodeFormData, target: ShowEntryFormData];
+}>();
 
 const selectedTab = ref<string>('general');
 const episodesPart = useTemplateRef<InstanceType<typeof ShowEntryEpisodesFormPart>>('episodesPart');
@@ -99,7 +110,12 @@ const updatePanelModelValue = (value: string[]): void => {
               </v-tabs-window-item>
 
               <v-tabs-window-item class="pa-2" value="episodes" eager>
-                <show-entry-episodes-form-part v-model:entry="entry" ref="episodesPart" />
+                <show-entry-episodes-form-part
+                  v-model:entry="entry"
+                  :move-targets="moveTargets"
+                  @move="(episode, target) => emit('move-episode', episode, target)"
+                  ref="episodesPart"
+                />
               </v-tabs-window-item>
             </v-tabs-window>
           </v-col>

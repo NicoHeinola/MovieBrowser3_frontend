@@ -1,6 +1,8 @@
-import type { ObjectChangeCheckOptions } from '@/utils/object/ObjectChangeCheckOptions';
+import type { DeleteRemovedItemsOptions } from './DeleteRemovedItemsOptions';
+import type { SaveItemsOptions } from './SaveItemsOptions';
 
-import { getSyncPlan } from './getSyncPlan';
+import { deleteRemovedItems } from './deleteRemovedItems';
+import { saveItems } from './saveItems';
 
 /**
  * Syncs a collection of items with the backend by creating new items,
@@ -32,32 +34,11 @@ import { getSyncPlan } from './getSyncPlan';
 export const syncItems = async <T extends Record<string, unknown>, K extends keyof T = 'id' & keyof T>(
   newItems: T[],
   oldItems: T[],
-  options: {
-    idKey?: K;
-    compareOptions?: ObjectChangeCheckOptions;
-    create: (item: T) => Promise<T>;
-    update: (id: T[K], item: T) => Promise<void>;
-    delete: (id: T[K]) => Promise<void>;
-    onItem?: (action: 'create' | 'update' | 'delete', item: T) => Promise<void> | void;
-  },
+  options: Omit<SaveItemsOptions<T, K>, 'onItem'> &
+    Omit<DeleteRemovedItemsOptions<T, K>, 'onItem'> & {
+      onItem?: (action: 'create' | 'update' | 'delete', item: T) => Promise<void> | void;
+    },
 ): Promise<void> => {
-  const idKey = (options.idKey ?? 'id') as K;
-  const { toCreate, toUpdate, toDelete } = getSyncPlan(newItems, oldItems, idKey, options.compareOptions);
-
-  for (const item of newItems) {
-    if (toCreate.includes(item)) {
-      const createdItem = await options.create(item);
-      item[idKey] = createdItem[idKey];
-      await options.onItem?.('create', item);
-    } else if (toUpdate.includes(item)) {
-      await options.update(item[idKey], item);
-      await options.onItem?.('update', item);
-    }
-  }
-
-  for (const item of toDelete) {
-    await options.delete(item[idKey]);
-    oldItems.splice(oldItems.indexOf(item), 1);
-    await options.onItem?.('delete', item);
-  }
+  await saveItems(newItems, oldItems, options);
+  await deleteRemovedItems(newItems, oldItems, options);
 };

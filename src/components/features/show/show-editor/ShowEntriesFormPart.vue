@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { EpisodeFormData } from './EpisodeFormData';
 import type { ShowEntriesFormData } from './ShowEntriesFormData';
 import type { ShowEntryFormData } from './ShowEntryFormData';
 import { ref, useTemplateRef } from 'vue';
@@ -9,6 +10,7 @@ import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useSortableItems } from '@/composables/sortable/useSortableItems';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
 import { getUnsavedRowKey } from '@/utils/sortable/getUnsavedRowKey';
+import { renumberItems } from '@/utils/sortable/renumberItems';
 import ShowEntryExpansionPanel from './ShowEntryExpansionPanel.vue';
 
 const show = defineModel<ShowEntriesFormData>('show', { required: true });
@@ -29,9 +31,7 @@ const { t } = useI18n();
  * @returns Nothing.
  */
 const syncEntrySortOrder = (): void => {
-  for (const [index, entry] of (show.value.entries ?? []).entries()) {
-    entry.sort_order = index;
-  }
+  renumberItems(show.value.entries ?? [], 'sort_order');
 };
 
 /**
@@ -100,6 +100,29 @@ const addEntry = (): void => {
   setEntryExpanded(nextEntry, true);
 };
 
+/**
+ * Moves an episode to the end of another entry. It keeps its id, so saving moves it instead of deleting it.
+ *
+ * @param source The entry the episode is in.
+ * @param episode The episode.
+ * @param target The entry it moves to.
+ * @returns Nothing.
+ */
+const moveEpisode = (source: ShowEntryFormData, episode: EpisodeFormData, target: ShowEntryFormData): void => {
+  // A reactive array's indexOf finds the episode whether it came as the reactive proxy or the raw object.
+  const index = source.episodes?.indexOf(episode) ?? -1;
+
+  if (!source.episodes || index === -1) {
+    return;
+  }
+
+  source.episodes.splice(index, 1);
+  (target.episodes ??= []).push(episode);
+
+  renumberItems(source.episodes, 'sequence_number');
+  renumberItems(target.episodes, 'sequence_number');
+};
+
 const draftEntries = useSortableItems<ShowEntryFormData>(zoneRef, {
   getItems: () => show.value.entries ?? [],
   getKey: getEntryRenderKey,
@@ -117,7 +140,9 @@ const draftEntries = useSortableItems<ShowEntryFormData>(zoneRef, {
         <show-entry-expansion-panel
           :entry="entry"
           :expanded="expandedEntryKeys.includes(getEntryRenderKey(entry))"
+          :move-targets="(show.entries ?? []).filter((candidate) => candidate !== entry)"
           style="min-width: 0"
+          @move-episode="(episode, target) => moveEpisode(entry, episode, target)"
           @update:expanded="setEntryExpanded(entry, $event)"
         />
         <v-btn

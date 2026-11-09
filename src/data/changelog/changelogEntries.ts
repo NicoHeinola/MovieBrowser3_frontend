@@ -9,12 +9,24 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
-    version: '2.1.1',
+    version: '2.2.0',
     date: null,
     changes: [
       {
+        type: ChangelogChangeType.Added,
+        text: 'Move episodes to another season or movie in the show editor.',
+        details: [
+          "Pick the entry from the episode's move menu.",
+          'The episode keeps its video file and watch progress.',
+        ],
+      },
+      {
         type: ChangelogChangeType.Changed,
         text: 'The show preview video is muted when you start watching the show, keeping your own volume choice.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: "Adding a removed episode's video file to another entry in the same save no longer loses the file.",
       },
     ],
   },

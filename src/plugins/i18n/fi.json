@@ -332,6 +332,8 @@
     "removeEntryConfirm": "Haluatko varmasti poistaa kohteen \"{name}\"?",
     "addEntry": "Lisää toinen osa",
     "addEpisode": "Lisää toinen jakso",
+    "moveEpisode": "Siirrä toiseen kohteeseen",
+    "moveEpisodeTo": "Siirrä kohteeseen",
     "addEpisodesFromFiles": "Lisää jaksoja tiedostoista",
     "dropEpisodeFiles": "Pudota videotiedostot lisätäksesi ne jaksoiksi",
     "dropEpisodeFilesHint": "tai vedä videotiedostot tähän",

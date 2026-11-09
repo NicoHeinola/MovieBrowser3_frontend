@@ -332,6 +332,8 @@
     "removeEntryConfirm": "Are you sure you want to remove \"{name}\"?",
     "addEntry": "Add another entry",
     "addEpisode": "Add another episode",
+    "moveEpisode": "Move to another entry",
+    "moveEpisodeTo": "Move to",
     "addEpisodesFromFiles": "Add episodes from files",
     "dropEpisodeFiles": "Drop video files to add them as episodes",
     "dropEpisodeFilesHint": "or drag video files here",
