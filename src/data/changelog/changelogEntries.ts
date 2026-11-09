@@ -25,6 +25,10 @@ export const changelogEntries: ChangelogEntry[] = [
         text: 'The show preview video is muted when you start watching the show, keeping your own volume choice.',
       },
       {
+        type: ChangelogChangeType.Changed,
+        text: 'The "See all results" button in the show search is rounded to match the search menu.',
+      },
+      {
         type: ChangelogChangeType.Fixed,
         text: "Adding a removed episode's video file to another entry in the same save no longer loses the file.",
       },

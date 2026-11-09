@@ -123,7 +123,7 @@ onKeyStroke('k', (event) => {
       <v-divider />
 
       <v-card-actions class="pa-4">
-        <v-btn color="primary" prepend-icon="mdi-magnify" variant="flat" block @click="submit">
+        <v-btn color="primary" prepend-icon="mdi-magnify" rounded="pill" variant="flat" block @click="submit">
           {{
             totalResults > 0 && !isLoading
               ? t('show.seeAllResultsCount', { count: totalResults })

@@ -273,6 +273,7 @@ components/
 - Spacing utilities (margin, padding and gap, such as `pa-*`, `mt-*`, `ga-*`) use even steps such as 2 and 4, plus 5 (20px), which matches Vuetify's dialog and toolbar insets (`base-dialog` uses `pa-5`). Never use 1, 3, 7 or other odd steps. ESLint enforces this with `vue/no-restricted-class`.
 - Space siblings with a flex container and gap (`d-flex ga-2 align-center`), not margins on a child (`ml-2`, `mr-4`). Use margins only when there is no shared parent to flex.
 - A button next to an input sits beside it in a `d-flex ga-2` row, not in the input's `#append` slot.
+- A full-width button at the bottom of a strongly rounded card (`rounded="xl"` or rounder, such as the show search menu) is `rounded="pill"`, so its shape follows the card's.
 - Show an image or video together with its URL field or link in `media-preview-card`.
 - Empty and info `v-alert`s shrink to their content with `class="flex-0-1"`; never let them stretch across the row.
 - `v-icon` uses a named size (`x-small`, `small`, `default`, `large`, `x-large`), never a pixel number like `size="20"`. Named sizes scale with the font, so icons that must match sit outside `text-*` classes.
