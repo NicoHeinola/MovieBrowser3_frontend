@@ -3,20 +3,25 @@ import prettier from 'eslint-config-prettier';
 import vuetify from 'eslint-config-vuetify';
 import pluginVue from 'eslint-plugin-vue';
 
-/** Matches any export statement, for the one-export-per-file rule. */
-const exportDeclaration = ':matches(ExportNamedDeclaration, ExportDefaultDeclaration)';
+/** Matches an export of a value (constant, function, class, enum); type and interface exports don't count. */
+const valueDeclaration = 'VariableDeclaration|FunctionDeclaration|ClassDeclaration|TSEnumDeclaration';
+const valueNamedExport = `ExportNamedDeclaration[declaration.type=/^(${valueDeclaration})$/]`;
+const valueExport = `:matches(ExportDefaultDeclaration, ${valueNamedExport})`;
 
-/** One exported symbol per file; barrels re-export a namespace's public surface instead. */
-const oneExportPerFile = [
+/**
+ * One exported value per file, together with the types that belong to it (its options, parameters, return shape).
+ * Barrels re-export a namespace's public surface instead.
+ */
+const oneValueExportPerFile = [
   {
-    // A second top-level export after the first one.
-    selector: `Program > ${exportDeclaration} ~ ${exportDeclaration}`,
-    message: 'Export one symbol per file. Move this export to a sibling file named after it.',
+    // A second exported value after the first one.
+    selector: `Program > ${valueExport} ~ ${valueExport}`,
+    message: 'Export one value per file. Move this export to a sibling file named after it.',
   },
   {
     // `export const a = 1, b = 2;`
     selector: 'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator ~ VariableDeclarator',
-    message: 'Export one symbol per file. Move this export to a sibling file named after it.',
+    message: 'Export one value per file. Move this export to a sibling file named after it.',
   },
 ];
 
@@ -86,15 +91,15 @@ export default [
     files: ['src/**/*.ts'],
     ignores: ['src/**/index.ts', 'src/**/*.d.ts', 'src/**/__tests__/**'],
     rules: {
-      'no-restricted-syntax': ['error', ...oneExportPerFile],
+      'no-restricted-syntax': ['error', ...oneValueExportPerFile],
     },
   },
   {
-    // Flat config replaces a rule's options instead of merging them, so this repeats the one-export rule.
+    // Flat config replaces a rule's options instead of merging them, so this repeats the one-value-export rule.
     files: ['src/composables/**/*.ts'],
     ignores: ['src/**/index.ts', 'src/**/*.d.ts', 'src/**/__tests__/**'],
     rules: {
-      'no-restricted-syntax': ['error', ...oneExportPerFile, ...composableNaming],
+      'no-restricted-syntax': ['error', ...oneValueExportPerFile, ...composableNaming],
     },
   },
   {

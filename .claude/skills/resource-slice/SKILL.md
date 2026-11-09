@@ -16,7 +16,7 @@ Reference slice: **categories**. Before writing anything, read the files it touc
 
 ## 2. Contracts
 
-- `models/<Name>.ts`, `requests/Create<Name>Request.ts` and `requests/Update<Name>Request.ts`. Keep one export per file and the backend's field names as-is.
+- `models/<Name>.ts`, `requests/Create<Name>Request.ts` and `requests/Update<Name>Request.ts`. Keep one model or request type per file and the backend's field names as-is.
 - Paginated lists reuse `PaginatedResponse<T>`. Plain arrays get no response file.
 
 ## 3. Service + Test

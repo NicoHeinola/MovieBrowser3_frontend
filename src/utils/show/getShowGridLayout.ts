@@ -1,5 +1,3 @@
-import type { ShowGridLayout } from './ShowGridLayout';
-
 import { SHOW_GRID_CARD_HEIGHT } from './showGridCardHeight';
 import { SHOW_GRID_CARD_WIDTH } from './showGridCardWidth';
 
@@ -14,6 +12,14 @@ const GRID_TOP_OFFSET = 225;
 
 /** Fewest rows on a page. A single row is too little to browse, so short windows scroll instead. */
 const MIN_ROWS = 2;
+
+/** How a show grid fills a screen. */
+export interface ShowGridLayout {
+  /** Shows per page, always whole rows. */
+  pageSize: number;
+  /** Exact width of the grid, in pixels. */
+  width: number;
+}
 
 /**
  * Fits the show grid to a viewport: as many columns and whole rows as fit, so a full page fills the screen without

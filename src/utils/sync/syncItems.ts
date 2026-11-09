@@ -1,5 +1,5 @@
-import type { DeleteRemovedItemsOptions } from './DeleteRemovedItemsOptions';
-import type { SaveItemsOptions } from './SaveItemsOptions';
+import type { DeleteRemovedItemsOptions } from './deleteRemovedItems';
+import type { SaveItemsOptions } from './saveItems';
 
 import { deleteRemovedItems } from './deleteRemovedItems';
 import { saveItems } from './saveItems';

@@ -1,4 +1,4 @@
-import type { PaginatedSearchOptions } from '../PaginatedSearchOptions';
+import type { PaginatedSearchOptions } from '../usePaginatedSearch';
 import type { EffectScope } from 'vue';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { flushPromises } from '@vue/test-utils';

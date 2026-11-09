@@ -1,8 +1,12 @@
-import type { ApiClientAuthOptions } from './apiClientAuthOptions';
-
 import axios from 'axios';
 
 import { apiClient } from './apiClient';
+
+/** Hooks the API client uses to authenticate requests and react to an expired session. */
+export interface ApiClientAuthOptions {
+  getToken: () => string | null;
+  onUnauthorized: () => void | Promise<void>;
+}
 
 /**
  * Adds the bearer token to every API request and calls `onUnauthorized` when a logged-in request gets a 401.

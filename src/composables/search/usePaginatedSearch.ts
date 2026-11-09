@@ -1,5 +1,6 @@
-import type { PaginatedSearchOptions } from './PaginatedSearchOptions';
+import type { ApiQueryParams } from '@/interfaces/api/requests/ApiQueryParams';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
+import type { PaginatedSearchRouteQuery } from '@/interfaces/search/PaginatedSearchRouteQuery';
 import type { PaginatedSearchState } from '@/interfaces/search/PaginatedSearchState';
 import type { Ref } from 'vue';
 import { watchDebounced } from '@vueuse/core';
@@ -7,6 +8,25 @@ import { computed, ref, watch } from 'vue';
 
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { usePaginatedSearchRouteSync } from './usePaginatedSearchRouteSync';
+
+/** What a paginated search needs to know about its domain. */
+export interface PaginatedSearchOptions<TItem, TFilters> {
+  /** Query key of the calling page, so each page keeps its own cache entry. */
+  queryKey: string;
+  /** Fetches one page of results. */
+  list: (query: ApiQueryParams) => Promise<PaginatedResponse<TItem>>;
+  /** Creates a filter set that filters nothing. */
+  createEmptyFilters: () => TFilters;
+  /** Builds the backend `filter` params from the trimmed search term and the filters. */
+  getFilterParams: (searchTerm: string, filters: TFilters) => Record<string, string | string[]> | undefined;
+  /** Counts the active filters, for the filter button badge. */
+  countActiveFilters: (filters: TFilters) => number;
+  /** Backend sort value to start with, such as `-created_at`. */
+  defaultSort: string;
+  pageSize: number;
+  /** Keeps the search in the URL query when set. Only one search per page may use it. */
+  routeQuery?: PaginatedSearchRouteQuery<TFilters>;
+}
 
 /**
  * Debounced, paginated backend search with filters and sorting, shared by the searchable list pages. Changing the
