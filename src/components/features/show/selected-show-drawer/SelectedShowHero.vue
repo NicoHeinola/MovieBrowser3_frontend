@@ -20,7 +20,20 @@ const emit = defineEmits<{
 const isDescriptionExpanded = ref<boolean>(false);
 const isVideoPlaying = ref<boolean>(false);
 const isVideoError = ref<boolean>(false);
-const isMuted = ref<boolean>(true);
+/** Mute applied by the app, such as when playback starts. It is dropped on the next show or open. */
+const isAutoMuted = defineModel<boolean>('autoMuted', { default: false });
+
+/** The user's own mute choice, kept while the drawer lives and never changed by the automatic mute. */
+const isUserMuted = ref<boolean>(true);
+
+/** What the player and volume control use: muted by the user or the app. Setting it is always the user's choice. */
+const isMuted = computed<boolean>({
+  get: () => isAutoMuted.value || isUserMuted.value,
+  set: (muted) => {
+    isUserMuted.value = muted;
+    isAutoMuted.value = false;
+  },
+});
 const volume = ref<number>(20);
 
 let hideTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -33,6 +46,8 @@ const activeVideoId = computed<string>(() => videoId.value ?? 'drawer-video');
 watch([() => props.show?.id, () => props.isShown], () => {
   isVideoPlaying.value = false;
   isVideoError.value = false;
+  // Discard the automatic mute so the user's own choice applies again.
+  isAutoMuted.value = false;
 });
 
 watch(

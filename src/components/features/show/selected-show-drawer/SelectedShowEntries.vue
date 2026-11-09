@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Episode } from '@/interfaces/api/models/Episode';
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import type { CombinedWatchStatus } from '@/utils/show/CombinedWatchStatus';
@@ -26,6 +27,11 @@ const props = defineProps<{
   show: Show | null;
 }>();
 
+const emit = defineEmits<{
+  /** A playback is being started, so the drawer's own preview video should go quiet. */
+  'playback-start': [];
+}>();
+
 const isSavingStatus = ref<boolean>(false);
 
 const entries = computed<ShowEntry[]>(() => props.show?.entries ?? []);
@@ -45,9 +51,27 @@ const {
   resumeEpisode,
   resumePosition,
   startingEpisodeId,
-  watchEpisode,
-  watchTarget,
+  watchEpisode: startEpisode,
+  watchTarget: startTarget,
 } = useSelectedShowPlayback(show, selectedEntry);
+
+/**
+ * Continues the selected entry, muting the drawer's preview video first.
+ * @param fromStart - Start the episode over instead of resuming at the saved position.
+ */
+const watchTarget = async (fromStart = false): Promise<void> => {
+  emit('playback-start');
+  await startTarget(fromStart);
+};
+
+/**
+ * Plays one episode, muting the drawer's preview video first.
+ * @param episode - The episode to start from.
+ */
+const watchEpisode = async (episode: Episode): Promise<void> => {
+  emit('playback-start');
+  await startEpisode(episode);
+};
 
 /** The selected entry, or every entry when none is selected. */
 const targetEntries = computed<ShowEntry[]>(() => {

@@ -8,7 +8,16 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  * version get the "What's new" popup on their next visit.
  */
 export const changelogEntries: ChangelogEntry[] = [
-  { version: '2.1.1', date: null, changes: [] },
+  {
+    version: '2.1.1',
+    date: null,
+    changes: [
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The show preview video is muted when you start watching the show, keeping your own volume choice.',
+      },
+    ],
+  },
   {
     version: '2.1.0',
     date: '2026-11-08',
