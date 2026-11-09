@@ -8,9 +8,9 @@ import { SortableItem } from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { useSortableItems } from '@/composables/sortable/useSortableItems';
-import { episodeVideoFileExtensions } from '@/utils/show/episodeVideoFileExtensions';
-import { getEpisodeNameFromFilename } from '@/utils/show/getEpisodeNameFromFilename';
-import { sortFilesByName } from '@/utils/show/sortFilesByName';
+import { episodeVideoFileExtensions } from '@/utils/show/video-file/episodeVideoFileExtensions';
+import { getEpisodeNameFromFilename } from '@/utils/show/video-file/getEpisodeNameFromFilename';
+import { sortFilesByName } from '@/utils/show/video-file/sortFilesByName';
 import { getUnsavedRowKey } from '@/utils/sortable/getUnsavedRowKey';
 import { renumberItems } from '@/utils/sortable/renumberItems';
 

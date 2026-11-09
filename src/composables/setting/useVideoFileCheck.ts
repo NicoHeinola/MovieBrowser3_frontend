@@ -11,7 +11,7 @@ import { VideoFileCheckQueryKey } from '@/enums/query/videoFileCheckQueryKey';
 import { videoFileCheckService } from '@/services/show/videoFileCheckService';
 import { isApiErrorCode } from '@/utils/api/isApiErrorCode';
 import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
-import { getVideoFileCheckOutcome } from '@/utils/show/getVideoFileCheckOutcome';
+import { getVideoFileCheckOutcome } from '@/utils/show/video-file/getVideoFileCheckOutcome';
 
 /** How often the status is read while a check runs. */
 const POLL_INTERVAL_MS = 3000;

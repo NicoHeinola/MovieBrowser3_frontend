@@ -9,7 +9,7 @@ import { showSearchFilterDefinitions } from '@/data/show/showSearchFilterDefinit
 import { showSortOptions } from '@/data/show/showSortOptions';
 import { showService } from '@/services/show/showService';
 import { createSearchFilters } from '@/utils/filter/createSearchFilters';
-import { getShowGridLayout } from '@/utils/show/getShowGridLayout';
+import { getShowGridLayout } from '@/utils/show/show-grid/getShowGridLayout';
 
 /**
  * Debounced, paginated show search shared by the search page and the admin shows page, kept in the URL query.

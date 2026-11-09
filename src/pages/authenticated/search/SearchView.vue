@@ -14,8 +14,8 @@ import { useShowSearch } from '@/composables/show/useShowSearch';
 import { showSearchFilterDefinitions } from '@/data/show/showSearchFilterDefinitions';
 import { showSortOptions } from '@/data/show/showSortOptions';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
-import { SHOW_GRID_CARD_SIZE } from '@/utils/show/showGridCardSize';
-import { WATCHED_SHOW_STATUSES } from '@/utils/show/watchedShowStatuses';
+import { SHOW_GRID_CARD_SIZE } from '@/utils/show/show-grid/showGridCardSize';
+import { WATCHED_SHOW_STATUSES } from '@/utils/show/watch-status/watchedShowStatuses';
 
 const { t } = useI18n();
 

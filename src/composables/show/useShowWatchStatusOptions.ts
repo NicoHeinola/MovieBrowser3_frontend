@@ -1,7 +1,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
+import { MIXED_WATCH_STATUS } from '@/utils/show/watch-status/mixedWatchStatus';
 import { useEntryWatchStatusOptions } from './useEntryWatchStatusOptions';
 
 /**

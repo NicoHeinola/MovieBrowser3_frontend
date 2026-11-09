@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/vue-query';
 import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchStatus';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
-import { setShowWatchProgress } from '@/utils/show/setShowWatchProgress';
+import { setShowWatchProgress } from '@/utils/show/query-cache/setShowWatchProgress';
 
 /** The cached show list ordered by progress, refetched on a change so a show can move up or join it. */
 const progressOrderedQueryKey = ShowQueryKey.ContinueWatchingShows;

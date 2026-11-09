@@ -3,7 +3,7 @@ import type { StorageSlice } from './StorageSlice';
 import type { Show } from '@/interfaces/api/models/Show';
 import type { DashboardStatsResponse } from '@/interfaces/api/responses/DashboardStatsResponse';
 
-import { getShowVideoBytes } from '@/utils/show/getShowVideoBytes';
+import { getShowVideoBytes } from '@/utils/show/video-file/getShowVideoBytes';
 
 /**
  * Splits the disk and the video files into the arcs of the storage chart.

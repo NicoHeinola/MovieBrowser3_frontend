@@ -6,8 +6,8 @@ import { makeDroppable } from '@vue-dnd-kit/core';
 import { computed, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { formatFileSize } from '@/utils/file/formatFileSize';
-import { getEntryVideoBytes } from '@/utils/show/getEntryVideoBytes';
-import { isEpisodeVideoFile } from '@/utils/show/isEpisodeVideoFile';
+import { getEntryVideoBytes } from '@/utils/show/video-file/getEntryVideoBytes';
+import { isEpisodeVideoFile } from '@/utils/show/video-file/isEpisodeVideoFile';
 import ShowEntryEpisodesFormPart from './ShowEntryEpisodesFormPart.vue';
 import ShowEntryGeneralFormPart from './ShowEntryGeneralFormPart.vue';
 

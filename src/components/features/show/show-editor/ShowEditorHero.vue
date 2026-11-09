@@ -7,7 +7,7 @@ import { useDisplay } from 'vuetify';
 import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { formatFileSize } from '@/utils/file/formatFileSize';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
-import { getShowVideoBytes } from '@/utils/show/getShowVideoBytes';
+import { getShowVideoBytes } from '@/utils/show/video-file/getShowVideoBytes';
 
 const props = defineProps<{
   /** The show being edited; the hero follows its unsaved changes as a live preview. */

@@ -8,7 +8,7 @@ import { useShowWatchProgressCache } from '@/composables/show/useShowWatchProgre
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { i18n } from '@/plugins/i18n';
 import { episodePlaybackService } from '@/services/show/episodePlaybackService';
-import { getResumeEpisode } from '@/utils/show/getResumeEpisode';
+import { getResumeEpisode } from '@/utils/show/watch-progress/getResumeEpisode';
 
 interface PlaybackOptions {
   /** Start at 0 and clear the saved position instead of resuming. */

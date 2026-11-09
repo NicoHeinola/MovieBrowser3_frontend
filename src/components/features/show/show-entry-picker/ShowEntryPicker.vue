@@ -6,8 +6,8 @@ import { useI18n } from 'vue-i18n';
 
 import { DragScrollContainer } from '@/components/common/drag-scroll-container';
 import { SectionLabel } from '@/components/common/section-label';
-import { getWatchStatusColor } from '@/utils/show/getWatchStatusColor';
-import { getWatchStatusIcon } from '@/utils/show/getWatchStatusIcon';
+import { getWatchStatusColor } from '@/utils/show/watch-status/getWatchStatusColor';
+import { getWatchStatusIcon } from '@/utils/show/watch-status/getWatchStatusIcon';
 
 const props = defineProps<{
   entries: ShowEntry[];

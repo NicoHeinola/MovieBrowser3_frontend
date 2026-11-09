@@ -16,6 +16,8 @@ applyTo: 'src/utils/**/*.ts'
 ## Namespace Layout
 
 - Group only closely related helpers in the same namespace folder.
+- Inside a domain folder, put the files of one concept in a kebab-case sub-folder with its own `__tests__`, such as `src/utils/show/watch-status/` or `src/utils/show/query-cache/`. Start one once a concept has about three files; files that belong to no concept stay at the domain level.
+- A sub-folder means "these belong together", not "these are private": its files are imported directly from anywhere, like any utility.
 - Do not add `index.ts` barrels inside utility namespaces.
 - Keep pure helpers in utilities; if code starts depending on Vue component lifecycle or global application wiring, move it to a more appropriate namespace.
 

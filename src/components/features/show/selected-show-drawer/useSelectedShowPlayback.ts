@@ -5,8 +5,8 @@ import type { Ref } from 'vue';
 import { computed, ref } from 'vue';
 
 import { useShowPlayback } from '@/composables/show/useShowPlayback';
-import { getResumeEpisode } from '@/utils/show/getResumeEpisode';
-import { getResumePosition } from '@/utils/show/getResumePosition';
+import { getResumeEpisode } from '@/utils/show/watch-progress/getResumeEpisode';
+import { getResumePosition } from '@/utils/show/watch-progress/getResumePosition';
 
 /**
  * Drawer playback for the shown show: picks where "watch" starts and tracks which button started a playback.

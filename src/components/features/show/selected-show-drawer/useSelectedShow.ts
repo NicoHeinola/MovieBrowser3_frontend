@@ -7,7 +7,7 @@ import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
 import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
-import { findShow } from '@/utils/show/findShow';
+import { findShow } from '@/utils/show/query-cache/findShow';
 
 /**
  * Reads the drawer's show from the query cache by id, so every cache patch, such as new watch progress, reaches it.

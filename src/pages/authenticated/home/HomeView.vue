@@ -21,7 +21,7 @@ import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showSectionService } from '@/services/show/showSectionService';
 import { showService } from '@/services/show/showService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
-import { WATCHED_SHOW_STATUSES } from '@/utils/show/watchedShowStatuses';
+import { WATCHED_SHOW_STATUSES } from '@/utils/show/watch-status/watchedShowStatuses';
 import { homepageSections } from './homepageSections';
 
 const selectedShowId = ref<number | null>(null);

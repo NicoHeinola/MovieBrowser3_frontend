@@ -25,7 +25,7 @@ import { WatchStatus } from '@/enums/show/WatchStatus';
 import enMessages from '@/plugins/i18n/en.json';
 import { categoryService } from '@/services/show/categoryService';
 import { websiteTagService } from '@/services/website/websiteTagService';
-import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
+import { MIXED_WATCH_STATUS } from '@/utils/show/watch-status/mixedWatchStatus';
 import SearchFilterDrawer from '../SearchFilterDrawer.vue';
 
 interface TestFilters {

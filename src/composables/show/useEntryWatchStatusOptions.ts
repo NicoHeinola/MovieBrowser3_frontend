@@ -2,8 +2,8 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { WatchStatus } from '@/enums/show/WatchStatus';
-import { getWatchStatusColor } from '@/utils/show/getWatchStatusColor';
-import { getWatchStatusIcon } from '@/utils/show/getWatchStatusIcon';
+import { getWatchStatusColor } from '@/utils/show/watch-status/getWatchStatusColor';
+import { getWatchStatusIcon } from '@/utils/show/watch-status/getWatchStatusIcon';
 
 /**
  * Provides a chip for every watch status.

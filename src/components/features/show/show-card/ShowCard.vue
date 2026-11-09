@@ -5,7 +5,7 @@ import { computed, onBeforeUnmount, ref } from 'vue';
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { useLongPress } from '@/composables/pointer/useLongPress';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
-import { getShowWatchStatusColor } from '@/utils/show/getShowWatchStatusColor';
+import { getShowWatchStatusColor } from '@/utils/show/watch-status/getShowWatchStatusColor';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 
 const props = withDefaults(

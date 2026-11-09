@@ -1,7 +1,7 @@
 import type { ShowEntryWatchStatus } from '@/interfaces/api/models/ShowEntryWatchStatus';
 
 import { updateCachedObjects } from '@/utils/query/updateCachedObjects';
-import { ownsShowEntry } from '@/utils/show/ownsShowEntry';
+import { ownsShowEntry } from './ownsShowEntry';
 
 /**
  * Rewrites the watch status of one show entry anywhere inside cached query data, whatever its shape.

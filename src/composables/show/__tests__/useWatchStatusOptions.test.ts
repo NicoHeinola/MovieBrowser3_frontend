@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { WatchStatus } from '@/enums/show/WatchStatus';
-import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
+import { MIXED_WATCH_STATUS } from '@/utils/show/watch-status/mixedWatchStatus';
 import { useEntryWatchStatusOptions } from '../useEntryWatchStatusOptions';
 import { useShowWatchStatusOptions } from '../useShowWatchStatusOptions';
 

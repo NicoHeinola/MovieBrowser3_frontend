@@ -6,7 +6,7 @@ import { computed, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { MissingVideoFileChip } from '@/components/features/show/missing-video-file-chip';
 import { formatFileSize } from '@/utils/file/formatFileSize';
-import { isEpisodeVideoMissing } from '@/utils/show/isEpisodeVideoMissing';
+import { isEpisodeVideoMissing } from '@/utils/show/video-file/isEpisodeVideoMissing';
 
 import { getRules } from './showEntriesFormRules';
 

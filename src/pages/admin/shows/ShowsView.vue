@@ -16,7 +16,7 @@ import { useShowSearch } from '@/composables/show/useShowSearch';
 import { adminShowSearchFilterDefinitions } from '@/data/show/adminShowSearchFilterDefinitions';
 import { showSortOptions } from '@/data/show/showSortOptions';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
-import { SHOW_GRID_CARD_SIZE } from '@/utils/show/showGridCardSize';
+import { SHOW_GRID_CARD_SIZE } from '@/utils/show/show-grid/showGridCardSize';
 
 const isFilterDrawerVisible = ref<boolean>(false);
 

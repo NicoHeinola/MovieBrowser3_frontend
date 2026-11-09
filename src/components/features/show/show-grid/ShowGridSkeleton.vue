@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { StyleValue } from 'vue';
-import { SHOW_GRID_CARD_SIZE } from '@/utils/show/showGridCardSize';
+import { SHOW_GRID_CARD_SIZE } from '@/utils/show/show-grid/showGridCardSize';
 
 const props = defineProps<{
   /** How many cards to stand in for, normally the page size. */

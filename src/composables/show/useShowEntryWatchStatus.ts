@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/vue-query';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showEntryWatchStatusService } from '@/services/show/showEntryWatchStatusService';
 import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
-import { setShowEntryWatchStatus } from '@/utils/show/setShowEntryWatchStatus';
+import { setShowEntryWatchStatus } from '@/utils/show/query-cache/setShowEntryWatchStatus';
 
 /** The show lists whose results depend on watch status. */
 const filteredShowListKeys = [ShowQueryKey.SearchShows, ShowQueryKey.AdminShows, ShowQueryKey.HomeShows];

@@ -2,7 +2,7 @@
 import type { Episode } from '@/interfaces/api/models/Episode';
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
-import type { CombinedWatchStatus } from '@/utils/show/CombinedWatchStatus';
+import type { CombinedWatchStatus } from '@/utils/show/watch-status/CombinedWatchStatus';
 import { useStorage } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -13,12 +13,12 @@ import { ShowEntryPicker } from '@/components/features/show/show-entry-picker';
 import { WatchStatusButton } from '@/components/features/show/watch-status-button';
 import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchStatus';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
-import { formatPlaybackTime } from '@/utils/show/formatPlaybackTime';
-import { getCombinedWatchStatus } from '@/utils/show/getCombinedWatchStatus';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
-import { getWatchedEpisodeIds } from '@/utils/show/getWatchedEpisodeIds';
-import { isEpisodeVideoMissing } from '@/utils/show/isEpisodeVideoMissing';
-import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
+import { isEpisodeVideoMissing } from '@/utils/show/video-file/isEpisodeVideoMissing';
+import { formatPlaybackTime } from '@/utils/show/watch-progress/formatPlaybackTime';
+import { getWatchedEpisodeIds } from '@/utils/show/watch-progress/getWatchedEpisodeIds';
+import { getCombinedWatchStatus } from '@/utils/show/watch-status/getCombinedWatchStatus';
+import { MIXED_WATCH_STATUS } from '@/utils/show/watch-status/mixedWatchStatus';
 import { useSelectedEntry } from './useSelectedEntry';
 import { useSelectedShowPlayback } from './useSelectedShowPlayback';
 
