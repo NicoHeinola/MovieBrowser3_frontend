@@ -14,8 +14,7 @@ import { useShowSearch } from '@/composables/show/useShowSearch';
 import { showSearchFilterDefinitions } from '@/data/show/showSearchFilterDefinitions';
 import { showSortOptions } from '@/data/show/showSortOptions';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
-import { SHOW_GRID_CARD_HEIGHT } from '@/utils/show/showGridCardHeight';
-import { SHOW_GRID_CARD_WIDTH } from '@/utils/show/showGridCardWidth';
+import { SHOW_GRID_CARD_SIZE } from '@/utils/show/showGridCardSize';
 import { WATCHED_SHOW_STATUSES } from '@/utils/show/watchedShowStatuses';
 
 const { t } = useI18n();
@@ -66,8 +65,8 @@ const selectShow = (show: Show | null) => {
       <v-row justify="center" v-if="shows.length > 0">
         <v-col class="d-flex justify-center" cols="12">
           <show-grid
-            :card-height="SHOW_GRID_CARD_HEIGHT"
-            :card-width="SHOW_GRID_CARD_WIDTH"
+            :card-height="SHOW_GRID_CARD_SIZE.height"
+            :card-width="SHOW_GRID_CARD_SIZE.width"
             :shows="shows"
             :style="gridStyle"
             class="d-flex justify-center flex-0-0"

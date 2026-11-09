@@ -22,11 +22,11 @@ describe('getCombinedWatchStatus', () => {
 
   it('returns mixed when statuses differ', () => {
     expect(getCombinedWatchStatus(createEntries([WatchStatus.Completed, WatchStatus.Dropped]))).toBe(
-      MIXED_WATCH_STATUS,
+      MIXED_WATCH_STATUS.value,
     );
   });
 
   it('returns mixed when only some entries have a status', () => {
-    expect(getCombinedWatchStatus(createEntries([WatchStatus.Completed, null]))).toBe(MIXED_WATCH_STATUS);
+    expect(getCombinedWatchStatus(createEntries([WatchStatus.Completed, null]))).toBe(MIXED_WATCH_STATUS.value);
   });
 });

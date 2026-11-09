@@ -2,8 +2,6 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
-import { MIXED_WATCH_STATUS_COLOR } from '@/utils/show/mixedWatchStatusColor';
-import { MIXED_WATCH_STATUS_ICON } from '@/utils/show/mixedWatchStatusIcon';
 import { useEntryWatchStatusOptions } from './useEntryWatchStatusOptions';
 
 /**
@@ -18,10 +16,10 @@ export const useShowWatchStatusOptions = () => {
     options: computed(() => [
       ...options.value,
       {
-        value: MIXED_WATCH_STATUS,
-        text: t('show.mixed'),
-        icon: MIXED_WATCH_STATUS_ICON,
-        color: MIXED_WATCH_STATUS_COLOR,
+        value: MIXED_WATCH_STATUS.value,
+        text: t(MIXED_WATCH_STATUS.titleKey),
+        icon: MIXED_WATCH_STATUS.icon,
+        color: MIXED_WATCH_STATUS.color,
       },
     ]),
   };

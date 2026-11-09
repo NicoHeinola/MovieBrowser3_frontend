@@ -18,7 +18,8 @@ describe('watch status options', () => {
   it('adds a mixed chip for whole shows, after the entry statuses', () => {
     const { options } = useShowWatchStatusOptions();
 
-    expect(options.value.map((option) => option.value)).toEqual([...Object.values(WatchStatus), MIXED_WATCH_STATUS]);
+    const values = options.value.map((option) => option.value);
+    expect(values).toEqual([...Object.values(WatchStatus), MIXED_WATCH_STATUS.value]);
     expect(options.value.at(-1)).toMatchObject({ text: 'show.mixed' });
   });
 });

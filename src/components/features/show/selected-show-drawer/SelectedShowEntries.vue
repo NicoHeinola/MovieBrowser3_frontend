@@ -133,7 +133,7 @@ const targetStatus = computed<CombinedWatchStatus>(() => getCombinedWatchStatus(
  * @param status - The new watch status, or null to clear it. `mixed` is display-only and ignored.
  */
 const setWatchStatus = async (status: CombinedWatchStatus): Promise<void> => {
-  if (status === MIXED_WATCH_STATUS) {
+  if (status === MIXED_WATCH_STATUS.value) {
     return;
   }
 

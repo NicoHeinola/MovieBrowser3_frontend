@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { WatchStatus } from '@/enums/show/WatchStatus';
 import { getShowWatchStatusColor } from '../getShowWatchStatusColor';
 import { getWatchStatusColor } from '../getWatchStatusColor';
-import { MIXED_WATCH_STATUS_COLOR } from '../mixedWatchStatusColor';
+import { MIXED_WATCH_STATUS } from '../mixedWatchStatus';
 
 const createShow = (statuses: (WatchStatus | null)[]): Show =>
   ({
@@ -28,11 +28,11 @@ describe('getShowWatchStatusColor', () => {
 
   it('returns the mixed color when statuses differ', () => {
     expect(getShowWatchStatusColor(createShow([WatchStatus.Completed, WatchStatus.Dropped]))).toBe(
-      MIXED_WATCH_STATUS_COLOR,
+      MIXED_WATCH_STATUS.color,
     );
   });
 
   it('returns the mixed color when some entries have no status', () => {
-    expect(getShowWatchStatusColor(createShow([WatchStatus.Completed, null]))).toBe(MIXED_WATCH_STATUS_COLOR);
+    expect(getShowWatchStatusColor(createShow([WatchStatus.Completed, null]))).toBe(MIXED_WATCH_STATUS.color);
   });
 });

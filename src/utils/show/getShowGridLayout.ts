@@ -1,5 +1,4 @@
-import { SHOW_GRID_CARD_HEIGHT } from './showGridCardHeight';
-import { SHOW_GRID_CARD_WIDTH } from './showGridCardWidth';
+import { SHOW_GRID_CARD_SIZE } from './showGridCardSize';
 
 /** Space between show cards (`ga-8` in `ShowGrid`), in pixels. */
 const SHOW_GRID_GAP = 32;
@@ -34,14 +33,15 @@ export const getShowGridLayout = (viewportWidth: number, viewportHeight: number)
   const availableWidth = viewportWidth - PAGE_HORIZONTAL_PADDING;
 
   // N columns or rows need N cards and N - 1 gaps, so adding one gap makes each of them cost the same.
-  const columns = Math.max(1, Math.floor((availableWidth + SHOW_GRID_GAP) / (SHOW_GRID_CARD_WIDTH + SHOW_GRID_GAP)));
+  const columnWidth = SHOW_GRID_CARD_SIZE.width + SHOW_GRID_GAP;
+  const columns = Math.max(1, Math.floor((availableWidth + SHOW_GRID_GAP) / columnWidth));
   const rows = Math.max(
     MIN_ROWS,
-    Math.floor((viewportHeight - GRID_TOP_OFFSET + SHOW_GRID_GAP) / (SHOW_GRID_CARD_HEIGHT + SHOW_GRID_GAP)),
+    Math.floor((viewportHeight - GRID_TOP_OFFSET + SHOW_GRID_GAP) / (SHOW_GRID_CARD_SIZE.height + SHOW_GRID_GAP)),
   );
 
   return {
     pageSize: columns * rows,
-    width: columns * (SHOW_GRID_CARD_WIDTH + SHOW_GRID_GAP) - SHOW_GRID_GAP,
+    width: columns * columnWidth - SHOW_GRID_GAP,
   };
 };

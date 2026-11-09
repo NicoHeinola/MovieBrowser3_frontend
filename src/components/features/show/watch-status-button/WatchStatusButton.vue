@@ -7,8 +7,6 @@ import { WatchStatus } from '@/enums/show/WatchStatus';
 import { getWatchStatusColor } from '@/utils/show/getWatchStatusColor';
 import { getWatchStatusIcon } from '@/utils/show/getWatchStatusIcon';
 import { MIXED_WATCH_STATUS } from '@/utils/show/mixedWatchStatus';
-import { MIXED_WATCH_STATUS_COLOR } from '@/utils/show/mixedWatchStatusColor';
-import { MIXED_WATCH_STATUS_ICON } from '@/utils/show/mixedWatchStatusIcon';
 
 const props = defineProps<{
   disabled?: boolean;
@@ -27,17 +25,17 @@ const { t } = useI18n();
 const statuses = Object.values(WatchStatus);
 
 const buttonColor = computed<string | undefined>(() => {
-  if (status.value === MIXED_WATCH_STATUS) return MIXED_WATCH_STATUS_COLOR;
+  if (status.value === MIXED_WATCH_STATUS.value) return MIXED_WATCH_STATUS.color;
   return status.value ? getWatchStatusColor(status.value) : undefined;
 });
 
 const buttonIcon = computed<string>(() => {
-  if (status.value === MIXED_WATCH_STATUS) return MIXED_WATCH_STATUS_ICON;
+  if (status.value === MIXED_WATCH_STATUS.value) return MIXED_WATCH_STATUS.icon;
   return status.value ? getWatchStatusIcon(status.value) : 'mdi-tag-outline';
 });
 
 const buttonLabel = computed<string>(() => {
-  if (status.value === MIXED_WATCH_STATUS) return t('show.mixed');
+  if (status.value === MIXED_WATCH_STATUS.value) return t(MIXED_WATCH_STATUS.titleKey);
   return status.value ? t(`showEntry.watchStatus.${status.value}`) : t('show.setStatus');
 });
 </script>

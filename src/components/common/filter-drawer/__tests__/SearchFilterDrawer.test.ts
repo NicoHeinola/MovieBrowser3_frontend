@@ -260,8 +260,8 @@ describe('SearchFilterDrawer', () => {
 
     it('shows the show filters and keeps only values that have a chip', async () => {
       const filters = ref<AdminShowSearchFilters>({
-        watchStatus: { included: ['binged', MIXED_WATCH_STATUS], excluded: [WatchStatus.Completed] },
-        entryWatchStatus: { included: [WatchStatus.Watching, MIXED_WATCH_STATUS], excluded: [] },
+        watchStatus: { included: ['binged', MIXED_WATCH_STATUS.value], excluded: [WatchStatus.Completed] },
+        entryWatchStatus: { included: [WatchStatus.Watching, MIXED_WATCH_STATUS.value], excluded: [] },
         category: { included: ['anime', 'deleted'], excluded: [] },
         episodeCount: { min: null, max: null },
         hasPreview: false,
@@ -292,7 +292,10 @@ describe('SearchFilterDrawer', () => {
         expect(wrapper.text()).toContain(text);
       }
 
-      expect(filters.value.watchStatus).toEqual({ included: [MIXED_WATCH_STATUS], excluded: [WatchStatus.Completed] });
+      expect(filters.value.watchStatus).toEqual({
+        included: [MIXED_WATCH_STATUS.value],
+        excluded: [WatchStatus.Completed],
+      });
       expect(filters.value.entryWatchStatus).toEqual({ included: [WatchStatus.Watching], excluded: [] });
       expect(filters.value.category).toEqual({ included: ['anime'], excluded: [] });
     });

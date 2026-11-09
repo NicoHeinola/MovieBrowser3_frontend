@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
-
 import { WatchStatus } from '@/enums/show/WatchStatus';
 import { MainTheme } from '@/plugins/vuetify/MainTheme';
 import { getWatchStatusColor } from '../getWatchStatusColor';
-import { MIXED_WATCH_STATUS_COLOR } from '../mixedWatchStatusColor';
+import { MIXED_WATCH_STATUS } from '../mixedWatchStatus';
 
 describe('getWatchStatusColor', () => {
   it('returns a theme color for every watch status', () => {
@@ -15,7 +14,7 @@ describe('getWatchStatusColor', () => {
   it('gives every watch status and the mixed state a distinct hex value', () => {
     const colorNames = [
       ...Object.values(WatchStatus).map((status) => getWatchStatusColor(status)),
-      MIXED_WATCH_STATUS_COLOR,
+      MIXED_WATCH_STATUS.color,
     ];
     const hexValues = colorNames.map((name) => MainTheme.colors?.[name]?.toLowerCase());
 

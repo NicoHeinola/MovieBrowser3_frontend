@@ -15,7 +15,7 @@ export const getCombinedWatchStatus = (
   if (statuses.size === 0) return null;
 
   const [[status, count]] = statuses;
-  if (statuses.size > 1 || count < (entries?.length ?? 0)) return MIXED_WATCH_STATUS;
+  if (statuses.size > 1 || count < (entries?.length ?? 0)) return MIXED_WATCH_STATUS.value;
 
   return status;
 };

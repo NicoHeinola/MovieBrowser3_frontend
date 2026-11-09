@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { StyleValue } from 'vue';
-import { SHOW_GRID_CARD_HEIGHT } from '@/utils/show/showGridCardHeight';
-import { SHOW_GRID_CARD_WIDTH } from '@/utils/show/showGridCardWidth';
+import { SHOW_GRID_CARD_SIZE } from '@/utils/show/showGridCardSize';
 
 const props = defineProps<{
   /** How many cards to stand in for, normally the page size. */
@@ -17,7 +16,7 @@ const props = defineProps<{
       <div :style="props.gridStyle" class="d-flex justify-center flex-0-0">
         <v-row class="w-100 ga-8">
           <v-col v-for="i in props.count" cols="auto" :key="i">
-            <v-skeleton-loader :height="SHOW_GRID_CARD_HEIGHT" :width="SHOW_GRID_CARD_WIDTH" type="ossein" />
+            <v-skeleton-loader :height="SHOW_GRID_CARD_SIZE.height" :width="SHOW_GRID_CARD_SIZE.width" type="ossein" />
           </v-col>
         </v-row>
       </div>
