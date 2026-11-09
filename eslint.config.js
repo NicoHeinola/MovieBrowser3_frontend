@@ -6,6 +6,34 @@ import pluginVue from 'eslint-plugin-vue';
 /** Matches any export statement, for the one-export-per-file rule. */
 const exportDeclaration = ':matches(ExportNamedDeclaration, ExportDefaultDeclaration)';
 
+/** One exported symbol per file; barrels re-export a namespace's public surface instead. */
+const oneExportPerFile = [
+  {
+    // A second top-level export after the first one.
+    selector: `Program > ${exportDeclaration} ~ ${exportDeclaration}`,
+    message: 'Export one symbol per file. Move this export to a sibling file named after it.',
+  },
+  {
+    // `export const a = 1, b = 2;`
+    selector: 'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator ~ VariableDeclarator',
+    message: 'Export one symbol per file. Move this export to a sibling file named after it.',
+  },
+];
+
+/** A function exported from `src/composables` must be a `useX` composable. */
+const composableNaming = [
+  {
+    selector: 'ExportNamedDeclaration > FunctionDeclaration[id.name!=/^use[A-Z]/]',
+    message: 'Functions in src/composables are composables named useX. Move other helpers to src/utils.',
+  },
+  {
+    selector:
+      'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[id.name!=/^use[A-Z]/]' +
+      '[init.type=/^(ArrowFunctionExpression|FunctionExpression)$/]',
+    message: 'Functions in src/composables are composables named useX. Move other helpers to src/utils.',
+  },
+];
+
 export default [
   ...(await vuetify()),
   prettier,
@@ -55,23 +83,18 @@ export default [
     },
   },
   {
-    // One exported symbol per file; barrels re-export a namespace's public surface instead.
     files: ['src/**/*.ts'],
     ignores: ['src/**/index.ts', 'src/**/*.d.ts', 'src/**/__tests__/**'],
     rules: {
-      'no-restricted-syntax': [
-        'error',
-        {
-          // A second top-level export after the first one.
-          selector: `Program > ${exportDeclaration} ~ ${exportDeclaration}`,
-          message: 'Export one symbol per file. Move this export to a sibling file named after it.',
-        },
-        {
-          // `export const a = 1, b = 2;`
-          selector: 'ExportNamedDeclaration > VariableDeclaration > VariableDeclarator ~ VariableDeclarator',
-          message: 'Export one symbol per file. Move this export to a sibling file named after it.',
-        },
-      ],
+      'no-restricted-syntax': ['error', ...oneExportPerFile],
+    },
+  },
+  {
+    // Flat config replaces a rule's options instead of merging them, so this repeats the one-export rule.
+    files: ['src/composables/**/*.ts'],
+    ignores: ['src/**/index.ts', 'src/**/*.d.ts', 'src/**/__tests__/**'],
+    rules: {
+      'no-restricted-syntax': ['error', ...oneExportPerFile, ...composableNaming],
     },
   },
   {

@@ -6,7 +6,7 @@ import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
-import { showSortOptions } from '@/composables/show/showSortOptions';
+import { showSortOptions } from '@/data/show/showSortOptions';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
 

@@ -14,9 +14,9 @@ import { SearchToolbar } from '@/components/common/search-toolbar';
 import { UserEditDialog } from '@/components/features/user/user-edit-dialog';
 import { UserTable } from '@/components/features/user/user-table';
 import { useDialog } from '@/components/layouts/dialog-provider';
-import { userSearchFilterDefinitions } from '@/composables/user/userSearchFilterDefinitions';
-import { userSortOptions } from '@/composables/user/userSortOptions';
 import { useUserSearch } from '@/composables/user/useUserSearch';
+import { userSearchFilterDefinitions } from '@/data/user/userSearchFilterDefinitions';
+import { userSortOptions } from '@/data/user/userSortOptions';
 
 const isFilterDrawerVisible = ref<boolean>(false);
 

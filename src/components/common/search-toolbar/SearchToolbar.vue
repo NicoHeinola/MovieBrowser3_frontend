@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SortOption } from '@/components/common/sort-menu';
+import type { SortOption } from '@/interfaces/search/SortOption';
 
 import { useI18n } from 'vue-i18n';
 

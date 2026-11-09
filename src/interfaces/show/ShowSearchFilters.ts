@@ -1,5 +1,5 @@
-import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
-import type { RangeFilterValue } from '@/composables/search/RangeFilterValue';
+import type { ChipsFilterValue } from '@/interfaces/search/ChipsFilterValue';
+import type { RangeFilterValue } from '@/interfaces/search/RangeFilterValue';
 
 /** Filters the show search applies on top of the search term. */
 export interface ShowSearchFilters {

@@ -1,5 +1,5 @@
-import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
-import type { SearchFilterValue } from '@/composables/search/SearchFilterValue';
+import type { SearchFilterDefinition } from '@/interfaces/search/SearchFilterDefinition';
+import type { SearchFilterValue } from '@/interfaces/search/SearchFilterValue';
 import type { LocationQuery, LocationQueryRaw } from 'vue-router';
 
 import { SearchFilterType } from '@/enums/search/SearchFilterType';

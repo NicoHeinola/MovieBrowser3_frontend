@@ -1,6 +1,6 @@
-import type { PaginatedSearchRouteQuery } from './PaginatedSearchRouteQuery';
 import type { ApiQueryParams } from '@/interfaces/api/requests/ApiQueryParams';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
+import type { PaginatedSearchRouteQuery } from '@/interfaces/search/PaginatedSearchRouteQuery';
 
 /** What a paginated search needs to know about its domain. */
 export interface PaginatedSearchOptions<TItem, TFilters> {

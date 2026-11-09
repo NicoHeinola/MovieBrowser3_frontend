@@ -1,5 +1,5 @@
-import type { ShowEditorEpisodeProgress } from './ShowEditorEpisodeProgress';
 import type { Show } from '@/interfaces/api/models/Show';
+import type { ShowEditorEpisodeProgress } from '@/interfaces/show/ShowEditorEpisodeProgress';
 import type { Ref } from 'vue';
 import { useQueryClient } from '@tanstack/vue-query';
 import { computed, ref, watch } from 'vue';

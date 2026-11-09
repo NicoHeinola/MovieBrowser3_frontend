@@ -1,4 +1,4 @@
-import type { AdminShowSearchFilters } from '../AdminShowSearchFilters';
+import type { AdminShowSearchFilters } from '@/interfaces/show/AdminShowSearchFilters';
 import type { EffectScope } from 'vue';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { flushPromises } from '@vue/test-utils';
@@ -6,10 +6,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp, effectScope } from 'vue';
 import { createMemoryHistory, createRouter } from 'vue-router';
 
+import { adminShowSearchFilterDefinitions } from '@/data/show/adminShowSearchFilterDefinitions';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { WatchStatus } from '@/enums/show/WatchStatus';
 import { showService } from '@/services/show/showService';
-import { adminShowSearchFilterDefinitions } from '../adminShowSearchFilterDefinitions';
 import { useShowEntryWatchStatus } from '../useShowEntryWatchStatus';
 import { useShowSearch } from '../useShowSearch';
 

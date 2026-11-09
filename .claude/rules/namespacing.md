@@ -55,7 +55,7 @@ applyTo: 'src/components/**,src/composables/**,src/data/**,src/enums/**,src/inte
 
 ## Static Data
 
-- Content that ships with the frontend instead of coming from the backend lives in `src/data/<domain>/`, one exported constant per file (`src/data/changelog/changelogEntries.ts`).
+- Content that ships with the frontend instead of coming from the backend lives in `src/data/<domain>/`, one exported constant per file (`src/data/changelog/changelogEntries.ts`). Shared configuration lists count too: sort options and search filter definitions (`src/data/show/showSortOptions.ts`). Data holds no Vue code; a definition that needs some references a composable.
 - Type it with interfaces in `src/interfaces/<domain>/`, not `src/interfaces/api`, and cover its invariants (order, uniqueness, formats) in an adjacent `__tests__` file.
 
 ## Utilities

@@ -1,4 +1,4 @@
-import type { PaginatedSearchRouteQuery } from '@/composables/search/PaginatedSearchRouteQuery';
+import type { PaginatedSearchRouteQuery } from '@/interfaces/search/PaginatedSearchRouteQuery';
 import { describe, expect, it } from 'vitest';
 
 import { getPaginatedSearchQuery } from '../getPaginatedSearchQuery';

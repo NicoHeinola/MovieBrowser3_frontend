@@ -1,6 +1,6 @@
-import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
-import type { RangeFilterValue } from '@/composables/search/RangeFilterValue';
-import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
+import type { ChipsFilterValue } from '@/interfaces/search/ChipsFilterValue';
+import type { RangeFilterValue } from '@/interfaces/search/RangeFilterValue';
+import type { SearchFilterDefinition } from '@/interfaces/search/SearchFilterDefinition';
 
 import { describe, expect, it } from 'vitest';
 import { computed } from 'vue';

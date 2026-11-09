@@ -1,6 +1,6 @@
 import type { PaginatedSearchOptions } from './PaginatedSearchOptions';
-import type { PaginatedSearchState } from './PaginatedSearchState';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
+import type { PaginatedSearchState } from '@/interfaces/search/PaginatedSearchState';
 import type { Ref } from 'vue';
 import { watchDebounced } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';

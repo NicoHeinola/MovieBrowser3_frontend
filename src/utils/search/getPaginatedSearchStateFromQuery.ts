@@ -1,5 +1,5 @@
-import type { PaginatedSearchRouteQuery } from '@/composables/search/PaginatedSearchRouteQuery';
-import type { PaginatedSearchState } from '@/composables/search/PaginatedSearchState';
+import type { PaginatedSearchRouteQuery } from '@/interfaces/search/PaginatedSearchRouteQuery';
+import type { PaginatedSearchState } from '@/interfaces/search/PaginatedSearchState';
 import type { LocationQuery } from 'vue-router';
 
 import { getQueryString } from '@/utils/route/getQueryString';

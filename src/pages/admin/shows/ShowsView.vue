@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { AdminShowSearchFilters } from '@/composables/show/AdminShowSearchFilters';
 import type { Show } from '@/interfaces/api/models/Show';
+import type { AdminShowSearchFilters } from '@/interfaces/show/AdminShowSearchFilters';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -12,9 +12,9 @@ import { PageContainer } from '@/components/common/page-container';
 import { ResultCount } from '@/components/common/result-count';
 import { SearchToolbar } from '@/components/common/search-toolbar';
 import { ShowGrid, ShowGridSkeleton } from '@/components/features/show/show-grid';
-import { adminShowSearchFilterDefinitions } from '@/composables/show/adminShowSearchFilterDefinitions';
-import { showSortOptions } from '@/composables/show/showSortOptions';
 import { useShowSearch } from '@/composables/show/useShowSearch';
+import { adminShowSearchFilterDefinitions } from '@/data/show/adminShowSearchFilterDefinitions';
+import { showSortOptions } from '@/data/show/showSortOptions';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { SHOW_GRID_CARD_HEIGHT } from '@/utils/show/showGridCardHeight';
 import { SHOW_GRID_CARD_WIDTH } from '@/utils/show/showGridCardWidth';

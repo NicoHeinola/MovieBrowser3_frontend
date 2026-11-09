@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SortOption } from './sortOption';
+import type { SortOption } from '@/interfaces/search/SortOption';
 
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';

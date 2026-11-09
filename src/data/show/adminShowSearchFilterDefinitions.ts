@@ -1,5 +1,5 @@
-import type { AdminShowSearchFilters } from './AdminShowSearchFilters';
-import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
+import type { SearchFilterDefinition } from '@/interfaces/search/SearchFilterDefinition';
+import type { AdminShowSearchFilters } from '@/interfaces/show/AdminShowSearchFilters';
 
 import { SearchFilterType } from '@/enums/search/SearchFilterType';
 import { showSearchFilterDefinitions } from './showSearchFilterDefinitions';

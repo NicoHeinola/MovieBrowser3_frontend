@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { RangeFilterValue } from '@/composables/search/RangeFilterValue';
-import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
 import type { SearchFilterType } from '@/enums/search/SearchFilterType';
+import type { RangeFilterValue } from '@/interfaces/search/RangeFilterValue';
+import type { SearchFilterDefinition } from '@/interfaces/search/SearchFilterDefinition';
 
 import { useDebounceFn } from '@vueuse/core';
 import { ref, watch } from 'vue';

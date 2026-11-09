@@ -13,6 +13,16 @@ applyTo: 'src/composables/**/*.ts'
 - Name the primary composable file with the `useX` convention that matches the exported composable.
 - Keep composable-local helper types or support files beside the composable in the same namespace when they are part of the same concern.
 
+## What a Domain Folder Holds
+
+A folder such as `src/composables/show` holds composables, plus support files only its own composables use:
+
+- `useX.ts`: the composables. Every function exported from `src/composables` is one, and ESLint fails any exported function whose name doesn't start with `use`. Stateless helpers go to `src/utils`.
+- Support types or constants that nothing outside the folder imports (tests aside), such as `search/PaginatedSearchOptions.ts`.
+- Once anything else imports a support file, it moves out: types to `src/interfaces/<domain>/` (`ShowSearchFilters`), constant lists to `src/data/<domain>/` (`showSortOptions`, `showSearchFilterDefinitions`). A list that needs Vue code, such as a filter's option loader, references a `useXOptions` composable here instead of holding it.
+
+Import each file directly. Composables get no `index.ts` barrels: code outside imports only `useX` files, one at a time, so a barrel would only alias them, and barrels inside one layer invite import cycles.
+
 ## File Shape
 
 - Export one primary composable per file.

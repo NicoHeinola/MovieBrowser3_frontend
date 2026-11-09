@@ -1,22 +1,9 @@
-import type { UserSearchFilters } from './UserSearchFilters';
-import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
-import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
+import type { ChipsFilterValue } from '@/interfaces/search/ChipsFilterValue';
+import type { SearchFilterDefinition } from '@/interfaces/search/SearchFilterDefinition';
+import type { UserSearchFilters } from '@/interfaces/user/UserSearchFilters';
 
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { useUserRoleOptions } from '@/composables/user/useUserRoleOptions';
 import { SearchFilterType } from '@/enums/search/SearchFilterType';
-
-/**
- * Provides the admin chip.
- * @returns The options.
- */
-const useRoleOptions = () => {
-  const { t } = useI18n();
-
-  return {
-    options: computed(() => [{ value: 'admin', text: t('user.admin'), icon: 'mdi-shield-crown' }]),
-  };
-};
 
 /**
  * Builds the backend params of the role filter, which takes one `is_admin` flag instead of value lists.
@@ -40,6 +27,6 @@ export const userSearchFilterDefinitions: SearchFilterDefinition<keyof UserSearc
     title: 'user.role',
     hint: { keypath: 'user.roleHint', include: 'include', exclude: 'exclude' },
     api: getRoleApiParams,
-    useOptions: useRoleOptions,
+    useOptions: useUserRoleOptions,
   },
 ];

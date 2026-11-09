@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ShowEditorEpisodeProgress } from '@/composables/show/ShowEditorEpisodeProgress';
+import type { ShowEditorEpisodeProgress } from '@/interfaces/show/ShowEditorEpisodeProgress';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 

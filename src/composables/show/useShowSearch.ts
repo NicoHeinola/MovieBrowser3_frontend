@@ -1,15 +1,15 @@
-import type { ShowSearchFilters } from './ShowSearchFilters';
-import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
-import type { SearchFilterValue } from '@/composables/search/SearchFilterValue';
 import type { ShowQueryKey } from '@/enums/query/showQueryKey';
 import type { Show } from '@/interfaces/api/models/Show';
+import type { SearchFilterDefinition } from '@/interfaces/search/SearchFilterDefinition';
+import type { SearchFilterValue } from '@/interfaces/search/SearchFilterValue';
+import type { ShowSearchFilters } from '@/interfaces/show/ShowSearchFilters';
 
 import { usePaginatedSearch } from '@/composables/search/usePaginatedSearch';
+import { showSearchFilterDefinitions } from '@/data/show/showSearchFilterDefinitions';
+import { showSortOptions } from '@/data/show/showSortOptions';
 import { showService } from '@/services/show/showService';
 import { createSearchFilters } from '@/utils/filter/createSearchFilters';
 import { getShowGridLayout } from '@/utils/show/getShowGridLayout';
-import { showSearchFilterDefinitions } from './showSearchFilterDefinitions';
-import { showSortOptions } from './showSortOptions';
 
 /**
  * Debounced, paginated show search shared by the search page and the admin shows page, kept in the URL query.

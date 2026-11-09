@@ -1,4 +1,4 @@
-import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
+import type { ChipsFilterValue } from '@/interfaces/search/ChipsFilterValue';
 
 /** Filters the user search applies on top of the search term. */
 export interface UserSearchFilters {

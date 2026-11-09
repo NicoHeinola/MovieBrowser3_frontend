@@ -1,14 +1,14 @@
-import type { WebsiteSearchFilters } from './WebsiteSearchFilters';
 import type { Website } from '@/interfaces/api/models/Website';
+import type { WebsiteSearchFilters } from '@/interfaces/website/WebsiteSearchFilters';
 
 import { computed } from 'vue';
 import { usePaginatedSearch } from '@/composables/search/usePaginatedSearch';
+import { websiteSearchFilterDefinitions } from '@/data/website/websiteSearchFilterDefinitions';
+import { websiteSortOptions } from '@/data/website/websiteSortOptions';
 import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
 import { websiteService } from '@/services/website/websiteService';
 import { createSearchFilters } from '@/utils/filter/createSearchFilters';
 import { toggleFilterValue } from '@/utils/filter/toggleFilterValue';
-import { websiteSearchFilterDefinitions } from './websiteSearchFilterDefinitions';
-import { websiteSortOptions } from './websiteSortOptions';
 
 /**
  * Debounced, paginated website search for the admin websites page, kept in the URL query.

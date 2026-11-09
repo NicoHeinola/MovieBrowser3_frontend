@@ -1,4 +1,4 @@
-import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
+import type { ChipsFilterValue } from '@/interfaces/search/ChipsFilterValue';
 
 /**
  * Drops selected values that have no option, such as a deleted tag or a mistyped URL value. They would keep filtering

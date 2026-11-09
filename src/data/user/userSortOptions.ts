@@ -1,4 +1,4 @@
-import type { SortOption } from '@/components/common/sort-menu';
+import type { SortOption } from '@/interfaces/search/SortOption';
 
 /** Sorts the user search offers, named like the backend sorts. */
 export const userSortOptions: SortOption[] = [

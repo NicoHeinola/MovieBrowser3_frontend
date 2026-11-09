@@ -4,7 +4,7 @@ import type { DashboardStatsResponse } from '@/interfaces/api/responses/Dashboar
 
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { adminShowSearchFilterDefinitions } from '@/composables/show/adminShowSearchFilterDefinitions';
+import { adminShowSearchFilterDefinitions } from '@/data/show/adminShowSearchFilterDefinitions';
 import { formatFileSize } from '@/utils/file/formatFileSize';
 import { searchFilterQuery } from '@/utils/filter/searchFilterQuery';
 

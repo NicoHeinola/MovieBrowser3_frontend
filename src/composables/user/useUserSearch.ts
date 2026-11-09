@@ -1,12 +1,12 @@
-import type { UserSearchFilters } from './UserSearchFilters';
 import type { User } from '@/interfaces/api/models/User';
+import type { UserSearchFilters } from '@/interfaces/user/UserSearchFilters';
 
 import { usePaginatedSearch } from '@/composables/search/usePaginatedSearch';
+import { userSearchFilterDefinitions } from '@/data/user/userSearchFilterDefinitions';
+import { userSortOptions } from '@/data/user/userSortOptions';
 import { UserQueryKey } from '@/enums/query/userQueryKey';
 import { userService } from '@/services/user/userService';
 import { createSearchFilters } from '@/utils/filter/createSearchFilters';
-import { userSearchFilterDefinitions } from './userSearchFilterDefinitions';
-import { userSortOptions } from './userSortOptions';
 
 /**
  * Debounced, paginated user search for the admin users page, kept in the URL query.

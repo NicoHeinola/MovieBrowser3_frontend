@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { FilterChipState } from '@/components/common/filter-chip';
-import type { ChipsFilterValue } from '@/composables/search/ChipsFilterValue';
-import type { SearchFilterDefinition } from '@/composables/search/SearchFilterDefinition';
 import type { SearchFilterType } from '@/enums/search/SearchFilterType';
+import type { ChipsFilterValue } from '@/interfaces/search/ChipsFilterValue';
+import type { SearchFilterDefinition } from '@/interfaces/search/SearchFilterDefinition';
 
 import { watch } from 'vue';
 import { useI18n } from 'vue-i18n';

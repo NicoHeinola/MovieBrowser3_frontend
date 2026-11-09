@@ -9,8 +9,8 @@ import { SearchToolbar } from '@/components/common/search-toolbar';
 import { useWebsiteEditDialog } from '@/composables/website/useWebsiteEditDialog';
 import { useWebsiteFavoriteToggle } from '@/composables/website/useWebsiteFavoriteToggle';
 import { useWebsiteSearch } from '@/composables/website/useWebsiteSearch';
-import { websiteSearchFilterDefinitions } from '@/composables/website/websiteSearchFilterDefinitions';
-import { websiteSortOptions } from '@/composables/website/websiteSortOptions';
+import { websiteSearchFilterDefinitions } from '@/data/website/websiteSearchFilterDefinitions';
+import { websiteSortOptions } from '@/data/website/websiteSortOptions';
 import { WebsiteCard } from '../website-card';
 
 const isFilterDrawerVisible = ref<boolean>(false);

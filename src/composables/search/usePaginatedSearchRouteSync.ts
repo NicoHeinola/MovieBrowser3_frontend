@@ -1,5 +1,5 @@
-import type { PaginatedSearchRouteQuery } from './PaginatedSearchRouteQuery';
-import type { PaginatedSearchState } from './PaginatedSearchState';
+import type { PaginatedSearchRouteQuery } from '@/interfaces/search/PaginatedSearchRouteQuery';
+import type { PaginatedSearchState } from '@/interfaces/search/PaginatedSearchState';
 import type { ComputedRef } from 'vue';
 import { watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
