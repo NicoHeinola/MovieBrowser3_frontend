@@ -122,6 +122,14 @@ onMounted(() => {
 />
 ```
 
+- When an element's text doesn't fit on one line, put `{{ ... }}` on a line of its own between the tags. Don't split it as `>{{` newline `t('key')` newline `}}<`, which is hard to read. Prettier keeps the readable form as long as there is whitespace inside the tag.
+
+```vue
+<span class="text-medium-emphasis">
+  {{ t('show.dropEpisodeFilesHint') }}
+</span>
+```
+
 - **Never use `.value` for refs in templates.** Vue automatically unwraps refs in templates. Using `.value` will cause incorrect behavior or errors.
 
 ```vue
