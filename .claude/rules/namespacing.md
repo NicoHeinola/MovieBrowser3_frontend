@@ -26,6 +26,22 @@ applyTo: 'src/components/**,src/composables/**,src/data/**,src/enums/**,src/inte
 - Reuse an existing service namespace under `src/services/<domain>/` for backend or platform-facing service wrappers.
 - Split work into a new namespace when the file would otherwise introduce an unrelated responsibility.
 
+## Layer Boundaries
+
+Dependencies point one way. ESLint (`layerBoundaries` in `eslint.config.js`) fails an import that goes the wrong way; tests may import anything.
+
+| Layer                       | Must not import                                                                                                 |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `interfaces`, `enums`       | anything but other interfaces and enums                                                                         |
+| `data`                      | components, pages, plugins, router, services, stores (a list that needs Vue code references a composable)       |
+| `utils`, `rules`            | components, composables, pages, router, services, stores                                                        |
+| `services`                  | components, composables, data, pages, router, stores                                                            |
+| `stores`                    | components, composables, pages, router                                                                          |
+| `plugins`                   | components, composables, pages, router, stores (only `plugins/index.ts`, the startup wiring, may import stores) |
+| `composables`, `components` | pages                                                                                                           |
+
+A type that a lower layer needs lives in `src/interfaces`, not in the component or composable that first used it.
+
 ## Folder and File Naming
 
 - Component and page folders should use the existing kebab-case folder style (for example `show-grid`, `top-navigation`, `home`).

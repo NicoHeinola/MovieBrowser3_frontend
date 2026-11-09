@@ -39,6 +39,76 @@ const composableNaming = [
   },
 ];
 
+/**
+ * The layers each layer must not import, so dependencies point one way: pages and components on top, then
+ * composables and stores, then services, utils and data, with interfaces and enums at the bottom. Tests may import
+ * anything.
+ */
+const layerBoundaries = [
+  {
+    files: ['src/interfaces/**', 'src/enums/**'],
+    forbidden: [
+      'components',
+      'composables',
+      'data',
+      'pages',
+      'plugins',
+      'router',
+      'rules',
+      'services',
+      'stores',
+      'utils',
+    ],
+    message: 'Interfaces and enums describe shapes; they import only other interfaces and enums.',
+  },
+  {
+    files: ['src/data/**'],
+    forbidden: ['components', 'pages', 'plugins', 'router', 'services', 'stores'],
+    message: 'Data holds constants; a list that needs Vue code references a composable, nothing higher.',
+  },
+  {
+    files: ['src/utils/**'],
+    forbidden: ['components', 'composables', 'pages', 'router', 'services', 'stores'],
+    message: 'Utilities are plain helpers. Move shared types to src/interfaces and logic that needs state up a layer.',
+  },
+  {
+    files: ['src/rules/**'],
+    forbidden: ['components', 'composables', 'pages', 'router', 'services', 'stores'],
+    message: 'Validation rules are plain functions; they may only use utilities, plugins (i18n) and types.',
+  },
+  {
+    files: ['src/services/**'],
+    forbidden: ['components', 'composables', 'data', 'pages', 'router', 'stores'],
+    message: 'Services wrap backend calls; stores, composables and components call them, never the other way.',
+  },
+  {
+    files: ['src/stores/**'],
+    forbidden: ['components', 'composables', 'pages', 'router'],
+    message: 'Stores hold client state and call services; UI layers use stores, not the other way.',
+  },
+  {
+    // plugins/index.ts is the startup wiring that connects plugins to stores, so it may import them.
+    files: ['src/plugins/**'],
+    ignores: ['src/plugins/index.ts'],
+    forbidden: ['components', 'composables', 'pages', 'router', 'stores'],
+    message: 'Plugins set up libraries; only plugins/index.ts wires them to stores.',
+  },
+  {
+    files: ['src/composables/**', 'src/components/**'],
+    forbidden: ['pages'],
+    message: 'Pages are entry points of routes; nothing but the router imports them.',
+  },
+].map(({ files, ignores = [], forbidden, message }) => ({
+  files,
+  ignores: [...ignores, 'src/**/__tests__/**'],
+  rules: {
+    'no-restricted-imports': [
+      'error',
+      { patterns: [{ group: forbidden.flatMap((layer) => [`@/${layer}`, `@/${layer}/*`]), message }] },
+    ],
+  },
+}));
+
 export default [
   ...(await vuetify()),
   prettier,
@@ -126,4 +196,5 @@ export default [
       ],
     },
   },
+  ...layerBoundaries,
 ];

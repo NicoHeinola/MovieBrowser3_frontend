@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FilterChipState } from './filterChipState';
+import type { FilterChipState } from '@/interfaces/search/FilterChipState';
 
 import { computed } from 'vue';
 

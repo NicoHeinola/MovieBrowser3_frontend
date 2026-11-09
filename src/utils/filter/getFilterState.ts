@@ -1,4 +1,4 @@
-import type { FilterChipState } from '@/components/common/filter-chip';
+import type { FilterChipState } from '@/interfaces/search/FilterChipState';
 
 /**
  * Resolves whether a value is included, excluded or not filtered on.

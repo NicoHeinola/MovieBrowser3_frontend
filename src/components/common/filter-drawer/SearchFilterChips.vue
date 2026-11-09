@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { FilterChipState } from '@/components/common/filter-chip';
 import type { SearchFilterType } from '@/enums/search/SearchFilterType';
 import type { ChipsFilterValue } from '@/interfaces/search/ChipsFilterValue';
+import type { FilterChipState } from '@/interfaces/search/FilterChipState';
 import type { SearchFilterDefinition } from '@/interfaces/search/SearchFilterDefinition';
 
 import { watch } from 'vue';
