@@ -14,8 +14,8 @@ import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { websiteTagService } from '@/services/website/websiteTagService';
 import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
-import { getWebsiteTagListQuery } from '@/utils/website/getWebsiteTagListQuery';
-import { getWebsiteTagRename } from '@/utils/website/getWebsiteTagRename';
+import { getWebsiteTagListQuery } from '@/utils/website/tag/getWebsiteTagListQuery';
+import { getWebsiteTagRename } from '@/utils/website/tag/getWebsiteTagRename';
 
 const props = withDefaults(
   defineProps<{

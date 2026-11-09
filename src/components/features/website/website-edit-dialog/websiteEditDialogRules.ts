@@ -2,7 +2,7 @@ import { i18n } from '@/plugins/i18n';
 import { maxLengthRule } from '@/rules/maxLengthRule';
 import { requiredRule } from '@/rules/requiredRule';
 import { urlRule } from '@/rules/urlRule';
-import { normalizeWebsiteUrl } from '@/utils/website/normalizeWebsiteUrl';
+import { normalizeWebsiteUrl } from '@/utils/website/url/normalizeWebsiteUrl';
 
 /**
  * Builds the website form rules, mirroring the backend limits.

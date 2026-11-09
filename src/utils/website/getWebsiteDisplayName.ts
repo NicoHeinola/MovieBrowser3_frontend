@@ -1,6 +1,6 @@
 import type { Website } from '@/interfaces/api/models/Website';
 
-import { getWebsiteHostname } from './getWebsiteHostname';
+import { getWebsiteHostname } from '@/utils/website/url/getWebsiteHostname';
 
 /**
  * Gets the name a website is shown with.

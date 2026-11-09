@@ -15,10 +15,10 @@ import { useCreatePendingWebsiteTags } from '@/composables/website/useCreatePend
 import { WebsiteIconKind } from '@/enums/website/WebsiteIconKind';
 import { websiteService } from '@/services/website/websiteService';
 import { getChangedObject } from '@/utils/object/hasObjectChanged';
-import { getAutofilledWebsiteTitle } from '@/utils/website/getAutofilledWebsiteTitle';
 import { getWebsiteDisplayName } from '@/utils/website/getWebsiteDisplayName';
 import { getWebsiteIconKind } from '@/utils/website/getWebsiteIconKind';
-import { normalizeWebsiteUrl } from '@/utils/website/normalizeWebsiteUrl';
+import { getAutofilledWebsiteTitle } from '@/utils/website/url/getAutofilledWebsiteTitle';
+import { normalizeWebsiteUrl } from '@/utils/website/url/normalizeWebsiteUrl';
 import { WebsiteIcon } from '../website-icon';
 import { WebsiteTagAutocomplete } from '../website-tag-autocomplete';
 import { getRules } from './websiteEditDialogRules';

@@ -8,7 +8,7 @@ import { useI18n } from 'vue-i18n';
 import { ExpandableText } from '@/components/common/expandable-text';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { getWebsiteDisplayName } from '@/utils/website/getWebsiteDisplayName';
-import { getWebsiteHostname } from '@/utils/website/getWebsiteHostname';
+import { getWebsiteHostname } from '@/utils/website/url/getWebsiteHostname';
 import { WebsiteIcon } from '../website-icon';
 
 const props = defineProps<{

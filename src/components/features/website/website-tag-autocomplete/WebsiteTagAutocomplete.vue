@@ -7,9 +7,9 @@ import { useI18n } from 'vue-i18n';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { websiteTagService } from '@/services/website/websiteTagService';
-import { createPendingWebsiteTag } from '@/utils/website/createPendingWebsiteTag';
-import { getWebsiteTagSearchState } from '@/utils/website/getWebsiteTagSearchState';
-import { isPendingWebsiteTag } from '@/utils/website/isPendingWebsiteTag';
+import { createPendingWebsiteTag } from '@/utils/website/tag/createPendingWebsiteTag';
+import { getWebsiteTagSearchState } from '@/utils/website/tag/getWebsiteTagSearchState';
+import { isPendingWebsiteTag } from '@/utils/website/tag/isPendingWebsiteTag';
 
 defineOptions({
   inheritAttrs: false,

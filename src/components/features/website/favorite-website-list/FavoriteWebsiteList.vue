@@ -4,7 +4,7 @@ import type { Website } from '@/interfaces/api/models/Website';
 import { useI18n } from 'vue-i18n';
 
 import { getWebsiteDisplayName } from '@/utils/website/getWebsiteDisplayName';
-import { getWebsiteHostname } from '@/utils/website/getWebsiteHostname';
+import { getWebsiteHostname } from '@/utils/website/url/getWebsiteHostname';
 import { WebsiteIcon } from '../website-icon';
 
 const { t } = useI18n();

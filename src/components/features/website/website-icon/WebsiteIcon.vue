@@ -2,8 +2,8 @@
 import { computed } from 'vue';
 
 import { WebsiteIconKind } from '@/enums/website/WebsiteIconKind';
-import { getWebsiteFaviconUrl } from '@/utils/website/getWebsiteFaviconUrl';
 import { getWebsiteIconKind } from '@/utils/website/getWebsiteIconKind';
+import { getWebsiteFaviconUrl } from '@/utils/website/url/getWebsiteFaviconUrl';
 
 const props = withDefaults(
   defineProps<{
