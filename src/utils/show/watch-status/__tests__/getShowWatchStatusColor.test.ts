@@ -3,8 +3,8 @@ import type { Show } from '@/interfaces/api/models/Show';
 import { describe, expect, it } from 'vitest';
 import { WatchStatus } from '@/enums/show/WatchStatus';
 import { getShowWatchStatusColor } from '../getShowWatchStatusColor';
-import { getWatchStatusColor } from '../getWatchStatusColor';
 import { MIXED_WATCH_STATUS } from '../mixedWatchStatus';
+import { WATCH_STATUS_STYLES } from '../watchStatusStyles';
 
 const createShow = (statuses: (WatchStatus | null)[]): Show =>
   ({
@@ -22,7 +22,7 @@ describe('getShowWatchStatusColor', () => {
 
   it('returns the status color when every entry shares one status', () => {
     expect(getShowWatchStatusColor(createShow([WatchStatus.Completed, WatchStatus.Completed]))).toBe(
-      getWatchStatusColor(WatchStatus.Completed),
+      WATCH_STATUS_STYLES[WatchStatus.Completed].color,
     );
   });
 

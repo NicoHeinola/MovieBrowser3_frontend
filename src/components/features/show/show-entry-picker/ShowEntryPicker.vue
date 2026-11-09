@@ -3,11 +3,9 @@ import type { ShowEntry } from '@/interfaces/api/models/ShowEntry';
 import { useResizeObserver, useScroll } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { DragScrollContainer } from '@/components/common/drag-scroll-container';
 import { SectionLabel } from '@/components/common/section-label';
-import { getWatchStatusColor } from '@/utils/show/watch-status/getWatchStatusColor';
-import { getWatchStatusIcon } from '@/utils/show/watch-status/getWatchStatusIcon';
+import { WATCH_STATUS_STYLES } from '@/utils/show/watch-status/watchStatusStyles';
 
 const props = defineProps<{
   entries: ShowEntry[];
@@ -90,8 +88,8 @@ useResizeObserver(rail, measure);
               v-if="entry.id === props.watchingEntryId"
             />
             <v-icon
-              :color="getWatchStatusColor(entry.watch_status.status)"
-              :icon="getWatchStatusIcon(entry.watch_status.status)"
+              :color="WATCH_STATUS_STYLES[entry.watch_status.status].color"
+              :icon="WATCH_STATUS_STYLES[entry.watch_status.status].icon"
               size="small"
               v-if="entry.watch_status"
             />

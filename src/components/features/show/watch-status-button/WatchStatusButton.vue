@@ -2,11 +2,9 @@
 import type { CombinedWatchStatus } from '@/utils/show/watch-status/CombinedWatchStatus';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { WatchStatus } from '@/enums/show/WatchStatus';
-import { getWatchStatusColor } from '@/utils/show/watch-status/getWatchStatusColor';
-import { getWatchStatusIcon } from '@/utils/show/watch-status/getWatchStatusIcon';
 import { MIXED_WATCH_STATUS } from '@/utils/show/watch-status/mixedWatchStatus';
+import { WATCH_STATUS_STYLES } from '@/utils/show/watch-status/watchStatusStyles';
 
 const props = defineProps<{
   disabled?: boolean;
@@ -26,12 +24,12 @@ const statuses = Object.values(WatchStatus);
 
 const buttonColor = computed<string | undefined>(() => {
   if (status.value === MIXED_WATCH_STATUS.value) return MIXED_WATCH_STATUS.color;
-  return status.value ? getWatchStatusColor(status.value) : undefined;
+  return status.value ? WATCH_STATUS_STYLES[status.value].color : undefined;
 });
 
 const buttonIcon = computed<string>(() => {
   if (status.value === MIXED_WATCH_STATUS.value) return MIXED_WATCH_STATUS.icon;
-  return status.value ? getWatchStatusIcon(status.value) : 'mdi-tag-outline';
+  return status.value ? WATCH_STATUS_STYLES[status.value].icon : 'mdi-tag-outline';
 });
 
 const buttonLabel = computed<string>(() => {
@@ -66,8 +64,8 @@ const buttonLabel = computed<string>(() => {
       <v-list-item
         v-for="option in statuses"
         :active="option === status"
-        :color="getWatchStatusColor(option)"
-        :prepend-icon="getWatchStatusIcon(option)"
+        :color="WATCH_STATUS_STYLES[option].color"
+        :prepend-icon="WATCH_STATUS_STYLES[option].icon"
         :title="t(`showEntry.watchStatus.${option}`)"
         @click="status = option"
         :key="option"

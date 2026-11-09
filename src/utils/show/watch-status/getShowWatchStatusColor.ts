@@ -1,7 +1,7 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import { getCombinedWatchStatus } from './getCombinedWatchStatus';
-import { getWatchStatusColor } from './getWatchStatusColor';
 import { MIXED_WATCH_STATUS } from './mixedWatchStatus';
+import { WATCH_STATUS_STYLES } from './watchStatusStyles';
 
 /**
  * Resolves the theme color that represents a whole show's watch progress.
@@ -13,5 +13,5 @@ export const getShowWatchStatusColor = (show: Show): string | null => {
   if (!status) return null;
   if (status === MIXED_WATCH_STATUS.value) return MIXED_WATCH_STATUS.color;
 
-  return getWatchStatusColor(status);
+  return WATCH_STATUS_STYLES[status].color;
 };

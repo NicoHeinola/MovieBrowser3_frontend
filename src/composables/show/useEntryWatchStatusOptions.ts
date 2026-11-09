@@ -1,9 +1,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { WatchStatus } from '@/enums/show/WatchStatus';
-import { getWatchStatusColor } from '@/utils/show/watch-status/getWatchStatusColor';
-import { getWatchStatusIcon } from '@/utils/show/watch-status/getWatchStatusIcon';
+import { WATCH_STATUS_STYLES } from '@/utils/show/watch-status/watchStatusStyles';
 
 /**
  * Provides a chip for every watch status.
@@ -17,8 +15,8 @@ export const useEntryWatchStatusOptions = () => {
       Object.values(WatchStatus).map((status) => ({
         value: status,
         text: t(`showEntry.watchStatus.${status}`),
-        icon: getWatchStatusIcon(status),
-        color: getWatchStatusColor(status),
+        icon: WATCH_STATUS_STYLES[status].icon,
+        color: WATCH_STATUS_STYLES[status].color,
       })),
     ),
   };
