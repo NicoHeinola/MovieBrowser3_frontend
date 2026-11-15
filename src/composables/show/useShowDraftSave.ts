@@ -79,7 +79,8 @@ type EpisodeDraft = Episode & { file?: File };
  * moved to another entry is updated with its new entry, not deleted and created again.
  * @param draft - The show being saved.
  * @param savedShow - What the backend holds, or null for a show not created yet.
- * @param onEpisodeProgress - Called as episodes are saved, with how many are done.
+ * @param onEpisodeProgress - Called as episodes are saved, with how many are done, how many bytes are left and
+ * the size of the file uploading now.
  * @returns Nothing.
  */
 const saveEpisodes = async (
@@ -102,33 +103,52 @@ const saveEpisodes = async (
   // An entry deletes only the episodes that are in no entry now: one moved away lives on in its new entry.
   const draftEpisodes = episodeSyncs.flatMap(({ episodes }) => episodes);
 
-  const total = episodeSyncs.reduce((amount, { episodes, savedEpisodes }) => {
+  let total = 0;
+  let bytesTotal = 0;
+  for (const { episodes, savedEpisodes } of episodeSyncs) {
     const { toCreate, toUpdate } = getSyncPlan(episodes, savedEpisodes, 'id');
     const { toDelete } = getSyncPlan(draftEpisodes, savedEpisodes, 'id');
 
-    return amount + toCreate.length + toUpdate.length + toDelete.length;
-  }, 0);
+    total += toCreate.length + toUpdate.length + toDelete.length;
+    for (const episode of [...toCreate, ...toUpdate] as EpisodeDraft[]) {
+      bytesTotal += episode.file?.size ?? 0;
+    }
+  }
 
   if (total === 0) {
     return;
   }
 
   let done = 0;
-  onEpisodeProgress({ done, total });
+  let bytesLeft = bytesTotal;
+  onEpisodeProgress({ done, total, bytesTotal, bytesLeft, bytesCurrent: 0 });
 
-  const countEpisode = (): void => {
+  /**
+   * Counts a finished episode, and the bytes of the file it uploaded.
+   * @param fileBytes - The size of the file the episode uploaded, 0 for none.
+   * @returns Nothing.
+   */
+  const countEpisode = (fileBytes: number): void => {
     done++;
-    onEpisodeProgress({ done, total });
+    bytesLeft -= fileBytes;
+    onEpisodeProgress({ done, total, bytesTotal, bytesLeft, bytesCurrent: 0 });
   };
 
   /**
-   * Sends one episode. Once its picked file is uploaded, the draft swaps the pick for the stored file's details, so a
-   * retry after a later failure sends the episode without the file instead of uploading it again.
+   * Sends one episode and counts it. Once its picked file is uploaded, the draft swaps the pick for the stored file's
+   * details, so a retry after a later failure sends the episode without the file instead of uploading it again.
    * @param episode - The draft episode being created or updated.
    * @param send - Sends the request.
    * @returns What the backend made of the episode.
    */
   const saveEpisode = async (episode: EpisodeDraft, send: () => Promise<Episode>): Promise<Episode> => {
+    const fileBytes = episode.file?.size ?? 0;
+
+    // Say which file is on its way, so the time estimate knows how much the running upload can still add.
+    if (fileBytes > 0) {
+      onEpisodeProgress({ done, total, bytesTotal, bytesLeft, bytesCurrent: fileBytes });
+    }
+
     const savedEpisode = await send();
 
     if (episode.file) {
@@ -138,6 +158,7 @@ const saveEpisodes = async (
       delete episode.file;
     }
 
+    countEpisode(fileBytes);
     return savedEpisode;
   };
 
@@ -166,14 +187,13 @@ const saveEpisodes = async (
         }
         savedEpisodes.push({ ...episode, show_entry_id: entry.id });
       },
-      onItem: countEpisode,
     });
   }
 
   for (const { savedEpisodes } of episodeSyncs) {
     await deleteRemovedItems(draftEpisodes, savedEpisodes, {
       delete: (id) => showEpisodeService.remove(id),
-      onItem: countEpisode,
+      onItem: () => countEpisode(0),
     });
   }
 };

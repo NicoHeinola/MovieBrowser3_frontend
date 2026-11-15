@@ -155,9 +155,35 @@ describe('useShowDraftSave', () => {
     await save(draft, savedShow);
 
     expect(progress).toEqual([
-      { done: 0, total: 2 },
-      { done: 1, total: 2 },
+      { done: 0, total: 2, bytesTotal: 0, bytesLeft: 0, bytesCurrent: 0 },
+      { done: 1, total: 2, bytesTotal: 0, bytesLeft: 0, bytesCurrent: 0 },
     ]);
+    expect(episodeProgress.value).toBeNull();
+  });
+
+  it('counts down the video bytes left as each file finishes uploading', async () => {
+    recordCalls();
+    const { episodeProgress, save } = useShowDraftSave();
+    const progress: unknown[] = [];
+    // Each request sees the bytes left before it.
+    vi.mocked(showEpisodeService.create).mockImplementation(async () => {
+      progress.push(episodeProgress.value?.bytesLeft);
+      return { id: 90 } as never;
+    });
+    vi.mocked(showEpisodeService.update).mockImplementation(async () => {
+      progress.push(episodeProgress.value?.bytesLeft);
+      return {} as never;
+    });
+    const savedShow = createShow();
+    const draft = deepClone(savedShow);
+
+    // Replace one file and add an episode with another.
+    Object.assign(draft.entries![0]!.episodes![0]!, { file: new File(['a'.repeat(1000)], 'one.mkv') });
+    const movieFile = new File(['b'.repeat(400)], 'movie.mkv');
+    draft.entries![1]!.episodes = [{ name: 'Movie', sequence_number: 0, file: movieFile } as never];
+    await save(draft, savedShow);
+
+    expect(progress).toEqual([1400, 400]);
     expect(episodeProgress.value).toBeNull();
   });
 

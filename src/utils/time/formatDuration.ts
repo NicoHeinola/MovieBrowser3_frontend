@@ -1,9 +1,9 @@
 /**
- * Formats a playback position like a media player: `m:ss`, or `h:mm:ss` from an hour up.
- * @param seconds - The position in seconds.
+ * Formats a time like a media player: `m:ss`, or `h:mm:ss` from an hour up, for playback positions and countdowns.
+ * @param seconds - The time in seconds.
  * @returns The formatted time.
  */
-export const formatPlaybackTime = (seconds: number): string => {
+export const formatDuration = (seconds: number): string => {
   const totalSeconds = Math.max(0, Math.floor(seconds));
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);

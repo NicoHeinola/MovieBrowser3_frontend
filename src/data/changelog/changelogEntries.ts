@@ -21,6 +21,11 @@ export const changelogEntries: ChangelogEntry[] = [
         ],
       },
       {
+        type: ChangelogChangeType.Added,
+        text: 'While a show saves, the save bar shows its progress.',
+        details: ['Episodes saved and video uploaded so far, out of the total.', 'An estimate of the time left.'],
+      },
+      {
         type: ChangelogChangeType.Changed,
         text: 'The show preview video is muted when you start watching the show, keeping your own volume choice.',
       },

@@ -15,10 +15,10 @@ import { useShowEntryWatchStatus } from '@/composables/show/useShowEntryWatchSta
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { getEpisodeName } from '@/utils/show/getEpisodeName';
 import { isEpisodeVideoMissing } from '@/utils/show/video-file/isEpisodeVideoMissing';
-import { formatPlaybackTime } from '@/utils/show/watch-progress/formatPlaybackTime';
 import { getWatchedEpisodeIds } from '@/utils/show/watch-progress/getWatchedEpisodeIds';
 import { getCombinedWatchStatus } from '@/utils/show/watch-status/getCombinedWatchStatus';
 import { MIXED_WATCH_STATUS } from '@/utils/show/watch-status/mixedWatchStatus';
+import { formatDuration } from '@/utils/time/formatDuration';
 import { useSelectedEntry } from './useSelectedEntry';
 import { useSelectedShowPlayback } from './useSelectedShowPlayback';
 
@@ -106,11 +106,11 @@ const episodeProgress = computed<{ label: string; percent: number | null } | nul
   }
 
   if (!duration) {
-    return { label: formatPlaybackTime(position), percent: null };
+    return { label: formatDuration(position), percent: null };
   }
 
   return {
-    label: `${formatPlaybackTime(position)} / ${formatPlaybackTime(duration)}`,
+    label: `${formatDuration(position)} / ${formatDuration(duration)}`,
     percent: Math.min(100, (position / duration) * 100),
   };
 });
@@ -118,7 +118,7 @@ const episodeProgress = computed<{ label: string; percent: number | null } | nul
 /** The label of the main watch button: resume at a saved position, continue an episode, or start the show. */
 const watchTargetLabel = computed<string>(() => {
   if (resumePosition.value !== null) {
-    return t('show.resumeAt', { time: formatPlaybackTime(resumePosition.value) });
+    return t('show.resumeAt', { time: formatDuration(resumePosition.value) });
   }
 
   return isContinuing.value ? t('show.continueWatching') : t('show.startWatching');

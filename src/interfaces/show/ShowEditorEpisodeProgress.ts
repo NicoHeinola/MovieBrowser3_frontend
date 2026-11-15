@@ -4,4 +4,10 @@ export interface ShowEditorEpisodeProgress {
   done: number;
   /** Episodes the save creates, updates or removes in all. */
   total: number;
+  /** Bytes of picked video files the save uploads in all; 0 when it uploads no files. */
+  bytesTotal: number;
+  /** Bytes of picked video files not uploaded yet. */
+  bytesLeft: number;
+  /** Bytes of the file uploading right now, part of `bytesLeft`; 0 between files. */
+  bytesCurrent: number;
 }
