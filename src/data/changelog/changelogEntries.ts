@@ -14,6 +14,15 @@ export const changelogEntries: ChangelogEntry[] = [
     changes: [
       {
         type: ChangelogChangeType.Added,
+        text: 'The database is backed up automatically once a day and before each update.',
+        details: [
+          'Settings lists the backups with their dates and sizes.',
+          'Back up now from Settings, which says why when backing up fails.',
+          'Copy the command that restores a backup.',
+        ],
+      },
+      {
+        type: ChangelogChangeType.Added,
         text: 'Move episodes to another season or movie in the show editor.',
         details: [
           "Pick the entry from the episode's move menu.",

@@ -136,6 +136,8 @@
       "video_relocation_running": "The video folder is being moved. Try again when the move is done.",
       "video_relocation_failed": "Moving the videos failed, so they were moved back. The video folder didn't change. If VLC is playing a video, close it and try again.",
       "video_relocation_revert_failed": "Moving the videos failed, and moving them back failed too. The video folder didn't change, but some videos may now be in the new folder. Check both folders, then scan the video files.",
+      "backup_dir_unavailable": "The backup folder doesn't exist or can't be written to. If it's on an external drive, check that the drive is connected.",
+      "backup_failed": "Backing up the database failed.",
       "only_primary_title": "A show's only primary title can't be deleted.",
       "last_admin": "At least one admin must remain, so this user can't lose admin rights.",
       "invalid": "A value is not valid."
@@ -267,6 +269,18 @@
     "removeVideoConfirm": "Remove this default banner video?\n\n{url}",
     "favoritesLink": "Websites",
     "openSetup": "Run setup again"
+  },
+  "backup": {
+    "section": "Backups",
+    "sectionSubtitle": "The database is backed up once a day and before each update. The newest 14 backups are kept.",
+    "backUpNow": "Back up now",
+    "createdAt": "Created",
+    "name": "File",
+    "size": "Size",
+    "copyRestoreCommand": "Copy restore command",
+    "restoreCommandCopied": "Restore command copied.",
+    "noBackups": "No backups yet",
+    "finished": "Database backed up."
   },
   "frontpage": {
     "saved": "Frontpage section saved successfully.",

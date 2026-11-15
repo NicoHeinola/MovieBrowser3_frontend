@@ -136,6 +136,8 @@
       "video_relocation_running": "Videokansiota siirretään. Yritä uudelleen, kun siirto on valmis.",
       "video_relocation_failed": "Videoiden siirto epäonnistui, joten ne siirrettiin takaisin. Videokansio ei muuttunut. Jos VLC toistaa videota, sulje se ja yritä uudelleen.",
       "video_relocation_revert_failed": "Videoiden siirto epäonnistui, eikä niitä saatu siirrettyä takaisin. Videokansio ei muuttunut, mutta osa videoista voi olla nyt uudessa kansiossa. Tarkista molemmat kansiot ja skannaa sitten videotiedostot.",
+      "backup_dir_unavailable": "Varmuuskopiokansiota ei ole tai siihen ei voi kirjoittaa. Jos se on ulkoisella levyllä, tarkista, että levy on kytketty.",
+      "backup_failed": "Tietokannan varmuuskopiointi epäonnistui.",
       "only_primary_title": "Sarjan ainoaa ensisijaista nimeä ei voi poistaa.",
       "last_admin": "Vähintään yhden ylläpitäjän on jäätävä, joten tältä käyttäjältä ei voi poistaa ylläpito-oikeuksia.",
       "invalid": "Arvo ei ole kelvollinen."
@@ -267,6 +269,18 @@
     "removeVideoConfirm": "Poistetaanko tämä bannerin oletusvideo?\n\n{url}",
     "favoritesLink": "Verkkosivut",
     "openSetup": "Käy käyttöönotto uudelleen"
+  },
+  "backup": {
+    "section": "Varmuuskopiot",
+    "sectionSubtitle": "Tietokanta varmuuskopioidaan kerran päivässä ja ennen jokaista päivitystä. 14 uusinta varmuuskopiota säilytetään.",
+    "backUpNow": "Varmuuskopioi nyt",
+    "createdAt": "Luotu",
+    "name": "Tiedosto",
+    "size": "Koko",
+    "copyRestoreCommand": "Kopioi palautuskomento",
+    "restoreCommandCopied": "Palautuskomento kopioitu.",
+    "noBackups": "Ei vielä varmuuskopioita",
+    "finished": "Tietokanta varmuuskopioitu."
   },
   "frontpage": {
     "saved": "Etusivun osio tallennettu.",

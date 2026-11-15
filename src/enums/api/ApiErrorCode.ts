@@ -100,6 +100,10 @@ export enum ApiErrorCode {
   VideoRelocationFailed = 'video_relocation_failed',
   /** Moving the video folder failed and moving the files back failed too, so some may be in the new folder. */
   VideoRelocationRevertFailed = 'video_relocation_revert_failed',
+  /** The backup folder doesn't exist or can't be written to, such as an external drive that isn't mounted. */
+  BackupDirUnavailable = 'backup_dir_unavailable',
+  /** The database dump failed. */
+  BackupFailed = 'backup_failed',
   /** A show's only primary title can't be deleted. */
   OnlyPrimaryTitle = 'only_primary_title',
   /** The only admin can't lose admin rights. */

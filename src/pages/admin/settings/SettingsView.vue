@@ -1,19 +1,25 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import type { Backup } from '@/interfaces/api/models/Backup';
+import type { ListResponse } from '@/interfaces/api/responses/ListResponse';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { TaskStatusCard } from '@/components/common/task-status-card';
 import { TitledSection } from '@/components/common/titled-section';
+import { BackupTable } from '@/components/features/backup/backup-table';
 import { AddDefaultBackgroundDialog } from '@/components/features/setting/add-default-background-dialog';
 import { AddDefaultVideoDialog } from '@/components/features/setting/add-default-video-dialog';
 import { DefaultMediaGallery } from '@/components/features/setting/default-media-gallery';
 import { VideoSettings } from '@/components/features/setting/video-settings';
 import { useDialog } from '@/components/layouts/dialog-provider';
+import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useVideoFileCheck } from '@/composables/setting/useVideoFileCheck';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { BackupQueryKey } from '@/enums/query/backupQueryKey';
+import { backupService } from '@/services/backup/backupService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
 const dialog = useDialog();
@@ -22,6 +28,34 @@ const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const settingStore = useSettingStore();
 const { t } = useI18n();
 const { isPending, isRunning, isStarting, startCheck, statusCard } = useVideoFileCheck();
+
+const isBackingUp = ref<boolean>(false);
+
+const backupQuery = useAPIQuery<ListResponse<Backup>>({
+  queryKey: [BackupQueryKey.AdminBackups],
+  queryFn: async () => await backupService.list(),
+  // Scheduled backups run while this page is closed, so read them on each visit.
+  staleTime: 0,
+});
+
+/**
+ * Backs up the database now and reloads the list. A failure says why, such as a backup folder on a drive that isn't
+ * connected: the one place the admin learns why scheduled backups fail.
+ * @returns Nothing.
+ */
+const backUpNow = async (): Promise<void> => {
+  isBackingUp.value = true;
+
+  try {
+    await backupService.create();
+    showSuccessSnackbar(t('backup.finished'));
+    await backupQuery.refetch();
+  } catch (error: unknown) {
+    showAPIErrorSnackbar(error);
+  } finally {
+    isBackingUp.value = false;
+  }
+};
 
 const loadSettings = async (): Promise<void> => {
   try {
@@ -192,6 +226,25 @@ onMounted(() => {
                 @click="void startCheck()"
               >
                 {{ t('settings.checkVideoFiles') }}
+              </v-btn>
+            </div>
+          </template>
+        </titled-section>
+      </v-col>
+
+      <v-col cols="12">
+        <titled-section :subtitle="t('backup.sectionSubtitle')" :title="t('backup.section')">
+          <backup-table :backups="backupQuery.data.value?.data ?? []" :is-pending="backupQuery.isPending.value" />
+
+          <template #append>
+            <div class="d-flex flex-1-1 justify-end">
+              <v-btn
+                :loading="isBackingUp"
+                prepend-icon="mdi-database-export-outline"
+                variant="tonal"
+                @click="void backUpNow()"
+              >
+                {{ t('backup.backUpNow') }}
               </v-btn>
             </div>
           </template>
