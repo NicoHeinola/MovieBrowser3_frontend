@@ -8,6 +8,7 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  * version get the "What's new" popup on their next visit.
  */
 export const changelogEntries: ChangelogEntry[] = [
+  { version: '2.2.2', date: null, changes: [] },
   {
     version: '2.2.1',
     date: '2026-11-16',
