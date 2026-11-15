@@ -6,11 +6,12 @@ import { useI18n } from 'vue-i18n';
 import { BaseDialog } from '@/components/common/base-dialog';
 import { CopyableCode } from '@/components/common/copyable-code';
 import { HeadingText } from '@/components/common/heading-text';
+import { CLI_PATH } from '@/data/cli/cliPath';
 
 const props = defineProps<UpdateDialogProps>();
 
 /** The command that updates a production install, run on the machine that hosts it. */
-const UPDATE_COMMAND = '~/prod_codes/MovieBrowser3/moviebrowser3 update';
+const UPDATE_COMMAND = `${CLI_PATH} update`;
 
 const { t } = useI18n();
 </script>

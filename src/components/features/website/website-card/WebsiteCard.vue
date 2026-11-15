@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type { Website } from '@/interfaces/api/models/Website';
 
-import { useClipboard } from '@vueuse/core';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { ExpandableText } from '@/components/common/expandable-text';
-import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { useCopyText } from '@/composables/clipboard/useCopyText';
 import { getWebsiteDisplayName } from '@/utils/website/getWebsiteDisplayName';
 import { getWebsiteHostname } from '@/utils/website/url/getWebsiteHostname';
 import { WebsiteIcon } from '../website-icon';
@@ -24,8 +23,7 @@ const emit = defineEmits<{
   'click:tag': [tagId: number];
 }>();
 
-const { copy } = useClipboard({ legacy: true });
-const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
+const { copyText } = useCopyText();
 const { t } = useI18n();
 
 const displayName = computed<string>(() => getWebsiteDisplayName(props.website));
@@ -36,12 +34,7 @@ const hostname = computed<string>(() => getWebsiteHostname(props.website.url));
  * @returns Nothing.
  */
 const copyUrl = async (): Promise<void> => {
-  try {
-    await copy(props.website.url);
-    showSuccessSnackbar(t('website.urlCopied'));
-  } catch {
-    showErrorSnackbar(t('website.urlCopyFailed'));
-  }
+  await copyText(props.website.url, { success: t('website.urlCopied'), error: t('website.urlCopyFailed') });
 };
 </script>
 

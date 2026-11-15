@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { useClipboard } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 
-import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { useCopyText } from '@/composables/clipboard/useCopyText';
 
 const props = defineProps<{
   /** The code to show and copy, such as a shell command. */
   code: string;
 }>();
 
-const { copy } = useClipboard({ legacy: true });
-const { showErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
+const { copyText } = useCopyText();
 const { t } = useI18n();
 
 /**
@@ -18,12 +16,7 @@ const { t } = useI18n();
  * @returns Nothing.
  */
 const copyCode = async (): Promise<void> => {
-  try {
-    await copy(props.code);
-    showSuccessSnackbar(t('common.copied'));
-  } catch {
-    showErrorSnackbar(t('common.copyFailed'));
-  }
+  await copyText(props.code);
 };
 </script>
 
