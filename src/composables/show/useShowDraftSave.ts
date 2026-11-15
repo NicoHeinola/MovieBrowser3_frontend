@@ -1,3 +1,4 @@
+import type { Episode } from '@/interfaces/api/models/Episode';
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEditorEpisodeProgress } from '@/interfaces/show/ShowEditorEpisodeProgress';
 import type { UnwrapRef } from 'vue';
@@ -70,6 +71,9 @@ const saveCategories = async (draft: ShowDraft, savedShow: ShowDraft | null): Pr
   }
 };
 
+/** A draft episode, which holds the video file the user picked until it is uploaded. */
+type EpisodeDraft = Episode & { file?: File };
+
 /**
  * Syncs episodes per entry after the entries exist, counting progress because uploads can take a while. An episode
  * moved to another entry is updated with its new entry, not deleted and created again.
@@ -117,14 +121,34 @@ const saveEpisodes = async (
     onEpisodeProgress({ done, total });
   };
 
+  /**
+   * Sends one episode. Once its picked file is uploaded, the draft swaps the pick for the stored file's details, so a
+   * retry after a later failure sends the episode without the file instead of uploading it again.
+   * @param episode - The draft episode being created or updated.
+   * @param send - Sends the request.
+   * @returns What the backend made of the episode.
+   */
+  const saveEpisode = async (episode: EpisodeDraft, send: () => Promise<Episode>): Promise<Episode> => {
+    const savedEpisode = await send();
+
+    if (episode.file) {
+      episode.filename = savedEpisode.filename;
+      episode.has_video_file = savedEpisode.has_video_file;
+      episode.video_file_size = savedEpisode.video_file_size;
+      delete episode.file;
+    }
+
+    return savedEpisode;
+  };
+
   // Every upload before any delete: a file added again in another entry can be the stored video file of an episode
   // deleted here, and the delete removes that file.
   for (const { entry, episodes, savedEpisodes } of episodeSyncs) {
     await saveItems(episodes, savedEpisodes, {
-      create: (episode) => showEpisodeService.create(entry.id, episode),
+      create: (episode) => saveEpisode(episode, () => showEpisodeService.create(entry.id, episode)),
       // A moved episode isn't in its new entry's saved list, so it lands here and the entry id moves it.
       update: async (id, episode) => {
-        await showEpisodeService.update(id, { ...episode, show_entry_id: entry.id });
+        await saveEpisode(episode, () => showEpisodeService.update(id, { ...episode, show_entry_id: entry.id }));
 
         if (savedEpisodes.some((saved) => saved.id === id)) {
           return;

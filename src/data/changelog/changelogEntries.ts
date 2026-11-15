@@ -32,6 +32,10 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Fixed,
         text: "Adding a removed episode's video file to another entry in the same save no longer loses the file.",
       },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'Saving a show again after a failed save no longer uploads the video files that already went through.',
+      },
     ],
   },
   {

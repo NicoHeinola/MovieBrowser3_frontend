@@ -160,4 +160,43 @@ describe('useShowDraftSave', () => {
     ]);
     expect(episodeProgress.value).toBeNull();
   });
+
+  it('does not upload a file again when a save is retried after a later failure', async () => {
+    const calls: string[] = [];
+    let hasFailed = false;
+    vi.mocked(showEpisodeService.create).mockImplementation(async (_entryId, request) => {
+      calls.push(`create ${request.name} with file ${request.file !== undefined}`);
+
+      // The third upload fails once.
+      if (request.name === 'C' && !hasFailed) {
+        hasFailed = true;
+        throw new Error('fail');
+      }
+
+      return { id: calls.length, filename: `${request.name}.mkv`, has_video_file: true } as never;
+    });
+    vi.mocked(showEpisodeService.update).mockImplementation(async (id, request) => {
+      calls.push(`update ${id} with file ${request.file !== undefined}`);
+      return {} as never;
+    });
+    const savedShow = createShow();
+    const draft = deepClone(savedShow);
+    draft.entries![1]!.episodes = ['A', 'B', 'C'].map(
+      (name, index) => ({ name, sequence_number: index, file: new File(['x'], `${name}.mkv`) }) as never,
+    );
+
+    await expect(useShowDraftSave().save(draft, savedShow)).rejects.toThrow('fail');
+    // The uploaded episodes show the stored file instead of the pick.
+    expect(draft.entries![1]!.episodes![0]).toMatchObject({ filename: 'A.mkv', has_video_file: true });
+    await useShowDraftSave().save(draft, savedShow);
+
+    expect(calls).toEqual([
+      'create A with file true',
+      'create B with file true',
+      'create C with file true',
+      'update 1 with file false',
+      'update 2 with file false',
+      'create C with file true',
+    ]);
+  });
 });
