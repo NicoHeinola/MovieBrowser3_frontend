@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { UpdateDialogProps } from './updateDialogProps';
 
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { BaseDialog } from '@/components/common/base-dialog';
@@ -14,6 +15,13 @@ const props = defineProps<UpdateDialogProps>();
 const UPDATE_COMMAND = `${CLI_PATH} update`;
 
 const { t } = useI18n();
+
+/** The new app version, or a plain notice when only the backend has an update. */
+const subtitle = computed<string>(() =>
+  props.update.version === null
+    ? t('update.updateAvailable')
+    : t('update.versionAvailable', { version: props.update.version }),
+);
 </script>
 
 <template>
@@ -23,10 +31,7 @@ const { t } = useI18n();
         <v-avatar color="primary" rounded="lg" size="x-large" variant="tonal">
           <v-icon>mdi-update</v-icon>
         </v-avatar>
-        <heading-text
-          :subtitle="t('update.versionAvailable', { version: props.update.version })"
-          :title="t('update.available')"
-        />
+        <heading-text :subtitle="subtitle" :title="t('update.available')" />
       </div>
 
       <div class="d-flex flex-column ga-2">

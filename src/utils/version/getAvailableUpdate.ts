@@ -28,14 +28,9 @@ export const getAvailableUpdate = (appVersion: AppVersion, frontendVersion: stri
     return null;
   }
 
-  // Both halves release together, so one version is enough; take the higher one when they differ.
-  const versions = [backendVersion, newerFrontendVersion].filter((version): version is string => version !== null);
-  const version = versions.reduce((highest, candidate) =>
-    compareVersions(candidate, highest) > 0 ? candidate : highest,
-  );
-
   return {
-    version,
+    // Only the frontend's version is the app version, so a backend-only update has no version to show
+    version: newerFrontendVersion,
     backendReleaseUrl: backendVersion === null ? null : appVersion.backend.release_url,
     frontendReleaseUrl: newerFrontendVersion === null ? null : appVersion.frontend.release_url,
   };

@@ -582,6 +582,7 @@
   "update": {
     "available": "Päivitys saatavilla",
     "versionAvailable": "MovieBrowser3 {version} on valmis asennettavaksi.",
+    "updateAvailable": "MovieBrowser3:n päivitys on valmis asennettavaksi.",
     "runCommand": "Suorita tämä koneella, jolla MovieBrowser3 toimii:",
     "backendRelease": "Taustapalvelun julkaisutiedot",
     "frontendRelease": "Käyttöliittymän julkaisutiedot"

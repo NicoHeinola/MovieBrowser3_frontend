@@ -582,6 +582,7 @@
   "update": {
     "available": "Update available",
     "versionAvailable": "MovieBrowser3 {version} is ready to install.",
+    "updateAvailable": "A MovieBrowser3 update is ready to install.",
     "runCommand": "Run this on the machine that hosts MovieBrowser3:",
     "backendRelease": "Backend release notes",
     "frontendRelease": "Frontend release notes"

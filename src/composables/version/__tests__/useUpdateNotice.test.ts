@@ -83,10 +83,10 @@ describe('useUpdateNotice', () => {
     expect(update.value).toBeNull();
   });
 
-  it('shows a newer version', () => {
+  it('offers a newer release', () => {
     data.value = createAppVersion('1.2.0');
 
-    expect(setup().update.value?.version).toBe('1.2.0');
+    expect(setup().update.value?.backendReleaseUrl).toBe('https://example.com/v1.2.0');
   });
 
   it('follows a newer release from the next check', () => {
@@ -95,6 +95,6 @@ describe('useUpdateNotice', () => {
 
     data.value = createAppVersion('1.3.0');
 
-    expect(update.value?.version).toBe('1.3.0');
+    expect(update.value?.backendReleaseUrl).toBe('https://example.com/v1.3.0');
   });
 });

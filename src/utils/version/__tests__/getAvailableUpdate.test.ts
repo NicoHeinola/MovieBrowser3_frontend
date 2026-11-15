@@ -37,9 +37,9 @@ describe('getAvailableUpdate', () => {
     expect(getAvailableUpdate(createAppVersion('1.1.0', '1.0.0', '1.0.0'), '1.1.0')).toBeNull();
   });
 
-  it('offers a newer backend', () => {
+  it('offers a newer backend without an app version', () => {
     expect(getAvailableUpdate(createAppVersion('1.1.0', '1.2.0', '1.1.0'), '1.1.0')).toEqual({
-      version: '1.2.0',
+      version: null,
       backendReleaseUrl: BACKEND_URL,
       frontendReleaseUrl: null,
     });
@@ -53,9 +53,9 @@ describe('getAvailableUpdate', () => {
     });
   });
 
-  it('shows the higher version and both links when both halves are behind', () => {
-    expect(getAvailableUpdate(createAppVersion('1.1.0', '1.2.0', '1.3.0'), '1.1.0')).toEqual({
-      version: '1.3.0',
+  it("shows the frontend's version, even when the backend's is higher, and both links when both are behind", () => {
+    expect(getAvailableUpdate(createAppVersion('2.1.0', '3.0.0', '2.2.0'), '2.1.0')).toEqual({
+      version: '2.2.0',
       backendReleaseUrl: BACKEND_URL,
       frontendReleaseUrl: FRONTEND_URL,
     });
