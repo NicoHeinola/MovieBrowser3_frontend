@@ -19,6 +19,8 @@ const props = defineProps<{
   rules: ((value: string) => true | string)[];
   /** Paths offered as one-click chips under the field. */
   suggestions?: string[];
+  /** Saves a path that passed its check and differs from the saved one. Throws when the backend turns it down. */
+  save: (path: string) => Promise<void>;
 }>();
 
 const path = defineModel<string>('path', { required: true });
@@ -28,7 +30,7 @@ const isValid = defineModel<boolean>('isValid', { default: false });
 const isSubmitting = defineModel<boolean>('isSubmitting', { default: false });
 
 const emit = defineEmits<{
-  /** The path passed its check and is saved. */
+  /** The path passed its check and is saved, or its save has started. */
   saved: [];
 }>();
 
@@ -39,7 +41,7 @@ const setupStore = useSetupStore();
 const { showAPIErrorSnackbar } = useCommonSnackbar();
 const { t } = useI18n();
 
-const savedPath = computed<string>(() => settingStore.getSetting<string>(props.settingKey) ?? '');
+const savedPath = computed<string>(() => settingStore.getSetting(props.settingKey) ?? '');
 const trimmedPath = computed<string>(() => path.value.trim());
 const isChangingSavedPath = computed<boolean>(() => savedPath.value !== '' && trimmedPath.value !== savedPath.value);
 
@@ -61,11 +63,19 @@ const submit = async (): Promise<void> => {
 
   isSubmitting.value = true;
   try {
-    checkResult.value = await setupStore.checkAndSavePath(props.settingKey, trimmedPath.value);
+    checkResult.value = await setupStore.checkPath(props.settingKey, trimmedPath.value);
 
-    if (checkResult.value?.ok !== false) {
-      emit('saved');
+    // A path the backend rejected is never saved.
+    if (checkResult.value?.ok === false) {
+      return;
     }
+
+    // An unchanged path is already saved, so there's nothing to send.
+    if (trimmedPath.value !== savedPath.value) {
+      await props.save(trimmedPath.value);
+    }
+
+    emit('saved');
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   } finally {

@@ -15,4 +15,10 @@ describe('vlcPathRule', () => {
     expect(vlcPathRule(String.raw`C:\VLC\vlc.exe`)).toBe(errorMessage);
     expect(vlcPathRule('bin/vlc')).toBe(errorMessage);
   });
+
+  it('returns an error message for a full path to another program', () => {
+    expect(vlcPathRule('/usr/bin/mpv')).toBe('Point to vlc or vlc.exe');
+    expect(vlcPathRule('/mnt/c/VLC/')).toBe('Point to vlc or vlc.exe');
+    expect(vlcPathRule('/usr/bin/vlc')).toBe(true);
+  });
 });

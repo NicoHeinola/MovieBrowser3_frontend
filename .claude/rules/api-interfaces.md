@@ -46,9 +46,10 @@ const list = async (): Promise<Setting[]> => { ... }
 ## User-Facing Text
 
 - The backend sends codes, not sentences. Give a code field an enum in `src/enums/<domain>` and keep its messages in i18n (`SetupCheckResult`, `setup.checkCodes`).
-- API errors are `{ code, params }` (`ApiErrorResponse`). A new code goes in `ApiErrorCode` and `apiErrors.codes`; `getApiErrorMessage` translates it and never shows a response's `message`.
+- API errors are `{ code, params }` (`ApiErrorDetail`, or `ApiErrorResponse` for a failed response). A new code goes in `ApiErrorCode` and `apiErrors.codes`. `getApiErrorDetailMessage` is the one place a code becomes a message, also for errors inside a payload such as a run's `error`; `getApiErrorMessage` uses it for failed requests and never shows a response's `message`.
 
 ## Safety
 
 - Represent nullable backend fields explicitly with `null` in the type.
 - Prefer exact optionality over broad escape hatches such as `Record<string, unknown>`.
+- Setting keys are the `SettingKey` enum, never raw strings. `SettingValues` maps each key to its value type (values arrive as `unknown`), and the setting service and store take only those keys, so a new setting gets an enum member and a field there first. Shapes keyed by setting, such as `SetupChecks`, use the enum members as keys.

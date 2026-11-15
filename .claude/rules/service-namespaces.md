@@ -28,6 +28,7 @@ applyTo: 'src/services/**/*.ts'
 
 ```typescript
 // src/services/setting/settingService.ts
+import type { SettingValues } from '@/interfaces/api/models/SettingValues';
 import type { UpdateSettingRequest } from '@/interfaces/api/requests/UpdateSettingRequest';
 import type { SettingsResponse } from '@/interfaces/api/responses/SettingsResponse';
 
@@ -39,7 +40,10 @@ const list = async (): Promise<SettingsResponse> => {
   return response.data;
 };
 
-const update = async <T>(key: string, request: UpdateSettingRequest<T>): Promise<void> => {
+const update = async <K extends keyof SettingValues>(
+  key: K,
+  request: UpdateSettingRequest<SettingValues[K]>,
+): Promise<void> => {
   await apiClient.patch(`settings/${key}`, request);
 };
 

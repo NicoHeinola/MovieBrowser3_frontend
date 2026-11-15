@@ -28,7 +28,8 @@ const { t } = useI18n();
 const load = async (): Promise<void> => {
   hasLoadFailed.value = false;
   try {
-    await Promise.all([settingStore.fetchSettings(), setupStore.fetchStatus()]);
+    // Fresh settings, like the status: a video folder move may have changed them since they were cached.
+    await Promise.all([settingStore.reloadSettings(), setupStore.fetchStatus()]);
     isReady.value = true;
   } catch (error: unknown) {
     // The page has no navigation, so a failed load offers a retry and a way out instead of an endless skeleton.

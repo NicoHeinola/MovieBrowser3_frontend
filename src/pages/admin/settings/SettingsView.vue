@@ -4,11 +4,11 @@ import { useI18n } from 'vue-i18n';
 
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
+import { TaskStatusCard } from '@/components/common/task-status-card';
 import { TitledSection } from '@/components/common/titled-section';
 import { AddDefaultBackgroundDialog } from '@/components/features/setting/add-default-background-dialog';
 import { AddDefaultVideoDialog } from '@/components/features/setting/add-default-video-dialog';
 import { DefaultMediaGallery } from '@/components/features/setting/default-media-gallery';
-import { VideoFileCheck } from '@/components/features/setting/video-file-check';
 import { VideoSettings } from '@/components/features/setting/video-settings';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
@@ -21,11 +21,12 @@ const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const settingStore = useSettingStore();
 const { t } = useI18n();
-const { isPending, isRunning, isStarting, startCheck, statusAlert } = useVideoFileCheck();
+const { isPending, isRunning, isStarting, startCheck, statusCard } = useVideoFileCheck();
 
 const loadSettings = async (): Promise<void> => {
   try {
-    await settingStore.fetchSettings();
+    // Fresh on every visit: a video folder move or another tab may have changed them since they were cached.
+    await settingStore.reloadSettings();
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   }
@@ -179,7 +180,7 @@ onMounted(() => {
 
       <v-col cols="12" lg="6">
         <titled-section :subtitle="t('settings.videoFilesSectionSubtitle')" :title="t('settings.videoFilesSection')">
-          <video-file-check :alert="statusAlert" :loading="isPending" />
+          <task-status-card v-bind="statusCard" :loading="isPending" />
 
           <template #append>
             <div class="d-flex flex-1-1 justify-end">

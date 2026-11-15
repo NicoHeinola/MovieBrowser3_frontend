@@ -6,6 +6,9 @@ import { useI18n } from 'vue-i18n';
 
 import { CardActionBar } from '@/components/common/card-action-bar';
 import { HeadingText } from '@/components/common/heading-text';
+import { TaskStatusCard } from '@/components/common/task-status-card';
+import { useVideoRelocation } from '@/composables/setting/useVideoRelocation';
+import { SettingKey } from '@/enums/setting/SettingKey';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
 import { getInitialVideoBasePath } from './getInitialVideoBasePath';
@@ -50,6 +53,7 @@ const isSubmittingPath = ref<boolean>(false);
 
 const settingStore = useSettingStore();
 const { t } = useI18n();
+const { isRunning: isRelocating, startRelocation, statusCard: relocationCard } = useVideoRelocation();
 
 const rules = getRules();
 
@@ -70,11 +74,11 @@ const mediaFolders = computed<string[]>(() =>
 const videoFolderSuggestions = computed<string[]>(() => getVideoFolderSuggestions(mediaFolders.value));
 
 const videoBasePath = ref<string>(
-  getInitialVideoBasePath(settingStore.getSetting<string>('video_base_path') ?? '', mediaFolders.value),
+  getInitialVideoBasePath(settingStore.getSetting(SettingKey.VideoBasePath) ?? '', mediaFolders.value),
 );
 // A path the admin already saved wins over the detected one.
 const vlcMediaPlayerPath = ref<string>(
-  settingStore.getSetting<string>('vlc_media_player_path') || props.status.detected_vlc_media_player_path || '',
+  settingStore.getSetting(SettingKey.VlcMediaPlayerPath) || props.status.detected_vlc_media_player_path || '',
 );
 
 // The "found VLC" note only fits while the field holds the found path; otherwise its chip offers it.
@@ -88,6 +92,15 @@ const vlcSuggestions = computed<string[]>(() =>
     ? [props.status.detected_vlc_media_player_path]
     : [],
 );
+
+/**
+ * Saves the VLC path as a plain setting.
+ * @param path - The checked path.
+ * @returns Nothing.
+ */
+const saveVlcPath = async (path: string): Promise<void> => {
+  await settingStore.updateSetting(SettingKey.VlcMediaPlayerPath, path);
+};
 </script>
 
 <template>
@@ -134,8 +147,9 @@ const vlcSuggestions = computed<string[]>(() =>
           :form-id="VIDEO_FOLDER_FORM_ID"
           :label="t('settings.videoBasePath')"
           :rules="rules.videoBasePath"
+          :save="startRelocation"
+          :setting-key="SettingKey.VideoBasePath"
           :suggestions="videoFolderSuggestions"
-          setting-key="video_base_path"
           @saved="step = 3"
         >
           <heading-text :level="2" :title="t('setup.videoFolderTitle')">
@@ -145,7 +159,8 @@ const vlcSuggestions = computed<string[]>(() =>
           </heading-text>
 
           <template #changed="{ savedPath }">
-            <v-alert class="mt-4" type="info" variant="tonal">
+            <!-- While a move runs its progress already says where the videos go. -->
+            <v-alert class="mt-4" type="info" variant="tonal" v-if="!isRelocating">
               {{ t('setup.videoFolderMoveWarning', { path: savedPath }) }}
             </v-alert>
           </template>
@@ -160,8 +175,9 @@ const vlcSuggestions = computed<string[]>(() =>
           :form-id="VLC_FORM_ID"
           :label="t('settings.vlcPath')"
           :rules="rules.vlcMediaPlayerPath"
+          :save="saveVlcPath"
+          :setting-key="SettingKey.VlcMediaPlayerPath"
           :suggestions="vlcSuggestions"
-          setting-key="vlc_media_player_path"
           @saved="step = 4"
         >
           <heading-text :level="2" :title="t('setup.vlcTitle')">
@@ -200,6 +216,11 @@ const vlcSuggestions = computed<string[]>(() =>
         </div>
       </v-stepper-window-item>
     </v-stepper-window>
+
+    <!-- A move can take hours, so the admin goes on through the steps and its progress follows them on every one. -->
+    <div class="px-8 pb-6" v-if="relocationCard">
+      <task-status-card v-bind="relocationCard" />
+    </div>
 
     <card-action-bar>
       <v-spacer />

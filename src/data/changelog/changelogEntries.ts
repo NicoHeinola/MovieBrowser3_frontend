@@ -26,12 +26,42 @@ export const changelogEntries: ChangelogEntry[] = [
         details: ['Episodes saved and video uploaded so far, out of the total.', 'An estimate of the time left.'],
       },
       {
+        type: ChangelogChangeType.Added,
+        text: 'Changing the video folder moves the videos in the background and shows how far the move is.',
+        details: [
+          'The progress shows in Settings and in the setup wizard, also after leaving the page and coming back.',
+          'If the move fails, the videos are moved back and the folder stays as it was.',
+          'Editing shows and episodes, playing videos and scanning video files wait until the move is done.',
+        ],
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'The VLC path must point to vlc or vlc.exe.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The video file scan in Settings shows its progress with a bar and says when every file was found.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Usernames ignore case when you log in.',
+        details: ['Two users can no longer have names that differ only by case.'],
+      },
+      {
         type: ChangelogChangeType.Changed,
         text: 'The show preview video is muted when you start watching the show, keeping your own volume choice.',
       },
       {
         type: ChangelogChangeType.Changed,
         text: 'The "See all results" button in the show search is rounded to match the search menu.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: "The only admin can no longer lose admin rights, so there's always someone who can manage the app.",
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'Settings can no longer be read without logging in.',
       },
       {
         type: ChangelogChangeType.Fixed,

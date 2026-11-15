@@ -31,6 +31,7 @@ export enum CategoryQueryKey {
 - Return the full query result object rather than cherry-picking; let callers destructure what they need.
 - List calls take `ApiQueryParams`: `sort: '-name'`, `filter`, `page: { number, size }`. `page: { number: 0, size: 0 }` fetches everything. Paginated endpoints return `PaginatedResponse<T>`.
 - Keep the previous page on screen while a new one loads with `placeholderData: (previousData) => previousData`.
+- A background run the backend reports as `{ running, finished_at, error }` (the video file check, the video folder move) is followed with `useVideoFileRun`: it polls only while the run goes and calls `onEnd` once per end, also for an end a start request returned (`followStatus`).
 
 ## Updating the Cache
 

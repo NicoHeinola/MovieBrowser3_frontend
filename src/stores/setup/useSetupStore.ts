@@ -6,7 +6,6 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { setupService } from '@/services/setup/setupService';
-import { useSettingStore } from '@/stores/setting/useSettingStore';
 
 export const useSetupStore = defineStore('setup', () => {
   const status = ref<SetupStatus | null>(null);
@@ -47,26 +46,16 @@ export const useSetupStore = defineStore('setup', () => {
   };
 
   /**
-   * Checks a setup path and saves it only when it passes, so a path the backend rejected is never stored.
-   * @param key - The setting to save; the backend checks it under the same key.
-   * @param path - The path to check and save.
+   * Checks a setup path without saving it. The caller saves a path that passed, because the video folder moves through
+   * a relocation while other paths are plain settings.
+   * @param key - The setting the path is for; the backend checks it under the same key.
+   * @param path - The path to check.
    * @returns The check's result, or `null` when the backend didn't check this key.
    */
-  const checkAndSavePath = async (key: keyof SetupChecks, path: string): Promise<SetupCheckResult | null> => {
+  const checkPath = async (key: keyof SetupChecks, path: string): Promise<SetupCheckResult | null> => {
     const checks = await setupService.check({ [key]: path });
-    const result = checks[key] ?? null;
 
-    if (result?.ok === false) {
-      return result;
-    }
-
-    const settingStore = useSettingStore();
-
-    if (path !== (settingStore.getSetting<string>(key) ?? '')) {
-      await settingStore.updateSetting(key, path);
-    }
-
-    return result;
+    return checks[key] ?? null;
   };
 
   /**
@@ -106,7 +95,7 @@ export const useSetupStore = defineStore('setup', () => {
     isCompleted,
     fetchStatus,
     isSetupDue,
-    checkAndSavePath,
+    checkPath,
     complete,
     skip,
     reset,

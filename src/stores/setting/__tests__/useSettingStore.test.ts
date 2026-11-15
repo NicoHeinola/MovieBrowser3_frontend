@@ -2,6 +2,7 @@ import type { SettingsResponse } from '@/interfaces/api/responses/SettingsRespon
 import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { SettingKey } from '@/enums/setting/SettingKey';
 import { settingService } from '@/services/setting/settingService';
 import { useSettingStore } from '../useSettingStore';
 
@@ -58,7 +59,7 @@ describe('useSettingStore', () => {
     expect(settingStore.settings).toEqual({
       banner_default_videos: refreshedSettings.data[0],
     });
-    expect(settingService.update).toHaveBeenCalledWith('banner_default_videos', {
+    expect(settingService.update).toHaveBeenCalledWith(SettingKey.BannerDefaultVideos, {
       value: ['https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
     });
     expect(settingService.list).toHaveBeenCalledTimes(1);
@@ -79,7 +80,7 @@ describe('useSettingStore', () => {
     expect(settingStore.settings).toEqual({
       banner_default_backgrounds: refreshedSettings.data[0],
     });
-    expect(settingService.update).toHaveBeenCalledWith('banner_default_backgrounds', {
+    expect(settingService.update).toHaveBeenCalledWith(SettingKey.BannerDefaultBackgrounds, {
       value: ['https://images.example.com/background-1.jpg'],
     });
     expect(settingService.list).toHaveBeenCalledTimes(1);
@@ -115,7 +116,7 @@ describe('useSettingStore', () => {
     expect(settingStore.settings).toEqual({
       banner_default_backgrounds: refreshedSettings.data[0],
     });
-    expect(settingService.update).toHaveBeenCalledWith('banner_default_backgrounds', {
+    expect(settingService.update).toHaveBeenCalledWith(SettingKey.BannerDefaultBackgrounds, {
       value: ['https://images.example.com/background-1.jpg', 'https://images.example.com/background-2.jpg'],
     });
     expect(settingService.list).toHaveBeenCalledTimes(1);
@@ -175,7 +176,7 @@ describe('useSettingStore', () => {
     expect(settingStore.settings).toEqual({
       banner_default_videos: refreshedSettings.data[0],
     });
-    expect(settingService.update).toHaveBeenCalledWith('banner_default_videos', {
+    expect(settingService.update).toHaveBeenCalledWith(SettingKey.BannerDefaultVideos, {
       value: ['https://www.youtube.com/watch?v=oHg5SJYRHA0'],
     });
     expect(settingService.list).toHaveBeenCalledTimes(1);
@@ -205,7 +206,7 @@ describe('useSettingStore', () => {
     expect(settingStore.settings).toEqual({
       banner_default_backgrounds: refreshedSettings.data[0],
     });
-    expect(settingService.update).toHaveBeenCalledWith('banner_default_backgrounds', {
+    expect(settingService.update).toHaveBeenCalledWith(SettingKey.BannerDefaultBackgrounds, {
       value: ['https://images.example.com/background-2.jpg'],
     });
     expect(settingService.list).toHaveBeenCalledTimes(1);

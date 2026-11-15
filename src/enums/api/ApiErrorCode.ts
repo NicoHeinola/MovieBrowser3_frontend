@@ -68,6 +68,18 @@ export enum ApiErrorCode {
   Min = 'min',
   /** The path must be absolute. */
   AbsolutePath = 'absolute_path',
+  /** The path doesn't start with `/`, such as a Windows path. */
+  PathNotAbsolute = 'path_not_absolute',
+  /** The path contains `..`. */
+  PathHasParentSegment = 'path_has_parent_segment',
+  /** The folder is outside every media folder. Params: `folders`. */
+  PathOutsideMediaFolders = 'path_outside_media_folders',
+  /** The path is a file, not a folder. */
+  PathIsFile = 'path_is_file',
+  /** The folder exists but can't be written to. */
+  PathNotWritable = 'path_not_writable',
+  /** The folder doesn't exist and can't be created. Params: `parent`. */
+  PathNotCreatable = 'path_not_creatable',
   /** The value is already in use, ignoring case. */
   UniqueIgnoringCase = 'unique_ignoring_case',
   /** Login failed: wrong username or password. */
@@ -80,8 +92,18 @@ export enum ApiErrorCode {
   VideoFileCheckRunning = 'video_file_check_running',
   /** The last video file check crashed, so its results may be partial. */
   VideoFileCheckFailed = 'video_file_check_failed',
+  /** The video folder can only change through a relocation, which moves the videos with it. */
+  VideoBasePathNeedsRelocation = 'video_base_path_needs_relocation',
+  /** The video folder is being moved, so this change has to wait for the move to end. */
+  VideoRelocationRunning = 'video_relocation_running',
+  /** Moving the video folder failed and the files were moved back. */
+  VideoRelocationFailed = 'video_relocation_failed',
+  /** Moving the video folder failed and moving the files back failed too, so some may be in the new folder. */
+  VideoRelocationRevertFailed = 'video_relocation_revert_failed',
   /** A show's only primary title can't be deleted. */
   OnlyPrimaryTitle = 'only_primary_title',
+  /** The only admin can't lose admin rights. */
+  LastAdmin = 'last_admin',
   /** Catch-all for any validation rule without its own code. */
   Invalid = 'invalid',
 }

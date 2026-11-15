@@ -1,6 +1,7 @@
 import type { App } from 'vue';
 import { VueQueryPlugin } from '@tanstack/vue-query';
 import { createPinia } from 'pinia';
+import { watch } from 'vue';
 
 import { configureApiClientAuth } from '@/plugins/api/configureApiClientAuth';
 import { i18n } from '@/plugins/i18n';
@@ -33,7 +34,19 @@ export const registerPlugins = (app: App) => {
     },
   });
 
-  void settingStore.fetchSettings();
+  // Reading settings needs a login, so load them whenever a token appears: at startup when already logged in, and
+  // right after login or registration, so home has its banner defaults. Logging out drops them with the token.
+  watch(
+    () => authStore.token,
+    (token: string | null) => {
+      if (token) {
+        void settingStore.fetchSettings();
+      } else {
+        settingStore.clearSettings();
+      }
+    },
+    { immediate: true },
+  );
 
   app.use(router);
 };

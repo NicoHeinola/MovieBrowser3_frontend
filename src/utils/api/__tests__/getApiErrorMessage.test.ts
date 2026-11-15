@@ -35,6 +35,12 @@ describe('getApiErrorMessage', () => {
     expect(getApiErrorMessage(error)).toBe('Väärä käyttäjätunnus tai salasana.');
   });
 
+  it('translates a code from a conflict response, which has no field errors', () => {
+    const error = createError(409, { code: 'video_file_check_running', params: {} });
+
+    expect(getApiErrorMessage(error)).toBe('A video file scan is running. Try again when it is done.');
+  });
+
   it('fills in the params', () => {
     const error = createError(422, { code: 'max', params: { value: '255' } });
 

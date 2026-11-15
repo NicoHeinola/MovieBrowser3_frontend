@@ -1,7 +1,8 @@
 import type { SetupCheckResult } from './SetupCheckResult';
+import type { SettingKey } from '@/enums/setting/SettingKey';
 
-/** Results of the setup path checks; only the paths that were sent are checked. */
+/** Results of the setup path checks, keyed by the setting each path is for; only the paths that were sent are checked. */
 export interface SetupChecks {
-  video_base_path?: SetupCheckResult;
-  vlc_media_player_path?: SetupCheckResult;
+  [SettingKey.VideoBasePath]?: SetupCheckResult;
+  [SettingKey.VlcMediaPlayerPath]?: SetupCheckResult;
 }
