@@ -8,6 +8,7 @@ export enum ShowQueryKey {
   AdminDashboardStorageShows = 'adminDashboardStorageShows',
   ShowAutocomplete = 'showAutocomplete',
   NavigationSearchShows = 'navigationSearchShows',
+  SurpriseShows = 'surpriseShows',
   SelectedShow = 'selectedShow',
   AdminShowEditor = 'adminShowEditor',
 }

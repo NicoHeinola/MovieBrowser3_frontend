@@ -13,6 +13,17 @@ const isShown = defineModel<boolean>('isShown', {
   default: false,
 });
 
+const props = defineProps<{
+  /** Shows a "pick another" button, for a show the page picked at random. */
+  canPickAnother?: boolean;
+  /** Shows the "pick another" button loading while the next pick loads. */
+  isPickingAnother?: boolean;
+}>();
+
+const emit = defineEmits<{
+  'click:pick-another': [];
+}>();
+
 const isPreviewAutoMuted = ref<boolean>(false);
 
 const { xlAndUp } = useDisplay();
@@ -30,8 +41,11 @@ const { isSwitchingShow, show } = useSelectedShow(showId, isShown);
   >
     <selected-show-hero
       v-model:auto-muted="isPreviewAutoMuted"
+      :can-pick-another="props.canPickAnother"
+      :is-picking-another="props.isPickingAnother"
       :is-shown="isShown"
       :show="show"
+      @click:pick-another="emit('click:pick-another')"
       @close="isShown = false"
     />
 

@@ -10,9 +10,11 @@ import { ChangelogVersionLink } from '@/components/features/changelog/changelog-
 import { LanguageMenu } from '@/components/features/locale/language-menu';
 import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowSearchMenu } from '@/components/features/show/show-search-menu';
+import { SurpriseButton } from '@/components/features/show/surprise-button';
 import { UpdateNotice } from '@/components/features/version/update-notice';
 import { useChangelogNotice } from '@/composables/changelog/useChangelogNotice';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
+import { useSurpriseShow } from '@/composables/show/useSurpriseShow';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 
 import NavLinks from './NavLinks.vue';
@@ -26,6 +28,11 @@ const authStore = useAuthStore();
 const { confirm } = useConfirmDialog();
 const { showUnseenChanges } = useChangelogNotice();
 const { t } = useI18n();
+
+const { isPicking, isSurprisePick, pickShow } = useSurpriseShow({
+  showId: selectedShowId,
+  isShown: isShowDrawerVisible,
+});
 
 const authenticatedLinks = computed<NavigationLinkItem[]>(() => [
   { label: t('nav.home'), routeName: 'authenticated-home', icon: 'mdi-home' },
@@ -99,6 +106,7 @@ onMounted(() => {
         <div class="d-none d-md-block" style="width: 280px" v-if="!isInAdminArea">
           <show-search-menu @select:show="selectShow" />
         </div>
+        <surprise-button :loading="isPicking" @click="pickShow" v-if="!isInAdminArea" />
         <v-btn
           :to="{ name: isInAdminArea ? 'authenticated-home' : 'admin-dashboard' }"
           color="default"
@@ -138,7 +146,13 @@ onMounted(() => {
     </div>
   </v-app-bar>
 
-  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show-id="selectedShowId" />
+  <selected-show-drawer
+    v-model:is-shown="isShowDrawerVisible"
+    v-model:show-id="selectedShowId"
+    :can-pick-another="isSurprisePick"
+    :is-picking-another="isPicking"
+    @click:pick-another="pickShow"
+  />
 </template>
 
 <style lang="scss" scoped>

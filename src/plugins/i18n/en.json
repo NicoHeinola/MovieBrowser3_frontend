@@ -433,6 +433,9 @@
     "setStatus": "Set status",
     "clearStatus": "Clear status",
     "noEpisodesToPlay": "There are no episodes to play.",
+    "surpriseMe": "Surprise me",
+    "pickAnother": "Pick another",
+    "surpriseNoShows": "There are no shows to pick from.",
     "episodeFallback": "Episode {number}"
   },
   "showEditor": {

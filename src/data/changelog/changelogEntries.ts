@@ -16,6 +16,10 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Added,
         text: 'Playing an episode sets its season or movie to Watching, unless you already completed it.',
       },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'The top bar has a "Surprise me" dice that opens a random show you haven\'t watched.',
+      },
     ],
   },
   {

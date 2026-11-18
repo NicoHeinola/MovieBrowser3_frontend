@@ -1,21 +1,30 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { ExpandableText } from '@/components/common/expandable-text';
 import { SectionContainer } from '@/components/common/section-container';
 import { VolumeControl } from '@/components/common/volume-control';
 import { YouTubePlayer } from '@/components/common/youtube-player';
+import { SurpriseButton } from '@/components/features/show/surprise-button';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 
 const props = defineProps<{
   isShown: boolean;
   show: Show | null;
+  /** Shows a "pick another" button next to the close button. */
+  canPickAnother?: boolean;
+  /** Shows the "pick another" button loading. */
+  isPickingAnother?: boolean;
 }>();
 
 const emit = defineEmits<{
   close: [];
+  'click:pick-another': [];
 }>();
+
+const { t } = useI18n();
 
 const isDescriptionExpanded = ref<boolean>(false);
 const isVideoPlaying = ref<boolean>(false);
@@ -125,13 +134,17 @@ watch(
       />
     </v-fade-transition>
 
-    <v-btn
-      class="position-absolute right-0 top-0 ma-4"
-      color="default"
-      icon="mdi-close"
-      variant="text"
-      @click="emit('close')"
-    />
+    <div class="position-absolute right-0 top-0 ma-4 d-flex align-center ga-2">
+      <surprise-button
+        :loading="props.isPickingAnother"
+        :tooltip="t('show.pickAnother')"
+        density="default"
+        variant="text"
+        @click="emit('click:pick-another')"
+        v-if="props.canPickAnother"
+      />
+      <v-btn color="default" icon="mdi-close" variant="text" @click="emit('close')" />
+    </div>
   </div>
 </template>
 

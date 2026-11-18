@@ -433,6 +433,9 @@
     "setStatus": "Aseta tila",
     "clearStatus": "Tyhjennä tila",
     "noEpisodesToPlay": "Toistettavia jaksoja ei ole.",
+    "surpriseMe": "Yllätä minut",
+    "pickAnother": "Valitse toinen",
+    "surpriseNoShows": "Valittavia sarjoja ei ole.",
     "episodeFallback": "Jakso {number}"
   },
   "showEditor": {
