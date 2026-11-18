@@ -18,6 +18,11 @@ Guidance for AI coding agents (Claude Code and Copilot). File-specific rules liv
 - `npm test`: Vitest once; `npx vitest run <path>` for a single file
 - `npm run fix` then `npm run check`: full pass before finishing a multi-file change
 
+## Run locally
+
+- `npm run dev` serves on `APP_PORT` from `.env` (3010 in the main checkout) and calls the API at `VITE_API_URL`.
+- A separate copy of the app (a ticket or a test) sets its own `APP_PORT` and points `VITE_API_URL` at its own backend (`http://localhost:<backend port>/api/v1`), then runs `npm run dev`.
+
 ## Working Rules
 
 - Prefer extending an existing feature, page, component, utility, or plugin namespace before creating a new top-level namespace.
