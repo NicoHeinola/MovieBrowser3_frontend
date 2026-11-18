@@ -16,7 +16,7 @@ The rules for each layer load when you open its files; this skill gives the orde
    - Several components share it, or it needs cross-view mutations → Pinia store that consumes the service.
    - The UI needs a different shape → an explicit mapping step in the store, composable or page; never reshape inside the service or the template.
 4. **Implement** the smallest coherent slice. Move reusable logic out of the page as you go.
-5. **Test** new utilities and risky logic (`test-workflow`).
+5. **Test** new utilities and risky logic (`write-tests`).
 6. Run `npm run fix`, then `npm run check`.
 
 ## Smells to fix on the way

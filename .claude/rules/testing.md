@@ -26,7 +26,8 @@ src/utils/css/
 
 - Use Vitest APIs for assertions, stubs, and mocks.
 - Keep test setup local to the file unless the same helper is reused across multiple sibling tests.
-- Mock only the external edges needed to isolate the behavior under test.
+- Mock only the external edges needed to isolate the behavior under test: `apiClient`, router, Vuetify display state, browser APIs, `import.meta.env`.
+- Start from the closest existing test in the nearest `__tests__` folder (services: `src/services/show/__tests__/showLinkService.test.ts`).
 
 ## Service Tests
 

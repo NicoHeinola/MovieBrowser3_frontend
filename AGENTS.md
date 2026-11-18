@@ -29,6 +29,7 @@ Guidance for AI coding agents (Claude Code and Copilot). File-specific rules liv
 - Keep each backend resource or independently versioned endpoint family in its own service concept. For sub-resources with dedicated CRUD endpoints, add a sibling service file instead of growing the parent service into a catch-all module.
 - Keep design tokens and theme-level color decisions in `src/plugins/vuetify` or shared styles, not scattered through component logic.
 - Use the dialog provider system for application dialogs. Open dialogs with `useDialog().showDialog(...)` and keep dialog components compatible with `src/components/layouts/dialog-provider`; do not mount feature dialogs inline in pages or other templates.
+- Utilities under `src/utils` and services always get tests. Component tests are opt-in: when the task asks for them or the behavior is risky.
 - Run the smallest relevant validation after changes, usually `npm run check:lint`, `npm test`, or `npm run check:types`.
 
 ## Changelog and Releases
@@ -81,7 +82,7 @@ the refresh request during app startup.
 `.claude/` is the single source of truth. Copilot reads it too; `.github/copilot-instructions.md` and `.github/skills` are symlinks into it.
 
 - **Rules** (`.claude/rules/*.md`): "files matching X should look like Y". Each rule has a `paths` list and the same globs in `applyTo` for Copilot.
-- **Skills** (`.claude/skills/<name>/SKILL.md`): reusable workflows such as building a resource or feature slice, writing tests or reviewing a diff.
+- **Skills** (`.claude/skills/<name>/SKILL.md`): project-specific workflows such as building a resource or feature slice or reviewing a diff. Generic workflows (tests, releases, review reporting, tickets) are global Claude skills; their project specifics live in this file and the rules.
 - When a change affects repository conventions, structure, ownership boundaries or workflow guidance, update the affected rules or skills in the same change. A backend endpoint family that moves, splits or gains a new service concept counts.
 - Keep customizations concise. Do not add cross-file reference lists when the rules already load for matching files.
 
