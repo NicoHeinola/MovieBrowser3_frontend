@@ -49,9 +49,11 @@ export const useSettingStore = defineStore('setting', () => {
   const fetchSettings = async (): Promise<void> => {
     isLoading.value = true;
     try {
-      const response = await queryClient.ensureQueryData({
+      // 'static' keeps cached settings without refetching; reloadSettings resets the query to force a fetch.
+      const response = await queryClient.query({
         queryKey: [SettingQueryKey.Settings],
         queryFn: settingService.list,
+        staleTime: 'static',
       });
 
       settings.value = normalizeSettings(response);

@@ -59,7 +59,7 @@ export const useSettingStore = defineStore('setting', () => {
 
 - Use `useAPIQuery` in pages and components for read-only server state that benefits from automatic caching, refetching, and centralized error handling.
 - Keep Pinia stores for client-side state, mutations with side effects, or state that needs to be shared across many components at app startup.
-- Store actions may use `queryClient.ensureQueryData` or `queryClient.resetQueries` to leverage TanStack Query's cache for deduplication without introducing a parallel reactive owner; the Pinia `ref` remains the single source of truth in that case.
+- Store actions may use `queryClient.query` (with `staleTime: 'static'` to reuse cached data) or `queryClient.resetQueries` to leverage TanStack Query's cache for deduplication without introducing a parallel reactive owner; the Pinia `ref` remains the single source of truth in that case.
 - Do not create both a `useAPIQuery` call and a Pinia `ref` for the same data in the same consumer; own it in one place per usage context.
 
 ## Growth Path
