@@ -20,6 +20,14 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Added,
         text: 'The top bar has a "Surprise me" dice that opens a random show you haven\'t watched.',
       },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'The home banner plays its videos with sound, with a volume control in its corner.',
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'The show drawer and the home banner remember your volume and mute choice in this browser.',
+      },
     ],
   },
   {

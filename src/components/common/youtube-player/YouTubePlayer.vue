@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { YouTubeWindow } from './youTubeWindow';
+import { useDocumentVisibility } from '@vueuse/core';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -32,6 +33,11 @@ const iframeRef = ref<HTMLIFrameElement | null>(null);
 const iframeId = `yt-player-${Math.random().toString(36).slice(2, 11)}`;
 
 let ytPlayer: YT.Player | null = null;
+
+const visibility = useDocumentVisibility();
+
+/** Muted as asked, and also while the page is hidden, so a looping preview doesn't keep playing sound in another tab. */
+const isMuted = computed<boolean>(() => props.muted || visibility.value === 'hidden');
 
 const playerSrc = computed<string>(() => {
   const params = new URLSearchParams({
@@ -84,14 +90,17 @@ const createPlayer = () => {
       onReady: (event) => {
         event.target.setVolume(props.volume);
 
-        if (props.muted) {
-          event.target.mute();
-        } else {
-          event.target.unMute();
-        }
+        // Start muted, which browsers always allow: a video they block from starting with sound would not start at all,
+        // and its volume control only shows once it plays. The sound comes on once it plays.
+        event.target.mute();
 
         if (props.autoplay) {
           event.target.playVideo();
+          return;
+        }
+
+        if (!isMuted.value) {
+          event.target.unMute();
         }
       },
       onError: () => {
@@ -101,6 +110,11 @@ const createPlayer = () => {
         const playingState = youtubeWindow.YT?.PlayerState?.PLAYING ?? 1;
 
         if (event.data === playingState) {
+          // Apply the wanted sound now that it plays; repeating it on each loop is harmless.
+          if (!isMuted.value) {
+            event.target.unMute();
+          }
+
           emit('playing');
         }
       },
@@ -130,19 +144,20 @@ const initYTApi = () => {
   }
 };
 
-watch(
-  () => props.muted,
-  (muted) => {
-    if (!ytPlayer) return;
+watch(isMuted, (muted) => {
+  if (!ytPlayer) return;
 
-    if (muted) {
-      ytPlayer.mute();
-      return;
+  if (muted) {
+    ytPlayer.mute();
+    // A browser may pause a video it won't let play sound; muting lets it play again.
+    if (props.autoplay) {
+      ytPlayer.playVideo();
     }
+    return;
+  }
 
-    ytPlayer.unMute();
-  },
-);
+  ytPlayer.unMute();
+});
 
 watch(
   () => props.volume,
@@ -167,6 +182,7 @@ onUnmounted(() => {
     <iframe
       :src="playerSrc"
       :title="t('common.showPreviewVideo')"
+      allow="autoplay; encrypted-media; picture-in-picture"
       class="player-container"
       frameborder="0"
       allowfullscreen

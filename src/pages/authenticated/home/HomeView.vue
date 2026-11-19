@@ -4,6 +4,7 @@ import type { HomeShowsResponse } from './HomeShowsResponse';
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowSection } from '@/interfaces/api/models/ShowSection';
 
+import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { VCol, VLazy, VRow } from 'vuetify/components';
@@ -21,6 +22,7 @@ import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showSectionService } from '@/services/show/showSectionService';
 import { showService } from '@/services/show/showService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
+import { useVideoAudioStore } from '@/stores/video/useVideoAudioStore';
 import { WATCHED_SHOW_STATUSES } from '@/utils/show/watch-status/watchedShowStatuses';
 import { homepageSections } from './homepageSections';
 
@@ -30,6 +32,8 @@ const isPlayingCardVideo = ref<boolean>(false);
 let bannerResumeTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const settingStore = useSettingStore();
+/** The volume and mute choice the user picked for previews, shared with the show drawer. */
+const { isMuted: isBannerMuted, volume: bannerVolume, hasForegroundPreview } = storeToRefs(useVideoAudioStore());
 const { playShow, startingShowId } = useShowPlayback();
 const {
   selectedShow: selectedBannerShow,
@@ -186,10 +190,13 @@ watch(
     }"
   />
   <media-banner
-    :disable-video-playback="isShowDrawerVisible || isPlayingCardVideo"
+    v-model:muted="isBannerMuted"
+    v-model:volume="bannerVolume"
+    :disable-video-playback="hasForegroundPreview || isPlayingCardVideo"
     :image-src="bannerBackground"
     :style="{ marginTop: '-70px', height: HOME_BANNER_HEIGHT }"
     :video-src="bannerVideo"
+    show-volume-control
   >
     <latest-shows-panel
       :loading="isLoading"

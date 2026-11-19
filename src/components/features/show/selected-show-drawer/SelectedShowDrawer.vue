@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onBeforeUnmount, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 import { SectionContainer } from '@/components/common/section-container';
+import { useVideoAudioStore } from '@/stores/video/useVideoAudioStore';
 import RelatedShowsPanel from './RelatedShowsPanel.vue';
 import SelectedShowEntries from './SelectedShowEntries.vue';
 import SelectedShowHero from './SelectedShowHero.vue';
@@ -26,8 +27,31 @@ const emit = defineEmits<{
 
 const isPreviewAutoMuted = ref<boolean>(false);
 
+/** Releases this drawer's claim on the sound, while it is open. */
+let releaseForeground: (() => void) | null = null;
+
 const { xlAndUp } = useDisplay();
 const { isSwitchingShow, show } = useSelectedShow(showId, isShown);
+const { claimForeground } = useVideoAudioStore();
+
+// While open, the preview here plays in front of the page, so page videos such as the home banner stop for it.
+watch(
+  isShown,
+  (shown) => {
+    if (shown) {
+      releaseForeground ??= claimForeground();
+      return;
+    }
+
+    releaseForeground?.();
+    releaseForeground = null;
+  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => {
+  releaseForeground?.();
+});
 </script>
 
 <template>

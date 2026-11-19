@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
+import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ExpandableText } from '@/components/common/expandable-text';
@@ -7,6 +8,8 @@ import { SectionContainer } from '@/components/common/section-container';
 import { VolumeControl } from '@/components/common/volume-control';
 import { YouTubePlayer } from '@/components/common/youtube-player';
 import { SurpriseButton } from '@/components/features/show/surprise-button';
+import { useVideoAudioStore } from '@/stores/video/useVideoAudioStore';
+import { canAutoplaySound } from '@/utils/media/canAutoplaySound';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getYouTubeVideoId } from '@/utils/youtube/getYouTubeVideoId';
 
@@ -29,11 +32,14 @@ const { t } = useI18n();
 const isDescriptionExpanded = ref<boolean>(false);
 const isVideoPlaying = ref<boolean>(false);
 const isVideoError = ref<boolean>(false);
-/** Mute applied by the app, such as when playback starts. It is dropped on the next show or open. */
+/**
+ * Mute applied by the app, such as when playback starts or while the browser blocks sound. It is dropped on the next
+ * show or open.
+ */
 const isAutoMuted = defineModel<boolean>('autoMuted', { default: false });
 
-/** The user's own mute choice, kept while the drawer lives and never changed by the automatic mute. */
-const isUserMuted = ref<boolean>(true);
+/** The user's own volume and mute choice, remembered in this browser and never changed by the automatic mute. */
+const { isMuted: isUserMuted, volume } = storeToRefs(useVideoAudioStore());
 
 /** What the player and volume control use: muted by the user or the app. Setting it is always the user's choice. */
 const isMuted = computed<boolean>({
@@ -43,7 +49,6 @@ const isMuted = computed<boolean>({
     isAutoMuted.value = false;
   },
 });
-const volume = ref<number>(20);
 
 let hideTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -55,8 +60,8 @@ const activeVideoId = computed<string>(() => videoId.value ?? 'drawer-video');
 watch([() => props.show?.id, () => props.isShown], () => {
   isVideoPlaying.value = false;
   isVideoError.value = false;
-  // Discard the automatic mute so the user's own choice applies again.
-  isAutoMuted.value = false;
+  // Discard the automatic mute so the user's own choice applies again, unless the browser would block the sound.
+  isAutoMuted.value = !canAutoplaySound();
 });
 
 watch(
