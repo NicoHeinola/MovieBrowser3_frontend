@@ -5,7 +5,7 @@ import { useStorage } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
 import { CollapsibleSection } from '@/components/common/collapsible-section';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
-import { getShowLinkTypeIcon } from '@/utils/show/getShowLinkTypeIcon';
+import { SHOW_LINK_TYPE_ICONS } from '@/utils/show/showLinkTypeIcons';
 
 const { t } = useI18n();
 
@@ -53,7 +53,7 @@ const changeShow = (targetShowId: number): void => {
           {{ getPrimaryTitle(link.target_show) }}
         </p>
         <v-chip color="primary" size="small" variant="tonal">
-          <v-icon :icon="getShowLinkTypeIcon(link.type)" start />
+          <v-icon :icon="SHOW_LINK_TYPE_ICONS[link.type]" start />
           {{ $t(`showLink.type.${link.type}`) }}
         </v-chip>
       </v-col>

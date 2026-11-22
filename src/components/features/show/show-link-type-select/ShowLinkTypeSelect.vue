@@ -3,7 +3,7 @@ import { computed, useAttrs } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { ShowLinkType } from '@/enums/show/ShowLinkType';
-import { getShowLinkTypeIcon } from '@/utils/show/getShowLinkTypeIcon';
+import { SHOW_LINK_TYPE_ICONS } from '@/utils/show/showLinkTypeIcons';
 
 defineOptions({
   inheritAttrs: false,
@@ -27,7 +27,7 @@ const { t } = useI18n();
 
 const linkTypeItems = computed<Array<{ icon: string; label: string; value: ShowLinkType }>>(() => {
   return Object.values(ShowLinkType).map((linkType) => ({
-    icon: getShowLinkTypeIcon(linkType),
+    icon: SHOW_LINK_TYPE_ICONS[linkType],
     label: t(`showLink.type.${linkType}`),
     value: linkType,
   }));

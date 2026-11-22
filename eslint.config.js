@@ -25,6 +25,9 @@ const oneValueExportPerFile = [
   },
 ];
 
+/** Why `v-icon` sizes must be named, shared by the static and the bound `size` rule. */
+const iconSizeMessage = 'Give v-icon a named size (x-small, small, default, large, x-large), not pixels.';
+
 /** A function exported from `src/composables` must be a `useX` composable. */
 const composableNaming = [
   {
@@ -120,6 +123,14 @@ export default [
     rules: {
       'antfu/top-level-function': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
+      'no-restricted-properties': [
+        'error',
+        {
+          // Any object, so `window.crypto.randomUUID()` and `globalThis.crypto.randomUUID()` count too.
+          property: 'randomUUID',
+          message: 'crypto.randomUUID() is missing over plain HTTP on the LAN. Key rows with getUnsavedRowKey.',
+        },
+      ],
       'vue/attributes-order': [
         'error',
         {
@@ -176,6 +187,21 @@ export default [
     files: ['**/*.vue'],
     rules: {
       'vue/padding-line-between-tags': 'off',
+      // Named icon sizes scale with the font; pixel sizes don't. One rule covers `size="20"`, the other `:size="20"`.
+      'vue/no-restricted-static-attribute': [
+        'error',
+        { key: 'size', value: String.raw`/^\d/`, element: '/^(v-icon|VIcon)$/', message: iconSizeMessage },
+      ],
+      'vue/no-restricted-syntax': [
+        'error',
+        {
+          // A number, or a string starting with one (`'20px'`), bound to the size of a v-icon.
+          selector:
+            'VElement[rawName=/^(v-icon|VIcon)$/] VAttribute[directive=true][key.name.name="bind"]' +
+            String.raw`[key.argument.name="size"] > VExpressionContainer > Literal[raw=/^['"]?\d/]`,
+          message: iconSizeMessage,
+        },
+      ],
       // Spacing utilities (margin, padding, gap) use even steps, plus 5 (20px), which matches Vuetify's dialog and
       // toolbar insets. Typography uses the MD3 scale, because Vuetify 4 no longer ships the MD2 classes.
       'vue/no-restricted-class': [

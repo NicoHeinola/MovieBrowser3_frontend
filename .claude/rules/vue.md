@@ -231,7 +231,7 @@ const save = async (): Promise<void> => {
 - Make a list sortable with `useSortableItems` on its container and render the rows it returns, each in a `SortableItem` with a `.handle` element inside. Render the returned draft, not the source list, and find a row's source index with `indexOf`, because the two differ during a drag.
 - Turn dragging off with `isDisabled`, not by removing `.handle`: without a handle the row itself takes keyboard drags.
 - Don't set a drag group: each list only trades with itself by default.
-- Keys come from the backend id, or `getUnsavedRowKey` for rows without one. Don't use `crypto.randomUUID()`: it is missing over plain HTTP on the LAN.
+- Keys come from the backend id, or `getUnsavedRowKey` for rows without one. `crypto.randomUUID()` is missing over plain HTTP on the LAN; ESLint blocks it.
 
 ## i18n
 
@@ -278,8 +278,8 @@ components/
 - A full-width button at the bottom of a strongly rounded card (`rounded="xl"` or rounder, such as the show search menu) is `rounded="pill"`, so its shape follows the card's.
 - Show an image or video together with its URL field or link in `media-preview-card`.
 - Empty and info `v-alert`s shrink to their content with `class="flex-0-1"`; never let them stretch across the row.
-- `v-icon` uses a named size (`x-small`, `small`, `default`, `large`, `x-large`), never a pixel number like `size="20"`. Named sizes scale with the font, so icons that must match sit outside `text-*` classes.
-- Never use "·" as a separator in UI copy. Write it out ("Version 1.0.0, released 1.11.2026") or split it into separate elements.
+- `v-icon` uses a named size (`x-small`, `small`, `default`, `large`, `x-large`); ESLint blocks pixel sizes. Named sizes scale with the font, so icons that must match sit outside `text-*` classes.
+- Never use "·" as a separator in UI copy (`messages.test.ts` checks the locale files). Write it out ("Version 1.0.0, released 1.11.2026") or split it into separate elements.
 - Typography uses Vuetify 4's MD3 scale (`text-body-*`, `text-label-*`, `text-title-*`). MD2 classes such as `text-caption`, `text-body-1` and `text-h6` no longer exist, and ESLint rejects them. Style single-class text with plain utilities (`text-medium-emphasis`, `text-truncate`). Use `heading-text` for a heading with a muted subtitle, `highlight-text` for colored bold words inside a sentence and `media-placeholder` for an icon-and-text stand-in where an image or video is missing.
 - For async loading UI, use a Vuetify component's built-in `loading` prop when available; otherwise use `v-skeleton-loader`.
 - `src/styles/main.scss` delays every `v-skeleton-loader` globally so fast loads show nothing. Do not add per-component delays.

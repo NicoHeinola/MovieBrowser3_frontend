@@ -34,7 +34,7 @@ Guidance for AI coding agents (Claude Code and Copilot). File-specific rules liv
 - Keep each backend resource or independently versioned endpoint family in its own service concept. For sub-resources with dedicated CRUD endpoints, add a sibling service file instead of growing the parent service into a catch-all module.
 - Keep design tokens and theme-level color decisions in `src/plugins/vuetify` or shared styles, not scattered through component logic.
 - Use the dialog provider system for application dialogs. Open dialogs with `useDialog().showDialog(...)` and keep dialog components compatible with `src/components/layouts/dialog-provider`; do not mount feature dialogs inline in pages or other templates.
-- Utilities under `src/utils` and services always get tests. Component tests are opt-in: when the task asks for them or the behavior is risky.
+- Utilities under `src/utils` and services always get tests; `src/__tests__/unitTestCoverage.test.ts` fails for a file that declares a function and has no `__tests__/<name>.test.ts`. Component tests are opt-in: when the task asks for them or the behavior is risky.
 - Run the smallest relevant validation after changes, usually `npm run check:lint`, `npm test`, or `npm run check:types`.
 
 ## Changelog and Releases

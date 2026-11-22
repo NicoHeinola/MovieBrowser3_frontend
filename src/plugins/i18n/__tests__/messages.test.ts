@@ -7,20 +7,28 @@ import enMessages from '../en.json';
 import fiMessages from '../fi.json';
 
 /**
- * Lists the dotted path of every message in a locale file.
+ * Lists every message in a locale file with its dotted path.
  * @param messages - The locale file's contents.
  * @param prefix - The path of the parent object.
+ * @returns The path and text of each message.
+ */
+const getEntries = (messages: Record<string, unknown>, prefix = ''): [string, string][] => {
+  return Object.entries(messages).flatMap(([key, value]): [string, string][] =>
+    typeof value === 'object' && value !== null
+      ? getEntries(value as Record<string, unknown>, `${prefix}${key}.`)
+      : [[`${prefix}${key}`, String(value)]],
+  );
+};
+
+/**
+ * Lists the dotted path of every message in a locale file.
+ * @param messages - The locale file's contents.
  * @returns The sorted message keys.
  */
-const getKeys = (messages: Record<string, unknown>, prefix = ''): string[] => {
-  return Object.entries(messages)
-    .flatMap(([key, value]) =>
-      typeof value === 'object' && value !== null
-        ? getKeys(value as Record<string, unknown>, `${prefix}${key}.`)
-        : [`${prefix}${key}`],
-    )
+const getKeys = (messages: Record<string, unknown>): string[] =>
+  getEntries(messages)
+    .map(([key]) => key)
     .toSorted();
-};
 
 describe('i18n messages', () => {
   it('has the same keys in every language', () => {
@@ -33,6 +41,15 @@ describe('i18n messages', () => {
 
   it('has a message for every API error code', () => {
     expect(Object.keys(enMessages.apiErrors.codes).toSorted()).toEqual(Object.values(ApiErrorCode).toSorted());
+  });
+
+  it('never uses "·" as a separator', () => {
+    for (const messages of [enMessages, fiMessages]) {
+      const keys = getEntries(messages)
+        .filter(([, text]) => text.includes('·'))
+        .map(([key]) => key);
+      expect(keys).toEqual([]);
+    }
   });
 
   it('has no empty messages', () => {
