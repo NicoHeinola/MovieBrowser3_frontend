@@ -1,13 +1,14 @@
 import type { NyaaMirror } from '@/interfaces/nyaa/NyaaMirror';
 
+import { getEnvArray } from '@/utils/env/getEnvArray';
+
 /**
- * The nyaa mirrors to pick from, the default first. Which ones work changes from day to day; the browser gets past
- * their Cloudflare checks, which the backend can't.
+ * The nyaa mirrors to pick from, the default first, from `VITE_NYAA_MIRRORS`: which ones work changes from day to
+ * day, so the list is configuration rather than code. The browser gets past their Cloudflare checks, which the
+ * backend can't.
  */
-export const nyaaMirrors: NyaaMirror[] = [
-  { host: 'nyaa.si', url: 'https://nyaa.si' },
-  { host: 'nyaa.land', url: 'https://nyaa.land' },
-  { host: 'nyaa.digital', url: 'https://nyaa.digital' },
-  { host: 'nyaa.iss.one', url: 'https://nyaa.iss.one' },
-  { host: 'nyaa.iss.ink', url: 'https://nyaa.iss.ink' },
-];
+export const nyaaMirrors: NyaaMirror[] = getEnvArray('VITE_NYAA_MIRRORS').map((address) => {
+  const url = new URL(address);
+
+  return { host: url.host, url: url.origin };
+});

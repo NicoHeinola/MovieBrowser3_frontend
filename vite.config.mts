@@ -44,6 +44,8 @@ export default defineConfig(({ mode }) => {
     test: {
       globals: true,
       environment: 'jsdom',
+      // Tests run with the production nyaa mirrors, so they pass whatever a local .env lists
+      env: loadEnv('production', process.cwd(), 'VITE_NYAA_'),
       server: {
         deps: {
           inline: ['vuetify'],

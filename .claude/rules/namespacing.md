@@ -72,6 +72,7 @@ A type that a lower layer needs lives in `src/interfaces`, not in the component 
 ## Static Data
 
 - Content that ships with the frontend instead of coming from the backend lives in `src/data/<domain>/`, one exported constant per file (`src/data/changelog/changelogEntries.ts`). Shared configuration lists count too: sort options and search filter definitions (`src/data/show/showSortOptions.ts`). Data holds no Vue code; a definition that needs some references a composable.
+- A list that changes without code changes, such as the nyaa mirrors, comes from a `VITE_*` key read with `getEnvArray` (`src/utils/env`), listed in `.env.example` and `.env.production`. Tests get the production value through `test.env` in `vite.config.mts`.
 - Type it with interfaces in `src/interfaces/<domain>/`, not `src/interfaces/api`, and cover its invariants (order, uniqueness, formats) in an adjacent `__tests__` file.
 
 ## Utilities

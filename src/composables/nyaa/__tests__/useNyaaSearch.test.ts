@@ -55,7 +55,7 @@ describe('useNyaaSearch', () => {
     const { search } = await setupSearch();
 
     expect(search.settings.value).toEqual({
-      mirror: 'nyaa.si',
+      mirror: nyaaMirrors[0].host,
       sort: '-size',
       filters: { category: '1_2', trust: '0' },
     });
@@ -80,13 +80,13 @@ describe('useNyaaSearch', () => {
 
   it('opens the trimmed search with its filters and sort on the picked mirror', async () => {
     const { search } = await setupSearch('/admin/torrents?q=%20frieren%20');
-    search.settings.value.mirror = 'nyaa.land';
+    search.settings.value.mirror = nyaaMirrors[1].host;
     search.settings.value.sort = 'id';
     search.settings.value.filters = { category: '4_0', trust: '2' };
 
     search.openSearch();
 
-    expect(open).toHaveBeenCalledWith('https://nyaa.land/?f=2&c=4_0&q=frieren&s=id&o=asc', '_blank', 'noopener');
+    expect(open).toHaveBeenCalledWith(`${nyaaMirrors[1].url}/?f=2&c=4_0&q=frieren&s=id&o=asc`, '_blank', 'noopener');
   });
 
   it('clears the filters to every category, keeping the sort and mirror', async () => {
@@ -97,19 +97,19 @@ describe('useNyaaSearch', () => {
     search.openSearch();
 
     expect(search.activeFilterCount.value).toBe(0);
-    expect(open).toHaveBeenCalledWith('https://nyaa.si/?f=0&c=0_0&q=&s=seeders&o=desc', '_blank', 'noopener');
+    expect(open).toHaveBeenCalledWith(`${nyaaMirrors[0].url}/?f=0&c=0_0&q=&s=seeders&o=desc`, '_blank', 'noopener');
   });
 
   it('remembers its settings between visits', async () => {
     const first = await setupSearch();
-    first.search.settings.value.mirror = 'nyaa.land';
+    first.search.settings.value.mirror = nyaaMirrors[1].host;
     first.search.settings.value.filters = { category: '4_0', trust: '1' };
     await flushPromises();
 
     const second = await setupSearch();
 
     expect(second.search.settings.value).toEqual({
-      mirror: 'nyaa.land',
+      mirror: nyaaMirrors[1].host,
       sort: '-size',
       filters: { category: '4_0', trust: '1' },
     });
@@ -121,7 +121,7 @@ describe('useNyaaSearch', () => {
     const { search } = await setupSearch();
 
     expect(search.settings.value).toEqual({
-      mirror: 'nyaa.si',
+      mirror: nyaaMirrors[0].host,
       sort: '-size',
       filters: { category: '1_2', trust: '2' },
     });
