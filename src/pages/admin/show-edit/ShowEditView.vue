@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { ShowTemplate } from '@/interfaces/api/models/ShowTemplate';
 import { useEventListener } from '@vueuse/core';
-import { computed, useTemplateRef } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 
@@ -12,25 +13,47 @@ import {
   ShowEditorSaveBar,
   ShowEditorSkeleton,
 } from '@/components/features/show/show-editor';
+import { ShowTemplateDialog } from '@/components/features/show/show-template-dialog';
+import { useDialog } from '@/components/layouts/dialog-provider';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useVideoDurationScan } from '@/composables/setting/useVideoDurationScan';
 import { useShowEditor } from '@/composables/show/useShowEditor';
+import { useShowTemplate } from '@/composables/show/useShowTemplate';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { getQueryString } from '@/utils/route/getQueryString';
 import { hasPendingVideoUploads } from '@/utils/show/video-file/hasPendingVideoUploads';
 
 const editor = useTemplateRef<InstanceType<typeof ShowEditor>>('editor');
 
+/** The page link the new show was last filled in from, or the one it was opened with, for the link dialog. */
+const templateUrl = ref<string>('');
+/** Whether the user has left the page, so a template that finishes loading afterwards isn't filled in. */
+let hasLeftPage = false;
+
 const route = useRoute();
 const router = useRouter();
 const { confirm } = useConfirmDialog();
-const { showWarningSnackbar } = useCommonSnackbar();
+const dialog = useDialog();
+const { showSuccessSnackbar, showWarningSnackbar } = useCommonSnackbar();
 const { t } = useI18n();
 
 /** The edited show's id from the URL, or null on the page for adding a show. */
 const showId = computed<number | null>(() => (route.name === 'admin-show-edit' ? Number(route.params.showId) : null));
 
-const { show, isLoading, isLoadError, isSaving, isDeleting, hasChanges, episodeProgress, save, remove, discard } =
-  useShowEditor(showId);
+const {
+  show,
+  isLoading,
+  isLoadError,
+  isSaving,
+  isDeleting,
+  hasChanges,
+  episodeProgress,
+  save,
+  remove,
+  discard,
+  applyTemplate,
+} = useShowEditor(showId);
+const { isLoading: isLoadingTemplate, loadTemplate } = useShowTemplate();
 
 const {
   isFollowing: isFollowingLengthScan,
@@ -113,6 +136,51 @@ const discardChanges = async (): Promise<void> => {
 };
 
 /**
+ * Fills the new show in from a template, after the user agrees to replace what they've typed so far, and says which
+ * genres had no category to pick.
+ * @param template - The template.
+ * @returns Nothing.
+ */
+const fillFromTemplate = async (template: ShowTemplate): Promise<void> => {
+  const isReplacing =
+    !hasChanges.value ||
+    (await confirm({
+      message: t('showEditor.template.replaceConfirm'),
+      confirmText: t('showEditor.template.replace'),
+      confirmColor: 'warning',
+      cancelText: t('common.cancel'),
+    }));
+
+  if (!isReplacing) {
+    return;
+  }
+
+  applyTemplate(template);
+  templateUrl.value = template.source_url;
+
+  const unmatched =
+    template.unmatched_genres.length > 0
+      ? ` ${t('showEditor.template.unmatchedGenres', { genres: template.unmatched_genres.join(', ') })}`
+      : '';
+  showSuccessSnackbar(`${t('showEditor.template.filled')}${unmatched}`);
+};
+
+/**
+ * Asks for a page link and fills the new show in from it.
+ * @returns Nothing.
+ */
+const openTemplateDialog = async (): Promise<void> => {
+  const template = await dialog.showDialog<ShowTemplate, Record<string, unknown>>({
+    component: ShowTemplateDialog,
+    props: { initialUrl: templateUrl.value },
+  });
+
+  if (template) {
+    await fillFromTemplate(template);
+  }
+};
+
+/**
  * Deletes the show and leaves the editor.
  * @returns Nothing.
  */
@@ -144,6 +212,25 @@ useEventListener(window, 'beforeunload', (event: BeforeUnloadEvent) => {
   }
 });
 
+// A new show opened from a link elsewhere (a torrent's "Create a show") starts from that link's template
+onMounted(async () => {
+  const linkedUrl = getQueryString(route.query.template);
+
+  if (showId.value === null && linkedUrl) {
+    templateUrl.value = linkedUrl;
+    const template = await loadTemplate(linkedUrl);
+
+    // The user may have left while nekoBT answered; filling in then would only pop a snackbar on another page
+    if (template && !hasLeftPage) {
+      await fillFromTemplate(template);
+    }
+  }
+});
+
+onBeforeUnmount(() => {
+  hasLeftPage = true;
+});
+
 // Ctrl+S (Cmd+S on a Mac) saves, like in any editor, instead of saving the web page.
 useEventListener(window, 'keydown', (event: KeyboardEvent) => {
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
@@ -168,7 +255,7 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
         {{ t('showEditor.loadFailed') }}
       </v-alert>
 
-      <show-editor-skeleton v-else-if="isLoading || !show" />
+      <show-editor-skeleton v-else-if="isLoading || isLoadingTemplate || !show" />
 
       <template v-else>
         <show-editor-hero :reading-lengths-progress="isFollowingLengthScan ? lengthScanProgress : null" :show="show">
@@ -193,6 +280,16 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
               @click="void deleteShow()"
             >
               {{ t('showEditor.deleteShow') }}
+            </v-btn>
+          </template>
+          <template #actions v-else>
+            <v-btn
+              class="glass-panel"
+              prepend-icon="mdi-link-variant"
+              variant="tonal"
+              @click="void openTemplateDialog()"
+            >
+              {{ t('showEditor.template.autofill') }}
             </v-btn>
           </template>
         </show-editor-hero>

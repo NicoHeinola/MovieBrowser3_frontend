@@ -1,4 +1,5 @@
 import type { Show } from '@/interfaces/api/models/Show';
+import type { ShowTemplate } from '@/interfaces/api/models/ShowTemplate';
 import type { Ref } from 'vue';
 import { hashKey, useQueryClient } from '@tanstack/vue-query';
 import { computed, ref, watch } from 'vue';
@@ -8,26 +9,14 @@ import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
-import { ShowEntryType } from '@/enums/show/ShowEntryType';
 import { showService } from '@/services/show/showService';
 import { deepClone } from '@/utils/clone/deepClone';
 import { getChangedObject } from '@/utils/object/hasObjectChanged';
 import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
+import { createEmptyShow } from '@/utils/show/createEmptyShow';
+import { getShowFromTemplate } from '@/utils/show/template/getShowFromTemplate';
 
 import { useShowDraftSave } from './useShowDraftSave';
-
-/**
- * Builds the show a new show starts from: one empty primary title and one season.
- * @returns The new show.
- */
-const createEmptyShow = (): Show =>
-  ({
-    titles: [{ title: '', is_primary: true }],
-    categories: [],
-    entries: [{ name: 'Season 1', type: ShowEntryType.Season, sort_order: 0, episodes: [] }],
-    outgoing_links: [],
-    incoming_links: [],
-  }) as unknown as Show;
 
 /**
  * The editor's query key for a show.
@@ -57,7 +46,7 @@ const withoutWatchData = (show: Show): Show => {
  * Loads a show into an editable draft and saves the draft with all its titles, categories, entries, episodes and
  * links. A background refetch replaces the draft only while it has no unsaved changes, so edits are never lost.
  * @param showId - The id of the show to edit, or null to add a new show.
- * @returns The draft, its load and save state, and the save, delete and discard actions.
+ * @returns The draft, its load and save state, and the save, delete, discard and apply-template actions.
  */
 export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
   const queryClient = useQueryClient();
@@ -227,6 +216,18 @@ export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
     }
   };
 
+  /**
+   * Starts a new show over from a show template. The pristine show stays the empty one, so the filled-in draft counts
+   * as unsaved changes until the user saves. Shows that already exist keep their draft.
+   * @param template - The template.
+   * @returns Nothing.
+   */
+  const applyTemplate = (template: ShowTemplate): void => {
+    if (showId.value === null) {
+      show.value = getShowFromTemplate(template);
+    }
+  };
+
   return {
     show,
     isLoading,
@@ -238,5 +239,6 @@ export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
     save,
     remove,
     discard,
+    applyTemplate,
   };
 };

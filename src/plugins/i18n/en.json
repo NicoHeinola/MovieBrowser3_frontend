@@ -143,7 +143,10 @@
       "last_admin": "At least one admin must remain, so this user can't lose admin rights.",
       "invalid": "A value is not valid.",
       "video_duration_scan_running": "Episode lengths are being read. Try again when that is done.",
-      "video_duration_scan_failed": "Reading episode lengths stopped because of an error. The rest are read on the next scan."
+      "video_duration_scan_failed": "Reading episode lengths stopped because of an error. The rest are read on the next scan.",
+      "show_template_not_found": "That link points at no show. Check the link and try again.",
+      "show_template_unavailable": "The show's site isn't answering right now. Try again in a moment.",
+      "unsupported_show_template_url": "Paste a link to a nekoBT media page, such as https://nekobt.to/media/s462."
     }
   },
   "rules": {
@@ -379,10 +382,6 @@
     "seeders": "Seeders",
     "leechers": "Leechers",
     "downloads": "Downloads",
-    "groups": "Release groups",
-    "uploader": "Uploader",
-    "audio": "Audio",
-    "subtitles": "Subtitles",
     "batch": "Batch",
     "batchHint": "A whole season or series in one torrent",
     "originalTranslation": "OTL",
@@ -425,11 +424,7 @@
       "vc1": "VC-1",
       "other": "Other codec"
     },
-    "openMagnet": "Open magnet in torrent client",
-    "copyMagnet": "Copy magnet link",
     "magnetCopied": "Magnet link copied",
-    "downloadTorrent": "Download .torrent file",
-    "openMedia": "Show page on nekoBT",
     "none": "No torrents found.",
     "sort": {
       "largest": "Largest first",
@@ -654,7 +649,18 @@
     "readLengths": "Read lengths",
     "runtime": "Total runtime",
     "videoSize": "Size of the video files",
-    "readingLengths": "Reading lengths: {progress}"
+    "readingLengths": "Reading lengths: {progress}",
+    "template": {
+      "autofill": "Fill from a link",
+      "dialogTitle": "Fill the show from a link",
+      "linkLabel": "Link to the show's page",
+      "linkHint": "A nekoBT media page, such as https://nekobt.to/media/s462",
+      "fill": "Fill in",
+      "replaceConfirm": "Replace what you have filled in so far with the show from the link?",
+      "replace": "Replace",
+      "filled": "Filled in from the link. Check it, add the videos and save.",
+      "unmatchedGenres": "No category for: {genres}."
+    }
   },
   "filter": {
     "any": "any",

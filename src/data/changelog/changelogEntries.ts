@@ -23,6 +23,15 @@ export const changelogEntries: ChangelogEntry[] = [
           'A nyaa tab opens the same search on nyaa, with its own categories, filters and the mirror you picked last.',
         ],
       },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'A new show can be filled in from a link to its nekoBT page.',
+        details: [
+          'Titles, description, banner, cover and categories are filled in for you to check.',
+          'Torrents with a nekoBT page have a "Create a show from this" button that opens the filled-in editor.',
+          'The new show editor has a "Fill from a link" button for pasting a nekoBT link yourself.',
+        ],
+      },
     ],
   },
   {

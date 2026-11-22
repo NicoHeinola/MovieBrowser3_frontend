@@ -4,8 +4,8 @@ export interface NekoBtBadge {
   key: string;
   /** i18n key of the badge text. */
   textKey: string;
-  /** i18n key of the hover hint, for abbreviations such as OTL. */
-  hintKey?: string;
+  /** i18n key of what the badge means, shown in the badge help. */
+  descriptionKey?: string;
   /** Theme color of the badge background. */
   color: string;
 }

@@ -44,7 +44,7 @@ const headers = computed<DataTableHeader[]>(() => [
   { title: t('torrents.seeders'), key: 'seeders', align: 'end', width: 120 },
   { title: t('torrents.leechers'), key: 'leechers', align: 'end', width: 120 },
   { title: t('torrents.downloads'), key: 'downloads', align: 'end', width: 130 },
-  { title: '', key: 'actions', align: 'end', sortable: false, width: 190 },
+  { title: '', key: 'actions', align: 'end', sortable: false, width: 230 },
 ]);
 
 /**
@@ -60,8 +60,8 @@ const copyMagnet = async (torrent: NekoBtTorrent): Promise<void> => {
 <template>
   <v-skeleton-loader type="table-tbody" v-if="props.isPending" />
   <!--
-    Sorted and paged by the backend; the server table only shows the rows it gets. Rows use plain elements and `title`
-    hints instead of chips and tooltip components: a page of tooltips froze the browser on every new page.
+    Sorted and paged by the backend; the server table only shows the rows it gets. Rows have no hover hints: a tooltip
+    component per button froze the browser on every new page, and the browser's own `title` hints look out of place.
   -->
   <v-data-table-server
     v-model:sort-by="sortBy"
@@ -93,21 +93,17 @@ const copyMagnet = async (torrent: NekoBtTorrent): Promise<void> => {
         </div>
 
         <div class="d-flex flex-wrap align-center ga-4 text-medium-emphasis text-body-small">
-          <span :title="t('torrents.groups')" v-if="item.groups.length > 0">
-            <i class="mdi mdi-account-group" /> {{ item.groups.join(', ') }}
-          </span>
-          <span :title="t('torrents.uploader')" v-if="item.uploader && !item.groups.includes(item.uploader)">
+          <span v-if="item.groups.length > 0"> <i class="mdi mdi-account-group" /> {{ item.groups.join(', ') }} </span>
+          <span v-if="item.uploader && !item.groups.includes(item.uploader)">
             <i class="mdi mdi-account" /> {{ item.uploader }}
           </span>
           <neko-bt-language-flags
             :codes="item.audio_languages"
-            :label="t('torrents.audio')"
             icon="mdi-volume-high"
             v-if="item.audio_languages.length > 0"
           />
           <neko-bt-language-flags
             :codes="item.subtitle_languages"
-            :label="t('torrents.subtitles')"
             icon="mdi-subtitles-outline"
             v-if="item.subtitle_languages.length > 0"
           />
@@ -137,34 +133,24 @@ const copyMagnet = async (torrent: NekoBtTorrent): Promise<void> => {
 
     <template #item.actions="{ item }">
       <div class="d-flex justify-end ga-2">
-        <v-btn
-          :href="item.magnet_url"
-          :title="t('torrents.openMagnet')"
-          icon="mdi-magnet"
-          size="small"
-          variant="text"
-        />
-        <v-btn
-          :title="t('torrents.copyMagnet')"
-          icon="mdi-content-copy"
-          size="small"
-          variant="text"
-          @click="void copyMagnet(item)"
-        />
-        <v-btn
-          :href="item.torrent_url"
-          :title="t('torrents.downloadTorrent')"
-          icon="mdi-download"
-          size="small"
-          variant="text"
-        />
+        <v-btn :href="item.magnet_url" icon="mdi-magnet" size="small" variant="text" />
+        <v-btn icon="mdi-content-copy" size="small" variant="text" @click="void copyMagnet(item)" />
+        <v-btn :href="item.torrent_url" icon="mdi-download" size="small" variant="text" />
         <v-btn
           :href="item.media_url"
-          :title="t('torrents.openMedia')"
           icon="mdi-open-in-new"
           rel="noopener"
           size="small"
           target="_blank"
+          variant="text"
+          v-if="item.media_url"
+        />
+        <!-- The new-show editor fills itself in from the show's nekoBT page -->
+        <v-btn
+          :to="{ name: 'admin-show-new', query: { template: item.media_url } }"
+          color="secondary"
+          icon="mdi-movie-plus-outline"
+          size="small"
           variant="text"
           v-if="item.media_url"
         />

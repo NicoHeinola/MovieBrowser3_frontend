@@ -1,4 +1,5 @@
 import type { Show } from '@/interfaces/api/models/Show';
+import type { ShowTemplate } from '@/interfaces/api/models/ShowTemplate';
 import type { VueWrapper } from '@vue/test-utils';
 import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -10,6 +11,9 @@ import { createVuetify } from 'vuetify';
 import ShowEditView from '../ShowEditView.vue';
 
 const confirm = vi.fn();
+const showDialog = vi.fn();
+const loadTemplate = vi.fn();
+const showSuccessSnackbar = vi.fn();
 const showWarningSnackbar = vi.fn();
 const validate = vi.fn();
 /** Mounted pages, unmounted after each test so their window listeners don't answer the next test's keys. */
@@ -27,7 +31,15 @@ const editor = {
   save: vi.fn(),
   remove: vi.fn(),
   discard: vi.fn(),
+  applyTemplate: vi.fn(),
 };
+
+/** A template as a nekoBT page gives it, with one genre the app has no category for. */
+const template = {
+  source_url: 'https://nekobt.to/media/s1453',
+  titles: ['Saga of Tanya the Evil'],
+  unmatched_genres: ['Military'],
+} as unknown as ShowTemplate;
 
 /** What the mocked length scan hands the page. */
 const lengthScan = {
@@ -42,7 +54,13 @@ const lengthScan = {
 vi.mock('@/composables/show/useShowEditor', () => ({ useShowEditor: () => editor }));
 vi.mock('@/composables/setting/useVideoDurationScan', () => ({ useVideoDurationScan: () => lengthScan }));
 vi.mock('@/composables/dialog/useConfirmDialog', () => ({ useConfirmDialog: () => ({ confirm }) }));
-vi.mock('@/composables/snackbar/useCommonSnackbar', () => ({ useCommonSnackbar: () => ({ showWarningSnackbar }) }));
+vi.mock('@/composables/snackbar/useCommonSnackbar', () => ({
+  useCommonSnackbar: () => ({ showSuccessSnackbar, showWarningSnackbar }),
+}));
+vi.mock('@/composables/show/useShowTemplate', () => ({
+  useShowTemplate: () => ({ isLoading: ref<boolean>(false), loadTemplate }),
+}));
+vi.mock('@/components/layouts/dialog-provider', () => ({ useDialog: () => ({ showDialog }) }));
 
 vi.mock('@/components/features/show/show-editor', () => ({
   ShowEditor: defineComponent({
@@ -50,7 +68,8 @@ vi.mock('@/components/features/show/show-editor', () => ({
     setup: (_props, { expose }) => expose({ validate }),
     template: '<div />',
   }),
-  ShowEditorHero: { name: 'ShowEditorHero', template: '<div />' },
+  // Renders its actions, so the page's buttons in them can be clicked
+  ShowEditorHero: { name: 'ShowEditorHero', template: '<div><slot name="actions" /></div>' },
   ShowEditorSaveBar: { name: 'ShowEditorSaveBar', template: '<div />' },
   ShowEditorSkeleton: { name: 'ShowEditorSkeleton', template: '<div />' },
 }));
@@ -173,5 +192,75 @@ describe('ShowEditView', () => {
 
     expect(confirm).not.toHaveBeenCalled();
     expect(router.currentRoute.value.fullPath).toBe('/admin/shows/42');
+  });
+
+  describe('templates', () => {
+    beforeEach(() => {
+      editor.show.value = { titles: [{ title: '', is_primary: true }] } as unknown as Show;
+    });
+
+    it('fills a new show in from the link it was opened with, naming genres without a category', async () => {
+      loadTemplate.mockResolvedValue(template);
+
+      await openPage('/admin/shows/new?template=https%3A%2F%2Fnekobt.to%2Fmedia%2Fs1453');
+
+      expect(loadTemplate).toHaveBeenCalledWith('https://nekobt.to/media/s1453');
+      expect(editor.applyTemplate).toHaveBeenCalledWith(template);
+      expect(showSuccessSnackbar).toHaveBeenCalledWith(expect.stringContaining('showEditor.template.unmatchedGenres'));
+
+      // The link dialog starts from the link the show was filled in from
+      showDialog.mockResolvedValue(undefined);
+      [...document.body.querySelectorAll<HTMLButtonElement>('button')]
+        .find((button) => button.textContent?.includes('showEditor.template.autofill'))
+        ?.click();
+      await flushPromises();
+      expect(showDialog).toHaveBeenCalledWith(
+        expect.objectContaining({ props: { initialUrl: 'https://nekobt.to/media/s1453' } }),
+      );
+    });
+
+    it("doesn't fill in a template that loads after the user left the page", async () => {
+      // The template answers only once the test lets it, after the user has left
+      let answer: (value: ShowTemplate) => void = () => {};
+      loadTemplate.mockReturnValue(new Promise<ShowTemplate>((resolve) => (answer = resolve)));
+
+      const router = await openPage('/admin/shows/new?template=https%3A%2F%2Fnekobt.to%2Fmedia%2Fs1453');
+      await router.push({ name: 'admin-shows' });
+      answer(template);
+      await flushPromises();
+
+      expect(editor.applyTemplate).not.toHaveBeenCalled();
+      expect(showSuccessSnackbar).not.toHaveBeenCalled();
+    });
+
+    it('ignores a template link on an existing show', async () => {
+      editor.show.value = { id: 4, titles: [] } as unknown as Show;
+
+      await openPage('/admin/shows/4?template=https%3A%2F%2Fnekobt.to%2Fmedia%2Fs1453');
+
+      expect(loadTemplate).not.toHaveBeenCalled();
+      expect(editor.applyTemplate).not.toHaveBeenCalled();
+    });
+
+    it('fills a new show in from a link pasted in the dialog, asking before replacing unsaved work', async () => {
+      await openPage('/admin/shows/new');
+      editor.hasChanges.value = true;
+      showDialog.mockResolvedValue(template);
+      confirm.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+
+      const button = [...document.body.querySelectorAll<HTMLButtonElement>('button')].find((candidate) =>
+        candidate.textContent?.includes('showEditor.template.autofill'),
+      );
+      expect(button).toBeDefined();
+
+      button?.click();
+      await flushPromises();
+      expect(confirm).toHaveBeenCalledWith(expect.objectContaining({ message: 'showEditor.template.replaceConfirm' }));
+      expect(editor.applyTemplate).not.toHaveBeenCalled();
+
+      button?.click();
+      await flushPromises();
+      expect(editor.applyTemplate).toHaveBeenCalledWith(template);
+    });
   });
 });

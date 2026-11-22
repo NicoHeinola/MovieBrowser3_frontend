@@ -59,6 +59,6 @@ describe('getNekoBtBadges', () => {
       color: 'torrent-level-full-scale-fansub',
     });
     expect(badges[5].textKey).toBe('torrents.videoSource.bd_remux');
-    expect(badges[1].hintKey).toBe('torrents.originalTranslationHint');
+    expect(badges[1].descriptionKey).toBe('torrents.originalTranslationHint');
   });
 });

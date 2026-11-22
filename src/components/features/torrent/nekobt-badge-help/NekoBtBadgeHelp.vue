@@ -15,7 +15,7 @@ const isOpen = ref<boolean>(false);
 
 const { t } = useI18n();
 
-/** Every badge the table can show, grouped, each with what it means; the tags explain themselves with their hint. */
+/** Every badge the table can show, grouped, each with what it means. */
 const groups = computed<{ titleKey: string; badges: (NekoBtBadgeStyle & { descriptionKey: string })[] }[]>(() => {
   const { levelColors, tags, videoSourceColor, videoCodecColor } = NEKOBT_BADGE_STYLES;
 
@@ -31,7 +31,7 @@ const groups = computed<{ titleKey: string; badges: (NekoBtBadgeStyle & { descri
     },
     {
       titleKey: 'torrents.help.tags',
-      badges: Object.values(tags).map((tag) => ({ ...tag, descriptionKey: tag.hintKey })),
+      badges: Object.values(tags),
     },
     {
       titleKey: 'torrents.help.videoSources',
@@ -61,7 +61,7 @@ const groups = computed<{ titleKey: string; badges: (NekoBtBadgeStyle & { descri
     <v-col v-for="group in groups" class="d-flex flex-column ga-2" cols="12" lg="3" md="6" :key="group.titleKey">
       <p class="text-label-large font-weight-bold">{{ t(group.titleKey) }}</p>
       <div v-for="badge in group.badges" class="d-flex align-baseline ga-2" :key="badge.key">
-        <neko-bt-badge :badge="badge" :show-hint="false" />
+        <neko-bt-badge :badge="badge" />
         <span class="text-body-small text-medium-emphasis">{{ t(badge.descriptionKey) }}</span>
       </div>
     </v-col>

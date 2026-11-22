@@ -143,7 +143,10 @@
       "last_admin": "Vähintään yhden ylläpitäjän on jäätävä, joten tältä käyttäjältä ei voi poistaa ylläpito-oikeuksia.",
       "invalid": "Arvo ei ole kelvollinen.",
       "video_duration_scan_running": "Jaksojen pituuksia luetaan. Yritä uudelleen, kun se on valmis.",
-      "video_duration_scan_failed": "Jaksojen pituuksien lukeminen keskeytyi virheeseen. Loput luetaan seuraavalla kerralla."
+      "video_duration_scan_failed": "Jaksojen pituuksien lukeminen keskeytyi virheeseen. Loput luetaan seuraavalla kerralla.",
+      "show_template_not_found": "Linkki ei osoita mihinkään sarjaan. Tarkista linkki ja yritä uudelleen.",
+      "show_template_unavailable": "Sarjan sivusto ei vastaa juuri nyt. Yritä hetken päästä uudelleen.",
+      "unsupported_show_template_url": "Liitä linkki nekoBT:n sarjasivulle, kuten https://nekobt.to/media/s462."
     }
   },
   "rules": {
@@ -379,10 +382,6 @@
     "seeders": "Jakajat",
     "leechers": "Lataajat",
     "downloads": "Lataukset",
-    "groups": "Julkaisuryhmät",
-    "uploader": "Lisääjä",
-    "audio": "Ääni",
-    "subtitles": "Tekstitykset",
     "batch": "Kokoelma",
     "batchHint": "Koko kausi tai sarja yhdessä torrentissa",
     "originalTranslation": "OTL",
@@ -425,11 +424,7 @@
       "vc1": "VC-1",
       "other": "Muu koodekki"
     },
-    "openMagnet": "Avaa magnet-linkki torrent-ohjelmassa",
-    "copyMagnet": "Kopioi magnet-linkki",
     "magnetCopied": "Magnet-linkki kopioitu",
-    "downloadTorrent": "Lataa .torrent-tiedosto",
-    "openMedia": "Sarjan sivu nekoBT:ssä",
     "none": "Torrentteja ei löytynyt.",
     "sort": {
       "largest": "Suurin ensin",
@@ -654,7 +649,18 @@
     "readLengths": "Lue pituudet",
     "runtime": "Kokonaiskesto",
     "videoSize": "Videotiedostojen koko",
-    "readingLengths": "Luetaan pituuksia: {progress}"
+    "readingLengths": "Luetaan pituuksia: {progress}",
+    "template": {
+      "autofill": "Täytä linkistä",
+      "dialogTitle": "Täytä sarja linkistä",
+      "linkLabel": "Linkki sarjan sivulle",
+      "linkHint": "nekoBT:n sarjasivu, kuten https://nekobt.to/media/s462",
+      "fill": "Täytä",
+      "replaceConfirm": "Korvataanko tähän asti täytetty linkin sarjalla?",
+      "replace": "Korvaa",
+      "filled": "Täytetty linkistä. Tarkista, lisää videot ja tallenna.",
+      "unmatchedGenres": "Ei kategoriaa: {genres}."
+    }
   },
   "filter": {
     "any": "mihin tahansa",

@@ -1,4 +1,5 @@
 import type { Show } from '@/interfaces/api/models/Show';
+import type { ShowTemplate } from '@/interfaces/api/models/ShowTemplate';
 import type { EffectScope, Ref } from 'vue';
 import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { flushPromises } from '@vue/test-utils';
@@ -17,7 +18,11 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false 
 const confirm = vi.fn();
 const showAPIErrorSnackbar = vi.fn();
 
-vi.mock('vue-i18n', () => ({ useI18n: () => ({ t: (key: string) => key }) }));
+// The real module stays for the app's i18n plugin, which names a template's entries; only the composable is stubbed
+vi.mock('vue-i18n', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  useI18n: () => ({ t: (key: string) => key }),
+}));
 
 vi.mock('@/composables/dialog/useConfirmDialog', () => ({ useConfirmDialog: () => ({ confirm }) }));
 
@@ -118,6 +123,32 @@ describe('useShowEditor', () => {
     const season = { name: 'Season 1', type: ShowEntryType.Season, sort_order: 0, episodes: [] };
     expect(show.value?.entries).toEqual([season]);
     expect(hasChanges.value).toBe(false);
+  });
+
+  it('starts a new show over from a template, which counts as unsaved, and leaves existing shows alone', async () => {
+    const template: ShowTemplate = {
+      source_url: 'https://nekobt.to/media/m134',
+      titles: ['Saga of Tanya the Evil - the Movie -'],
+      description: 'Tanya returns home.',
+      banner_url: null,
+      card_image_url: 'https://example.com/cover.jpg',
+      preview_url: null,
+      categories: [],
+      unmatched_genres: [],
+    };
+
+    const newShow = await setupEditor(null);
+    newShow.applyTemplate(template);
+
+    expect(newShow.show.value?.titles).toEqual([{ title: 'Saga of Tanya the Evil - the Movie -', is_primary: true }]);
+    expect(newShow.show.value?.entries?.[0]?.type).toBe(ShowEntryType.Season);
+    expect(newShow.hasChanges.value).toBe(true);
+
+    const existingShow = await setupEditor(4);
+    const before = JSON.stringify(existingShow.show.value);
+    existingShow.applyTemplate(template);
+
+    expect(JSON.stringify(existingShow.show.value)).toBe(before);
   });
 
   it('loads a copy of the show and tracks changes against it', async () => {
