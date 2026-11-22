@@ -14,15 +14,9 @@ const isShown = defineModel<boolean>('isShown', {
   default: false,
 });
 
-const props = defineProps<{
-  /** Shows a "pick another" button, for a show the page picked at random. */
-  canPickAnother?: boolean;
-  /** Shows the "pick another" button loading while the next pick loads. */
-  isPickingAnother?: boolean;
-}>();
-
-const emit = defineEmits<{
-  'click:pick-another': [];
+defineSlots<{
+  /** Buttons next to the close button, such as "pick another" for a show the page picked at random. */
+  actions?: () => unknown;
 }>();
 
 const isPreviewAutoMuted = ref<boolean>(false);
@@ -65,13 +59,14 @@ onBeforeUnmount(() => {
   >
     <selected-show-hero
       v-model:auto-muted="isPreviewAutoMuted"
-      :can-pick-another="props.canPickAnother"
-      :is-picking-another="props.isPickingAnother"
       :is-shown="isShown"
       :show="show"
-      @click:pick-another="emit('click:pick-another')"
       @close="isShown = false"
-    />
+    >
+      <template #actions v-if="$slots.actions">
+        <slot name="actions" />
+      </template>
+    </selected-show-hero>
 
     <section-container class="pt-0">
       <selected-show-entries :is-shown="isShown" :show="show" @playback-start="isPreviewAutoMuted = true" />

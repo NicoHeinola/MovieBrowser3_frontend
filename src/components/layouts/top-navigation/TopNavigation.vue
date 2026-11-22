@@ -146,13 +146,18 @@ onMounted(() => {
     </div>
   </v-app-bar>
 
-  <selected-show-drawer
-    v-model:is-shown="isShowDrawerVisible"
-    v-model:show-id="selectedShowId"
-    :can-pick-another="isSurprisePick"
-    :is-picking-another="isPicking"
-    @click:pick-another="pickShow"
-  />
+  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show-id="selectedShowId">
+    <!-- A show picked at random can be swapped for another pick without closing the drawer. -->
+    <template #actions v-if="isSurprisePick">
+      <surprise-button
+        :loading="isPicking"
+        :tooltip="t('show.pickAnother')"
+        density="default"
+        variant="text"
+        @click="pickShow"
+      />
+    </template>
+  </selected-show-drawer>
 </template>
 
 <style lang="scss" scoped>
