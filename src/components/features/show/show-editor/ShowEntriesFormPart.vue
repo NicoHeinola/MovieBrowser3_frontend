@@ -2,13 +2,14 @@
 import type { EpisodeFormData } from './EpisodeFormData';
 import type { ShowEntriesFormData } from './ShowEntriesFormData';
 import type { ShowEntryFormData } from './ShowEntryFormData';
-import { ref, useTemplateRef } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { FormItemList } from '@/components/common/form-item-list';
 import { SortableItem } from '@/components/common/sortable-item';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useSortableItems } from '@/composables/sortable/useSortableItems';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
+import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getUnsavedRowKey } from '@/utils/sortable/getUnsavedRowKey';
 import { renumberItems } from '@/utils/sortable/renumberItems';
 import ShowEntryExpansionPanel from './ShowEntryExpansionPanel.vue';
@@ -24,6 +25,9 @@ const expandedEntryKeys = ref<string[]>([]);
 
 const { confirm } = useConfirmDialog();
 const { t } = useI18n();
+
+/** The show's primary title, or empty before it has one. */
+const showTitle = computed<string>(() => getPrimaryTitle(show.value, '').trim());
 
 /**
  * Keep persisted `sort_order` aligned with current visual list order.
@@ -141,6 +145,7 @@ const draftEntries = useSortableItems<ShowEntryFormData>(zoneRef, {
           :entry="entry"
           :expanded="expandedEntryKeys.includes(getEntryRenderKey(entry))"
           :move-targets="(show.entries ?? []).filter((candidate) => candidate !== entry)"
+          :show-title="showTitle"
           style="min-width: 0"
           @move-episode="(episode, target) => moveEpisode(entry, episode, target)"
           @update:expanded="setEntryExpanded(entry, $event)"

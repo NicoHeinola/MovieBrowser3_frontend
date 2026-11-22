@@ -14,6 +14,13 @@ const props = defineProps<{
 const isOpen = defineModel<boolean>({
   default: true,
 });
+
+defineSlots<{
+  /** The section body. */
+  default: () => unknown;
+  /** Buttons in the header, before the toggle; clicking them doesn't toggle the section. */
+  actions?: () => unknown;
+}>();
 </script>
 
 <template>
@@ -22,16 +29,24 @@ const isOpen = defineModel<boolean>({
       <!-- The button's click bubbles here, so the whole header toggles once. -->
       <div class="d-flex ga-2 align-center justify-space-between cursor-pointer" @click="isOpen = !isOpen">
         <section-label :title="props.title" />
-        <v-btn
-          :aria-label="
-            isOpen ? t('common.closeSection', { title: props.title }) : t('common.openSection', { title: props.title })
-          "
-          :icon="isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'"
-          class="text-medium-emphasis"
-          color="default"
-          size="small"
-          variant="text"
-        />
+        <div class="d-flex ga-2 align-center">
+          <!-- Stops the click here, so a header button does its own thing without toggling the section. -->
+          <div class="d-flex ga-2 align-center" @click.stop v-if="$slots.actions">
+            <slot name="actions" />
+          </div>
+          <v-btn
+            :aria-label="
+              isOpen
+                ? t('common.closeSection', { title: props.title })
+                : t('common.openSection', { title: props.title })
+            "
+            :icon="isOpen ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+            class="text-medium-emphasis"
+            color="default"
+            size="small"
+            variant="text"
+          />
+        </div>
       </div>
     </v-col>
   </v-row>

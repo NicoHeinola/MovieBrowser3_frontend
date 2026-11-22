@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/vue-query';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
+import { FloatingContainer } from '@/components/common/floating-container';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { SearchToolbar } from '@/components/common/search-toolbar';
 import { useDialog } from '@/components/layouts/dialog-provider';
@@ -55,5 +56,7 @@ const openCreateTagDialog = async (): Promise<void> => {
 
   <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
 
-  <floating-action-button class="z-100" icon="mdi-plus" @click="openCreateTagDialog" />
+  <floating-container>
+    <floating-action-button icon="mdi-plus" @click="openCreateTagDialog" />
+  </floating-container>
 </template>

@@ -16,9 +16,11 @@ const { t, locale } = useI18n();
 const entry = defineModel<ShowEntryFormData>('entry', { required: true });
 const expanded = defineModel<boolean>('expanded', { default: false });
 
-const { moveTargets = [] } = defineProps<{
+const { moveTargets = [], showTitle = '' } = defineProps<{
   /** The show's other entries, which an episode can move to. */
   moveTargets?: ShowEntryFormData[];
+  /** The show's primary title, which the entry's MyAnimeList search starts from. */
+  showTitle?: string;
 }>();
 
 const emit = defineEmits<{
@@ -106,7 +108,7 @@ const updatePanelModelValue = (value: string[]): void => {
           <v-col cols="12">
             <v-tabs-window :model-value="selectedTab">
               <v-tabs-window-item class="pa-2" value="general" eager>
-                <show-entry-general-form-part v-model:entry="entry" />
+                <show-entry-general-form-part v-model:entry="entry" :show-title="showTitle" />
               </v-tabs-window-item>
 
               <v-tabs-window-item class="pa-2" value="episodes" eager>

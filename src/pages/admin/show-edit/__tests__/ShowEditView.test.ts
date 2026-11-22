@@ -199,14 +199,15 @@ describe('ShowEditView', () => {
       editor.show.value = { titles: [{ title: '', is_primary: true }] } as unknown as Show;
     });
 
-    it('fills a new show in from the link it was opened with, naming genres without a category', async () => {
+    it('fills a new show in from the link it was opened with, warning about genres without a category', async () => {
       loadTemplate.mockResolvedValue(template);
 
       await openPage('/admin/shows/new?template=https%3A%2F%2Fnekobt.to%2Fmedia%2Fs1453');
 
       expect(loadTemplate).toHaveBeenCalledWith('https://nekobt.to/media/s1453');
       expect(editor.applyTemplate).toHaveBeenCalledWith(template);
-      expect(showSuccessSnackbar).toHaveBeenCalledWith(expect.stringContaining('showEditor.template.unmatchedGenres'));
+      expect(showSuccessSnackbar).toHaveBeenCalledWith('showEditor.template.filled');
+      expect(showWarningSnackbar).toHaveBeenCalledWith(expect.stringContaining('showEditor.template.unmatchedGenres'));
 
       // The link dialog starts from the link the show was filled in from
       showDialog.mockResolvedValue(undefined);
@@ -231,6 +232,7 @@ describe('ShowEditView', () => {
 
       expect(editor.applyTemplate).not.toHaveBeenCalled();
       expect(showSuccessSnackbar).not.toHaveBeenCalled();
+      expect(showWarningSnackbar).not.toHaveBeenCalled();
     });
 
     it('ignores a template link on an existing show', async () => {

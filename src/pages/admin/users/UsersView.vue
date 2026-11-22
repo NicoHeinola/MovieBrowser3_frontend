@@ -6,6 +6,7 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { SearchFilterDrawer } from '@/components/common/filter-drawer';
 import { FloatingActionButton } from '@/components/common/floating-action-button';
+import { FloatingContainer } from '@/components/common/floating-container';
 import { FloatingPagination } from '@/components/common/floating-pagination';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
@@ -103,7 +104,9 @@ const openEditUserDialog = async (user?: User): Promise<void> => {
     </v-row>
 
     <floating-pagination v-model:page="page" :length="totalPages" class="mb-6" />
-    <floating-action-button class="z-100" icon="mdi-plus" @click="openEditUserDialog()" />
+    <floating-container>
+      <floating-action-button icon="mdi-plus" @click="openEditUserDialog()" />
+    </floating-container>
 
     <search-filter-drawer
       v-model:filters="filters"

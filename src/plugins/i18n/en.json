@@ -146,7 +146,8 @@
       "video_duration_scan_failed": "Reading episode lengths stopped because of an error. The rest are read on the next scan.",
       "show_template_not_found": "That link points at no show. Check the link and try again.",
       "show_template_unavailable": "The show's site isn't answering right now. Try again in a moment.",
-      "unsupported_show_template_url": "Paste a link to a nekoBT media page, such as https://nekobt.to/media/s462."
+      "mal_unavailable": "MyAnimeList isn't answering right now. Try again in a moment.",
+      "unsupported_show_template_url": "Paste a link to a nekoBT media page or a MyAnimeList anime page, such as https://myanimelist.net/anime/16498."
     }
   },
   "rules": {
@@ -526,6 +527,14 @@
       "hideHardsubs": "Hide hardsubs"
     }
   },
+  "mal": {
+    "searchTitle": "Search MyAnimeList",
+    "searchLabel": "Anime name",
+    "noMatch": "No anime on MyAnimeList matches.",
+    "open": "Open on MyAnimeList",
+    "score": "Score {score}",
+    "addShow": "Add a show from MyAnimeList"
+  },
   "show": {
     "added": "Added {time}",
     "relatedShows": "Related shows",
@@ -562,6 +571,9 @@
     "episodeCount": "{count} Episodes",
     "entryName": "Entry name",
     "entryType": "Entry type",
+    "entryUrl": "Link",
+    "entryUrlHint": "Such as the entry's MyAnimeList page",
+    "openEntryUrl": "Open on {site}",
     "episodeName": "Episode name",
     "file": "File",
     "noVideoFile": "No video file",
@@ -654,11 +666,11 @@
       "autofill": "Fill from a link",
       "dialogTitle": "Fill the show from a link",
       "linkLabel": "Link to the show's page",
-      "linkHint": "A nekoBT media page, such as https://nekobt.to/media/s462",
+      "linkHint": "A nekoBT media page or a MyAnimeList anime page, such as https://myanimelist.net/anime/16498",
       "fill": "Fill in",
       "replaceConfirm": "Replace what you have filled in so far with the show from the link?",
       "replace": "Replace",
-      "filled": "Filled in from the link. Check it, add the videos and save.",
+      "filled": "Filled in from the link.",
       "unmatchedGenres": "No category for: {genres}."
     }
   },

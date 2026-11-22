@@ -30,11 +30,21 @@ export const changelogEntries: ChangelogEntry[] = [
       },
       {
         type: ChangelogChangeType.Added,
-        text: 'A new show can be filled in from a link to its nekoBT page.',
+        text: 'A new show can be filled in from a link to its nekoBT or MyAnimeList page.',
         details: [
           'Titles, description, banner, cover and categories are filled in for you to check.',
           'Torrents with a nekoBT page have a "Create a show from this" button that opens the filled-in editor.',
-          'The new show editor has a "Fill from a link" button for pasting a nekoBT link yourself.',
+          'The shows page has a "+ MAL" button: search MyAnimeList and pick an anime to open the filled-in editor.',
+          'The new show editor has a "Fill from a link" button for pasting a nekoBT or MyAnimeList link yourself.',
+        ],
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Seasons and movies can link to an outside page, such as their MyAnimeList page.',
+        details: [
+          'The show editor has a link field on each season or movie, with a button that searches MyAnimeList for it.',
+          'A show filled in from a link starts with its first season linked to that page.',
+          "The show drawer has a button that opens the selected season's or movie's page.",
         ],
       },
     ],

@@ -19,6 +19,7 @@ import { getWatchedEpisodeIds } from '@/utils/show/watch-progress/getWatchedEpis
 import { getCombinedWatchStatus } from '@/utils/show/watch-status/getCombinedWatchStatus';
 import { MIXED_WATCH_STATUS } from '@/utils/show/watch-status/mixedWatchStatus';
 import { formatDuration } from '@/utils/time/formatDuration';
+import { getWebsiteHostname } from '@/utils/website/url/getWebsiteHostname';
 import { useSelectedEntry } from './useSelectedEntry';
 import { useSelectedShowPlayback } from './useSelectedShowPlayback';
 
@@ -220,6 +221,23 @@ watch([() => props.show?.id, () => props.isShown], () => {
   </v-row>
 
   <collapsible-section v-model="isEpisodesOpen" :title="t('show.episodes')">
+    <!-- The selected entry's outside page, such as its MyAnimeList page, named by its site -->
+    <template #actions v-if="selectedEntry?.url">
+      <v-btn
+        :href="selectedEntry.url"
+        append-icon="mdi-open-in-new"
+        class="text-medium-emphasis"
+        color="default"
+        rel="noopener"
+        size="small"
+        target="_blank"
+        variant="text"
+        v-tooltip:bottom="t('show.openEntryUrl', { site: getWebsiteHostname(selectedEntry.url) })"
+      >
+        {{ getWebsiteHostname(selectedEntry.url) }}
+      </v-btn>
+    </template>
+
     <v-col cols="12" v-if="!selectedEntry">
       <v-alert class="flex-0-1" type="info" variant="tonal">{{ t('show.selectEntry') }}</v-alert>
     </v-col>

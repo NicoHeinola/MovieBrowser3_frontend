@@ -110,7 +110,9 @@ export enum ApiErrorCode {
   ShowTemplateNotFound = 'show_template_not_found',
   /** A show template link's site didn't answer, or answered with an error. */
   ShowTemplateUnavailable = 'show_template_unavailable',
-  /** A show template link is to a page no source can read; it must be a nekoBT media page. */
+  /** MyAnimeList didn't answer the anime search, or answered with an error. */
+  MalUnavailable = 'mal_unavailable',
+  /** A show template link is to a page no source can read; it must be a nekoBT media page or a MyAnimeList anime page. */
   UnsupportedShowTemplateUrl = 'unsupported_show_template_url',
   /** The backup folder doesn't exist or can't be written to, such as an external drive that isn't mounted. */
   BackupDirUnavailable = 'backup_dir_unavailable',

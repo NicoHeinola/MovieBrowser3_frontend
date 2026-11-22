@@ -6,7 +6,8 @@ import { createEmptyShow } from '@/utils/show/createEmptyShow';
 /**
  * Builds a new show's draft from a show template: an empty new show with the template's titles (the first as
  * primary), categories, images and description. Its seasons and episodes are left to the user, so it keeps the empty
- * show's one season. Nothing in it exists on the backend yet, so every item is created on save.
+ * show's one season, which links to the template's page (such as its MyAnimeList page). Nothing in it exists on the
+ * backend yet, so every item is created on save.
  * @param template - The template.
  * @returns The draft.
  */
@@ -25,5 +26,7 @@ export const getShowFromTemplate = (template: ShowTemplate): Show => {
     card_image_url: template.card_image_url ?? '',
     preview_url: template.preview_url,
     categories: template.categories,
+    // The page the show was filled in from describes its first season, so that season links to it
+    entries: show.entries?.map((entry, index) => (index === 0 ? { ...entry, url: template.source_url } : entry)),
   } as Show;
 };

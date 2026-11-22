@@ -158,11 +158,12 @@ const fillFromTemplate = async (template: ShowTemplate): Promise<void> => {
   applyTemplate(template);
   templateUrl.value = template.source_url;
 
-  const unmatched =
-    template.unmatched_genres.length > 0
-      ? ` ${t('showEditor.template.unmatchedGenres', { genres: template.unmatched_genres.join(', ') })}`
-      : '';
-  showSuccessSnackbar(`${t('showEditor.template.filled')}${unmatched}`);
+  showSuccessSnackbar(t('showEditor.template.filled'));
+
+  // Genres no category matches are left out of the show, so they get their own warning to act on
+  if (template.unmatched_genres.length > 0) {
+    showWarningSnackbar(t('showEditor.template.unmatchedGenres', { genres: template.unmatched_genres.join(', ') }));
+  }
 };
 
 /**
@@ -212,7 +213,8 @@ useEventListener(window, 'beforeunload', (event: BeforeUnloadEvent) => {
   }
 });
 
-// A new show opened from a link elsewhere (a torrent's "Create a show") starts from that link's template
+// A new show opened from a link elsewhere (a torrent's "Create a show", "+ MAL" on the shows page) starts from that
+// link's template
 onMounted(async () => {
   const linkedUrl = getQueryString(route.query.template);
 
@@ -220,7 +222,7 @@ onMounted(async () => {
     templateUrl.value = linkedUrl;
     const template = await loadTemplate(linkedUrl);
 
-    // The user may have left while nekoBT answered; filling in then would only pop a snackbar on another page
+    // The user may have left while the site answered; filling in then would only pop a snackbar on another page
     if (template && !hasLeftPage) {
       await fillFromTemplate(template);
     }

@@ -146,7 +146,8 @@
       "video_duration_scan_failed": "Jaksojen pituuksien lukeminen keskeytyi virheeseen. Loput luetaan seuraavalla kerralla.",
       "show_template_not_found": "Linkki ei osoita mihinkään sarjaan. Tarkista linkki ja yritä uudelleen.",
       "show_template_unavailable": "Sarjan sivusto ei vastaa juuri nyt. Yritä hetken päästä uudelleen.",
-      "unsupported_show_template_url": "Liitä linkki nekoBT:n sarjasivulle, kuten https://nekobt.to/media/s462."
+      "mal_unavailable": "MyAnimeList ei vastaa juuri nyt. Yritä hetken päästä uudelleen.",
+      "unsupported_show_template_url": "Liitä linkki nekoBT-mediasivulle tai MyAnimeList-animesivulle, esimerkiksi https://myanimelist.net/anime/16498."
     }
   },
   "rules": {
@@ -526,6 +527,14 @@
       "hideHardsubs": "Piilota poltetut tekstit"
     }
   },
+  "mal": {
+    "searchTitle": "Hae MyAnimeLististä",
+    "searchLabel": "Animen nimi",
+    "noMatch": "MyAnimeLististä ei löytynyt vastaavaa animea.",
+    "open": "Avaa MyAnimeListissä",
+    "score": "Pisteet {score}",
+    "addShow": "Lisää sarja MyAnimeLististä"
+  },
   "show": {
     "added": "Lisätty {time}",
     "relatedShows": "Liittyvät sarjat",
@@ -562,6 +571,9 @@
     "episodeCount": "{count} jaksoa",
     "entryName": "Osan nimi",
     "entryType": "Osan tyyppi",
+    "entryUrl": "Linkki",
+    "entryUrlHint": "Esimerkiksi osan MyAnimeList-sivu",
+    "openEntryUrl": "Avaa sivustolla {site}",
     "episodeName": "Jakson nimi",
     "file": "Tiedosto",
     "noVideoFile": "Ei videotiedostoa",
@@ -654,11 +666,11 @@
       "autofill": "Täytä linkistä",
       "dialogTitle": "Täytä sarja linkistä",
       "linkLabel": "Linkki sarjan sivulle",
-      "linkHint": "nekoBT:n sarjasivu, kuten https://nekobt.to/media/s462",
+      "linkHint": "nekoBT-mediasivu tai MyAnimeList-animesivu, esimerkiksi https://myanimelist.net/anime/16498",
       "fill": "Täytä",
       "replaceConfirm": "Korvataanko tähän asti täytetty linkin sarjalla?",
       "replace": "Korvaa",
-      "filled": "Täytetty linkistä. Tarkista, lisää videot ja tallenna.",
+      "filled": "Täytetty linkistä.",
       "unmatchedGenres": "Ei kategoriaa: {genres}."
     }
   },

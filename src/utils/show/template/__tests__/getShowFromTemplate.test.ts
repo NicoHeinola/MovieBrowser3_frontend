@@ -50,8 +50,20 @@ describe('getShowFromTemplate', () => {
     i18n.global.locale.value = AppLocale.Finnish;
 
     expect(getShowFromTemplate(createTemplate()).entries).toEqual([
-      { name: 'Season 1', type: ShowEntryType.Season, sort_order: 0, episodes: [] },
+      {
+        name: 'Season 1',
+        type: ShowEntryType.Season,
+        url: 'https://nekobt.to/media/s1453',
+        sort_order: 0,
+        episodes: [],
+      },
     ]);
+  });
+
+  it('links the first season to the page the show was filled in from', () => {
+    const show = getShowFromTemplate(createTemplate({ source_url: 'https://myanimelist.net/anime/16498' }));
+
+    expect(show.entries?.[0]?.url).toBe('https://myanimelist.net/anime/16498');
   });
 
   it('fills the gaps of a sparse template like a new show: one empty title and empty texts', () => {

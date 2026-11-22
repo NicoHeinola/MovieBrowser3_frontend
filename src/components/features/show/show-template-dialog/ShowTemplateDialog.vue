@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { DialogComponentProps } from '@/components/layouts/dialog-provider';
-import type { ShowTemplate } from '@/interfaces/api/models/ShowTemplate';
+import type { ShowTemplateDialogProps } from './showTemplateDialogProps';
 
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -9,12 +8,7 @@ import { BaseForm } from '@/components/common/base-form';
 import { useShowTemplate } from '@/composables/show/useShowTemplate';
 import { getRules } from './showTemplateDialogRules';
 
-const props = defineProps<
-  DialogComponentProps<ShowTemplate> & {
-    /** The link to start with, such as the one the show was last filled in from. */
-    initialUrl?: string;
-  }
->();
+const props = defineProps<ShowTemplateDialogProps>();
 
 const isDialogVisible = defineModel<boolean>({ required: true });
 
