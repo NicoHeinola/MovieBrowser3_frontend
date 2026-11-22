@@ -7,10 +7,14 @@ import { useI18n } from 'vue-i18n';
 import { CardActionBar } from '@/components/common/card-action-bar';
 import { HeadingText } from '@/components/common/heading-text';
 import { TaskStatusCard } from '@/components/common/task-status-card';
+import { DownloadClientForm } from '@/components/features/setting/download-client-form';
+import { useDownloadClientSettings } from '@/composables/setting/useDownloadClientSettings';
 import { useVideoRelocation } from '@/composables/setting/useVideoRelocation';
+import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { SettingKey } from '@/enums/setting/SettingKey';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
+import { getDownloadFolderSuggestions } from './getDownloadFolderSuggestions';
 import { getInitialVideoBasePath } from './getInitialVideoBasePath';
 import { getVideoFolderSuggestions } from './getVideoFolderSuggestions';
 import SetupHighlightText from './SetupHighlightText.vue';
@@ -23,15 +27,18 @@ const VLC_DOWNLOAD_URL = 'https://www.videolan.org/vlc/';
 const WELCOME_ITEMS = [
   { icon: 'mdi-folder-play-outline', textKey: 'setup.welcomeVideoFolder' },
   { icon: 'mdi-play-circle-outline', textKey: 'setup.welcomeVlc' },
+  { icon: 'mdi-download-outline', textKey: 'setup.welcomeDownloads' },
 ];
 
 const VIDEO_FOLDER_FORM_ID = 'setup-video-folder-form';
 const VLC_FORM_ID = 'setup-vlc-form';
+const DOWNLOADS_FORM_ID = 'setup-downloads-form';
 
-/** The form of each path step, keyed by step number, so the footer's Next button submits the step on screen. */
-const PATH_STEP_FORM_IDS: Record<number, string> = {
+/** The form of each step that has one, keyed by step number, so the footer's Next button submits the step on screen. */
+const STEP_FORM_IDS: Record<number, string> = {
   2: VIDEO_FOLDER_FORM_ID,
   3: VLC_FORM_ID,
+  4: DOWNLOADS_FORM_ID,
 };
 
 const props = defineProps<{
@@ -47,13 +54,21 @@ const emit = defineEmits<{
 }>();
 
 const step = ref<number>(1);
-/** Whether each path step's form is valid, keyed by step number: both are mounted while the steps slide past. */
-const validPathSteps = ref<Record<number, boolean>>({});
+/** Whether each step's form is valid, keyed by step number: all are mounted while the steps slide past. */
+const validSteps = ref<Record<number, boolean>>({});
 const isSubmittingPath = ref<boolean>(false);
 
 const settingStore = useSettingStore();
 const { t } = useI18n();
 const { isRunning: isRelocating, startRelocation, statusCard: relocationCard } = useVideoRelocation();
+const {
+  checks: downloadClientChecks,
+  isPasswordSaved: isDownloadPasswordSaved,
+  isSaving: isSavingDownloadClient,
+  request: downloadClientRequest,
+  save: saveDownloadClientSettings,
+} = useDownloadClientSettings();
+const { showAPIErrorSnackbar } = useCommonSnackbar();
 
 const rules = getRules();
 
@@ -61,10 +76,14 @@ const stepTitles = computed<string[]>(() => [
   t('setup.welcomeStep'),
   t('setup.videoFolderStep'),
   t('setup.vlcStep'),
+  t('setup.downloadsStep'),
   t('setup.doneStep'),
 ]);
 
-const activeFormId = computed<string | undefined>(() => PATH_STEP_FORM_IDS[step.value]);
+const activeFormId = computed<string | undefined>(() => STEP_FORM_IDS[step.value]);
+
+/** Whether the step on screen is checking and saving, so the footer shows it and keeps the admin on the step. */
+const isStepBusy = computed<boolean>(() => isSubmittingPath.value || isSavingDownloadClient.value);
 
 /** Media folders without trailing slashes, so paths can be built and compared on whole folder names. */
 const mediaFolders = computed<string[]>(() =>
@@ -72,6 +91,7 @@ const mediaFolders = computed<string[]>(() =>
 );
 
 const videoFolderSuggestions = computed<string[]>(() => getVideoFolderSuggestions(mediaFolders.value));
+const downloadFolderSuggestions = computed<string[]>(() => getDownloadFolderSuggestions(mediaFolders.value));
 
 const videoBasePath = ref<string>(
   getInitialVideoBasePath(settingStore.getSetting(SettingKey.VideoBasePath) ?? '', mediaFolders.value),
@@ -92,6 +112,24 @@ const vlcSuggestions = computed<string[]>(() =>
     ? [props.status.detected_vlc_media_player_path]
     : [],
 );
+
+/**
+ * Checks and saves the qBittorrent connection, then moves on. An empty address turns downloads off and just moves on.
+ * @returns Nothing.
+ */
+const saveDownloadClient = async (): Promise<void> => {
+  if (!validSteps.value[4]) {
+    return;
+  }
+
+  try {
+    if (await saveDownloadClientSettings()) {
+      step.value = 5;
+    }
+  } catch (error: unknown) {
+    showAPIErrorSnackbar(error);
+  }
+};
 
 /**
  * Saves the VLC path as a plain setting.
@@ -124,7 +162,7 @@ const saveVlcPath = async (path: string): Promise<void> => {
           </heading-text>
 
           <v-row class="w-100">
-            <v-col v-for="item in WELCOME_ITEMS" cols="12" sm="6" :key="item.textKey">
+            <v-col v-for="item in WELCOME_ITEMS" cols="12" sm="4" :key="item.textKey">
               <v-sheet
                 border="sm"
                 class="d-flex flex-column align-center ga-2 pa-4 h-100 text-center"
@@ -142,7 +180,7 @@ const saveVlcPath = async (path: string): Promise<void> => {
       <v-stepper-window-item :value="2" class="pa-8">
         <setup-path-step
           v-model:is-submitting="isSubmittingPath"
-          v-model:is-valid="validPathSteps[2]"
+          v-model:is-valid="validSteps[2]"
           v-model:path="videoBasePath"
           :form-id="VIDEO_FOLDER_FORM_ID"
           :label="t('settings.videoBasePath')"
@@ -170,7 +208,7 @@ const saveVlcPath = async (path: string): Promise<void> => {
       <v-stepper-window-item :value="3" class="pa-8">
         <setup-path-step
           v-model:is-submitting="isSubmittingPath"
-          v-model:is-valid="validPathSteps[3]"
+          v-model:is-valid="validSteps[3]"
           v-model:path="vlcMediaPlayerPath"
           :form-id="VLC_FORM_ID"
           :label="t('settings.vlcPath')"
@@ -201,6 +239,30 @@ const saveVlcPath = async (path: string): Promise<void> => {
       </v-stepper-window-item>
 
       <v-stepper-window-item :value="4" class="pa-8">
+        <v-row>
+          <v-col cols="12">
+            <heading-text :level="2" :title="t('setup.downloadsTitle')">
+              <template #subtitle>
+                <setup-highlight-text highlight-key="setup.downloadsHighlight" keypath="setup.downloadsSubtitle" />
+              </template>
+            </heading-text>
+          </v-col>
+
+          <v-col cols="12">
+            <download-client-form
+              v-model:is-valid="validSteps[4]"
+              v-model:request="downloadClientRequest"
+              :checks="downloadClientChecks"
+              :folder-suggestions="downloadFolderSuggestions"
+              :is-password-saved="isDownloadPasswordSaved"
+              @submit="saveDownloadClient"
+              :id="DOWNLOADS_FORM_ID"
+            />
+          </v-col>
+        </v-row>
+      </v-stepper-window-item>
+
+      <v-stepper-window-item :value="5" class="pa-8">
         <div class="d-flex flex-column align-center ga-6">
           <v-scale-transition appear>
             <v-avatar color="success" size="x-large" variant="tonal">
@@ -226,15 +288,15 @@ const saveVlcPath = async (path: string): Promise<void> => {
       <v-spacer />
 
       <v-btn variant="text" @click="emit('skip')" v-if="step === 1">{{ t('setup.notNow') }}</v-btn>
-      <v-btn :disabled="isSubmittingPath || props.loading" variant="text" @click="step--" v-else>
+      <v-btn :disabled="isStepBusy || props.loading" variant="text" @click="step--" v-else>
         {{ t('setup.back') }}
       </v-btn>
 
       <v-btn color="primary" variant="flat" @click="step = 2" v-if="step === 1">{{ t('setup.start') }}</v-btn>
       <v-btn
-        :disabled="!validPathSteps[step]"
+        :disabled="!validSteps[step]"
         :form="activeFormId"
-        :loading="isSubmittingPath"
+        :loading="isStepBusy"
         color="primary"
         type="submit"
         variant="flat"

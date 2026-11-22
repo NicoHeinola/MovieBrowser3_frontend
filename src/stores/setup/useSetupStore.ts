@@ -1,6 +1,7 @@
 import type { SetupCheckResult } from '@/interfaces/api/models/SetupCheckResult';
 import type { SetupChecks } from '@/interfaces/api/models/SetupChecks';
 import type { SetupStatus } from '@/interfaces/api/models/SetupStatus';
+import type { SetupCheckRequest } from '@/interfaces/api/requests/SetupCheckRequest';
 import { useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
@@ -46,6 +47,15 @@ export const useSetupStore = defineStore('setup', () => {
   };
 
   /**
+   * Checks setup values without saving them. The caller saves the values that passed.
+   * @param request - The values to check; the ones left out are not checked.
+   * @returns One result per checked value.
+   */
+  const checkSettings = async (request: SetupCheckRequest): Promise<SetupChecks> => {
+    return await setupService.check(request);
+  };
+
+  /**
    * Checks a setup path without saving it. The caller saves a path that passed, because the video folder moves through
    * a relocation while other paths are plain settings.
    * @param key - The setting the path is for; the backend checks it under the same key.
@@ -53,7 +63,7 @@ export const useSetupStore = defineStore('setup', () => {
    * @returns The check's result, or `null` when the backend didn't check this key.
    */
   const checkPath = async (key: keyof SetupChecks, path: string): Promise<SetupCheckResult | null> => {
-    const checks = await setupService.check({ [key]: path });
+    const checks = await checkSettings({ [key]: path });
 
     return checks[key] ?? null;
   };
@@ -95,6 +105,7 @@ export const useSetupStore = defineStore('setup', () => {
     isCompleted,
     fetchStatus,
     isSetupDue,
+    checkSettings,
     checkPath,
     complete,
     skip,

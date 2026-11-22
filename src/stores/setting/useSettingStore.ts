@@ -125,6 +125,32 @@ export const useSettingStore = defineStore('setting', () => {
   };
 
   /**
+   * Whether a secret setting holds a value. Secrets read back as `null`, so this is all the frontend learns of them.
+   * @param key - The setting.
+   * @returns Whether a value is saved.
+   */
+  const isSettingSet = (key: keyof SettingValues): boolean => {
+    return settings.value[key]?.is_set ?? false;
+  };
+
+  /**
+   * Saves several settings, then loads the settings once.
+   * @param values - The settings to save; the ones left out keep their value.
+   * @returns Nothing.
+   */
+  const updateSettings = async (values: Partial<SettingValues>): Promise<void> => {
+    try {
+      // One after another: the backend validates each on its own, and a failure stops the rest.
+      for (const key of Object.keys(values) as (keyof SettingValues)[]) {
+        await settingService.update(key, { value: values[key] as SettingValues[typeof key] });
+      }
+    } finally {
+      // Values saved before a failure stay saved, so the form must show them.
+      await reloadSettings();
+    }
+  };
+
+  /**
    * Saves a setting and loads the settings again.
    * @param key - The setting to save.
    * @param value - Its new value.
@@ -148,6 +174,8 @@ export const useSettingStore = defineStore('setting', () => {
     reloadSettings,
     clearSettings,
     getSetting,
+    isSettingSet,
     updateSetting,
+    updateSettings,
   };
 });

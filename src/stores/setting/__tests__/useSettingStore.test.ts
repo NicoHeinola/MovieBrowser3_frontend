@@ -246,4 +246,57 @@ describe('useSettingStore', () => {
     expect(settingService.update).not.toHaveBeenCalled();
     expect(settingService.list).not.toHaveBeenCalled();
   });
+  it('saves several settings one after another and reloads once', async () => {
+    const settingStore = useSettingStore();
+
+    vi.mocked(settingService.update).mockResolvedValue();
+    vi.mocked(settingService.list).mockResolvedValue(
+      createSettingsResponse({ qbittorrent_url: 'http://127.0.0.1:8080', qbittorrent_username: 'admin' }),
+    );
+
+    await settingStore.updateSettings({
+      [SettingKey.QBittorrentUrl]: 'http://127.0.0.1:8080',
+      [SettingKey.QBittorrentUsername]: 'admin',
+    });
+
+    expect(vi.mocked(settingService.update).mock.calls).toEqual([
+      [SettingKey.QBittorrentUrl, { value: 'http://127.0.0.1:8080' }],
+      [SettingKey.QBittorrentUsername, { value: 'admin' }],
+    ]);
+    expect(settingService.list).toHaveBeenCalledOnce();
+    expect(settingStore.getSetting(SettingKey.QBittorrentUsername)).toBe('admin');
+  });
+
+  it('stops at the first failed save but still reloads what was saved', async () => {
+    const settingStore = useSettingStore();
+
+    vi.mocked(settingService.update).mockResolvedValueOnce().mockRejectedValueOnce(new Error('422'));
+    vi.mocked(settingService.list).mockResolvedValue(
+      createSettingsResponse({ qbittorrent_url: 'http://127.0.0.1:8080' }),
+    );
+
+    await expect(
+      settingStore.updateSettings({
+        [SettingKey.QBittorrentUrl]: 'http://127.0.0.1:8080',
+        [SettingKey.DownloadPath]: '/elsewhere',
+        [SettingKey.QBittorrentUsername]: 'admin',
+      }),
+    ).rejects.toThrow('422');
+
+    expect(settingService.update).toHaveBeenCalledTimes(2);
+    expect(settingStore.getSetting(SettingKey.QBittorrentUrl)).toBe('http://127.0.0.1:8080');
+  });
+
+  it('tells whether a secret setting is saved without knowing its value', async () => {
+    const settingStore = useSettingStore();
+    const response = createSettingsResponse({ qbittorrent_password: null });
+
+    response.data[0] = { ...response.data[0]!, type: 'secret', is_set: true };
+    vi.mocked(settingService.list).mockResolvedValue(response);
+
+    await settingStore.reloadSettings();
+
+    expect(settingStore.isSettingSet(SettingKey.QBittorrentPassword)).toBe(true);
+    expect(settingStore.isSettingSet(SettingKey.DownloadPath)).toBe(false);
+  });
 });

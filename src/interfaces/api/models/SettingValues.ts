@@ -6,4 +6,9 @@ export interface SettingValues {
   [SettingKey.VlcMediaPlayerPath]: string;
   [SettingKey.BannerDefaultVideos]: string[];
   [SettingKey.BannerDefaultBackgrounds]: string[];
+  [SettingKey.QBittorrentUrl]: string;
+  [SettingKey.QBittorrentUsername]: string;
+  /** Sent as a string; reads back as `null`, since a secret never leaves the backend. */
+  [SettingKey.QBittorrentPassword]: string | null;
+  [SettingKey.DownloadPath]: string;
 }

@@ -71,6 +71,25 @@ describe('useSetupStore', () => {
     });
   });
 
+  describe('checkSettings', () => {
+    it('checks several values at once and returns every result', async () => {
+      const checks = {
+        qbittorrent_url: { ok: true, code: null, params: {} },
+        download_path: { ok: false, code: SetupCheckCode.PathNotWritable, params: {} },
+      };
+      const request = {
+        [SettingKey.QBittorrentUrl]: 'http://127.0.0.1:8080',
+        [SettingKey.QBittorrentUsername]: 'admin',
+        [SettingKey.DownloadPath]: '/mnt/d/Downloads',
+      };
+
+      vi.mocked(setupService.check).mockResolvedValue(checks);
+
+      await expect(useSetupStore().checkSettings(request)).resolves.toEqual(checks);
+      expect(setupService.check).toHaveBeenCalledWith(request);
+    });
+  });
+
   describe('checkPath', () => {
     const PATH = '/mnt/g/New_Vid';
 

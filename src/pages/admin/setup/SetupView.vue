@@ -66,7 +66,7 @@ onMounted(() => {
   <movie-background />
   <page-container class="d-flex align-center justify-center" style="min-height: 100vh">
     <v-row class="position-relative" justify="center">
-      <v-col cols="12" style="max-width: 720px">
+      <v-col cols="12" style="max-width: 880px">
         <setup-wizard
           :loading="setupStore.isLoading"
           :status="setupStore.status"

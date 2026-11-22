@@ -1,4 +1,4 @@
-/** Why a setup path failed its check. Messages live under `setup.checkCodes` in i18n. */
+/** Why a setup value failed its check. Messages live under `setup.checkCodes` in i18n. */
 export enum SetupCheckCode {
   /** No video folder was entered. */
   PathRequired = 'path_required',
@@ -26,4 +26,14 @@ export enum SetupCheckCode {
   VlcBridgeUnauthorized = 'vlc_bridge_unauthorized',
   /** The VLC bridge rejected the path without saying why. */
   VlcBridgeRejected = 'vlc_bridge_rejected',
+  /** No qBittorrent address was entered. */
+  UrlRequired = 'url_required',
+  /** qBittorrent didn't answer at the address. */
+  QBittorrentUnreachable = 'qbittorrent_unreachable',
+  /** qBittorrent turned the username or password down. */
+  QBittorrentLoginFailed = 'qbittorrent_login_failed',
+  /** qBittorrent banned the app's address after too many failed logins. */
+  QBittorrentBanned = 'qbittorrent_banned',
+  /** qBittorrent is older than the app supports. Params: `version`, `minimum_version`. */
+  QBittorrentOutdated = 'qbittorrent_outdated',
 }

@@ -47,6 +47,11 @@ export const changelogEntries: ChangelogEntry[] = [
           "The show drawer has a button that opens the selected season's or movie's page.",
         ],
       },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Admins can download torrents straight into shows through their own qBittorrent.',
+        details: ['Settings and the setup wizard connect to qBittorrent and pick the folder it downloads into.'],
+      },
     ],
   },
   {

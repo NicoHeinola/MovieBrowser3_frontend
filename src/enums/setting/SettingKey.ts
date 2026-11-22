@@ -8,4 +8,12 @@ export enum SettingKey {
   BannerDefaultVideos = 'banner_default_videos',
   /** Image URLs the home banner shows when no video plays. */
   BannerDefaultBackgrounds = 'banner_default_backgrounds',
+  /** qBittorrent's Web UI address, such as `http://127.0.0.1:8080`. Empty while downloads are off. */
+  QBittorrentUrl = 'qbittorrent_url',
+  /** The username the app logs in to qBittorrent with. */
+  QBittorrentUsername = 'qbittorrent_username',
+  /** qBittorrent's password. A secret: it reads back as `null`, with `is_set` telling whether one is saved. */
+  QBittorrentPassword = 'qbittorrent_password',
+  /** The folder qBittorrent downloads into, as the app sees it (`/mnt/d/MovieBrowser3/Downloads`). */
+  DownloadPath = 'download_path',
 }

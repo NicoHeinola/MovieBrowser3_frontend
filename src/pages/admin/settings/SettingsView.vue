@@ -12,6 +12,7 @@ import { BackupTable } from '@/components/features/backup/backup-table';
 import { AddDefaultBackgroundDialog } from '@/components/features/setting/add-default-background-dialog';
 import { AddDefaultVideoDialog } from '@/components/features/setting/add-default-video-dialog';
 import { DefaultMediaGallery } from '@/components/features/setting/default-media-gallery';
+import { DownloadClientSettings } from '@/components/features/setting/download-client-settings';
 import { VideoSettings } from '@/components/features/setting/video-settings';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
@@ -230,6 +231,10 @@ onMounted(() => {
             </div>
           </template>
         </titled-section>
+      </v-col>
+
+      <v-col cols="12" lg="6">
+        <download-client-settings />
       </v-col>
 
       <v-col cols="12" lg="6">

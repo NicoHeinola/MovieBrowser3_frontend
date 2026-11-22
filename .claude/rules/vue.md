@@ -202,6 +202,7 @@ const handleSubmit = (): void => {
 </template>
 ```
 
+- A `*-form` component only shows fields: `v-model:request`, `v-model:isValid` and props for what it displays (saved state, check results). It never calls services or stores. Its caller checks and saves: the page or dialog, or a composable when several screens share the save (`useDownloadClientSettings` for Settings and the setup wizard).
 - Mark required inputs with `class="required"`.
 - Validation rules come from the sibling `<feature>Rules.ts`: `const rules = getRules();`, then `:rules="rules.name"`.
 
