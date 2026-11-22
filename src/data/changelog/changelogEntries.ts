@@ -9,6 +9,11 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
+    version: '2.3.1',
+    date: null,
+    changes: [],
+  },
+  {
     version: '2.3.0',
     date: '2026-11-22',
     changes: [
