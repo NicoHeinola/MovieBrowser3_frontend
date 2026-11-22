@@ -16,6 +16,7 @@ import { VideoSettings } from '@/components/features/setting/video-settings';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
+import { useVideoDurationScan } from '@/composables/setting/useVideoDurationScan';
 import { useVideoFileCheck } from '@/composables/setting/useVideoFileCheck';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { BackupQueryKey } from '@/enums/query/backupQueryKey';
@@ -28,8 +29,17 @@ const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const settingStore = useSettingStore();
 const { t } = useI18n();
 const { isPending, isRunning, isStarting, startCheck, statusCard } = useVideoFileCheck();
+const {
+  isPending: isDurationScanPending,
+  isRunning: isDurationScanRunning,
+  isStarting: isStartingDurationScan,
+  startScan: startDurationScan,
+  statusCard: durationScanCard,
+} = useVideoDurationScan();
 
 const isBackingUp = ref<boolean>(false);
+/** Whether the last length scan started here read only the missing lengths, so that button shows the spinner. */
+const isReadingMissingLengths = ref<boolean>(true);
 
 const backupQuery = useAPIQuery<ListResponse<Backup>>({
   queryKey: [BackupQueryKey.AdminBackups],
@@ -55,6 +65,16 @@ const backUpNow = async (): Promise<void> => {
   } finally {
     isBackingUp.value = false;
   }
+};
+
+/**
+ * Starts a length scan from one of the two buttons, and remembers which one so it shows the spinner.
+ * @param onlyMissing - Whether to read only the episodes without a length.
+ * @returns Nothing.
+ */
+const readLengths = async (onlyMissing: boolean): Promise<void> => {
+  isReadingMissingLengths.value = onlyMissing;
+  await startDurationScan({ onlyMissing });
 };
 
 const loadSettings = async (): Promise<void> => {
@@ -226,6 +246,37 @@ onMounted(() => {
                 @click="void startCheck()"
               >
                 {{ t('settings.checkVideoFiles') }}
+              </v-btn>
+            </div>
+          </template>
+        </titled-section>
+      </v-col>
+
+      <v-col cols="12" lg="6">
+        <titled-section
+          :subtitle="t('settings.durationScanSectionSubtitle')"
+          :title="t('settings.durationScanSection')"
+        >
+          <task-status-card v-bind="durationScanCard" :loading="isDurationScanPending" />
+
+          <template #append>
+            <div class="d-flex flex-1-1 justify-end ga-2">
+              <v-btn
+                :disabled="isDurationScanRunning || isStartingDurationScan"
+                :loading="(isStartingDurationScan || isDurationScanRunning) && !isReadingMissingLengths"
+                variant="text"
+                @click="void readLengths(false)"
+              >
+                {{ t('settings.readEpisodeLengths') }}
+              </v-btn>
+              <v-btn
+                :disabled="isDurationScanRunning || isStartingDurationScan"
+                :loading="(isStartingDurationScan || isDurationScanRunning) && isReadingMissingLengths"
+                prepend-icon="mdi-timer-sand"
+                variant="tonal"
+                @click="void readLengths(true)"
+              >
+                {{ t('settings.readMissingLengths') }}
               </v-btn>
             </div>
           </template>

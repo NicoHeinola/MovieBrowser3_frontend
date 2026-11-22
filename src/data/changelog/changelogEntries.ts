@@ -28,6 +28,17 @@ export const changelogEntries: ChangelogEntry[] = [
         type: ChangelogChangeType.Added,
         text: 'The show drawer and the home banner remember your volume and mute choice in this browser.',
       },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Episodes know how long they are, read from their video files in the background.',
+        details: [
+          "The show drawer shows each episode's length.",
+          "The show editor shows each episode's length and the show's total runtime.",
+          'The dashboard shows the total runtime of every video.',
+          'Uploaded videos get their length on their own.',
+          'Settings can read the missing lengths, and the show editor can read one show again.',
+        ],
+      },
     ],
   },
   {

@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n';
 import { adminShowSearchFilterDefinitions } from '@/data/show/adminShowSearchFilterDefinitions';
 import { formatFileSize } from '@/utils/file/formatFileSize';
 import { searchFilterQuery } from '@/utils/filter/searchFilterQuery';
+import { formatRuntime } from '@/utils/time/formatRuntime';
 
 const { t, locale } = useI18n();
 
@@ -58,6 +59,13 @@ const tiles = computed<DashboardStatTile[]>(() => [
     color: 'info',
     value: props.stats?.video_files_total_bytes ?? null,
     format: (bytes) => formatFileSize(bytes, locale.value),
+  },
+  {
+    label: t('dashboard.videoRuntime'),
+    icon: 'mdi-timer-outline',
+    color: 'success',
+    value: props.stats?.video_files_total_seconds ?? null,
+    format: (seconds) => formatRuntime(seconds, locale.value),
   },
   {
     label: t('dashboard.websites'),

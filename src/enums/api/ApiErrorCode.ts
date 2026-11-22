@@ -92,6 +92,10 @@ export enum ApiErrorCode {
   VideoFileCheckRunning = 'video_file_check_running',
   /** The last video file check crashed, so its results may be partial. */
   VideoFileCheckFailed = 'video_file_check_failed',
+  /** An episode length scan is reading the video files, so they can't be moved now. */
+  VideoDurationScanRunning = 'video_duration_scan_running',
+  /** The last episode length scan stopped on an error. */
+  VideoDurationScanFailed = 'video_duration_scan_failed',
   /** The video folder can only change through a relocation, which moves the videos with it. */
   VideoBasePathNeedsRelocation = 'video_base_path_needs_relocation',
   /** The video folder is being moved, so this change has to wait for the move to end. */

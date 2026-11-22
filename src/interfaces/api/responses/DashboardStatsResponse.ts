@@ -8,6 +8,8 @@ export interface DashboardStatsResponse {
   users_count: number;
   /** Sum of the known video file sizes of episodes that have a file, in bytes. */
   video_files_total_bytes: number;
+  /** Sum of the known lengths of episodes that have a file, in seconds. */
+  video_files_total_seconds: number;
   /** Size of the disk holding the video folder; null when unknown or unset. */
   disk_total_bytes: number | null;
   /** Free space on that disk; null when unknown or unset. */

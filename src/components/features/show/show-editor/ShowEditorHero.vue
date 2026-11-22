@@ -8,19 +8,19 @@ import { MediaPlaceholder } from '@/components/common/media-placeholder';
 import { formatFileSize } from '@/utils/file/formatFileSize';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { getShowVideoBytes } from '@/utils/show/video-file/getShowVideoBytes';
+import { getShowVideoSeconds } from '@/utils/show/video-file/getShowVideoSeconds';
+import { formatRuntime } from '@/utils/time/formatRuntime';
 
 const props = defineProps<{
   /** The show being edited; the hero follows its unsaved changes as a live preview. */
   show: Show;
-  /** Whether the show is being deleted, for the delete button's spinner. */
-  isDeleting?: boolean;
-  /** Whether saving or deleting is running, which disables the delete button. */
-  disabled?: boolean;
+  /** How far the running length scan is, such as `12 of 40 episodes`, or null while none runs. */
+  readingLengthsProgress?: string | null;
 }>();
 
-const emit = defineEmits<{
-  /** The delete button was clicked; the parent confirms and deletes. */
-  delete: [];
+defineSlots<{
+  /** Buttons in the top-right corner, such as delete; the page wires them to its own actions. */
+  actions?: () => unknown;
 }>();
 
 const { t, locale } = useI18n();
@@ -37,6 +37,9 @@ const episodeCount = computed<number>(() =>
 
 /** The saved video files; picked but unsaved files are not measured yet. */
 const videoBytes = computed<number>(() => getShowVideoBytes(props.show));
+
+/** The saved episodes' known lengths; a new file's length is read in the background after saving. */
+const videoSeconds = computed<number>(() => getShowVideoSeconds(props.show));
 </script>
 
 <template>
@@ -112,27 +115,27 @@ const videoBytes = computed<number>(() => getShowVideoBytes(props.show));
             <v-icon icon="mdi-filmstrip" size="small" />
             {{ t('showEditor.episodeCount', { count: episodeCount }, episodeCount) }}
           </span>
-          <span class="d-flex align-center ga-2" v-if="videoBytes > 0">
+          <!-- Always shown, with a dash until saved videos give them a value, so a new show has the same row. -->
+          <span class="d-flex align-center ga-2" v-tooltip:top="t('showEditor.videoSize')">
             <v-icon icon="mdi-harddisk" size="small" />
-            {{ formatFileSize(videoBytes, locale) }}
+            {{ videoBytes > 0 ? formatFileSize(videoBytes, locale) : '–' }}
+          </span>
+          <span class="d-flex align-center ga-2" v-tooltip:top="t('showEditor.runtime')">
+            <v-icon icon="mdi-timer-outline" size="small" />
+            {{ videoSeconds > 0 ? formatRuntime(videoSeconds, locale) : '–' }}
+          </span>
+          <span class="d-flex align-center ga-2" v-if="props.readingLengthsProgress">
+            <v-icon icon="mdi-timer-sand" size="small" />
+            {{ t('showEditor.readingLengths', { progress: props.readingLengthsProgress }) }}
           </span>
         </div>
       </div>
     </div>
 
-    <!-- Last, so it paints above the content row, which spans the whole card. -->
-    <v-btn
-      :disabled="props.disabled"
-      :loading="props.isDeleting"
-      class="glass-panel position-absolute top-0 right-0 ma-4"
-      color="error"
-      prepend-icon="mdi-trash-can-outline"
-      variant="tonal"
-      @click="emit('delete')"
-      v-if="props.show.id"
-    >
-      {{ t('showEditor.deleteShow') }}
-    </v-btn>
+    <!-- Last, so they paint above the content row, which spans the whole card. -->
+    <div class="position-absolute top-0 right-0 ma-4 d-flex ga-2" v-if="$slots.actions">
+      <slot name="actions" />
+    </div>
   </v-card>
 </template>
 

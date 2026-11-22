@@ -155,6 +155,8 @@ const saveEpisodes = async (
       episode.filename = savedEpisode.filename;
       episode.has_video_file = savedEpisode.has_video_file;
       episode.video_file_size = savedEpisode.video_file_size;
+      // Null until the background length scan reads the new file
+      episode.video_duration_seconds = savedEpisode.video_duration_seconds;
       delete episode.file;
     }
 

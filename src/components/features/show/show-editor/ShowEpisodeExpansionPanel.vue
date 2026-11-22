@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n';
 import { MissingVideoFileChip } from '@/components/features/show/missing-video-file-chip';
 import { formatFileSize } from '@/utils/file/formatFileSize';
 import { isEpisodeVideoMissing } from '@/utils/show/video-file/isEpisodeVideoMissing';
+import { formatDuration } from '@/utils/time/formatDuration';
 
 import { getRules } from './showEntriesFormRules';
 
@@ -61,6 +62,9 @@ makeDroppable(() => fileInput.value?.$el as HTMLElement | undefined, {
             v-if="filename"
           >
             {{ filename }}
+          </span>
+          <span class="text-medium-emphasis text-body-small text-no-wrap" v-if="episode.video_duration_seconds">
+            {{ formatDuration(episode.video_duration_seconds) }}
           </span>
           <span class="text-medium-emphasis text-body-small text-no-wrap" v-if="episode.video_file_size">
             {{ formatFileSize(episode.video_file_size, locale) }}

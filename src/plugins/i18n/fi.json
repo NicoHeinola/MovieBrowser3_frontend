@@ -140,7 +140,9 @@
       "backup_failed": "Tietokannan varmuuskopiointi epäonnistui.",
       "only_primary_title": "Sarjan ainoaa ensisijaista nimeä ei voi poistaa.",
       "last_admin": "Vähintään yhden ylläpitäjän on jäätävä, joten tältä käyttäjältä ei voi poistaa ylläpito-oikeuksia.",
-      "invalid": "Arvo ei ole kelvollinen."
+      "invalid": "Arvo ei ole kelvollinen.",
+      "video_duration_scan_running": "Jaksojen pituuksia luetaan. Yritä uudelleen, kun se on valmis.",
+      "video_duration_scan_failed": "Jaksojen pituuksien lukeminen keskeytyi virheeseen. Loput luetaan seuraavalla kerralla."
     }
   },
   "rules": {
@@ -204,7 +206,8 @@
       "otherShows": "Muut sarjat"
     },
     "storageBiggestShows": "Suurimmat sarjat",
-    "storageNoSizes": "Videoiden kokoja ei ole vielä mitattu."
+    "storageNoSizes": "Videoiden kokoja ei ole vielä mitattu.",
+    "videoRuntime": "Kokonaiskesto"
   },
   "bannerPreview": {
     "latestShows": "Uusimmat sarjat",
@@ -268,7 +271,22 @@
     "removeBackgroundConfirm": "Poistetaanko tämä bannerin oletustausta?\n\n{url}",
     "removeVideoConfirm": "Poistetaanko tämä bannerin oletusvideo?\n\n{url}",
     "favoritesLink": "Verkkosivut",
-    "openSetup": "Käy käyttöönotto uudelleen"
+    "openSetup": "Käy käyttöönotto uudelleen",
+    "durationScanSection": "Jaksojen pituudet",
+    "durationScanSectionSubtitle": "Lukee taustalla, kuinka pitkä kukin jakso on. Ladatut videot saavat omansa itse.",
+    "readEpisodeLengths": "Lue kaikki pituudet",
+    "readMissingLengths": "Lue puuttuvat pituudet",
+    "durationScanNever": "Pituuksia ei ole vielä luettu",
+    "durationScanStarted": "Jaksojen pituuksia luetaan taustalla.",
+    "durationScanNothingToRead": "Ei luettavia jaksojen pituuksia.",
+    "durationScanRunning": "Luetaan jaksojen pituuksia",
+    "durationScanFinishedAt": "Luettu viimeksi {date}",
+    "durationScanFinished": "Jaksojen pituudet luettu.",
+    "durationScanFinishedUnknown": "Jaksojen pituudet luettu, {count} jaksolta puuttuu yhä pituus. | Jaksojen pituudet luettu, {count} jaksolta puuttuu yhä pituus.",
+    "durationScanInterrupted": "Jaksojen pituuksien lukeminen keskeytyi. Yritä uudelleen.",
+    "durationScanUnknown": "{count} jaksolta puuttuu pituus | {count} jaksolta puuttuu pituus",
+    "durationScanAllKnown": "Kaikilla jaksoilla on pituus",
+    "durationScanFailed": "Viimeisin pituuksien luku epäonnistui"
   },
   "backup": {
     "section": "Varmuuskopiot",
@@ -471,7 +489,11 @@
     "leave": "Poistu",
     "stay": "Jää",
     "fixErrors": "Osa kentistä pitää korjata ennen kuin sarjan voi tallentaa.",
-    "loadFailed": "Sarjaa ei voitu ladata."
+    "loadFailed": "Sarjaa ei voitu ladata.",
+    "readLengths": "Lue pituudet",
+    "runtime": "Kokonaiskesto",
+    "videoSize": "Videotiedostojen koko",
+    "readingLengths": "Luetaan pituuksia: {progress}"
   },
   "filter": {
     "any": "mihin tahansa",

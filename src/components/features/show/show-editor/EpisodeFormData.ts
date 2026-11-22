@@ -5,5 +5,6 @@ export interface EpisodeFormData {
   filename?: string;
   has_video_file?: boolean;
   video_file_size?: number | null;
+  video_duration_seconds?: number | null;
   sequence_number: number;
 }

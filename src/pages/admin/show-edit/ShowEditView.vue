@@ -13,8 +13,10 @@ import {
   ShowEditorSkeleton,
 } from '@/components/features/show/show-editor';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
+import { useVideoDurationScan } from '@/composables/setting/useVideoDurationScan';
 import { useShowEditor } from '@/composables/show/useShowEditor';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { hasPendingVideoUploads } from '@/utils/show/video-file/hasPendingVideoUploads';
 
 const editor = useTemplateRef<InstanceType<typeof ShowEditor>>('editor');
 
@@ -29,6 +31,15 @@ const showId = computed<number | null>(() => (route.name === 'admin-show-edit' ?
 
 const { show, isLoading, isLoadError, isSaving, isDeleting, hasChanges, episodeProgress, save, remove, discard } =
   useShowEditor(showId);
+
+const {
+  isFollowing: isFollowingLengthScan,
+  isRunning: isReadingLengths,
+  isStarting: isStartingLengthScan,
+  progressText: lengthScanProgress,
+  followQueuedScan: followLengthScan,
+  startScan: startLengthScan,
+} = useVideoDurationScan();
 
 /**
  * Returns to the page the editor was opened from, such as the show list with its filters, or to the show list when
@@ -60,10 +71,27 @@ const saveShow = async (): Promise<void> => {
   }
 
   const wasNew = showId.value === null;
+  // Read before saving: a save clears the picked files once they're uploaded
+  const hasUploads = show.value !== null && hasPendingVideoUploads(show.value);
   const savedId = await save();
+
+  // Uploaded files queue a length scan on the backend; follow it so their lengths show once read
+  if (savedId !== null && hasUploads) {
+    void followLengthScan();
+  }
 
   if (savedId !== null && wasNew) {
     await router.replace({ name: 'admin-show-edit', params: { showId: savedId } });
+  }
+};
+
+/**
+ * Queues this show's episodes for a length read in the background; the hero shows the scan while it runs.
+ * @returns Nothing.
+ */
+const readLengths = async (): Promise<void> => {
+  if (show.value?.id) {
+    await startLengthScan({ showIds: [show.value.id] });
   }
 };
 
@@ -143,12 +171,31 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
       <show-editor-skeleton v-else-if="isLoading || !show" />
 
       <template v-else>
-        <show-editor-hero
-          :disabled="isSaving || isDeleting"
-          :is-deleting="isDeleting"
-          :show="show"
-          @delete="void deleteShow()"
-        />
+        <show-editor-hero :reading-lengths-progress="isFollowingLengthScan ? lengthScanProgress : null" :show="show">
+          <template #actions v-if="show.id">
+            <v-btn
+              :disabled="isSaving || isDeleting || isReadingLengths"
+              :loading="isStartingLengthScan || isReadingLengths"
+              class="glass-panel"
+              prepend-icon="mdi-timer-sand"
+              variant="tonal"
+              @click="void readLengths()"
+            >
+              {{ t('showEditor.readLengths') }}
+            </v-btn>
+            <v-btn
+              :disabled="isSaving || isDeleting"
+              :loading="isDeleting"
+              class="glass-panel"
+              color="error"
+              prepend-icon="mdi-trash-can-outline"
+              variant="tonal"
+              @click="void deleteShow()"
+            >
+              {{ t('showEditor.deleteShow') }}
+            </v-btn>
+          </template>
+        </show-editor-hero>
         <show-editor v-model:show="show" ref="editor" />
       </template>
     </div>

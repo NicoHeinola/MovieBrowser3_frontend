@@ -140,7 +140,9 @@
       "backup_failed": "Backing up the database failed.",
       "only_primary_title": "A show's only primary title can't be deleted.",
       "last_admin": "At least one admin must remain, so this user can't lose admin rights.",
-      "invalid": "A value is not valid."
+      "invalid": "A value is not valid.",
+      "video_duration_scan_running": "Episode lengths are being read. Try again when that is done.",
+      "video_duration_scan_failed": "Reading episode lengths stopped because of an error. The rest are read on the next scan."
     }
   },
   "rules": {
@@ -204,7 +206,8 @@
       "otherShows": "Other shows"
     },
     "storageBiggestShows": "Biggest shows",
-    "storageNoSizes": "No video sizes measured yet."
+    "storageNoSizes": "No video sizes measured yet.",
+    "videoRuntime": "Total runtime"
   },
   "bannerPreview": {
     "latestShows": "Latest shows",
@@ -268,7 +271,22 @@
     "removeBackgroundConfirm": "Remove this default banner background?\n\n{url}",
     "removeVideoConfirm": "Remove this default banner video?\n\n{url}",
     "favoritesLink": "Websites",
-    "openSetup": "Run setup again"
+    "openSetup": "Run setup again",
+    "durationScanSection": "Episode lengths",
+    "durationScanSectionSubtitle": "Reads how long each episode is, in the background. Uploaded videos get theirs on their own.",
+    "readEpisodeLengths": "Read all lengths",
+    "readMissingLengths": "Read missing lengths",
+    "durationScanNever": "No lengths read yet",
+    "durationScanStarted": "Reading episode lengths in the background.",
+    "durationScanNothingToRead": "No episode lengths to read.",
+    "durationScanRunning": "Reading episode lengths",
+    "durationScanFinishedAt": "Last read {date}",
+    "durationScanFinished": "Episode lengths read.",
+    "durationScanFinishedUnknown": "Episode lengths read, {count} episode still has no length. | Episode lengths read, {count} episodes still have no length.",
+    "durationScanInterrupted": "Reading episode lengths stopped before finishing. Try again.",
+    "durationScanUnknown": "{count} episode has no length | {count} episodes have no length",
+    "durationScanAllKnown": "Every episode has a length",
+    "durationScanFailed": "The last length scan failed"
   },
   "backup": {
     "section": "Backups",
@@ -471,7 +489,11 @@
     "leave": "Leave",
     "stay": "Stay",
     "fixErrors": "Some fields need fixing before the show can be saved.",
-    "loadFailed": "This show could not be loaded."
+    "loadFailed": "This show could not be loaded.",
+    "readLengths": "Read lengths",
+    "runtime": "Total runtime",
+    "videoSize": "Size of the video files",
+    "readingLengths": "Reading lengths: {progress}"
   },
   "filter": {
     "any": "any",

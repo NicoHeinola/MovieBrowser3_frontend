@@ -96,10 +96,17 @@ const getEpisodeChipProps = (episodeId: number): { color?: string; prependIcon?:
   return {};
 };
 
-/** How far into the last watched episode the user is, as `12:34 / 24:00` and a percentage for its progress bar. */
+/**
+ * How far into the last watched episode the user is, as `12:34 / 24:00` and a percentage for its progress bar. The
+ * player's length wins; the episode's read length stands in until the player has reported one.
+ */
 const episodeProgress = computed<{ label: string; percent: number | null } | null>(() => {
-  const position = props.show?.watch_progress?.position_seconds;
-  const duration = props.show?.watch_progress?.duration_seconds;
+  const progress = props.show?.watch_progress;
+  const position = progress?.position_seconds;
+  const episode = entries.value
+    .flatMap((entry) => entry.episodes ?? [])
+    .find((candidate) => candidate.id === progress?.episode_id);
+  const duration = progress?.duration_seconds ?? episode?.video_duration_seconds;
 
   if (!position) {
     return null;
@@ -259,6 +266,9 @@ watch([() => props.show?.id, () => props.isShown], () => {
               v-if="episodeProgress.percent !== null"
             />
           </template>
+          <span class="text-label-small text-medium-emphasis" v-else-if="episode.video_duration_seconds">
+            {{ formatDuration(episode.video_duration_seconds) }}
+          </span>
         </v-btn>
       </template>
     </v-col>

@@ -263,6 +263,8 @@ components/
       navigationLinkItem.ts   ✓ reused or substantial named type lives here
 ```
 
+- Action buttons that only emit back to the parent go in a named slot that the parent fills and wires up itself, such as `show-editor-hero`'s `#actions`. Otherwise every new action adds an emit to the child, plus props like `isDeleting` that exist only to pass the button's state through. The child keeps the placement, and uses `defineSlots` with `v-if="$slots.actions"` around the slot.
+
 ## Styling
 
 - Keep styles `scoped` unless the component is intentionally providing global styling.

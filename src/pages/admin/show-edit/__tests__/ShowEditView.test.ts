@@ -29,7 +29,18 @@ const editor = {
   discard: vi.fn(),
 };
 
+/** What the mocked length scan hands the page. */
+const lengthScan = {
+  isRunning: ref<boolean>(false),
+  isStarting: ref<boolean>(false),
+  isFollowing: ref<boolean>(false),
+  progressText: ref<string | null>(null),
+  followQueuedScan: vi.fn(),
+  startScan: vi.fn(),
+};
+
 vi.mock('@/composables/show/useShowEditor', () => ({ useShowEditor: () => editor }));
+vi.mock('@/composables/setting/useVideoDurationScan', () => ({ useVideoDurationScan: () => lengthScan }));
 vi.mock('@/composables/dialog/useConfirmDialog', () => ({ useConfirmDialog: () => ({ confirm }) }));
 vi.mock('@/composables/snackbar/useCommonSnackbar', () => ({ useCommonSnackbar: () => ({ showWarningSnackbar }) }));
 
@@ -127,6 +138,25 @@ describe('ShowEditView', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'S', metaKey: true }));
     await flushPromises();
     expect(editor.save).toHaveBeenCalledTimes(1);
+    // Nothing was uploaded, so no length scan was queued to follow
+    expect(lengthScan.followQueuedScan).not.toHaveBeenCalled();
+  });
+
+  it('follows the length scan a save with uploads queues', async () => {
+    await openPage('/admin/shows/4');
+    editor.show.value = {
+      id: 4,
+      titles: [],
+      entries: [{ id: 1, episodes: [{ id: 2, file: new File(['a'], 'a.mkv') }] }],
+    } as unknown as Show;
+    editor.hasChanges.value = true;
+    editor.save.mockResolvedValue(4);
+    validate.mockResolvedValue(true);
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 's', ctrlKey: true }));
+    await flushPromises();
+
+    expect(lengthScan.followQueuedScan).toHaveBeenCalledOnce();
   });
 
   it('moves a created show to its own edit URL without asking', async () => {
