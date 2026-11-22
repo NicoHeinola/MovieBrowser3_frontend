@@ -1,7 +1,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { nekoBtAudioLanguages } from '@/data/nekobt/nekoBtAudioLanguages';
+import { NekoBtAudioLanguage } from '@/enums/nekobt/NekoBtAudioLanguage';
 
 /**
  * Provides "Any" and one chip per offered audio language, named in the app language, such as "Latin American Spanish".
@@ -16,7 +16,7 @@ export const useNekoBtAudioLanguageOptions = () => {
 
       return [
         { value: 'any', text: t('torrents.filters.anyLanguage'), icon: 'mdi-earth' },
-        ...nekoBtAudioLanguages.map((code) => ({ value: code, text: names.of(code) ?? code })),
+        ...Object.values(NekoBtAudioLanguage).map((code) => ({ value: code, text: names.of(code) ?? code })),
       ];
     }),
   };

@@ -24,6 +24,7 @@ export const changelogEntries: ChangelogEntry[] = [
           'Each torrent has its magnet link, .torrent file and nekoBT page one click away.',
           'A help section explains what each badge means.',
           'Filters narrow the results by level, source, codec, audio language, batches, translation and hardsubs.',
+          'Searches start on Japanese audio, with hardsubs and machine translations hidden.',
           'A nyaa tab opens the same search on nyaa, with its own categories, filters and the mirror you picked last.',
         ],
       },

@@ -47,6 +47,9 @@ const setupSearch = async (url = '/admin/torrents') => {
   return { ...search, router };
 };
 
+/** The backend filter params of the default filters: Japanese audio, no hardsubs, no machine translations. */
+const defaultFilterParams = { audio_language: 'ja', hardsub: 'false', machine_translation: 'false' };
+
 const getLastQuery = () => vi.mocked(nekoBtTorrentService.list).mock.lastCall?.[0];
 
 describe('useNekoBtTorrentSearch', () => {
@@ -67,10 +70,27 @@ describe('useNekoBtTorrentSearch', () => {
     }
   });
 
-  it('starts biggest first on the first page', async () => {
-    await setupSearch();
+  it('starts biggest first on the first page, with the default filters', async () => {
+    const { activeFilterCount, router } = await setupSearch();
 
-    expect(getLastQuery()).toEqual({ filter: undefined, sort: '-size', page: { number: 1, size: 50 } });
+    expect(getLastQuery()).toEqual({ filter: defaultFilterParams, sort: '-size', page: { number: 1, size: 50 } });
+    expect(activeFilterCount.value).toBe(3);
+    expect(router.currentRoute.value.query).toEqual({});
+  });
+
+  it('keeps cleared default filters cleared after a reload', async () => {
+    const { clearFilters, router } = await setupSearch();
+
+    clearFilters();
+    await flushPromises();
+
+    expect(getLastQuery()?.filter).toBeUndefined();
+    expect(router.currentRoute.value.query).toEqual({ audio: 'any', no_mtl: 'false', no_hardsub: 'false' });
+
+    const reloaded = await setupSearch(router.currentRoute.value.fullPath);
+
+    expect(reloaded.activeFilterCount.value).toBe(0);
+    expect(getLastQuery()?.filter).toBeUndefined();
   });
 
   it('reads the search, sort and page from the URL, best match included', async () => {
@@ -78,7 +98,11 @@ describe('useNekoBtTorrentSearch', () => {
 
     expect(sort.value).toBe('best');
     expect(page.value).toBe(2);
-    expect(getLastQuery()).toEqual({ filter: { search: 'frieren' }, sort: 'best', page: { number: 2, size: 50 } });
+    expect(getLastQuery()).toEqual({
+      filter: { search: 'frieren', ...defaultFilterParams },
+      sort: 'best',
+      page: { number: 2, size: 50 },
+    });
   });
 
   it('falls back to biggest first for a sort nekoBT does not take, and caps a page past the deepest one', async () => {
@@ -90,7 +114,7 @@ describe('useNekoBtTorrentSearch', () => {
 
   it('sends the filters as the backend takes them and keeps them in the URL', async () => {
     const { filters, router } = await setupSearch(
-      '/admin/torrents?level=full_scale_fansub&exclude_source=bd_mini&audio=en&batch=true&no_mtl=true',
+      '/admin/torrents?level=full_scale_fansub&exclude_source=bd_mini&audio=en&batch=true&no_hardsub=false',
     );
 
     expect(getLastQuery()?.filter).toEqual({
@@ -107,7 +131,9 @@ describe('useNekoBtTorrentSearch', () => {
 
     expect(getLastQuery()?.filter).toMatchObject({ hardsub: 'false' });
     expect(getLastQuery()?.filter).not.toHaveProperty('batch');
-    expect(router.currentRoute.value.query).toMatchObject({ no_hardsub: 'true', audio: 'en' });
+    // Back at its default, hide hardsubs leaves the URL
+    expect(router.currentRoute.value.query).toMatchObject({ audio: 'en' });
+    expect(router.currentRoute.value.query).not.toHaveProperty('no_hardsub');
     expect(router.currentRoute.value.query).not.toHaveProperty('batch');
   });
 
