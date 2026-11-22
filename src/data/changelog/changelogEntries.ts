@@ -14,6 +14,10 @@ export const changelogEntries: ChangelogEntry[] = [
     changes: [
       {
         type: ChangelogChangeType.Added,
+        text: 'Password fields have an eye button that shows or hides what you typed.',
+      },
+      {
+        type: ChangelogChangeType.Added,
         text: 'Admins can search anime torrents on the new Torrents page.',
         details: [
           'Results come from nekoBT, biggest first, with release groups, languages, quality and batches marked.',

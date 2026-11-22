@@ -4,6 +4,7 @@ import type { AuthLoginRequest } from '@/interfaces/api/requests/AuthLoginReques
 import { useI18n } from 'vue-i18n';
 
 import { BaseForm } from '@/components/common/base-form';
+import { PasswordField } from '@/components/common/password-field';
 
 import { getRules } from './loginFormRules';
 
@@ -40,13 +41,12 @@ const rules = getRules();
         />
       </v-col>
       <v-col cols="12">
-        <v-text-field
+        <password-field
           v-model="request.password"
           :label="t('auth.password')"
           :rules="rules.password"
           class="required"
           prepend-inner-icon="mdi-lock-outline"
-          type="password"
         />
       </v-col>
     </v-row>

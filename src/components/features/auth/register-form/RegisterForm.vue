@@ -4,6 +4,7 @@ import type { RegisterRequest } from './registerRequest';
 import { useI18n } from 'vue-i18n';
 
 import { BaseForm } from '@/components/common/base-form';
+import { PasswordField } from '@/components/common/password-field';
 
 import { getRules } from './registerFormRules';
 
@@ -41,25 +42,23 @@ const rules = getRules(() => request.value.password);
         />
       </v-col>
       <v-col cols="12">
-        <v-text-field
+        <password-field
           v-model="request.password"
           :label="t('auth.password')"
           :rules="rules.password"
           autocomplete="new-password"
           class="required"
           prepend-inner-icon="mdi-lock-outline"
-          type="password"
         />
       </v-col>
       <v-col cols="12">
-        <v-text-field
+        <password-field
           v-model="request.password_confirmation"
           :label="t('auth.confirmPassword')"
           :rules="rules.confirmPassword"
           autocomplete="new-password"
           class="required"
           prepend-inner-icon="mdi-shield-lock-outline"
-          type="password"
         />
       </v-col>
     </v-row>

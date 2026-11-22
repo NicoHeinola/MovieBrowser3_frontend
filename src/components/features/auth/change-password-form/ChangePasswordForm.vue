@@ -4,6 +4,7 @@ import type { ChangePasswordFormRequest } from './changePasswordFormRequest';
 import { useI18n } from 'vue-i18n';
 
 import { BaseForm } from '@/components/common/base-form';
+import { PasswordField } from '@/components/common/password-field';
 
 import { getRules } from './changePasswordFormRules';
 
@@ -31,23 +32,21 @@ const rules = getRules(() => request.value.password);
   <base-form v-model:is-valid="isValid" :id="props.id">
     <v-row>
       <v-col cols="12">
-        <v-text-field
+        <password-field
           v-model="request.password"
           :label="t('auth.newPassword')"
           :rules="rules.password"
           class="required"
           prepend-inner-icon="mdi-lock-outline"
-          type="password"
         />
       </v-col>
       <v-col cols="12">
-        <v-text-field
+        <password-field
           v-model="request.password_confirmation"
           :label="t('auth.confirmNewPassword')"
           :rules="rules.confirmPassword"
           class="required"
           prepend-inner-icon="mdi-shield-lock-outline"
-          type="password"
         />
       </v-col>
     </v-row>

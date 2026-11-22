@@ -7,6 +7,7 @@ import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BaseDialog } from '@/components/common/base-dialog';
 import { BaseForm } from '@/components/common/base-form';
+import { PasswordField } from '@/components/common/password-field';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { userService } from '@/services/user/userService';
@@ -168,26 +169,24 @@ onMounted(() => {
           </v-col>
 
           <v-col cols="12" sm="6">
-            <v-text-field
+            <password-field
               v-model="user.password"
               :class="{ required: !user.id }"
               :hint="user.id ? t('user.keepPasswordHint') : undefined"
               :label="t('auth.password')"
               :rules="rules.password"
               autocomplete="new-password"
-              type="password"
               persistent-hint
             />
           </v-col>
 
           <v-col cols="12" sm="6">
-            <v-text-field
+            <password-field
               v-model="user.password_confirmation"
               :class="{ required: !user.id || user.password }"
               :label="t('auth.confirmPassword')"
               :rules="rules.confirmPassword"
               autocomplete="new-password"
-              type="password"
               ref="confirmPasswordField"
             />
           </v-col>
