@@ -1,5 +1,6 @@
 import type { ApiQueryParams } from '@/interfaces/api/requests/ApiQueryParams';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
+import type { UncountedPaginatedResponse } from '@/interfaces/api/responses/UncountedPaginatedResponse';
 import type { PaginatedSearchRouteQuery } from '@/interfaces/search/PaginatedSearchRouteQuery';
 import type { PaginatedSearchState } from '@/interfaces/search/PaginatedSearchState';
 import type { Ref } from 'vue';
@@ -13,8 +14,8 @@ import { usePaginatedSearchRouteSync } from './usePaginatedSearchRouteSync';
 export interface PaginatedSearchOptions<TItem, TFilters> {
   /** Query key of the calling page, so each page keeps its own cache entry. */
   queryKey: string;
-  /** Fetches one page of results. */
-  list: (query: ApiQueryParams) => Promise<PaginatedResponse<TItem>>;
+  /** Fetches one page of results, with a total count or, for a backend that doesn't count, only a next link. */
+  list: (query: ApiQueryParams) => Promise<PaginatedResponse<TItem> | UncountedPaginatedResponse<TItem>>;
   /** Creates a filter set that filters nothing. */
   createEmptyFilters: () => TFilters;
   /** Builds the backend `filter` params from the trimmed search term and the filters. */
@@ -24,9 +25,20 @@ export interface PaginatedSearchOptions<TItem, TFilters> {
   /** Backend sort value to start with, such as `-created_at`. */
   defaultSort: string;
   pageSize: number;
+  /** The deepest page the backend serves, for a backend that limits it; a URL asking for more gets this one. */
+  maxPage?: number;
   /** Keeps the search in the URL query when set. Only one search per page may use it. */
   routeQuery?: PaginatedSearchRouteQuery<TFilters>;
 }
+
+/**
+ * Tells a page with a total count from one that only links to the next page.
+ * @param response - One page of results.
+ * @returns Whether the page carries `last_page` and `total`.
+ */
+const isCountedPage = <TItem>(
+  response: PaginatedResponse<TItem> | UncountedPaginatedResponse<TItem>,
+): response is PaginatedResponse<TItem> => 'total' in response.meta;
 
 /**
  * Debounced, paginated backend search with filters and sorting, shared by the searchable list pages. Changing the
@@ -71,7 +83,7 @@ export const usePaginatedSearch = <TItem, TFilters>(options: PaginatedSearchOpti
     searchTerm.value = nextState.search;
     filters.value = nextState.filters;
     sort.value = nextState.sort;
-    page.value = nextState.page;
+    page.value = Math.min(nextState.page, options.maxPage ?? Infinity);
     pageScope = getPageScope();
   };
 
@@ -79,7 +91,7 @@ export const usePaginatedSearch = <TItem, TFilters>(options: PaginatedSearchOpti
     usePaginatedSearchRouteSync(state, setState, options.routeQuery, options.defaultSort);
   }
 
-  const query = useAPIQuery<PaginatedResponse<TItem>>({
+  const query = useAPIQuery<PaginatedResponse<TItem> | UncountedPaginatedResponse<TItem>>({
     queryKey: [options.queryKey, searchTerm, filters, sort, page],
     queryFn: async () => {
       return await options.list({
@@ -92,8 +104,22 @@ export const usePaginatedSearch = <TItem, TFilters>(options: PaginatedSearchOpti
   });
 
   const items = computed<TItem[]>(() => query.data.value?.data ?? []);
-  const totalPages = computed<number>(() => query.data.value?.meta.last_page ?? 1);
-  const totalResults = computed<number>(() => query.data.value?.meta.total ?? 0);
+  const totalPages = computed<number>(() => {
+    const response = query.data.value;
+    if (!response) {
+      return 1;
+    }
+
+    // Without a count, the pages known so far run up to the next one, when there is one.
+    return isCountedPage(response)
+      ? response.meta.last_page
+      : response.meta.current_page + (response.links.next ? 1 : 0);
+  });
+  /** All results over every page; 0 for a backend that doesn't count them. */
+  const totalResults = computed<number>(() => {
+    const response = query.data.value;
+    return response && isCountedPage(response) ? response.meta.total : 0;
+  });
   const isLoading = computed<boolean>(() => isSearchPending.value || query.isFetching.value);
   const activeFilterCount = computed<number>(() => options.countActiveFilters(filters.value));
 
@@ -151,6 +177,8 @@ export const usePaginatedSearch = <TItem, TFilters>(options: PaginatedSearchOpti
 
   return {
     searchInput,
+    /** The trimmed search term the results belong to, which follows `searchInput` after the debounce. */
+    searchTerm,
     filters,
     activeFilterCount,
     clearFilters,

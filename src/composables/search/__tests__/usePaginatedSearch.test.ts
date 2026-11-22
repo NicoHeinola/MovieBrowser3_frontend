@@ -196,6 +196,29 @@ describe('usePaginatedSearch', () => {
     expect(getLastQuery()?.page).toEqual({ number: 2, size: 10 });
   });
 
+  it('counts the pages up to the next one for a backend without totals', async () => {
+    list.mockResolvedValue({
+      data: [{ id: 1 }],
+      links: { prev: null, next: '/items?page%5Bnumber%5D=2' },
+      meta: { current_page: 1, per_page: 10, from: 1, to: 10 },
+    });
+    const { page, totalPages, totalResults } = await setupSearch();
+
+    expect(totalPages.value).toBe(2);
+    expect(totalResults.value).toBe(0);
+
+    list.mockResolvedValue({
+      data: [{ id: 2 }],
+      links: { prev: '/items?page%5Bnumber%5D=1', next: null },
+      meta: { current_page: 2, per_page: 10, from: 11, to: 11 },
+    });
+    page.value = 2;
+    await flushPromises();
+
+    expect(totalPages.value).toBe(2);
+    expect(page.value).toBe(2);
+  });
+
   it('clears the filters but keeps the search term', async () => {
     const { searchInput, filters, clearFilters, activeFilterCount } = await setupSearch();
 
@@ -285,6 +308,26 @@ describe('usePaginatedSearch', () => {
 
       expect(search.searchInput.value).toBe('car');
       expect(router.currentRoute.value.fullPath).toBe('/other?q=bike');
+    });
+
+    it("caps a page past the backend's deepest one", async () => {
+      list.mockResolvedValue({ data: [], meta: { current_page: 100, last_page: 500, per_page: 10, total: 5000 } });
+      const component = { template: '<div />' };
+      const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/search', component }] });
+      await router.push('/search?page=150');
+
+      const app = createApp({});
+      app.use(VueQueryPlugin, { queryClient });
+      app.use(router);
+
+      const scope = effectScope();
+      scopes.push(scope);
+      const options = { ...routeOptions, maxPage: 100 };
+      const { page } = app.runWithContext(() => scope.run(() => usePaginatedSearch(options)))!;
+      await flushPromises();
+
+      expect(page.value).toBe(100);
+      expect(getLastQuery()?.page).toEqual({ number: 100, size: 10 });
     });
 
     it('falls back to the defaults for an unknown sort and an invalid page', async () => {

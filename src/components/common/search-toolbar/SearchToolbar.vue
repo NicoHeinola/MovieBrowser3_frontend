@@ -27,7 +27,26 @@ const sort = defineModel<string>('sort', { default: '' });
 
 const emit = defineEmits<{
   'click:filters': [];
+  /** Enter was pressed in the search field, for searches that run on demand instead of while typing. */
+  submit: [];
 }>();
+
+defineSlots<{
+  /** Buttons after the sort and filter buttons, such as a link to the searched site. */
+  append?: () => unknown;
+}>();
+
+/**
+ * Submits on Enter, but not on the Enter that confirms text typed with an input method (such as Japanese), which
+ * would submit half a word.
+ * @param event - The key event.
+ * @returns void
+ */
+const onEnter = (event: KeyboardEvent): void => {
+  if (!event.isComposing) {
+    emit('submit');
+  }
+};
 </script>
 
 <template>
@@ -41,6 +60,7 @@ const emit = defineEmits<{
         variant="solo-filled"
         autofocus
         clearable
+        @keydown.enter="onEnter"
       />
       <sort-menu v-model="sort" :options="props.sortOptions" v-if="props.sortOptions" />
       <v-badge
@@ -59,6 +79,7 @@ const emit = defineEmits<{
           v-tooltip:bottom="t('common.filters')"
         />
       </v-badge>
+      <slot name="append" />
     </v-col>
   </v-row>
 </template>

@@ -25,7 +25,7 @@ interface BaseFilterDefinition<TKey extends string> {
 interface ChipsFilterDefinition<TKey extends string> extends BaseFilterDefinition<TKey> {
   type: SearchFilterType.Chips;
   /** Backend params of the included and excluded values, or a function for a backend that takes another shape. */
-  api: { include: string; exclude: string } | ((value: ChipsFilterValue) => Record<string, string>);
+  api: { include: string; exclude: string } | ((value: ChipsFilterValue) => Record<string, string | string[]>);
   /** Composable that provides the chips. Selected values without a chip are dropped once the options have loaded. */
   useOptions: () => {
     options: ComputedRef<{ value: string; text: string; icon?: string; color?: string }[]>;
@@ -56,6 +56,22 @@ interface RangeFilterDefinition<TKey extends string> extends BaseFilterDefinitio
   maxLabel: string;
 }
 
+/** One value picked from a group of chips; `emptyValue` is the option that filters nothing. */
+interface ChoiceFilterDefinition<TKey extends string> extends BaseFilterDefinition<TKey> {
+  type: SearchFilterType.Choice;
+  /** Backend param of the picked value, left out while the empty value is picked. */
+  api: string;
+  /** The option that filters nothing, such as "All categories", which clearing the filters picks. */
+  emptyValue: string;
+  /** Composable that provides the chips, the empty value's among them. */
+  useOptions: () => {
+    options: ComputedRef<{ value: string; text: string; icon?: string }[]>;
+  };
+}
+
 /** One search filter: how it is stored in the URL, sent to the backend and shown in the filter drawer. */
 export type SearchFilterDefinition<TKey extends string = string> =
-  ChipsFilterDefinition<TKey> | SwitchFilterDefinition<TKey> | RangeFilterDefinition<TKey>;
+  | ChipsFilterDefinition<TKey>
+  | SwitchFilterDefinition<TKey>
+  | RangeFilterDefinition<TKey>
+  | ChoiceFilterDefinition<TKey>;

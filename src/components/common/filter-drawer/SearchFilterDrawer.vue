@@ -11,14 +11,22 @@ import { SearchFilterType } from '@/enums/search/SearchFilterType';
 import FilterDrawer from './FilterDrawer.vue';
 import FilterDrawerSection from './FilterDrawerSection.vue';
 import SearchFilterChips from './SearchFilterChips.vue';
+import SearchFilterChoice from './SearchFilterChoice.vue';
 import SearchFilterRange from './SearchFilterRange.vue';
 
-const props = defineProps<{
-  definitions: SearchFilterDefinition<keyof TFilters & string>[];
-  activeFilterCount: number;
-  totalResults: number;
-  isLoading: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    definitions: SearchFilterDefinition<keyof TFilters & string>[];
+    activeFilterCount: number;
+    totalResults: number;
+    isLoading: boolean;
+    /** Text of the closing button, for a search without a result count; defaults to "Show N results". */
+    applyText?: string;
+  }>(),
+  {
+    applyText: undefined,
+  },
+);
 
 const isShown = defineModel<boolean>('isShown', {
   default: false,
@@ -60,6 +68,7 @@ const setFilter = (key: keyof TFilters, value: SearchFilterValue): void => {
   <filter-drawer
     v-model:is-shown="isShown"
     :active-filter-count="props.activeFilterCount"
+    :apply-text="props.applyText"
     :is-loading="props.isLoading"
     :total-results="props.totalResults"
     @clear="emit('clear')"
@@ -87,6 +96,12 @@ const setFilter = (key: keyof TFilters, value: SearchFilterValue): void => {
         :model-value="filters[definition.key] as RangeFilterValue"
         @update:model-value="setFilter(definition.key, $event)"
         v-else-if="definition.type === SearchFilterType.Range"
+      />
+      <search-filter-choice
+        :definition="definition"
+        :model-value="filters[definition.key] as string"
+        @update:model-value="setFilter(definition.key, $event)"
+        v-else-if="definition.type === SearchFilterType.Choice"
       />
       <v-col cols="12" v-else>
         <v-switch

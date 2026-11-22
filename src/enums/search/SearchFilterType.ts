@@ -6,4 +6,6 @@ export enum SearchFilterType {
   Switch = 'switch',
   /** A minimum and a maximum number, either of which can be left empty. */
   Range = 'range',
+  /** One value picked from a group of chips, for a backend that takes a single value; one option filters nothing. */
+  Choice = 'choice',
 }

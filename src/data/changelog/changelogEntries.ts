@@ -9,9 +9,21 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  */
 export const changelogEntries: ChangelogEntry[] = [
   {
-    version: '2.3.1',
+    version: '2.4.0',
     date: null,
-    changes: [],
+    changes: [
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Admins can search anime torrents on the new Torrents page.',
+        details: [
+          'Results come from nekoBT, biggest first, with release groups, languages, quality and batches marked.',
+          'Each torrent has its magnet link, .torrent file and nekoBT page one click away.',
+          'A help section explains what each badge means.',
+          'Filters narrow the results by level, source, codec, audio language, batches, translation and hardsubs.',
+          'A nyaa tab opens the same search on nyaa, with its own categories, filters and the mirror you picked last.',
+        ],
+      },
+    ],
   },
   {
     version: '2.3.0',

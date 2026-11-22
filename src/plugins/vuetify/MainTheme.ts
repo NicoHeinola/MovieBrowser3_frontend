@@ -28,6 +28,14 @@ export const MainTheme: ThemeDefinition = {
     'storage-free': '#2A3242',
     /** The shows too small for their own arc in the storage chart, grouped. */
     'storage-other-shows': '#6B7486',
+    /** nekoBT level badges, from an untouched official release to a group's own fansub. */
+    'torrent-level-official': '#74D0FF',
+    'torrent-level-slight-modifications': '#65C89B',
+    'torrent-level-small-scale-fansub': '#E7B657',
+    'torrent-level-full-scale-fansub': '#B39DFF',
+    /** Torrent video source and codec badges: quiet, so the level and tag badges stand out. */
+    'torrent-video-source': '#35507A',
+    'torrent-video-codec': '#2D5F66',
     'pattern-start': '#6B4FCC',
     'pattern-end': '#2A7A8A',
   },

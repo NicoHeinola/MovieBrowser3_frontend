@@ -19,6 +19,10 @@ export const getSearchFilterApiParams = (
     return value ? definition.api : {};
   }
 
+  if (definition.type === SearchFilterType.Choice) {
+    return value === definition.emptyValue ? {} : { [definition.api]: value as string };
+  }
+
   if (definition.type === SearchFilterType.Range) {
     const { min, max } = value as RangeFilterValue;
 

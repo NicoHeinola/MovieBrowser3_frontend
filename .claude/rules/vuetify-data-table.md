@@ -14,9 +14,11 @@ applyTo: 'src/components/**/*Table.vue'
 
 ## Table Setup
 
-- A `*Table.vue` wrapper renders only the table (plus its `v-skeleton-loader` placeholder). Search fields, toolbars and the `v-row`/`v-col` layout belong to the page, which passes the search term in as a prop.
-
+- A `*Table.vue` wrapper renders only the table (plus its `v-skeleton-loader` placeholder). Search fields, toolbars and the `v-row`/`v-col` layout belong to the page.
+- Tables display; they never fetch. A paginated list's search term, filters, sort, page, page size and query live in its `use<Domain>Search` (built on `usePaginatedSearch`), which the parent calls and hands to the table as rows plus `v-model:sort`. Paging is the parent's `floating-pagination`, like every search page, so the table hides its footer. Single actions on a row (rename, delete) stay in the table.
+- Use `v-data-table-server` whenever the backend sorts or pages the rows, whichever component runs the query: a plain `v-data-table` sorts and pages its items again in the browser.
 - Type headers explicitly with `DataTableHeader`.
+- A server-sorted table binds `v-model:sort-by` through `useDataTableSort(sort, { columnKey: 'backendField' })`, so the rest of the code keeps one backend sort string such as `-size`.
 - Map store or API arrays into row objects with a `computed(...)` value before passing them to the table.
 - Use the table's built-in `loading` prop for in-place loading states, or `v-skeleton-loader` for initial placeholder rendering around the table region.
 - Do not add any other loading treatment for table data, including custom row shimmers, standalone spinners, or bespoke loading overlays.

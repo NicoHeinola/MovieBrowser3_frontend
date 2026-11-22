@@ -44,6 +44,7 @@ const adminLinks = computed<NavigationLinkItem[]>(() => [
   { label: t('nav.shows'), routeName: 'admin-shows', icon: 'mdi-movie-edit' },
   { label: t('nav.categories'), routeName: 'admin-categories', icon: 'mdi-shape' },
   { label: t('nav.websites'), routeName: 'admin-websites', icon: 'mdi-web' },
+  { label: t('nav.torrents'), routeName: 'admin-torrents', icon: 'mdi-magnet' },
   { label: t('nav.users'), routeName: 'admin-users', icon: 'mdi-account-group' },
   { label: t('nav.settings'), routeName: 'admin-settings', icon: 'mdi-cog' },
 ]);

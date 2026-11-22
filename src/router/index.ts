@@ -104,6 +104,15 @@ const router = createRouter({
       component: () => import('@/pages/admin/websites/WebsitesView.vue'),
     },
     {
+      path: '/admin/torrents',
+      name: 'admin-torrents',
+      meta: {
+        requiresAuth: true,
+        requiresAdmin: true,
+      },
+      component: () => import('@/pages/admin/torrents/TorrentsView.vue'),
+    },
+    {
       path: '/admin/users',
       name: 'admin-users',
       meta: {

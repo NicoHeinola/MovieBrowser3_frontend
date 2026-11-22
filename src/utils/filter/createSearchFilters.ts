@@ -21,15 +21,24 @@ export const createSearchFilters = <TFilters extends Record<keyof TFilters, Sear
 ) => {
   /**
    * Creates the value of a filter that filters nothing.
-   * @param type - The filter's type.
+   * @param definition - The filter.
    * @returns The empty value.
    */
-  const createEmptyFilterValue = (type: SearchFilterType): SearchFilterValue => {
-    if (type === SearchFilterType.Switch) {
-      return false;
+  const createEmptyFilterValue = (definition: SearchFilterDefinition): SearchFilterValue => {
+    switch (definition.type) {
+      case SearchFilterType.Switch: {
+        return false;
+      }
+      case SearchFilterType.Range: {
+        return { min: null, max: null };
+      }
+      case SearchFilterType.Choice: {
+        return definition.emptyValue;
+      }
+      default: {
+        return { included: [], excluded: [] };
+      }
     }
-
-    return type === SearchFilterType.Range ? { min: null, max: null } : { included: [], excluded: [] };
   };
 
   /**
@@ -37,7 +46,9 @@ export const createSearchFilters = <TFilters extends Record<keyof TFilters, Sear
    * @returns The empty filters.
    */
   const createEmptyFilters = (): TFilters =>
-    Object.fromEntries(definitions.map(({ key, type }) => [key, createEmptyFilterValue(type)])) as TFilters;
+    Object.fromEntries(
+      definitions.map((definition) => [definition.key, createEmptyFilterValue(definition)]),
+    ) as TFilters;
 
   const defaults: TFilters = { ...createEmptyFilters(), ...defaultFilters };
 
@@ -58,16 +69,22 @@ export const createSearchFilters = <TFilters extends Record<keyof TFilters, Sear
   };
 
   /**
-   * Counts the active filters, for the filter button badge: each chip, and each switch that is on.
+   * Counts the active filters, for the filter button badge: each chip, each switch that is on and each choice of
+   * something other than its empty value.
    * @param filters - The selected filters.
    * @returns The number of active filters.
    */
   const countActiveFilters = (filters: TFilters): number =>
-    definitions.reduce((count, { key }) => {
-      const value: SearchFilterValue = filters[key];
+    definitions.reduce((count, definition) => {
+      const value: SearchFilterValue = filters[definition.key];
 
-      if (typeof value === 'boolean') {
-        return count + Number(value);
+      if (definition.type === SearchFilterType.Choice) {
+        return count + Number(value !== definition.emptyValue);
+      }
+
+      // A switch counts while it is on; any other value that is not an object (only a choice, handled above) never
+      if (typeof value !== 'object') {
+        return count + Number(value === true);
       }
 
       // A range counts once, however many of its bounds are set.

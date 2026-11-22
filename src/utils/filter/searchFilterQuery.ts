@@ -36,6 +36,10 @@ const write = (
     return value === defaultValue ? {} : { [param]: String(value) };
   }
 
+  if (definition.type === SearchFilterType.Choice) {
+    return value === defaultValue ? {} : { [param]: value as string };
+  }
+
   if (definition.type === SearchFilterType.Range) {
     const { min, max } = value as RangeFilterValue;
     const defaults = defaultValue as RangeFilterValue;
@@ -83,6 +87,10 @@ const read = (
   if (definition.type === SearchFilterType.Switch) {
     const value = getQueryString(query[param]);
     return value === undefined ? defaultValue : value === 'true';
+  }
+
+  if (definition.type === SearchFilterType.Choice) {
+    return getQueryString(query[param]) ?? defaultValue;
   }
 
   if (definition.type === SearchFilterType.Range) {

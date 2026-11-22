@@ -104,6 +104,8 @@ export enum ApiErrorCode {
   VideoRelocationFailed = 'video_relocation_failed',
   /** Moving the video folder failed and moving the files back failed too, so some may be in the new folder. */
   VideoRelocationRevertFailed = 'video_relocation_revert_failed',
+  /** A torrent site didn't answer the search, or answered with an error; `site` tells which, such as `nekobt`. */
+  TorrentSiteUnavailable = 'torrent_site_unavailable',
   /** The backup folder doesn't exist or can't be written to, such as an external drive that isn't mounted. */
   BackupDirUnavailable = 'backup_dir_unavailable',
   /** The database dump failed. */

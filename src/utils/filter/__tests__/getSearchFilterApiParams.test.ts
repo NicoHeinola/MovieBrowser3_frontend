@@ -39,6 +39,16 @@ const toggle: SearchFilterDefinition = {
   api: { age: 'new' },
 };
 
+const choice: SearchFilterDefinition = {
+  key: 'category',
+  type: SearchFilterType.Choice,
+  param: 'category',
+  title: 'category',
+  api: 'c',
+  emptyValue: 'all',
+  useOptions,
+};
+
 const range: SearchFilterDefinition = {
   key: 'year',
   type: SearchFilterType.Range,
@@ -72,5 +82,10 @@ describe('getSearchFilterApiParams', () => {
     expect(getSearchFilterApiParams(range, { min: 1990, max: 2000 })).toEqual({ year_from: '1990', year_to: '2000' });
     expect(getSearchFilterApiParams(range, { min: null, max: 0 })).toEqual({ year_to: '0' });
     expect(getSearchFilterApiParams(range, { min: null, max: null })).toEqual({});
+  });
+
+  it('sends a choice under its param, unless it is the empty value', () => {
+    expect(getSearchFilterApiParams(choice, '1_2')).toEqual({ c: '1_2' });
+    expect(getSearchFilterApiParams(choice, 'all')).toEqual({});
   });
 });

@@ -42,12 +42,27 @@ const range: SearchFilterDefinition = {
   api: { min: 'year_from', max: 'year_to' },
 };
 
+const choice: SearchFilterDefinition = {
+  key: 'category',
+  type: SearchFilterType.Choice,
+  param: 'category',
+  title: 'category',
+  api: 'c',
+  emptyValue: 'all',
+  useOptions,
+};
+
 const noChips: ChipsFilterValue = { included: [], excluded: [] };
 const redChips: ChipsFilterValue = { included: ['red'], excluded: [] };
 const noRange: RangeFilterValue = { min: null, max: null };
 
 describe('searchFilterQuery', () => {
   describe('write', () => {
+    it('writes a choice only when it differs from the default', () => {
+      expect(searchFilterQuery.write(choice, '4_0', 'all')).toEqual({ category: '4_0' });
+      expect(searchFilterQuery.write(choice, 'all', 'all')).toEqual({});
+    });
+
     it('leaves a filter at its default out of the URL, in any order', () => {
       const defaults: ChipsFilterValue = { included: ['red', 'green'], excluded: [] };
 
@@ -95,6 +110,11 @@ describe('searchFilterQuery', () => {
       expect(searchFilterQuery.read(toggle, { new: 'true' }, false)).toBe(true);
       expect(searchFilterQuery.read(toggle, { new: 'false' }, true)).toBe(false);
       expect(searchFilterQuery.read(range, { year_min: '1990' }, noRange)).toEqual({ min: 1990, max: null });
+    });
+
+    it('reads a choice, or its default without the param', () => {
+      expect(searchFilterQuery.read(choice, { category: '4_0' }, 'all')).toBe('4_0');
+      expect(searchFilterQuery.read(choice, {}, '1_2')).toBe('1_2');
     });
 
     it('reads back what it writes', () => {

@@ -19,6 +19,8 @@ const props = withDefaults(
     menuLabel?: string;
     /** Icon before the main button's label. */
     prependIcon?: string;
+    /** Corner rounding of the group, such as `pill` next to a rounded search field. */
+    rounded?: string;
   }>(),
   {
     appendIcon: undefined,
@@ -29,6 +31,7 @@ const props = withDefaults(
     menuDisabled: false,
     menuLabel: undefined,
     prependIcon: undefined,
+    rounded: undefined,
   },
 );
 
@@ -49,7 +52,7 @@ const { t } = useI18n();
 
 <template>
   <!-- The main action stays one click; the other actions sit behind the arrow. -->
-  <v-btn-group :class="{ 'w-100': props.block }" :color="props.color" variant="tonal" divided>
+  <v-btn-group :class="{ 'w-100': props.block }" :color="props.color" :rounded="props.rounded" variant="tonal" divided>
     <v-btn
       :append-icon="props.appendIcon"
       :class="{ 'flex-1-1': props.block }"

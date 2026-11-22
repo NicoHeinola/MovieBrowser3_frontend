@@ -235,4 +235,36 @@ describe('createSearchFilters', () => {
       expect(routeQuery.getFiltersFromQuery({ new: 'false' }).isNew).toBe(false);
     });
   });
+
+  describe('choice filters', () => {
+    interface ChoiceFilters {
+      category: string;
+    }
+
+    const choiceFilters = createSearchFilters<ChoiceFilters>(
+      [
+        {
+          key: 'category',
+          type: SearchFilterType.Choice,
+          param: 'category',
+          title: 'category',
+          api: 'c',
+          emptyValue: 'all',
+          useOptions,
+        },
+      ],
+      'q',
+    );
+
+    it('start at the empty value, which filters nothing', () => {
+      expect(choiceFilters.createEmptyFilters()).toEqual({ category: 'all' });
+      expect(choiceFilters.getFilterParams('', { category: 'all' })).toBeUndefined();
+      expect(choiceFilters.countActiveFilters({ category: 'all' })).toBe(0);
+    });
+
+    it('count and send any other value', () => {
+      expect(choiceFilters.getFilterParams('frieren', { category: '1_2' })).toEqual({ q: 'frieren', c: '1_2' });
+      expect(choiceFilters.countActiveFilters({ category: '1_2' })).toBe(1);
+    });
+  });
 });

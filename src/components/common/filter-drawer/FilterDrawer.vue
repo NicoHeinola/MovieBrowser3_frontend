@@ -4,11 +4,18 @@ import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
 
-const props = defineProps<{
-  activeFilterCount: number;
-  totalResults: number;
-  isLoading: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    activeFilterCount: number;
+    totalResults: number;
+    isLoading: boolean;
+    /** Text of the closing button, for a search without a result count; defaults to "Show N results". */
+    applyText?: string;
+  }>(),
+  {
+    applyText: undefined,
+  },
+);
 
 const isShown = defineModel<boolean>('isShown', {
   default: false,
@@ -19,7 +26,7 @@ const emit = defineEmits<{
 }>();
 
 const resultLabel = computed<string>(() => {
-  return t('common.showResults', { count: props.totalResults }, props.totalResults);
+  return props.applyText ?? t('common.showResults', { count: props.totalResults }, props.totalResults);
 });
 </script>
 

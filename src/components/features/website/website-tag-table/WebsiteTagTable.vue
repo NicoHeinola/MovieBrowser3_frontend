@@ -1,42 +1,38 @@
 <script setup lang="ts">
 import type { WebsiteTag } from '@/interfaces/api/models/WebsiteTag';
-import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 import type { DataTableHeader } from 'vuetify';
 
 import { useQueryClient } from '@tanstack/vue-query';
-import { watchDebounced } from '@vueuse/core';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { useDataTableSort } from '@/composables/table/useDataTableSort';
 import { WebsiteQueryKey } from '@/enums/query/websiteQueryKey';
 import { WebsiteTagQueryKey } from '@/enums/query/websiteTagQueryKey';
 import { websiteTagService } from '@/services/website/websiteTagService';
 import { getQueryKeyFilter } from '@/utils/query/getQueryKeyFilter';
-import { getWebsiteTagListQuery } from '@/utils/website/tag/getWebsiteTagListQuery';
 import { getWebsiteTagRename } from '@/utils/website/tag/getWebsiteTagRename';
 
-const props = withDefaults(
-  defineProps<{
-    /** Words the tag names must all contain. Changes are debounced before searching the backend. */
-    search?: string | null;
-  }>(),
-  {
-    search: '',
-  },
-);
+const props = defineProps<{
+  /** The current page of tags, searched, sorted and paged by the backend; the parent's pagination picks the page. */
+  tags: WebsiteTag[];
+  /** Shows a placeholder instead of the table, for the first load. */
+  isPending: boolean;
+  /** Shows the table's loading bar while another page, sort or search loads. */
+  loading: boolean;
+  /** Whether a search term is set, for the empty table's text. */
+  isSearching: boolean;
+}>();
+
+/** Backend sort: `name`, or `-name` for descending. */
+const sort = defineModel<string>('sort', { required: true });
 
 const emit = defineEmits<{
   /** The websites count of a tag was clicked, to list the websites using it. */
   'click:websites': [tagId: number];
 }>();
 
-const searchTerm = ref<string>('');
-const page = ref<number>(1);
-/** -1 shows every tag on one page. */
-const itemsPerPage = ref<number>(-1);
-const sortBy = ref<Array<{ key: string; order?: boolean | 'asc' | 'desc' }>>([{ key: 'name', order: 'asc' }]);
 /** Names being edited, by tag id. A tag without an entry shows its saved name. */
 const editedNames = ref<Record<number, string>>({});
 const busyTagId = ref<number | null>(null);
@@ -45,6 +41,7 @@ const { confirm } = useConfirmDialog();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const queryClient = useQueryClient();
 const { t } = useI18n();
+const { sortBy } = useDataTableSort(sort, { name: 'name' });
 
 const headers = computed<DataTableHeader[]>(() => [
   { title: t('website.colName'), key: 'name' },
@@ -52,28 +49,8 @@ const headers = computed<DataTableHeader[]>(() => [
   { title: '', key: 'actions', align: 'end', sortable: false, width: 72 },
 ]);
 
-const itemsPerPageOptions = computed(() => [
-  { value: 25, title: '25' },
-  { value: 50, title: '50' },
-  { value: 100, title: '100' },
-  { value: -1, title: t('website.all') },
-]);
-
-/** Searched, sorted and paged on the backend, so the table scales with the tag count. */
-const tagsQuery = useAPIQuery<PaginatedResponse<WebsiteTag>>({
-  queryKey: [WebsiteTagQueryKey.AdminWebsiteTags, searchTerm, page, itemsPerPage, sortBy],
-  queryFn: async () => {
-    return await websiteTagService.list(
-      getWebsiteTagListQuery(searchTerm.value, page.value, itemsPerPage.value, sortBy.value),
-    );
-  },
-  placeholderData: (previousData) => previousData,
-});
-
-const totalTags = computed<number>(() => tagsQuery.data.value?.meta.total ?? 0);
-
 const items = computed<Array<{ id: number; name: string; websites_count: number }>>(() => {
-  return (tagsQuery.data.value?.data ?? []).map((tag) => ({
+  return props.tags.map((tag) => ({
     id: tag.id,
     name: tag.name,
     websites_count: tag.websites_count ?? 0,
@@ -179,38 +156,19 @@ const confirmDelete = async (tag: { id: number; name: string; websites_count: nu
     busyTagId.value = null;
   }
 };
-watch(
-  () => tagsQuery.data.value?.meta.last_page,
-  (lastPage) => {
-    // Step back when deleting the last tag of the last page leaves it empty.
-    if (lastPage && page.value > lastPage) {
-      page.value = lastPage;
-    }
-  },
-);
-
-watchDebounced(
-  () => props.search,
-  (value) => {
-    searchTerm.value = (value ?? '').trim();
-    page.value = 1;
-  },
-  { debounce: 300 },
-);
 </script>
 
 <template>
-  <v-skeleton-loader type="table-tbody" v-if="tagsQuery.isPending.value" />
+  <v-skeleton-loader type="table-tbody" v-if="props.isPending" />
   <v-data-table-server
-    v-model:items-per-page="itemsPerPage"
-    v-model:page="page"
     v-model:sort-by="sortBy"
     :headers="headers"
     :items="items"
-    :items-length="totalTags"
-    :items-per-page-options="itemsPerPageOptions"
-    :loading="tagsQuery.isFetching.value || busyTagId !== null"
+    :items-length="props.tags.length"
+    :items-per-page="-1"
+    :loading="props.loading || busyTagId !== null"
     class="tag-table"
+    hide-default-footer
     hover
     must-sort
     v-else
@@ -254,7 +212,7 @@ watchDebounced(
     </template>
 
     <template #no-data>
-      {{ searchTerm ? 'No tags match this search.' : 'No tags yet. Add one with the + button.' }}
+      {{ props.isSearching ? t('website.noTagsMatch') : t('website.noTagsAdd') }}
     </template>
   </v-data-table-server>
 </template>
