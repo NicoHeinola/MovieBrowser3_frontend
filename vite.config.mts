@@ -44,6 +44,11 @@ export default defineConfig(({ mode }) => {
     test: {
       globals: true,
       environment: 'jsdom',
+      // Creates jsdom once per worker instead of once per file, and still isolates each file in its own VM context.
+      // About 3x faster than the default forks pool. isolate: false was no faster and let state leak between files.
+      pool: 'vmThreads',
+      // Half the cores beats one worker per core: past that, starting more workers and jsdoms costs more than it saves.
+      maxWorkers: '50%',
       // Tests run with the production nyaa mirrors, so they pass whatever a local .env lists
       env: loadEnv('production', process.cwd(), 'VITE_NYAA_'),
       server: {
