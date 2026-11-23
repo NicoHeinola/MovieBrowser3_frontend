@@ -43,6 +43,19 @@ describe('useSettingStore', () => {
     };
   };
 
+  it('has loaded once the first settings arrive, and forgets that on clear', async () => {
+    const settingStore = useSettingStore();
+    vi.mocked(settingService.list).mockResolvedValue(createSettingsResponse({ video_base_path: '/videos' }));
+
+    expect(settingStore.hasLoaded).toBe(false);
+
+    await settingStore.fetchSettings();
+    expect(settingStore.hasLoaded).toBe(true);
+
+    settingStore.clearSettings();
+    expect(settingStore.hasLoaded).toBe(false);
+  });
+
   it('refreshes banner videos from the backend after adding a trimmed URL', async () => {
     const settingStore = useSettingStore();
     const refreshedSettings = createSettingsResponse({

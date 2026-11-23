@@ -3,7 +3,9 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { BaseForm } from '@/components/common/base-form';
+import { FormCard } from '@/components/common/form-card';
 import { TaskStatusCard } from '@/components/common/task-status-card';
+import { TitledSection } from '@/components/common/titled-section';
 import { VideoRelocationConfirmDialog } from '@/components/features/setting/video-relocation-confirm-dialog';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { useVideoRelocation } from '@/composables/setting/useVideoRelocation';
@@ -13,14 +15,13 @@ import { useSettingStore } from '@/stores/setting/useSettingStore';
 
 import { getRules } from './videoSettingsRules';
 
-const VIDEO_BASE_PATH_FORM_ID = 'video-base-path-form';
-const VLC_PATH_FORM_ID = 'vlc-path-form';
+const FORM_ID = 'video-settings-form';
 
 /** Local drafts so unsaved edits never leak into the store and missing keys don't break rendering. */
 const videoBasePath = ref<string>('');
 const vlcMediaPlayerPath = ref<string>('');
-const isVideoBasePathValid = ref<boolean>(false);
-const isVlcPathValid = ref<boolean>(false);
+const isValid = ref<boolean>(false);
+const isSavingVlcPath = ref<boolean>(false);
 
 const rules = getRules();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
@@ -33,20 +34,33 @@ const { isRunning: isRelocating, isStarting: isStartingRelocation, startRelocati
 const savedVideoBasePath = computed<string>(() => settingStore.getSetting(SettingKey.VideoBasePath) ?? '');
 const savedVlcMediaPlayerPath = computed<string>(() => settingStore.getSetting(SettingKey.VlcMediaPlayerPath) ?? '');
 
-/** Saving an unchanged path would do nothing, so each Save button waits for an edit. */
 const isVideoBasePathChanged = computed<boolean>(() => videoBasePath.value.trim() !== savedVideoBasePath.value);
 const isVlcPathChanged = computed<boolean>(() => vlcMediaPlayerPath.value.trim() !== savedVlcMediaPlayerPath.value);
 
+/** The folder draft stays changed until its move ends, so a running move must not start another. */
+const canRelocate = computed<boolean>(() => isVideoBasePathChanged.value && !isRelocating.value);
+const isSaving = computed<boolean>(() => isSavingVlcPath.value || isStartingRelocation.value);
+/** Saving unchanged paths would do nothing, so Save waits for an edit. */
+const canSave = computed<boolean>(() => isValid.value && (canRelocate.value || isVlcPathChanged.value));
+
 /**
  * Saves the VLC path as a plain setting.
- * @returns Nothing.
+ * @returns Whether it saved.
  */
-const saveVlcPath = async (): Promise<void> => {
+const saveVlcPath = async (): Promise<boolean> => {
+  isSavingVlcPath.value = true;
+
   try {
     await settingStore.updateSetting(SettingKey.VlcMediaPlayerPath, vlcMediaPlayerPath.value.trim());
     showSuccessSnackbar(t('settings.updated'));
+
+    return true;
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
+
+    return false;
+  } finally {
+    isSavingVlcPath.value = false;
   }
 };
 
@@ -77,6 +91,27 @@ const relocateVideos = async (): Promise<void> => {
   }
 };
 
+/**
+ * Saves the paths that changed.
+ * @returns Nothing.
+ */
+const save = async (): Promise<void> => {
+  // Enter submits even while the button is disabled or loading.
+  if (!canSave.value || isSaving.value) {
+    return;
+  }
+
+  // The quick one first: a move asks to confirm, and turning that down must not lose the VLC path.
+  if (isVlcPathChanged.value && !(await saveVlcPath())) {
+    return;
+  }
+
+  // Checked only now: the VLC save reloads the settings, and the folder may have changed elsewhere since.
+  if (canRelocate.value) {
+    await relocateVideos();
+  }
+};
+
 // Each draft follows only its own saved value, so a reload after a move doesn't wipe an unsaved VLC path edit.
 watch(
   savedVideoBasePath,
@@ -96,67 +131,62 @@ watch(
 </script>
 
 <template>
-  <v-row>
-    <v-col class="d-flex ga-2 align-center" cols="12">
-      <template v-if="settingStore.isLoading">
-        <v-skeleton-loader type="text" width="45" />
-        <v-skeleton-loader type="text" width="390" />
-        <v-skeleton-loader type="text" width="65" />
-      </template>
+  <titled-section
+    :subtitle="t('settings.videoSectionSubtitle')"
+    :title="t('settings.videoSection')"
+    icon="mdi-folder-play-outline"
+    icon-color="primary"
+  >
+    <form-card>
+      <v-skeleton-loader type="text@2" v-if="!settingStore.hasLoaded" />
       <template v-else>
-        <base-form
-          v-model:is-valid="isVideoBasePathValid"
-          class="flex-1-1"
-          @submit="relocateVideos"
-          :id="VIDEO_BASE_PATH_FORM_ID"
-        >
-          <div class="d-flex ga-2 align-center">
-            <v-text-field
-              v-model="videoBasePath"
-              :label="t('settings.videoBasePath')"
-              :readonly="isRelocating"
-              :rules="rules.videoBasePath"
-            >
-              <template #prepend>
-                <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.videoBasePathHint')" />
-              </template>
-            </v-text-field>
-            <v-btn
-              :disabled="!isVideoBasePathValid || !isVideoBasePathChanged || isRelocating"
-              :loading="isStartingRelocation"
-              color="primary"
-              type="submit"
-            >
-              {{ t('common.save') }}
-            </v-btn>
-          </div>
+        <base-form v-model:is-valid="isValid" @submit="save" :id="FORM_ID">
+          <v-row>
+            <v-col cols="12">
+              <v-text-field
+                v-model="videoBasePath"
+                :label="t('settings.videoBasePath')"
+                :readonly="isRelocating"
+                :rules="rules.videoBasePath"
+                class="required"
+              >
+                <template #prepend>
+                  <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.videoBasePathHint')" />
+                </template>
+              </v-text-field>
+            </v-col>
+            <!-- Indented past the field's help icon, so the card lines up under the field it reports on. -->
+            <v-col class="pt-0" cols="12" v-if="statusCard">
+              <task-status-card class="ms-10" v-bind="statusCard" />
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                v-model="vlcMediaPlayerPath"
+                :label="t('settings.vlcPath')"
+                :rules="rules.vlcMediaPlayerPath"
+              >
+                <template #prepend>
+                  <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.vlcPathHint')" />
+                </template>
+              </v-text-field>
+            </v-col>
+          </v-row>
         </base-form>
+
+        <div class="d-flex justify-end">
+          <v-btn :disabled="!canSave" :form="FORM_ID" :loading="isSaving" color="primary" type="submit">
+            {{ t('common.save') }}
+          </v-btn>
+        </div>
       </template>
-    </v-col>
-    <!-- Indented past the field's help icon, so the card lines up under the field it reports on. -->
-    <v-col class="pt-0" cols="12" v-if="statusCard">
-      <task-status-card class="ms-10" v-bind="statusCard" />
-    </v-col>
-    <v-col class="d-flex ga-2 align-center" cols="12">
-      <template v-if="settingStore.isLoading">
-        <v-skeleton-loader type="text" width="45" />
-        <v-skeleton-loader type="text" width="390" />
-        <v-skeleton-loader type="text" width="65" />
-      </template>
-      <template v-else>
-        <base-form v-model:is-valid="isVlcPathValid" class="flex-1-1" @submit="saveVlcPath" :id="VLC_PATH_FORM_ID">
-          <div class="d-flex ga-2 align-center">
-            <v-text-field v-model="vlcMediaPlayerPath" :label="t('settings.vlcPath')" :rules="rules.vlcMediaPlayerPath">
-              <template #prepend>
-                <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.vlcPathHint')" />
-              </template>
-            </v-text-field>
-            <v-btn :disabled="!isVlcPathValid || !isVlcPathChanged" color="primary" type="submit">
-              {{ t('common.save') }}
-            </v-btn>
-          </div>
-        </base-form>
-      </template>
-    </v-col>
-  </v-row>
+    </form-card>
+
+    <template #append>
+      <div class="d-flex flex-1-1 justify-end">
+        <v-btn :to="{ name: 'admin-setup' }" prepend-icon="mdi-auto-fix" variant="tonal">
+          {{ t('settings.openSetup') }}
+        </v-btn>
+      </div>
+    </template>
+  </titled-section>
 </template>

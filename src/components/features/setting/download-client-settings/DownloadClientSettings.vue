@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { FormCard } from '@/components/common/form-card';
 import { TitledSection } from '@/components/common/titled-section';
 import { DownloadClientForm } from '@/components/features/setting/download-client-form';
 import { useDownloadClientSettings } from '@/composables/setting/useDownloadClientSettings';
@@ -16,9 +17,6 @@ const settingStore = useSettingStore();
 const { checks, isPasswordSaved, isSaving, request, save } = useDownloadClientSettings();
 const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const { t } = useI18n();
-
-/** Whether settings have loaded once. A reload after saving keeps the old values, so only the first load has none. */
-const hasLoadedSettings = computed<boolean>(() => Object.keys(settingStore.settings).length > 0);
 
 /**
  * Checks and saves the connection, and says so when it saved. A failed check shows under its field instead.
@@ -40,30 +38,30 @@ const submit = async (): Promise<void> => {
 </script>
 
 <template>
-  <titled-section :subtitle="t('settings.downloadsSectionSubtitle')" :title="t('settings.downloadsSection')">
-    <v-skeleton-loader type="text@3" v-if="!hasLoadedSettings" />
-    <download-client-form
-      v-model:is-valid="isValid"
-      v-model:request="request"
-      :checks="checks"
-      :is-password-saved="isPasswordSaved"
-      @submit="submit"
-      :id="FORM_ID"
-      v-else
-    />
+  <titled-section
+    :subtitle="t('settings.downloadsSectionSubtitle')"
+    :title="t('settings.downloadsSection')"
+    icon="mdi-download"
+    icon-color="info"
+  >
+    <form-card>
+      <v-skeleton-loader type="text@3" v-if="!settingStore.hasLoaded" />
+      <template v-else>
+        <download-client-form
+          v-model:is-valid="isValid"
+          v-model:request="request"
+          :checks="checks"
+          :is-password-saved="isPasswordSaved"
+          @submit="submit"
+          :id="FORM_ID"
+        />
 
-    <template #append>
-      <div class="d-flex flex-1-1 justify-end">
-        <v-btn
-          :disabled="!isValid || !hasLoadedSettings"
-          :form="FORM_ID"
-          :loading="isSaving"
-          color="primary"
-          type="submit"
-        >
-          {{ t('common.save') }}
-        </v-btn>
-      </div>
-    </template>
+        <div class="d-flex justify-end">
+          <v-btn :disabled="!isValid" :form="FORM_ID" :loading="isSaving" color="primary" type="submit">
+            {{ t('common.save') }}
+          </v-btn>
+        </div>
+      </template>
+    </form-card>
   </titled-section>
 </template>

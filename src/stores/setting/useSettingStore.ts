@@ -32,6 +32,9 @@ export const useSettingStore = defineStore('setting', () => {
   const settings = ref<SettingsState>({});
   const isLoading = ref<boolean>(false);
 
+  /** Whether the settings have loaded once. A reload keeps the old values, so only the first load has none to show. */
+  const hasLoaded = computed<boolean>(() => Object.keys(settings.value).length > 0);
+
   /**
    * Reads a loaded setting's value.
    * @param key - The setting to read.
@@ -164,6 +167,7 @@ export const useSettingStore = defineStore('setting', () => {
   return {
     settings,
     isLoading,
+    hasLoaded,
     bannerDefaultVideos,
     bannerDefaultBackgrounds,
     addBannerDefaultVideo,

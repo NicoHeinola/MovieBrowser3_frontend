@@ -1,22 +1,13 @@
 <script setup lang="ts">
-import { useLocalStorage } from '@vueuse/core';
-import { computed } from 'vue';
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { NekoBtBrowser } from '@/components/features/torrent/nekobt-browser';
 import { NyaaSearch } from '@/components/features/torrent/nyaa-search';
+import { useStoredTab } from '@/composables/tab/useStoredTab';
 import { TorrentSite } from '@/enums/torrent/TorrentSite';
 
 /** One tab per torrent site, since each has its own filters and sorts. The last one used opens next time. */
-const storedSite = useLocalStorage<TorrentSite>('torrentSite', TorrentSite.NekoBt);
-
-/** The open tab; a stored value that is no tab (from an older version) opens the first one. */
-const site = computed<TorrentSite>({
-  get: () => (Object.values(TorrentSite).includes(storedSite.value) ? storedSite.value : TorrentSite.NekoBt),
-  set: (value) => {
-    storedSite.value = value;
-  },
-});
+const site = useStoredTab<TorrentSite>('torrentSite', [TorrentSite.NekoBt, TorrentSite.Nyaa]);
 </script>
 
 <template>

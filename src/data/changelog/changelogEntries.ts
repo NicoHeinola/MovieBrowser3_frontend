@@ -63,6 +63,10 @@ export const changelogEntries: ChangelogEntry[] = [
           'Finished files are copied into their episodes within a minute, ready to play. A failed copy can be retried.',
         ],
       },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The settings page is split into tabs: Videos, Downloads, Home banner and Backups.',
+      },
     ],
   },
   {
