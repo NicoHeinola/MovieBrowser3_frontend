@@ -24,7 +24,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: 'click:show', value: Show | null): void;
+  (e: 'click:show', value: Show): void;
   (e: 'hover:show', value: boolean): void;
 }>();
 
@@ -59,7 +59,7 @@ const maxCols = computed<number>(() => {
             v-model:selected-show="selectedShow"
             :cols="maxCols"
             :shows="props.shows"
-            @click:show="(show: Show | null) => emit('click:show', show)"
+            @click:show="(show: Show) => emit('click:show', show)"
             @hover:show="(isHovered: boolean) => emit('hover:show', isHovered)"
           ></show-grid>
           <div class="d-flex" v-if="props.shows.length === 0">

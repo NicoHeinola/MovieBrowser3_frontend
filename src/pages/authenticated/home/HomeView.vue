@@ -5,7 +5,7 @@ import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowSection } from '@/interfaces/api/models/ShowSection';
 
 import { storeToRefs } from 'pinia';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { VCol, VLazy, VRow } from 'vuetify/components';
 import { HOME_BANNER_HEIGHT, MediaBanner } from '@/components/common/media-banner';
@@ -13,7 +13,6 @@ import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { TitledSection } from '@/components/common/titled-section';
 import { LATEST_SHOWS_MAX_COLS, LatestShowsPanel } from '@/components/features/show/latest-shows-panel';
-import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowCarousel } from '@/components/features/show/show-carousel';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { useHomeBanner } from '@/composables/show/useHomeBanner';
@@ -22,16 +21,16 @@ import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showSectionService } from '@/services/show/showSectionService';
 import { showService } from '@/services/show/showService';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
+import { useShowDrawerStore } from '@/stores/show/useShowDrawerStore';
 import { useVideoAudioStore } from '@/stores/video/useVideoAudioStore';
 import { WATCHED_SHOW_STATUSES } from '@/utils/show/watch-status/watchedShowStatuses';
 import { homepageSections } from './homepageSections';
 
-const selectedShowId = ref<number | null>(null);
-const isShowDrawerVisible = ref<boolean>(false);
 const isPlayingCardVideo = ref<boolean>(false);
 let bannerResumeTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const settingStore = useSettingStore();
+const showDrawerStore = useShowDrawerStore();
 /** The volume and mute choice the user picked for previews, shared with the show drawer. */
 const { isMuted: isBannerMuted, volume: bannerVolume, hasForegroundPreview } = storeToRefs(useVideoAudioStore());
 const { playShow, startingShowId } = useShowPlayback();
@@ -39,7 +38,10 @@ const {
   selectedShow: selectedBannerShow,
   isPointerOver: isPointerOverBannerCard,
   background: bannerBackground,
-} = useHomeBanner(() => settingStore.bannerDefaultBackgrounds, isShowDrawerVisible);
+} = useHomeBanner(
+  () => settingStore.bannerDefaultBackgrounds,
+  () => showDrawerStore.isShown,
+);
 
 const { t } = useI18n();
 
@@ -156,15 +158,6 @@ const onPlayingVideoUpdate = (isPlaying: boolean) => {
     }, 700);
   }
 };
-
-watch(
-  () => selectedBannerShow.value,
-  () => {
-    if (selectedBannerShow.value) {
-      selectedShowId.value = selectedBannerShow.value.id;
-    }
-  },
-);
 </script>
 
 <template>
@@ -202,7 +195,7 @@ watch(
       :loading="isLoading"
       :selected-show="selectedBannerShow"
       :shows="latestBannerShows"
-      @click:show="isShowDrawerVisible = true"
+      @click:show="(show: Show) => showDrawerStore.open(show.id)"
       @hover:show="(isHovered: boolean) => (isPointerOverBannerCard = isHovered)"
       @update:selected-show="
         (show: Show | null) =>
@@ -229,10 +222,9 @@ watch(
               :starting-show-id="section.playOnClick ? startingShowId : null"
               :style="{ left: '-48px', width: 'calc(100% + 48px)', position: 'relative' }"
               drag-class="pl-12 pr-12"
-              @click:show="isShowDrawerVisible = true"
+              @click:show="(show: Show) => showDrawerStore.open(show.id)"
               @play:show="playShow"
               @playing-video="onPlayingVideoUpdate"
-              @update:selected-show="(show: Show | null | undefined) => (selectedShowId = show?.id ?? null)"
               v-else
             />
 
@@ -246,6 +238,4 @@ watch(
       </v-col>
     </v-row>
   </page-container>
-
-  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show-id="selectedShowId" />
 </template>

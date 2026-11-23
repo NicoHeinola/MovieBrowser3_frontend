@@ -1,38 +1,31 @@
-import type { Ref } from 'vue';
+import type { Show } from '@/interfaces/api/models/Show';
 import { useQueryClient } from '@tanstack/vue-query';
-import { ref, watch } from 'vue';
+import { onScopeDispose, ref } from 'vue';
 
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { i18n } from '@/plugins/i18n';
 import { showService } from '@/services/show/showService';
+import { useShowDrawerStore } from '@/stores/show/useShowDrawerStore';
 import { WATCHED_SHOW_STATUSES } from '@/utils/show/watch-status/watchedShowStatuses';
 
-/** The show drawer a surprise pick opens. */
-export interface SurpriseShowOptions {
-  /** The drawer's show id, set to the picked show. */
-  showId: Ref<number | null>;
-  /** Whether the drawer is open; a pick opens it. */
-  isShown: Ref<boolean>;
-}
-
 /**
- * "Surprise me": picks a random show you haven't watched, like the home page's random row, and opens it in the show
- * drawer. While the drawer shows a pick, `isSurprisePick` is true, so the drawer can offer another one.
- * @param options - The drawer to open.
- * @returns The pick function and whether a pick is loading or shown.
+ * "Surprise me": picks a random show you haven't watched, like the home page's random row.
+ * @param onPick - Receives the picked show, to open it.
+ * @returns The pick function and whether a pick is loading.
  */
-export const useSurpriseShow = (options: SurpriseShowOptions) => {
+export const useSurpriseShow = (onPick: (show: Show) => void) => {
   const isPicking = ref<boolean>(false);
-  /** Whether the open drawer shows a surprise pick. Closing the drawer ends it. */
-  const isSurprisePick = ref<boolean>(false);
+  /** Whether the button that picks is gone. */
+  let isDisposed = false;
 
   const queryClient = useQueryClient();
   const { showAPIErrorSnackbar, showWarningSnackbar } = useCommonSnackbar();
+  const showDrawerStore = useShowDrawerStore();
 
   /**
-   * Picks a random unwatched show, other than the one the drawer holds when there is another, and opens it. Errors and
-   * an empty pick are shown in a snackbar.
+   * Picks a random unwatched show, other than the one the drawer holds when there is another. Errors and an empty pick
+   * are shown in a snackbar.
    * @returns void
    */
   const pickShow = async (): Promise<void> => {
@@ -56,17 +49,20 @@ export const useSurpriseShow = (options: SurpriseShowOptions) => {
         staleTime: 0,
       });
 
+      // The drawer closed or the user logged out meanwhile, so the pick must not change what is open now.
+      if (isDisposed) {
+        return;
+      }
+
       // Two picks, so "pick another" can skip the show already open. With a single match it opens that one again.
-      const show = response.data.find((item) => item.id !== options.showId.value) ?? response.data[0];
+      const show = response.data.find((item) => item.id !== showDrawerStore.showId) ?? response.data[0];
 
       if (!show) {
         showWarningSnackbar(i18n.global.t('show.surpriseNoShows'));
         return;
       }
 
-      options.showId.value = show.id;
-      options.isShown.value = true;
-      isSurprisePick.value = true;
+      onPick(show);
     } catch (error: unknown) {
       showAPIErrorSnackbar(error);
     } finally {
@@ -74,15 +70,12 @@ export const useSurpriseShow = (options: SurpriseShowOptions) => {
     }
   };
 
-  watch(options.isShown, (isShown) => {
-    if (!isShown) {
-      isSurprisePick.value = false;
-    }
+  onScopeDispose(() => {
+    isDisposed = true;
   });
 
   return {
     isPicking,
-    isSurprisePick,
     pickShow,
   };
 };

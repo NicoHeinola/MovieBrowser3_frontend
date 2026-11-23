@@ -266,6 +266,7 @@ components/
 ```
 
 - State that a feature's root shares with parts several levels down, which the parts in between never use, goes through `provide` with a typed `InjectionKey` in the root's folder plus a small `inject…` helper that returns a safe default (the show editor's torrents: `showEditorDownloadsKey`, `injectShowEditorDownloads`). A prop or v-model that every level uses, such as the show draft, stays a prop.
+- There is one show drawer, mounted in `App.vue`. Open a show in it with `useShowDrawerStore().open(showId)`, from any page or component; never mount another `selected-show-drawer`. A button that belongs only to the caller goes in as `open(showId, { action: SomeButton })`, a component that wires up itself.
 - Action buttons that only emit back to the parent go in a named slot that the parent fills and wires up itself, such as `show-editor-hero`'s `#actions`. Otherwise every new action adds an emit to the child, plus props like `isDeleting` that exist only to pass the button's state through. The child keeps the placement, and uses `defineSlots` with `v-if="$slots.actions"` around the slot.
 
 ## Styling

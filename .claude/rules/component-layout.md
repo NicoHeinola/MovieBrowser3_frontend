@@ -41,7 +41,7 @@ Example:
     <show-banner />
   </v-col>
   <v-col cols="12" md="4">
-    <selected-show-drawer />
+    <latest-shows-panel />
   </v-col>
 </v-row>
 ```

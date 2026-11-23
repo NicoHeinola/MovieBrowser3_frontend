@@ -18,7 +18,7 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: 'click:show', value: Show | null): void;
+  (e: 'click:show', value: Show): void;
   (e: 'hover:show', value: boolean): void;
 }>();
 

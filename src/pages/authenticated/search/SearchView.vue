@@ -8,19 +8,18 @@ import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
 import { ResultCount } from '@/components/common/result-count';
 import { SearchToolbar } from '@/components/common/search-toolbar';
-import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
 import { ShowGrid, ShowGridSkeleton } from '@/components/features/show/show-grid';
 import { useShowSearch } from '@/composables/show/useShowSearch';
 import { showSearchFilterDefinitions } from '@/data/show/showSearchFilterDefinitions';
 import { showSortOptions } from '@/data/show/showSortOptions';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
+import { useShowDrawerStore } from '@/stores/show/useShowDrawerStore';
 import { SHOW_GRID_CARD_SIZE } from '@/utils/show/show-grid/showGridCardSize';
 import { WATCHED_SHOW_STATUSES } from '@/utils/show/watch-status/watchedShowStatuses';
 
 const { t } = useI18n();
+const showDrawerStore = useShowDrawerStore();
 
-const selectedShowId = ref<number | null>(null);
-const isShowDrawerVisible = ref<boolean>(false);
 const isFilterDrawerVisible = ref<boolean>(false);
 
 const {
@@ -37,11 +36,6 @@ const {
   totalResults,
   isLoading,
 } = useShowSearch(ShowQueryKey.SearchShows, { watchStatus: { included: [], excluded: WATCHED_SHOW_STATUSES } });
-
-const selectShow = (show: Show | null) => {
-  selectedShowId.value = show?.id ?? null;
-  isShowDrawerVisible.value = true;
-};
 </script>
 
 <template>
@@ -70,7 +64,7 @@ const selectShow = (show: Show | null) => {
             :shows="shows"
             :style="gridStyle"
             class="d-flex justify-center flex-0-0"
-            @click:show="selectShow"
+            @click:show="(show: Show) => showDrawerStore.open(show.id)"
           />
         </v-col>
       </v-row>
@@ -102,6 +96,4 @@ const selectShow = (show: Show | null) => {
     :total-results="totalResults"
     @clear="clearFilters"
   />
-
-  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show-id="selectedShowId" />
 </template>

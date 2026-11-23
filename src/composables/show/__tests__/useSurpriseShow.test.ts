@@ -3,11 +3,13 @@ import type * as VueQuery from '@tanstack/vue-query';
 import type { EffectScope } from 'vue';
 import { QueryClient } from '@tanstack/vue-query';
 import { AxiosError } from 'axios';
+import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { effectScope, nextTick, ref } from 'vue';
+import { effectScope } from 'vue';
 
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
+import { useShowDrawerStore } from '@/stores/show/useShowDrawerStore';
 import { WATCHED_SHOW_STATUSES } from '@/utils/show/watch-status/watchedShowStatuses';
 import { useSurpriseShow } from '../useSurpriseShow';
 
@@ -43,25 +45,25 @@ const createResponse = (ids: number[]) => ({
 const scopes: EffectScope[] = [];
 
 /**
- * Runs the composable with its own drawer state.
- * @returns The composable's result and the drawer refs.
+ * Runs the composable in a scope the test can stop.
+ * @returns The composable's result, the pick callback, the drawer store and the scope.
  */
 const setup = () => {
-  const showId = ref<number | null>(null);
-  const isShown = ref<boolean>(false);
+  const onPick = vi.fn();
 
   const scope = effectScope();
   scopes.push(scope);
 
-  const surprise = scope.run(() => useSurpriseShow({ showId, isShown }))!;
+  const surprise = scope.run(() => useSurpriseShow(onPick))!;
 
-  return { ...surprise, showId, isShown };
+  return { ...surprise, onPick, scope, showDrawerStore: useShowDrawerStore() };
 };
 
 describe('useSurpriseShow', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     queryClient.clear();
+    setActivePinia(createPinia());
   });
 
   afterEach(() => {
@@ -70,9 +72,9 @@ describe('useSurpriseShow', () => {
     }
   });
 
-  it('asks for random unwatched shows and opens the first one', async () => {
+  it('asks for random unwatched shows and hands over the first one', async () => {
     vi.mocked(showService.list).mockResolvedValue(createResponse([4, 7]));
-    const { pickShow, showId, isShown, isSurprisePick, isPicking } = setup();
+    const { pickShow, onPick, isPicking } = setup();
 
     await pickShow();
 
@@ -81,9 +83,7 @@ describe('useSurpriseShow', () => {
       sort: 'random',
       page: { size: 2 },
     });
-    expect(showId.value).toBe(4);
-    expect(isShown.value).toBe(true);
-    expect(isSurprisePick.value).toBe(true);
+    expect(onPick).toHaveBeenCalledExactlyOnceWith({ id: 4 });
     expect(isPicking.value).toBe(false);
   });
 
@@ -107,47 +107,45 @@ describe('useSurpriseShow', () => {
     expect(showService.list).toHaveBeenCalledTimes(2);
   });
 
-  it('skips the show already open when there is another', async () => {
+  it('skips the show the drawer holds when there is another', async () => {
     vi.mocked(showService.list).mockResolvedValue(createResponse([4, 7]));
-    const { pickShow, showId } = setup();
-    showId.value = 4;
+    const { pickShow, onPick, showDrawerStore } = setup();
+    showDrawerStore.open(4);
 
     await pickShow();
 
-    expect(showId.value).toBe(7);
+    expect(onPick).toHaveBeenCalledExactlyOnceWith({ id: 7 });
   });
 
-  it('opens the only match again when it is already open', async () => {
+  it('hands over the only match again when the drawer holds it', async () => {
     vi.mocked(showService.list).mockResolvedValue(createResponse([4]));
-    const { pickShow, showId, isShown } = setup();
-    showId.value = 4;
+    const { pickShow, onPick, showDrawerStore } = setup();
+    showDrawerStore.open(4);
 
     await pickShow();
 
-    expect(showId.value).toBe(4);
-    expect(isShown.value).toBe(true);
+    expect(onPick).toHaveBeenCalledExactlyOnceWith({ id: 4 });
   });
 
-  it('warns and leaves the drawer closed when nothing matches', async () => {
+  it('warns and picks nothing when nothing matches', async () => {
     vi.mocked(showService.list).mockResolvedValue(createResponse([]));
-    const { pickShow, isShown, isSurprisePick } = setup();
+    const { pickShow, onPick } = setup();
 
     await pickShow();
 
     expect(showWarningSnackbar).toHaveBeenCalledOnce();
-    expect(isShown.value).toBe(false);
-    expect(isSurprisePick.value).toBe(false);
+    expect(onPick).not.toHaveBeenCalled();
   });
 
   it('shows a failed request in a snackbar', async () => {
     const error = new AxiosError('Network Error');
     vi.mocked(showService.list).mockRejectedValue(error);
-    const { pickShow, isShown, isPicking } = setup();
+    const { pickShow, onPick, isPicking } = setup();
 
     await pickShow();
 
     expect(showAPIErrorSnackbar).toHaveBeenCalledWith(error);
-    expect(isShown.value).toBe(false);
+    expect(onPick).not.toHaveBeenCalled();
     expect(isPicking.value).toBe(false);
   });
 
@@ -160,14 +158,14 @@ describe('useSurpriseShow', () => {
     expect(showService.list).toHaveBeenCalledOnce();
   });
 
-  it('ends the surprise pick when the drawer closes', async () => {
+  it('drops a pick that arrives after its button is gone', async () => {
     vi.mocked(showService.list).mockResolvedValue(createResponse([4]));
-    const { pickShow, isShown, isSurprisePick } = setup();
+    const { pickShow, onPick, scope } = setup();
 
-    await pickShow();
-    isShown.value = false;
-    await nextTick();
+    const pick = pickShow();
+    scope.stop();
+    await pick;
 
-    expect(isSurprisePick.value).toBe(false);
+    expect(onPick).not.toHaveBeenCalled();
   });
 });

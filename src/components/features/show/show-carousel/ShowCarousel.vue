@@ -25,22 +25,9 @@ const props = withDefaults(
 );
 
 const emit = defineEmits<{
-  (e: 'click:show', value: Show | null): void;
-  (e: 'play:show', value: Show): void;
+  (e: 'click:show' | 'play:show', value: Show): void;
   (e: 'playing-video', value: boolean, show: Show | null): void;
 }>();
-
-const selectedShow = defineModel<Show | null>('selectedShow');
-
-/**
- * Selects a show and asks the parent to open it.
- * @param show - The show to open.
- */
-const openShow = (show: Show): void => {
-  selectedShow.value = show;
-
-  emit('click:show', show);
-};
 
 /**
  * Plays the clicked show when the carousel plays on click, otherwise opens it.
@@ -52,7 +39,7 @@ const onShowClick = (show: Show): void => {
     return;
   }
 
-  openShow(show);
+  emit('click:show', show);
 };
 
 const onPlayingVideo = (value: boolean, show: Show | null) => {
@@ -76,7 +63,7 @@ const onPlayingVideo = (value: boolean, show: Show | null) => {
         image-to-use="card"
         style="border-radius: 0"
         @click.stop="onShowClick(show)"
-        @hold="openShow(show)"
+        @hold="emit('click:show', show)"
         @playing-video="(value: boolean) => onPlayingVideo(value, show)"
         :key="show.id"
       />

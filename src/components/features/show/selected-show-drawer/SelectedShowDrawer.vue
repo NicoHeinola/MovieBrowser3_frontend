@@ -1,23 +1,14 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia';
 import { onBeforeUnmount, ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 import { SectionContainer } from '@/components/common/section-container';
+import { useShowDrawerStore } from '@/stores/show/useShowDrawerStore';
 import { useVideoAudioStore } from '@/stores/video/useVideoAudioStore';
 import RelatedShowsPanel from './RelatedShowsPanel.vue';
 import SelectedShowEntries from './SelectedShowEntries.vue';
 import SelectedShowHero from './SelectedShowHero.vue';
 import { useSelectedShow } from './useSelectedShow';
-
-const showId = defineModel<number | null>('showId', { required: true });
-
-const isShown = defineModel<boolean>('isShown', {
-  default: false,
-});
-
-defineSlots<{
-  /** Buttons next to the close button, such as "pick another" for a show the page picked at random. */
-  actions?: () => unknown;
-}>();
 
 const isPreviewAutoMuted = ref<boolean>(false);
 
@@ -25,6 +16,8 @@ const isPreviewAutoMuted = ref<boolean>(false);
 let releaseForeground: (() => void) | null = null;
 
 const { xlAndUp } = useDisplay();
+const showDrawerStore = useShowDrawerStore();
+const { action, isShown, showId } = storeToRefs(showDrawerStore);
 const { isSwitchingShow, show } = useSelectedShow(showId, isShown);
 const { claimForeground } = useVideoAudioStore();
 
@@ -45,26 +38,29 @@ watch(
 
 onBeforeUnmount(() => {
   releaseForeground?.();
+  // The drawer goes away with the navigation, such as on logout, and must not come back open.
+  showDrawerStore.close();
 });
 </script>
 
 <template>
   <v-navigation-drawer
-    v-model="isShown"
+    :model-value="isShown"
     :width="xlAndUp ? 600 : 400"
     class="glass-panel high"
     location="right"
     style="height: 100vh !important; top: 0; z-index: 2000"
     temporary
+    @update:model-value="(shown: boolean) => !shown && showDrawerStore.close()"
   >
     <selected-show-hero
       v-model:auto-muted="isPreviewAutoMuted"
       :is-shown="isShown"
       :show="show"
-      @close="isShown = false"
+      @close="showDrawerStore.close()"
     >
-      <template #actions v-if="$slots.actions">
-        <slot name="actions" />
+      <template #actions v-if="action">
+        <component :is="action" />
       </template>
     </selected-show-hero>
 

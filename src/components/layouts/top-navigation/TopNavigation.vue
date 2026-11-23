@@ -2,13 +2,13 @@
 import type { NavigationLinkItem } from './navigationLinkItem';
 import type { Show } from '@/interfaces/api/models/Show';
 
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 import { ChangelogVersionLink } from '@/components/features/changelog/changelog-version-link';
 import { LanguageMenu } from '@/components/features/locale/language-menu';
-import { SelectedShowDrawer } from '@/components/features/show/selected-show-drawer';
+import { PickAnotherButton } from '@/components/features/show/pick-another-button';
 import { ShowSearchMenu } from '@/components/features/show/show-search-menu';
 import { SurpriseButton } from '@/components/features/show/surprise-button';
 import { UpdateNotice } from '@/components/features/version/update-notice';
@@ -16,22 +16,20 @@ import { useChangelogNotice } from '@/composables/changelog/useChangelogNotice';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useSurpriseShow } from '@/composables/show/useSurpriseShow';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
+import { useShowDrawerStore } from '@/stores/show/useShowDrawerStore';
 
 import NavLinks from './NavLinks.vue';
-
-const selectedShowId = ref<number | null>(null);
-const isShowDrawerVisible = ref<boolean>(false);
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const showDrawerStore = useShowDrawerStore();
 const { confirm } = useConfirmDialog();
 const { showUnseenChanges } = useChangelogNotice();
 const { t } = useI18n();
 
-const { isPicking, isSurprisePick, pickShow } = useSurpriseShow({
-  showId: selectedShowId,
-  isShown: isShowDrawerVisible,
+const { isPicking, pickShow } = useSurpriseShow((show) => {
+  showDrawerStore.open(show.id, { action: PickAnotherButton });
 });
 
 const authenticatedLinks = computed<NavigationLinkItem[]>(() => [
@@ -51,15 +49,6 @@ const adminLinks = computed<NavigationLinkItem[]>(() => [
 ]);
 
 const isInAdminArea = computed<boolean>(() => String(route.name ?? '').startsWith('admin-'));
-/**
- * Opens a show picked from the navigation search in the show drawer.
- * @param show - The picked show.
- * @returns void
- */
-const selectShow = (show: Show): void => {
-  selectedShowId.value = show.id;
-  isShowDrawerVisible.value = true;
-};
 
 const logout = async (): Promise<void> => {
   const isConfirmed = await confirm({
@@ -106,7 +95,7 @@ onMounted(() => {
 
       <div class="flex-1-1-0 d-flex align-center justify-end ga-2">
         <div class="d-none d-md-block" style="width: 280px" v-if="!isInAdminArea">
-          <show-search-menu @select:show="selectShow" />
+          <show-search-menu @select:show="(show: Show) => showDrawerStore.open(show.id)" />
         </div>
         <surprise-button :loading="isPicking" @click="pickShow" v-if="!isInAdminArea" />
         <v-btn
@@ -147,19 +136,6 @@ onMounted(() => {
       </div>
     </div>
   </v-app-bar>
-
-  <selected-show-drawer v-model:is-shown="isShowDrawerVisible" v-model:show-id="selectedShowId">
-    <!-- A show picked at random can be swapped for another pick without closing the drawer. -->
-    <template #actions v-if="isSurprisePick">
-      <surprise-button
-        :loading="isPicking"
-        :tooltip="t('show.pickAnother')"
-        density="default"
-        variant="text"
-        @click="pickShow"
-      />
-    </template>
-  </selected-show-drawer>
 </template>
 
 <style lang="scss" scoped>
