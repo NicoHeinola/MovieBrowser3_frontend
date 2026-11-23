@@ -10,6 +10,7 @@ import { useRouter } from 'vue-router';
 import { BaseDialog } from '@/components/common/base-dialog';
 import { CoverListItem } from '@/components/common/cover-list-item';
 import { SearchResultList } from '@/components/common/search-result-list';
+import { DownloadCard } from '@/components/features/download/download-card';
 import { ShowListItem } from '@/components/features/show/show-list-item';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { useDownloadCreate } from '@/composables/download/useDownloadCreate';
@@ -114,15 +115,7 @@ watch(shows, (current) => {
 
     <template #default>
       <div class="d-flex flex-column ga-4">
-        <v-sheet border="sm" class="d-flex align-center ga-4 pa-4" rounded="lg">
-          <v-avatar color="primary" icon="mdi-magnet" variant="tonal" />
-          <div class="d-flex flex-column" style="min-width: 0">
-            <span class="font-weight-medium text-break">{{ props.torrent.title }}</span>
-            <span class="text-medium-emphasis text-body-small">
-              {{ formatFileSize(props.torrent.size_bytes, locale) }}
-            </span>
-          </div>
-        </v-sheet>
+        <download-card :details="formatFileSize(props.torrent.size_bytes, locale)" :name="props.torrent.title" />
 
         <span class="text-medium-emphasis text-body-small">{{ t('download.pickShowHint') }}</span>
 

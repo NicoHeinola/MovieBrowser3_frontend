@@ -8,7 +8,7 @@ import { apiClient } from '@/plugins/api/apiClient';
 import { downloadService } from '../downloadService';
 
 vi.mock('@/plugins/api/apiClient', () => ({
-  apiClient: { get: vi.fn(), post: vi.fn() },
+  apiClient: { get: vi.fn(), post: vi.fn(), delete: vi.fn() },
 }));
 
 const download: Download = {
@@ -50,5 +50,24 @@ describe('downloadService', () => {
 
     await expect(downloadService.get(4)).resolves.toEqual(download);
     expect(apiClient.get).toHaveBeenCalledWith('downloads/4');
+  });
+
+  it('lists the downloads', async () => {
+    vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [download] });
+
+    await expect(downloadService.list()).resolves.toEqual([download]);
+    expect(apiClient.get).toHaveBeenCalledWith('downloads');
+  });
+
+  it('cancels a download, removing its waiting episodes only when asked', async () => {
+    vi.mocked(apiClient.delete).mockResolvedValue({ data: undefined });
+
+    await downloadService.remove(4, true);
+    await downloadService.remove(5, false);
+
+    expect(vi.mocked(apiClient.delete).mock.calls).toEqual([
+      ['downloads/4', { params: { remove_episodes: 1 } }],
+      ['downloads/5', { params: {} }],
+    ]);
   });
 });

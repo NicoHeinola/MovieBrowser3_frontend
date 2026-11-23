@@ -344,7 +344,8 @@
     "profile": "Profile",
     "logoutConfirm": "Log out of your account?",
     "toggleAdmin": "Toggle Admin Area",
-    "changelog": "Changelog"
+    "changelog": "Changelog",
+    "downloads": "Downloads"
   },
   "sort": {
     "newest": "Newest",
@@ -854,7 +855,25 @@
       "client_lost_torrent": "qBittorrent no longer has this torrent. Add it again from the Torrents page, or with Add torrent."
     },
     "pickFileTitle": "Pick a file for {target}",
-    "useFile": "Use this file"
+    "useFile": "Use this file",
+    "name": "Torrent",
+    "status": "Status",
+    "progress": "Progress",
+    "percent": "{percent}%",
+    "bytesOf": "{downloaded} of {size}",
+    "speed": "Speed",
+    "timeLeft": "Time left",
+    "added": "Added",
+    "perSecond": "{size}/s",
+    "openShow": "Open the show",
+    "cancel": "Cancel download",
+    "keep": "Keep it",
+    "cancelTitle": "Cancel this download?",
+    "cancelText": "qBittorrent stops it and deletes what it downloaded. Episodes that already have their video keep it.",
+    "removeWaitingEpisodes": "Remove its waiting episode | Remove its {count} waiting episodes",
+    "cancelled": "Download cancelled.",
+    "none": "No downloads yet. Send a torrent into a show from the Torrents page, or with Add torrent in the show editor.",
+    "waitingEpisodesHint": "It has no video and only waits for this download. | They have no video and only wait for this download."
   },
   "update": {
     "available": "Update available",

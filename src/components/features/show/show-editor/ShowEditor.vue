@@ -10,7 +10,7 @@ import { BaseForm } from '@/components/common/base-form';
 import { FormCard } from '@/components/common/form-card';
 import { SectionLabel } from '@/components/common/section-label';
 import { TitledSection } from '@/components/common/titled-section';
-import { DownloadStatusChip } from '@/components/features/download/download-status-chip';
+import { DownloadCard } from '@/components/features/download/download-card';
 import { useScrollSpy } from '@/composables/scroll/useScrollSpy';
 import { DownloadStatus } from '@/enums/download/DownloadStatus';
 import { getPickedDownloadFileIndexes } from '@/utils/download/getPickedDownloadFileIndexes';
@@ -100,7 +100,7 @@ const editorDownload = computed<ShowEditorDownload>(() => {
   }
 
   const pickedIndexes = getPickedDownloadFileIndexes(show.value.entries ?? [], download.id);
-  const availableFiles = download.files.filter(
+  const availableFiles = (download.files ?? []).filter(
     (file) => !pickedIndexes.has(file.index) && (file.show_id === null || file.show_id === show.value.id),
   );
 
@@ -199,18 +199,7 @@ provide(showEditorDownloadKey, editorDownload);
                   : t('download.pickFilesHint')
               "
             />
-            <v-sheet border="sm" class="d-flex align-center ga-4 pa-4 flex-1-1" color="transparent" rounded="lg">
-              <v-avatar
-                :color="download.status === DownloadStatus.Failed ? 'error' : 'primary'"
-                icon="mdi-magnet"
-                rounded="lg"
-                variant="tonal"
-              />
-              <span class="text-body-large font-weight-medium text-truncate flex-1-1" v-tooltip:bottom="download.name">
-                {{ download.name }}
-              </span>
-              <download-status-chip :status="download.status" />
-            </v-sheet>
+            <download-card :name="download.name" :status="download.status" class="flex-1-1" is-one-line />
           </div>
 
           <form-card>

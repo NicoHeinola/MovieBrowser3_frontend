@@ -4,6 +4,16 @@ import type { CreateDownloadRequest } from '@/interfaces/api/requests/CreateDown
 import { apiClient } from '@/plugins/api/apiClient';
 
 /**
+ * Lists every download, newest first, with its progress as qBittorrent reports it now.
+ * @returns The downloads.
+ */
+const list = async (): Promise<Download[]> => {
+  const response = await apiClient.get<Download[]>('downloads');
+
+  return response.data;
+};
+
+/**
  * Hands a torrent to qBittorrent, which holds it without downloading until files are picked.
  * @param request - The torrent.
  * @returns The new download.
@@ -26,7 +36,19 @@ const get = async (id: number): Promise<Download> => {
   return response.data;
 };
 
+/**
+ * Cancels a download: removes the torrent and what it downloaded from qBittorrent.
+ * @param id - The download's id.
+ * @param removeEpisodes - Also remove the episodes made for it that still wait for their file.
+ * @returns Nothing.
+ */
+const remove = async (id: number, removeEpisodes: boolean): Promise<void> => {
+  await apiClient.delete(`downloads/${id}`, { params: removeEpisodes ? { remove_episodes: 1 } : {} });
+};
+
 export const downloadService = {
+  list,
   create,
   get,
+  remove,
 };

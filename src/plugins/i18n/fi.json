@@ -344,7 +344,8 @@
     "profile": "Profiili",
     "logoutConfirm": "Kirjaudutaanko ulos tililtä?",
     "toggleAdmin": "Vaihda ylläpitoalueen näkymää",
-    "changelog": "Muutosloki"
+    "changelog": "Muutosloki",
+    "downloads": "Lataukset"
   },
   "sort": {
     "newest": "Uusin",
@@ -854,7 +855,25 @@
       "client_lost_torrent": "qBittorrentilla ei ole enää tätä torrentia. Lisää se uudelleen Torrentit-sivulta tai Lisää torrent -painikkeella."
     },
     "pickFileTitle": "Valitse tiedosto: {target}",
-    "useFile": "Käytä tätä tiedostoa"
+    "useFile": "Käytä tätä tiedostoa",
+    "name": "Torrent",
+    "status": "Tila",
+    "progress": "Edistyminen",
+    "percent": "{percent} %",
+    "bytesOf": "{downloaded} / {size}",
+    "speed": "Nopeus",
+    "timeLeft": "Aikaa jäljellä",
+    "added": "Lisätty",
+    "perSecond": "{size}/s",
+    "openShow": "Avaa sarja",
+    "cancel": "Peru lataus",
+    "keep": "Pidä",
+    "cancelTitle": "Perutaanko tämä lataus?",
+    "cancelText": "qBittorrent pysäyttää sen ja poistaa ladatut tiedostot. Jaksot, joilla on jo video, pitävät sen.",
+    "removeWaitingEpisodes": "Poista sitä odottava jakso | Poista sitä odottavat {count} jaksoa",
+    "cancelled": "Lataus peruttu.",
+    "none": "Ei vielä latauksia. Lähetä torrent sarjaan Torrentit-sivulta tai sarjan muokkauksen Lisää torrent -painikkeella.",
+    "waitingEpisodesHint": "Sillä ei ole videota, ja se odottaa vain tätä latausta. | Niillä ei ole videota, ja ne odottavat vain tätä latausta."
   },
   "update": {
     "available": "Päivitys saatavilla",

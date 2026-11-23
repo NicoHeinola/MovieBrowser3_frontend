@@ -23,7 +23,9 @@ export interface Download {
   eta_seconds: number | null;
   /** The show its files were last picked for, with its titles only; null until picked. */
   show: Show | null;
-  /** Every file of the torrent; empty until qBittorrent knows them. */
-  files: DownloadFile[];
+  /** Every file of the torrent, empty until qBittorrent knows them; left out of the list of downloads. */
+  files?: DownloadFile[];
+  /** Episodes made for it that have no video and still wait for it; only in the list of downloads. */
+  waiting_episode_count?: number;
   created_at: string;
 }

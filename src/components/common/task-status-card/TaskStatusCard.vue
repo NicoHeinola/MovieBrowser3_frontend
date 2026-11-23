@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { TaskStatusCardProps } from './taskStatusCardProps';
 
+import { IconCard } from '@/components/common/icon-card';
+
 const props = withDefaults(defineProps<TaskStatusCardProps>(), {
   text: undefined,
   progress: null,
@@ -11,22 +13,10 @@ const props = withDefaults(defineProps<TaskStatusCardProps>(), {
 <template>
   <v-skeleton-loader class="bg-transparent" type="list-item-avatar-two-line" v-if="props.loading" />
 
-  <v-sheet border="sm" class="d-flex flex-column ga-4 pa-4" color="transparent" rounded="lg" v-else>
-    <div class="d-flex align-center ga-4">
-      <v-avatar :color="props.type" rounded="lg" variant="tonal">
-        <v-icon :icon="props.icon" />
-      </v-avatar>
-
-      <!-- min-width lets long paths wrap instead of pushing the count off the card. -->
-      <div class="flex-1-1" style="min-width: 0">
-        <div class="text-body-large font-weight-medium">{{ props.title }}</div>
-        <div class="text-body-medium text-medium-emphasis text-break" v-if="props.text">{{ props.text }}</div>
-      </div>
-
-      <div class="text-body-medium text-medium-emphasis text-no-wrap" v-if="props.progressText">
-        {{ props.progressText }}
-      </div>
-    </div>
+  <icon-card :color="props.type" :icon="props.icon" :text="props.text" :title="props.title" v-else>
+    <template #append v-if="props.progressText">
+      <div class="text-body-medium text-medium-emphasis text-no-wrap">{{ props.progressText }}</div>
+    </template>
 
     <v-progress-linear
       :color="props.type"
@@ -36,5 +26,5 @@ const props = withDefaults(defineProps<TaskStatusCardProps>(), {
       rounded
       v-if="props.running"
     />
-  </v-sheet>
+  </icon-card>
 </template>
