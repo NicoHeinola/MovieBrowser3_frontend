@@ -7,8 +7,9 @@ export interface DownloadPick {
 }
 
 /**
- * Collects which torrent files are picked for which saved episodes, per download. Episodes that aren't saved yet have
- * no id to pick for, so they are left out.
+ * Collects which torrent files saved episodes wait for, per download. Episodes that aren't saved yet have no id to pick
+ * for, so they are left out, and so are files that already are their episode's video: those are done, and qBittorrent
+ * may no longer have their torrent.
  * @param entries - The show's entries.
  * @returns The picks by download id, each list ordered by file index.
  */
@@ -16,7 +17,7 @@ export const getDownloadPicks = (entries: EntryWithEpisodeDownloads[]): Map<numb
   const picks = new Map<number, DownloadPick[]>();
 
   for (const episode of entries.flatMap((entry) => entry.episodes ?? [])) {
-    if (!episode.download || episode.id === undefined) {
+    if (!episode.download || episode.download.imported_at || episode.id === undefined) {
       continue;
     }
 

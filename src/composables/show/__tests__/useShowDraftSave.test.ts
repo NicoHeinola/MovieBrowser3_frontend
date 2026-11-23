@@ -268,6 +268,41 @@ describe('useShowDraftSave', () => {
       ]);
     });
 
+    it('sends nothing when a deleted or replaced episode already had its file', async () => {
+      recordCalls();
+      const savedShow = createShow();
+      const [first, second] = savedShow.entries![0]!.episodes!;
+      const imported = { path: 'a.mkv', status: DownloadStatus.Completed, imported_at: '2026-11-23T19:32:00Z' };
+      first!.download = { id: 9, file_index: 2, ...imported };
+      second!.download = { id: 9, file_index: 3, ...imported };
+      const draft = deepClone(savedShow);
+      // A better release from another torrent
+      draft.entries![0]!.episodes![0]!.download = { id: 12, file_index: 0, path: 'b.mkv' };
+      draft.entries![0]!.episodes!.splice(1, 1);
+
+      await useShowDraftSave().save(draft, savedShow);
+
+      expect(vi.mocked(downloadFileService.update).mock.calls).toEqual([
+        [12, { show_id: 4, files: [{ index: 0, episode_id: 42 }] }],
+      ]);
+    });
+
+    it('lets a torrent go of an episode before another one takes it', async () => {
+      recordCalls();
+      const savedShow = createShow();
+      const [first] = savedShow.entries![0]!.episodes!;
+      first!.download = { id: 9, file_index: 2, path: 'a.mkv', status: DownloadStatus.Downloading };
+      const draft = deepClone(savedShow);
+      draft.entries![0]!.episodes![0]!.download = { id: 12, file_index: 0, path: 'b.mkv' };
+
+      await useShowDraftSave().save(draft, savedShow);
+
+      expect(vi.mocked(downloadFileService.update).mock.calls).toEqual([
+        [9, { show_id: 4, files: [] }],
+        [12, { show_id: 4, files: [{ index: 0, episode_id: 42 }] }],
+      ]);
+    });
+
     it('sends nothing when the picks did not change', async () => {
       recordCalls();
       const savedShow = createShow();

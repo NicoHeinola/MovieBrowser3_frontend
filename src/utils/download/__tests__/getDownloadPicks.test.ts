@@ -43,6 +43,19 @@ describe('getDownloadPicks', () => {
     expect(getDownloadPicks([{ episodes: [{ download: pick(1, 0) }] }]).size).toBe(0);
   });
 
+  it("leaves out files that already are their episode's video", () => {
+    const picks = getDownloadPicks([
+      {
+        episodes: [
+          { id: 10, download: { ...pick(1, 0), imported_at: '2026-11-23T19:32:00Z' } },
+          { id: 11, download: { ...pick(1, 1), imported_at: null } },
+        ],
+      },
+    ]);
+
+    expect([...picks.entries()]).toEqual([[1, [{ index: 1, episode_id: 11 }]]]);
+  });
+
   it('handles entries without episodes', () => {
     expect(getDownloadPicks([{}]).size).toBe(0);
   });

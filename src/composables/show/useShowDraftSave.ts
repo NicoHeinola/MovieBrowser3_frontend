@@ -216,12 +216,26 @@ const saveEpisodes = async (
 const saveDownloadPicks = async (draft: ShowDraft, savedPicks: Map<number, DownloadPick[]>): Promise<void> => {
   const draftPicks = getDownloadPicks(draft.entries ?? []);
 
-  for (const downloadId of new Set([...draftPicks.keys(), ...savedPicks.keys()])) {
-    const files = draftPicks.get(downloadId) ?? [];
+  const changedIds = [...new Set([...draftPicks.keys(), ...savedPicks.keys()])].filter(
+    (id) => JSON.stringify(draftPicks.get(id) ?? []) !== JSON.stringify(savedPicks.get(id) ?? []),
+  );
 
-    if (JSON.stringify(files) !== JSON.stringify(savedPicks.get(downloadId) ?? [])) {
-      await downloadFileService.update(downloadId, { show_id: draft.id, files });
-    }
+  // Which download each episode waited for, to tell which downloads take an episode over from another
+  const savedDownloadIds = new Map(
+    [...savedPicks].flatMap(([id, picks]) => picks.map((pick) => [pick.episode_id, id] as const)),
+  );
+
+  /**
+   * Whether a download takes over an episode that waited for another one.
+   * @param id - The download's id.
+   * @returns True when one of its picked episodes did.
+   */
+  const isTakingOver = (id: number): boolean =>
+    (draftPicks.get(id) ?? []).some((pick) => (savedDownloadIds.get(pick.episode_id) ?? id) !== id);
+
+  // Those last: an episode waits for one download at most, so the other one has to let go of it first
+  for (const id of changedIds.toSorted((a, b) => Number(isTakingOver(a)) - Number(isTakingOver(b)))) {
+    await downloadFileService.update(id, { show_id: draft.id, files: draftPicks.get(id) ?? [] });
   }
 };
 
