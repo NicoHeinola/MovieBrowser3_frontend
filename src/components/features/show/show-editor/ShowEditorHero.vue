@@ -14,8 +14,6 @@ import { formatRuntime } from '@/utils/time/formatRuntime';
 const props = defineProps<{
   /** The show being edited; the hero follows its unsaved changes as a live preview. */
   show: Show;
-  /** How far the running length scan is, such as `12 of 40 episodes`, or null while none runs. */
-  readingLengthsProgress?: string | null;
 }>();
 
 defineSlots<{
@@ -123,10 +121,6 @@ const videoSeconds = computed<number>(() => getShowVideoSeconds(props.show));
           <span class="d-flex align-center ga-2" v-tooltip:top="t('showEditor.runtime')">
             <v-icon icon="mdi-timer-outline" size="small" />
             {{ videoSeconds > 0 ? formatRuntime(videoSeconds, locale) : '–' }}
-          </span>
-          <span class="d-flex align-center ga-2" v-if="props.readingLengthsProgress">
-            <v-icon icon="mdi-timer-sand" size="small" />
-            {{ t('showEditor.readingLengths', { progress: props.readingLengthsProgress }) }}
           </span>
         </div>
       </div>

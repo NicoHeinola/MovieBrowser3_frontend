@@ -22,6 +22,10 @@ vi.mock('@vue-dnd-kit/core', () => ({
   makeDroppable: () => ({ isOver: { value: false }, isAccepting: { value: false } }),
 }));
 
+vi.mock('@/components/layouts/dialog-provider', () => ({
+  useDialog: () => ({ showDialog: vi.fn() }),
+}));
+
 vi.mock('@/composables/dialog/useConfirmDialog', () => ({
   useConfirmDialog: () => ({ confirm: vi.fn() }),
 }));

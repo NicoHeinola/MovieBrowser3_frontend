@@ -50,7 +50,15 @@ export const changelogEntries: ChangelogEntry[] = [
       {
         type: ChangelogChangeType.Added,
         text: 'Admins can download torrents straight into shows through their own qBittorrent.',
-        details: ['Settings and the setup wizard connect to qBittorrent and pick the folder it downloads into.'],
+        details: [
+          'Settings and the setup wizard connect to qBittorrent and pick the folder it downloads into.',
+          'Torrents have a "Download into a show" button: pick an existing show or start a new one.',
+          'In the show editor, "Add from torrent" turns picked files into episodes. Video files start picked.',
+          'An episode can take a file from the torrent too, such as a better release of its video.',
+          'The show editor has an "Add torrent" button for a magnet link from any site, such as nyaa.',
+          'Only the picked files download, starting when the show is saved. Their episodes show the download status.',
+          'Deleting a show removes its downloads, and deleting an episode stops downloading its file.',
+        ],
       },
     ],
   },

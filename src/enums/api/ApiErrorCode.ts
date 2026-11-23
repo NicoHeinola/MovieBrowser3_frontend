@@ -122,6 +122,24 @@ export enum ApiErrorCode {
   OnlyPrimaryTitle = 'only_primary_title',
   /** The only admin can't lose admin rights. */
   LastAdmin = 'last_admin',
+  /** qBittorrent couldn't be used. Params: `reason` (`unreachable`, `login_failed`, `banned`, `torrent_rejected`). */
+  QBittorrentUnavailable = 'qbittorrent_unavailable',
+  /** Downloads are off: qBittorrent or the download folder isn't set up. */
+  DownloadClientNotConfigured = 'download_client_not_configured',
+  /** The torrent is already a download. Params: `download_id`. */
+  DownloadExists = 'download_exists',
+  /** qBittorrent no longer has the download's torrent. */
+  DownloadNotInClient = 'download_not_in_client',
+  /** A picked file isn't in the torrent. */
+  FileIndexInvalid = 'file_index_invalid',
+  /** A picked file already belongs to an episode of another show. */
+  FileAlreadyPicked = 'file_already_picked',
+  /** A picked episode belongs to another show. */
+  EpisodeNotInShow = 'episode_not_in_show',
+  /** A picked episode already waits for another download. */
+  EpisodeAlreadyDownloading = 'episode_already_downloading',
+  /** The picked files don't fit on the download disk. Params: `needed_bytes`, `free_bytes`. */
+  NotEnoughDiskSpace = 'not_enough_disk_space',
   /** Catch-all for any validation rule without its own code. */
   Invalid = 'invalid',
 }

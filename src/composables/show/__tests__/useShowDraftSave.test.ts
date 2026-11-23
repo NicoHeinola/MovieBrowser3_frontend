@@ -2,7 +2,9 @@ import type { Show } from '@/interfaces/api/models/Show';
 import type { UnwrapRef } from 'vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { DownloadStatus } from '@/enums/download/DownloadStatus';
 import { ShowEntryType } from '@/enums/show/ShowEntryType';
+import { downloadFileService } from '@/services/download/downloadFileService';
 import { showEntryService } from '@/services/show/showEntryService';
 import { showEpisodeService } from '@/services/show/showEpisodeService';
 import { showLinkService } from '@/services/show/showLinkService';
@@ -22,6 +24,7 @@ vi.mock('@/services/show/showEpisodeService', () => ({
 vi.mock('@/services/show/showCategoryService', () => ({
   showCategoryService: { create: vi.fn(), remove: vi.fn() },
 }));
+vi.mock('@/services/download/downloadFileService', () => ({ downloadFileService: { update: vi.fn() } }));
 vi.mock('@/services/show/showLinkService', () => ({
   showLinkService: { create: vi.fn(), update: vi.fn(), remove: vi.fn() },
 }));
@@ -224,5 +227,58 @@ describe('useShowDraftSave', () => {
       'update 2 with file false',
       'create C with file true',
     ]);
+  });
+  describe('torrent file picks', () => {
+    it('sends the picks after the episodes, with the ids of new ones, and saves no episode for a pick', async () => {
+      const calls = recordCalls();
+      vi.mocked(downloadFileService.update).mockImplementation(async (downloadId, request) => {
+        calls.push(`pick ${downloadId}: ${JSON.stringify(request)}`);
+        return {} as never;
+      });
+      const savedShow = createShow();
+      const draft = deepClone(savedShow);
+      const [season] = draft.entries!;
+      season!.episodes![0]!.download = { id: 9, file_index: 2, path: 'Batch/01.mkv' };
+      const newEpisode = { name: 'Two', sequence_number: 2, download: { id: 9, file_index: 1, path: 'Batch/02.mkv' } };
+      season!.episodes!.push(newEpisode as never);
+
+      await useShowDraftSave().save(draft, savedShow);
+
+      expect(calls).toEqual([
+        'create episode in 41',
+        'pick 9: {"show_id":4,"files":[{"index":1,"episode_id":60},{"index":2,"episode_id":42}]}',
+      ]);
+    });
+
+    it('sends an empty list when every pick of a download is dropped or its episode deleted', async () => {
+      recordCalls();
+      const savedShow = createShow();
+      const [first, second] = savedShow.entries![0]!.episodes!;
+      first!.download = { id: 9, file_index: 2, path: 'a.mkv', status: DownloadStatus.Downloading };
+      second!.download = { id: 7, file_index: 0, path: 'b.mkv', status: DownloadStatus.Downloading };
+      const draft = deepClone(savedShow);
+      draft.entries![0]!.episodes![0]!.download = null;
+      draft.entries![0]!.episodes!.splice(1, 1);
+
+      await useShowDraftSave().save(draft, savedShow);
+
+      expect(vi.mocked(downloadFileService.update).mock.calls).toEqual([
+        [9, { show_id: 4, files: [] }],
+        [7, { show_id: 4, files: [] }],
+      ]);
+    });
+
+    it('sends nothing when the picks did not change', async () => {
+      recordCalls();
+      const savedShow = createShow();
+      const [first] = savedShow.entries![0]!.episodes!;
+      first!.download = { id: 9, file_index: 2, path: 'a.mkv', status: DownloadStatus.Downloading };
+      const draft = deepClone(savedShow);
+      draft.entries![0]!.episodes![0]!.name = 'Renamed';
+
+      await useShowDraftSave().save(draft, savedShow);
+
+      expect(downloadFileService.update).not.toHaveBeenCalled();
+    });
   });
 });

@@ -147,7 +147,16 @@
       "show_template_not_found": "That link points at no show. Check the link and try again.",
       "show_template_unavailable": "The show's site isn't answering right now. Try again in a moment.",
       "mal_unavailable": "MyAnimeList isn't answering right now. Try again in a moment.",
-      "unsupported_show_template_url": "Paste a link to a nekoBT media page or a MyAnimeList anime page, such as https://myanimelist.net/anime/16498."
+      "unsupported_show_template_url": "Paste a link to a nekoBT media page or a MyAnimeList anime page, such as https://myanimelist.net/anime/16498.",
+      "qbittorrent_unavailable": "qBittorrent can't be used right now. Check that it's running, and its address and login in Settings.",
+      "download_client_not_configured": "Downloads are off. Set up qBittorrent and the download folder in Settings first.",
+      "download_exists": "This torrent is already downloading.",
+      "download_not_in_client": "qBittorrent no longer has this torrent. Add it again from the Torrents page.",
+      "file_index_invalid": "A picked file isn't in the torrent.",
+      "episode_not_in_show": "A picked episode belongs to another show.",
+      "episode_already_downloading": "An episode already waits for a file from another torrent.",
+      "not_enough_disk_space": "The picked files need {needed_bytes}, but the download disk has only {free_bytes} free.",
+      "file_already_picked": "A picked file already belongs to an episode of another show."
     }
   },
   "rules": {
@@ -156,7 +165,8 @@
     "vlcWrongBinary": "Point to vlc or vlc.exe",
     "invalidYouTubeUrl": "Enter a valid YouTube URL",
     "titleUnique": "Title must be unique",
-    "maxTags": "Use at most 50 tags"
+    "maxTags": "Use at most 50 tags",
+    "invalidMagnetUrl": "Paste a magnet link, starting with magnet:?"
   },
   "auth": {
     "username": "Username",
@@ -535,7 +545,13 @@
       "originalTranslationOnly": "Original translations only",
       "hideMachineTranslations": "Hide machine translations",
       "hideHardsubs": "Hide hardsubs"
-    }
+    },
+    "createShow": "Create a show from this",
+    "openNekoBtPage": "Open on nekoBT",
+    "openMagnet": "Open in your torrent client",
+    "copyMagnet": "Copy magnet link",
+    "downloadTorrentFile": "Download the .torrent file",
+    "noNekoBtPage": "nekoBT has no show page for this torrent"
   },
   "mal": {
     "searchTitle": "Search MyAnimeList",
@@ -671,7 +687,6 @@
     "readLengths": "Read lengths",
     "runtime": "Total runtime",
     "videoSize": "Size of the video files",
-    "readingLengths": "Reading lengths: {progress}",
     "template": {
       "autofill": "Fill from a link",
       "dialogTitle": "Fill the show from a link",
@@ -803,6 +818,43 @@
     "loadFailed": "The setup couldn't load",
     "loadFailedText": "MovieBrowser didn't answer. It may still be starting up, so wait a moment and try again.",
     "retry": "Try again"
+  },
+  "download": {
+    "addToShow": "Download into a show",
+    "newShow": "New show",
+    "newShowFilled": "The new show is filled in from the torrent site's page of the show.",
+    "newShowEmpty": "You fill the new show in yourself.",
+    "continue": "Continue",
+    "pickFilesHint": "Open a season's Episodes tab and click Add from torrent. The picked files download once you save.",
+    "addFromTorrent": "Add from torrent",
+    "pickFilesTitle": "Pick files for {target}",
+    "noFilesLeft": "Every file of this torrent is already picked.",
+    "pickedSummary": "{count} file, {size} | {count} files, {size}",
+    "addPicked": "Add episodes",
+    "downloadsOnSave": "Downloads on save",
+    "fromTorrent": "From torrent",
+    "removePick": "Don't download this file",
+    "statuses": {
+      "fetching_metadata": "Fetching files",
+      "waiting_for_files": "Waiting",
+      "downloading": "Downloading",
+      "importing": "Importing",
+      "completed": "Downloaded",
+      "failed": "Failed"
+    },
+    "add": "Add",
+    "addTorrent": "Add torrent",
+    "addTorrentTitle": "Add a torrent",
+    "addTorrentHint": "Paste a magnet link from any torrent site, such as nyaa. You pick its files for episodes next.",
+    "magnetLink": "Magnet link",
+    "pickShowHint": "Pick the show its files go into. You choose the files for episodes next.",
+    "searchShows": "Search shows",
+    "pickFromTorrent": "Pick a file from the torrent",
+    "errorCodes": {
+      "client_lost_torrent": "qBittorrent no longer has this torrent. Add it again from the Torrents page, or with Add torrent."
+    },
+    "pickFileTitle": "Pick a file for {target}",
+    "useFile": "Use this file"
   },
   "update": {
     "available": "Update available",

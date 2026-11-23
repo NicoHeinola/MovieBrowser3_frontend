@@ -5,6 +5,8 @@ import { ref, useTemplateRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useDisplay } from 'vuetify';
 
+import { SearchResultList } from '@/components/common/search-result-list';
+
 import { ShowListItem } from '../show-list-item';
 import { useShowSearchMenu } from './useShowSearchMenu';
 
@@ -92,7 +94,6 @@ onKeyStroke('k', (event) => {
           prepend-inner-icon="mdi-magnify"
           rounded="xl"
           clearable
-          hide-details
           @click="openMenu"
           @keydown.enter="submit"
           @keydown.esc="isMenuShown = false"
@@ -102,12 +103,8 @@ onKeyStroke('k', (event) => {
     </template>
 
     <v-card class="glass-panel high mt-2" rounded="xl" border>
-      <v-list bg-color="transparent" class="overflow-y-auto" style="max-height: 440px">
-        <template v-if="isLoading">
-          <v-skeleton-loader v-for="i in 3" color="transparent" type="list-item-avatar" :key="i" />
-        </template>
-
-        <template v-else-if="shows.length > 0">
+      <div class="d-flex flex-column py-4">
+        <search-result-list :empty-text="t('show.noMatchingShows')" :is-empty="shows.length === 0" :loading="isLoading">
           <show-list-item
             v-for="show in shows"
             :show="show"
@@ -115,10 +112,8 @@ onKeyStroke('k', (event) => {
             @click="selectShow(show)"
             :key="show.id"
           />
-        </template>
-
-        <v-list-item :title="t('show.noMatchingShows')" disabled v-else />
-      </v-list>
+        </search-result-list>
+      </div>
 
       <v-divider />
 

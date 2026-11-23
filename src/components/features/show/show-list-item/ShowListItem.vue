@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { Show } from '@/interfaces/api/models/Show';
 
+import { CoverListItem } from '@/components/common/cover-list-item';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 
-/** Listeners such as `@click` fall through to the root `v-list-item`. */
+/** A show as a list row with its cover. Listeners such as `@click` and props such as `value` fall through to the row. */
 const props = defineProps<{
   show: Show;
   subtitle?: string;
@@ -11,9 +12,10 @@ const props = defineProps<{
 </script>
 
 <template>
-  <v-list-item :subtitle="props.subtitle" :title="getPrimaryTitle(props.show)">
-    <template #prepend>
-      <v-img :src="props.show.card_image_url" class="me-4" height="52" rounded="sm" width="36" cover />
-    </template>
-  </v-list-item>
+  <cover-list-item
+    :image-url="props.show.card_image_url"
+    :subtitle="props.subtitle"
+    :title="getPrimaryTitle(props.show)"
+    icon="mdi-television-classic"
+  />
 </template>

@@ -11,6 +11,15 @@ describe('getApiErrorDetailMessage', () => {
     );
   });
 
+  it('reads byte counts as sizes', () => {
+    expect(
+      getApiErrorDetailMessage({
+        code: ApiErrorCode.NotEnoughDiskSpace,
+        params: { needed_bytes: '3221225472', free_bytes: '1073741824' },
+      }),
+    ).toBe('The picked files need 3.0 GB, but the download disk has only 1.0 GB free.');
+  });
+
   it('falls back to the generic message for an unknown code', () => {
     expect(getApiErrorDetailMessage({ code: 'from_a_newer_backend', params: {} })).toBe(
       'Something went wrong. Please try again.',

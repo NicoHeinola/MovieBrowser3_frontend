@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import type { EpisodeFormData } from './EpisodeFormData';
+import type { DownloadFile } from '@/interfaces/api/models/DownloadFile';
 import type { ComponentPublicInstance } from 'vue';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { computed, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { DownloadFilePickerDialog } from '@/components/features/download/download-file-picker-dialog';
+import { DownloadStatusChip } from '@/components/features/download/download-status-chip';
 import { MissingVideoFileChip } from '@/components/features/show/missing-video-file-chip';
+import { useDialog } from '@/components/layouts/dialog-provider';
+import { getDownloadFileName } from '@/utils/download/getDownloadFileName';
 import { formatFileSize } from '@/utils/file/formatFileSize';
 import { isEpisodeVideoMissing } from '@/utils/show/video-file/isEpisodeVideoMissing';
 import { formatDuration } from '@/utils/time/formatDuration';
 
+import { injectShowEditorDownload } from './injectShowEditorDownload';
 import { getRules } from './showEntriesFormRules';
 
 const { t, locale } = useI18n();
@@ -18,12 +24,60 @@ const expanded = defineModel<boolean>('expanded', { default: false });
 
 const fileInput = useTemplateRef<ComponentPublicInstance>('fileInput');
 
+const dialog = useDialog();
+const editorDownload = injectShowEditorDownload();
+
 const rules = computed(() => getRules(null));
 
-/** The picked file's name, or the saved one. An unsaved episode's filename is only left over from a cleared pick. */
+/** Whether the episode's video comes from a torrent file that isn't in place yet. */
+const isWaitingForDownload = computed<boolean>(
+  () => !episode.value.file && Boolean(episode.value.download) && !episode.value.download?.imported_at,
+);
+
+/**
+ * The picked file's name, the torrent file's, or the saved one. An unsaved episode's filename is only left over from a
+ * cleared pick.
+ */
 const filename = computed<string | undefined>(() => {
+  if (isWaitingForDownload.value) {
+    return getDownloadFileName(episode.value.download!.path);
+  }
+
   return episode.value.file?.name || (episode.value.id ? episode.value.filename : undefined);
 });
+
+/**
+ * Lets the user pick one torrent file for the episode, which downloads into it once the show is saved. A video it
+ * already has is replaced when the download is done.
+ * @returns Nothing.
+ */
+const pickDownloadFile = async (): Promise<void> => {
+  const { download, availableFiles } = editorDownload.value;
+
+  if (!download) {
+    return;
+  }
+
+  const [file] =
+    (await dialog.showDialog<DownloadFile[], { files: DownloadFile[]; targetName: string; isSingle: boolean }>({
+      component: DownloadFilePickerDialog,
+      props: { files: availableFiles, targetName: episode.value.name, isSingle: true },
+    })) ?? [];
+
+  if (file) {
+    episode.value.download = { id: download.id, file_index: file.index, path: file.path };
+    // The torrent file takes the place of a picked one, which would otherwise upload too
+    episode.value.file = undefined;
+  }
+};
+
+/**
+ * Drops the torrent file, so it isn't downloaded for this episode once the show is saved.
+ * @returns Nothing.
+ */
+const removeDownload = (): void => {
+  episode.value.download = null;
+};
 
 const panelModelValue = computed<string[]>(() => {
   return expanded.value ? ['episode'] : [];
@@ -69,7 +123,8 @@ makeDroppable(() => fileInput.value?.$el as HTMLElement | undefined, {
           <span class="text-medium-emphasis text-body-small text-no-wrap" v-if="episode.video_file_size">
             {{ formatFileSize(episode.video_file_size, locale) }}
           </span>
-          <missing-video-file-chip v-if="isEpisodeVideoMissing(episode)" />
+          <download-status-chip :status="episode.download?.status" v-if="isWaitingForDownload" />
+          <missing-video-file-chip v-else-if="isEpisodeVideoMissing(episode)" />
         </div>
       </template>
 
@@ -85,7 +140,33 @@ makeDroppable(() => fileInput.value?.$el as HTMLElement | undefined, {
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-file-input v-model="episode.file" :label="t('show.file')" :rules="rules.episodeFile" ref="fileInput" />
+            <div class="d-flex ga-2 align-center" v-if="isWaitingForDownload">
+              <v-text-field
+                :label="t('download.fromTorrent')"
+                :model-value="episode.download?.path"
+                prepend-icon="mdi-magnet"
+                disabled
+              />
+              <v-btn
+                icon="mdi-close"
+                size="small"
+                variant="text"
+                @click="removeDownload"
+                v-tooltip:bottom="t('download.removePick')"
+              />
+            </div>
+            <div class="d-flex ga-2 align-center" v-else>
+              <v-file-input v-model="episode.file" :label="t('show.file')" :rules="rules.episodeFile" ref="fileInput" />
+              <!-- Any episode can take a torrent file instead, such as a better release of a video it has -->
+              <v-btn
+                icon="mdi-magnet"
+                size="small"
+                variant="text"
+                @click="void pickDownloadFile()"
+                v-tooltip:bottom="t('download.pickFromTorrent')"
+                v-if="editorDownload.download && editorDownload.availableFiles.length > 0"
+              />
+            </div>
           </v-col>
         </v-row>
       </template>

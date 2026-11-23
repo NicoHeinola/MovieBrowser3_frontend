@@ -4,6 +4,8 @@ import type { DataTableHeader } from 'vuetify';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { DownloadIntoShowDialog } from '@/components/features/download/download-into-show-dialog';
+import { useDialog } from '@/components/layouts/dialog-provider';
 import { useCopyText } from '@/composables/clipboard/useCopyText';
 import { useDataTableSort } from '@/composables/table/useDataTableSort';
 import { formatFileSize } from '@/utils/file/formatFileSize';
@@ -25,6 +27,7 @@ const props = defineProps<{
 /** Backend sort, such as `-size`; clicking a column header changes it. */
 const sort = defineModel<string>('sort', { required: true });
 
+const dialog = useDialog();
 const { copyText } = useCopyText();
 const { locale, t } = useI18n();
 // `best` has no column, so no header shows as sorted while it's picked
@@ -44,8 +47,17 @@ const headers = computed<DataTableHeader[]>(() => [
   { title: t('torrents.seeders'), key: 'seeders', align: 'end', width: 120 },
   { title: t('torrents.leechers'), key: 'leechers', align: 'end', width: 120 },
   { title: t('torrents.downloads'), key: 'downloads', align: 'end', width: 130 },
-  { title: '', key: 'actions', align: 'end', sortable: false, width: 230 },
+  { title: '', key: 'actions', align: 'end', sortable: false, width: 320 },
 ]);
+
+/**
+ * Opens the dialog that sends the torrent into a show; it opens that show's editor itself.
+ * @param torrent - The torrent.
+ * @returns Nothing.
+ */
+const openDownloadDialog = async (torrent: NekoBtTorrent): Promise<void> => {
+  await dialog.showDialog<void, { torrent: NekoBtTorrent }>({ component: DownloadIntoShowDialog, props: { torrent } });
+};
 
 /**
  * Copies a torrent's magnet link, for a torrent client on another machine.
@@ -131,28 +143,59 @@ const copyMagnet = async (torrent: NekoBtTorrent): Promise<void> => {
       <span class="text-medium-emphasis">{{ value }}</span>
     </template>
 
+    <!-- What the app does with the torrent first, then the nekoBT page, then the raw links for another client -->
     <template #item.actions="{ item }">
       <div class="d-flex justify-end ga-2">
-        <v-btn :href="item.magnet_url" icon="mdi-magnet" size="small" variant="text" />
-        <v-btn icon="mdi-content-copy" size="small" variant="text" @click="void copyMagnet(item)" />
-        <v-btn :href="item.torrent_url" icon="mdi-download" size="small" variant="text" />
         <v-btn
-          :href="item.media_url"
-          icon="mdi-open-in-new"
-          rel="noopener"
+          icon="mdi-download-box-outline"
           size="small"
-          target="_blank"
           variant="text"
-          v-if="item.media_url"
+          @click="void openDownloadDialog(item)"
+          v-tooltip:bottom="t('download.addToShow')"
         />
-        <!-- The new-show editor fills itself in from the show's nekoBT page -->
+        <!-- Both need the show's nekoBT page. Without one they stay in place, disabled, so every row's buttons line up;
+             the tooltip sits on a wrapper, since a disabled button gets no hover. -->
+        <span v-tooltip:bottom="item.media_url ? t('torrents.createShow') : t('torrents.noNekoBtPage')">
+          <!-- The new-show editor fills itself in from the show's nekoBT page -->
+          <v-btn
+            :disabled="!item.media_url"
+            :to="item.media_url ? { name: 'admin-show-new', query: { template: item.media_url } } : undefined"
+            icon="mdi-movie-plus-outline"
+            size="small"
+            variant="text"
+          />
+        </span>
+        <span v-tooltip:bottom="item.media_url ? t('torrents.openNekoBtPage') : t('torrents.noNekoBtPage')">
+          <v-btn
+            :disabled="!item.media_url"
+            :href="item.media_url ?? undefined"
+            icon="mdi-open-in-new"
+            rel="noopener"
+            size="small"
+            target="_blank"
+            variant="text"
+          />
+        </span>
         <v-btn
-          :to="{ name: 'admin-show-new', query: { template: item.media_url } }"
-          color="secondary"
-          icon="mdi-movie-plus-outline"
+          :href="item.magnet_url"
+          icon="mdi-magnet"
           size="small"
           variant="text"
-          v-if="item.media_url"
+          v-tooltip:bottom="t('torrents.openMagnet')"
+        />
+        <v-btn
+          icon="mdi-content-copy"
+          size="small"
+          variant="text"
+          @click="void copyMagnet(item)"
+          v-tooltip:bottom="t('torrents.copyMagnet')"
+        />
+        <v-btn
+          :href="item.torrent_url"
+          icon="mdi-file-download-outline"
+          size="small"
+          variant="text"
+          v-tooltip:bottom="t('torrents.downloadTorrentFile')"
         />
       </div>
     </template>

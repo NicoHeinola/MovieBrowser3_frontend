@@ -1,6 +1,7 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowTemplate } from '@/interfaces/api/models/ShowTemplate';
 import type { VueWrapper } from '@vue/test-utils';
+import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query';
 import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, ref } from 'vue';
@@ -95,7 +96,12 @@ const openPage = async (path: string) => {
     {
       attachTo: document.body,
       global: {
-        plugins: [router, createVuetify(), createI18n({ legacy: false, locale: 'en', missingWarn: false })],
+        plugins: [
+          router,
+          createVuetify(),
+          createI18n({ legacy: false, locale: 'en', missingWarn: false }),
+          [VueQueryPlugin, { queryClient: new QueryClient() }],
+        ],
         stubs: { PageBackground: true, PageContainer: { template: '<div><slot /></div>' } },
       },
     },

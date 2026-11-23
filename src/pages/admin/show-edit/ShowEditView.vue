@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Download } from '@/interfaces/api/models/Download';
 import type { ShowTemplate } from '@/interfaces/api/models/ShowTemplate';
 import { useEventListener } from '@vueuse/core';
 import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue';
@@ -7,6 +8,7 @@ import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 
 import { PageBackground } from '@/components/common/page-background';
 import { PageContainer } from '@/components/common/page-container';
+import { AddTorrentDialog } from '@/components/features/download/add-torrent-dialog';
 import {
   ShowEditor,
   ShowEditorHero,
@@ -15,11 +17,15 @@ import {
 } from '@/components/features/show/show-editor';
 import { ShowTemplateDialog } from '@/components/features/show/show-template-dialog';
 import { useDialog } from '@/components/layouts/dialog-provider';
+import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useVideoDurationScan } from '@/composables/setting/useVideoDurationScan';
 import { useShowEditor } from '@/composables/show/useShowEditor';
 import { useShowTemplate } from '@/composables/show/useShowTemplate';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { DownloadStatus } from '@/enums/download/DownloadStatus';
+import { DownloadQueryKey } from '@/enums/query/downloadQueryKey';
+import { downloadService } from '@/services/download/downloadService';
 import { getQueryString } from '@/utils/route/getQueryString';
 import { hasPendingVideoUploads } from '@/utils/show/video-file/hasPendingVideoUploads';
 
@@ -55,11 +61,25 @@ const {
 } = useShowEditor(showId);
 const { isLoading: isLoadingTemplate, loadTemplate } = useShowTemplate();
 
+/** The download the editor was opened with (a torrent's "Add to show"), whose files can be picked for episodes. */
+const downloadId = computed<number | null>(() => {
+  const id = Number(getQueryString(route.query.download));
+
+  return Number.isInteger(id) && id > 0 ? id : null;
+});
+
+const downloadQuery = useAPIQuery<Download>({
+  queryKey: computed(() => [DownloadQueryKey.ShowEditorDownload, downloadId.value]),
+  queryFn: async () => await downloadService.get(downloadId.value!),
+  enabled: computed(() => downloadId.value !== null),
+  // A magnet's file list comes from peers first, so look again until qBittorrent has it
+  refetchInterval: (query) => (query.state.data?.status === DownloadStatus.FetchingMetadata ? 2000 : false),
+  staleTime: 0,
+});
+
 const {
-  isFollowing: isFollowingLengthScan,
   isRunning: isReadingLengths,
   isStarting: isStartingLengthScan,
-  progressText: lengthScanProgress,
   followQueuedScan: followLengthScan,
   startScan: startLengthScan,
 } = useVideoDurationScan();
@@ -103,8 +123,16 @@ const saveShow = async (): Promise<void> => {
     void followLengthScan();
   }
 
+  // The download's status follows its picks, which the save just sent
+  if (savedId !== null && downloadId.value !== null) {
+    void downloadQuery.refetch();
+  }
+
+  // The download stays in the URL, so more of its files can still be picked
   if (savedId !== null && wasNew) {
-    await router.replace({ name: 'admin-show-edit', params: { showId: savedId } });
+    const query = route.query.download ? { download: route.query.download } : {};
+
+    await router.replace({ name: 'admin-show-edit', params: { showId: savedId }, query });
   }
 };
 
@@ -178,6 +206,19 @@ const openTemplateDialog = async (): Promise<void> => {
 
   if (template) {
     await fillFromTemplate(template);
+  }
+};
+
+/**
+ * Adds a torrent pasted as a magnet link, such as one from nyaa, and attaches it to the editor so its files can be
+ * picked for episodes. It replaces the attached one; picks already made stay with their episodes.
+ * @returns Nothing.
+ */
+const addTorrent = async (): Promise<void> => {
+  const addedId = await dialog.showDialog<number>({ component: AddTorrentDialog });
+
+  if (addedId !== undefined) {
+    await router.replace({ query: { ...route.query, download: String(addedId) } });
   }
 };
 
@@ -260,8 +301,17 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
       <show-editor-skeleton v-else-if="isLoading || isLoadingTemplate || !show" />
 
       <template v-else>
-        <show-editor-hero :reading-lengths-progress="isFollowingLengthScan ? lengthScanProgress : null" :show="show">
+        <show-editor-hero :show="show">
           <template #actions v-if="show.id">
+            <v-btn
+              :disabled="isSaving || isDeleting"
+              class="glass-panel"
+              prepend-icon="mdi-magnet"
+              variant="tonal"
+              @click="void addTorrent()"
+            >
+              {{ t('download.addTorrent') }}
+            </v-btn>
             <v-btn
               :disabled="isSaving || isDeleting || isReadingLengths"
               :loading="isStartingLengthScan || isReadingLengths"
@@ -285,6 +335,9 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
             </v-btn>
           </template>
           <template #actions v-else>
+            <v-btn class="glass-panel" prepend-icon="mdi-magnet" variant="tonal" @click="void addTorrent()">
+              {{ t('download.addTorrent') }}
+            </v-btn>
             <v-btn
               class="glass-panel"
               prepend-icon="mdi-link-variant"
@@ -295,7 +348,7 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
             </v-btn>
           </template>
         </show-editor-hero>
-        <show-editor v-model:show="show" ref="editor" />
+        <show-editor v-model:show="show" :download="downloadQuery.data.value ?? null" ref="editor" />
       </template>
     </div>
   </page-container>

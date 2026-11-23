@@ -1,15 +1,18 @@
 import type { Episode } from '@/interfaces/api/models/Episode';
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEditorEpisodeProgress } from '@/interfaces/show/ShowEditorEpisodeProgress';
+import type { DownloadPick } from '@/utils/download/getDownloadPicks';
 import type { UnwrapRef } from 'vue';
-import { ref } from 'vue';
 
+import { ref } from 'vue';
+import { downloadFileService } from '@/services/download/downloadFileService';
 import { showCategoryService } from '@/services/show/showCategoryService';
 import { showEntryService } from '@/services/show/showEntryService';
 import { showEpisodeService } from '@/services/show/showEpisodeService';
 import { showLinkService } from '@/services/show/showLinkService';
 import { showService } from '@/services/show/showService';
 import { showTitleService } from '@/services/show/showTitleService';
+import { getDownloadPicks } from '@/utils/download/getDownloadPicks';
 import { getChangedObject } from '@/utils/object/hasObjectChanged';
 import { deleteRemovedItems } from '@/utils/sync/deleteRemovedItems';
 import { getSyncPlan } from '@/utils/sync/getSyncPlan';
@@ -168,6 +171,8 @@ const saveEpisodes = async (
   // deleted here, and the delete removes that file.
   for (const { entry, episodes, savedEpisodes } of episodeSyncs) {
     await saveItems(episodes, savedEpisodes, {
+      // A picked torrent file is saved with the download's picks, not with the episode
+      compareOptions: { excludes: ['download'] },
       create: (episode) => saveEpisode(episode, () => showEpisodeService.create(entry.id, episode)),
       // A moved episode isn't in its new entry's saved list, so it lands here and the entry id moves it.
       update: async (id, episode) => {
@@ -201,12 +206,33 @@ const saveEpisodes = async (
 };
 
 /**
+ * Tells each download which torrent files its episodes wait for, when that changed: picked, dropped, or their episode
+ * deleted. Runs after the episodes are saved, so new ones have ids, and sends a download's whole list each time.
+ * @param draft - The show being saved.
+ * @param savedPicks - The picks the backend held when the save started. Read then, because deleting an episode drops
+ * it from the saved show, and its download must still hear that the episode's file is no longer wanted.
+ * @returns Nothing.
+ */
+const saveDownloadPicks = async (draft: ShowDraft, savedPicks: Map<number, DownloadPick[]>): Promise<void> => {
+  const draftPicks = getDownloadPicks(draft.entries ?? []);
+
+  for (const downloadId of new Set([...draftPicks.keys(), ...savedPicks.keys()])) {
+    const files = draftPicks.get(downloadId) ?? [];
+
+    if (JSON.stringify(files) !== JSON.stringify(savedPicks.get(downloadId) ?? [])) {
+      await downloadFileService.update(downloadId, { show_id: draft.id, files });
+    }
+  }
+};
+
+/**
  * Saves show drafts with their titles, categories, entries, episodes and links, in the order the backend needs:
  *
  * - the show first, so a new show has an id;
  * - entries are created before their episodes;
  * - every upload runs before any delete, and entries are deleted last, because deleting an episode or an entry
- *   deletes video files that a moved or re-added episode may still need.
+ *   deletes video files that a moved or re-added episode may still need;
+ * - torrent file picks go after the episodes, which need ids to be picked for.
  *
  * @returns `episodeProgress`, how many episodes a running save has done (null when none runs, as uploads can take a
  * while), and `save`.
@@ -226,6 +252,8 @@ export const useShowDraftSave = () => {
     const onEpisodeProgress = (progress: ShowEditorEpisodeProgress): void => {
       episodeProgress.value = progress;
     };
+
+    const savedPicks = getDownloadPicks(savedShow?.entries ?? []);
 
     try {
       await saveShowFields(draft, savedShow);
@@ -251,6 +279,7 @@ export const useShowDraftSave = () => {
       await deleteRemovedItems(draft.entries ?? [], savedEntries, {
         delete: (id) => showEntryService.remove(id),
       });
+      await saveDownloadPicks(draft, savedPicks);
 
       await syncItems(draft.outgoing_links ?? [], savedShow?.outgoing_links ?? [], {
         create: (link) => showLinkService.create(draft.id, link),

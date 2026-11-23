@@ -147,7 +147,16 @@
       "show_template_not_found": "Linkki ei osoita mihinkään sarjaan. Tarkista linkki ja yritä uudelleen.",
       "show_template_unavailable": "Sarjan sivusto ei vastaa juuri nyt. Yritä hetken päästä uudelleen.",
       "mal_unavailable": "MyAnimeList ei vastaa juuri nyt. Yritä hetken päästä uudelleen.",
-      "unsupported_show_template_url": "Liitä linkki nekoBT-mediasivulle tai MyAnimeList-animesivulle, esimerkiksi https://myanimelist.net/anime/16498."
+      "unsupported_show_template_url": "Liitä linkki nekoBT-mediasivulle tai MyAnimeList-animesivulle, esimerkiksi https://myanimelist.net/anime/16498.",
+      "qbittorrent_unavailable": "qBittorrentia ei voi nyt käyttää. Tarkista, että se on käynnissä, ja sen osoite ja tunnukset asetuksista.",
+      "download_client_not_configured": "Lataukset ovat pois päältä. Määritä ensin qBittorrent ja latauskansio asetuksissa.",
+      "download_exists": "Tämä torrent latautuu jo.",
+      "download_not_in_client": "qBittorrentilla ei ole enää tätä torrentia. Lisää se uudelleen Torrentit-sivulta.",
+      "file_index_invalid": "Valittu tiedosto ei ole torrentissa.",
+      "episode_not_in_show": "Valittu jakso kuuluu toiseen sarjaan.",
+      "episode_already_downloading": "Jakso odottaa jo tiedostoa toisesta torrentista.",
+      "not_enough_disk_space": "Valitut tiedostot vievät {needed_bytes}, mutta latauslevyllä on vapaana vain {free_bytes}.",
+      "file_already_picked": "Valittu tiedosto kuuluu jo toisen sarjan jaksolle."
     }
   },
   "rules": {
@@ -156,7 +165,8 @@
     "vlcWrongBinary": "Valitse vlc tai vlc.exe",
     "invalidYouTubeUrl": "Anna kelvollinen YouTube-osoite",
     "titleUnique": "Nimen on oltava yksilöllinen",
-    "maxTags": "Käytä enintään 50 tunnistetta"
+    "maxTags": "Käytä enintään 50 tunnistetta",
+    "invalidMagnetUrl": "Liitä magnet-linkki, joka alkaa magnet:?"
   },
   "auth": {
     "username": "Käyttäjätunnus",
@@ -535,7 +545,13 @@
       "originalTranslationOnly": "Vain alkuperäiset käännökset",
       "hideMachineTranslations": "Piilota konekäännökset",
       "hideHardsubs": "Piilota poltetut tekstit"
-    }
+    },
+    "createShow": "Luo sarja tästä",
+    "openNekoBtPage": "Avaa nekoBT:ssä",
+    "openMagnet": "Avaa torrent-ohjelmassa",
+    "copyMagnet": "Kopioi magnet-linkki",
+    "downloadTorrentFile": "Lataa .torrent-tiedosto",
+    "noNekoBtPage": "nekoBT:ssä ei ole tämän torrentin sarjasivua"
   },
   "mal": {
     "searchTitle": "Hae MyAnimeLististä",
@@ -671,7 +687,6 @@
     "readLengths": "Lue pituudet",
     "runtime": "Kokonaiskesto",
     "videoSize": "Videotiedostojen koko",
-    "readingLengths": "Luetaan pituuksia: {progress}",
     "template": {
       "autofill": "Täytä linkistä",
       "dialogTitle": "Täytä sarja linkistä",
@@ -803,6 +818,43 @@
     "loadFailed": "Käyttöönottoa ei voitu ladata",
     "loadFailedText": "MovieBrowser ei vastannut. Se saattaa vielä käynnistyä, joten odota hetki ja yritä uudelleen.",
     "retry": "Yritä uudelleen"
+  },
+  "download": {
+    "addToShow": "Lataa sarjaan",
+    "newShow": "Uusi sarja",
+    "newShowFilled": "Uusi sarja täytetään torrent-sivuston sarjasivulta.",
+    "newShowEmpty": "Täytät uuden sarjan tiedot itse.",
+    "continue": "Jatka",
+    "pickFilesHint": "Avaa kauden Jaksot-välilehti ja valitse Lisää torrentista. Valitut tiedostot latautuvat, kun tallennat.",
+    "addFromTorrent": "Lisää torrentista",
+    "pickFilesTitle": "Valitse tiedostot: {target}",
+    "noFilesLeft": "Kaikki tämän torrentin tiedostot on jo valittu.",
+    "pickedSummary": "{count} tiedosto, {size} | {count} tiedostoa, {size}",
+    "addPicked": "Lisää jaksot",
+    "downloadsOnSave": "Latautuu tallennettaessa",
+    "fromTorrent": "Torrentista",
+    "removePick": "Älä lataa tätä tiedostoa",
+    "statuses": {
+      "fetching_metadata": "Haetaan tiedostoja",
+      "waiting_for_files": "Odottaa",
+      "downloading": "Ladataan",
+      "importing": "Siirretään",
+      "completed": "Ladattu",
+      "failed": "Epäonnistui"
+    },
+    "add": "Lisää",
+    "addTorrent": "Lisää torrent",
+    "addTorrentTitle": "Lisää torrent",
+    "addTorrentHint": "Liitä magnet-linkki miltä tahansa torrent-sivustolta, kuten nyaasta. Valitset sen tiedostot jaksoiksi seuraavaksi.",
+    "magnetLink": "Magnet-linkki",
+    "pickShowHint": "Valitse sarja, johon tiedostot menevät. Valitset tiedostot jaksoiksi seuraavaksi.",
+    "searchShows": "Hae sarjoja",
+    "pickFromTorrent": "Valitse tiedosto torrentista",
+    "errorCodes": {
+      "client_lost_torrent": "qBittorrentilla ei ole enää tätä torrentia. Lisää se uudelleen Torrentit-sivulta tai Lisää torrent -painikkeella."
+    },
+    "pickFileTitle": "Valitse tiedosto: {target}",
+    "useFile": "Käytä tätä tiedostoa"
   },
   "update": {
     "available": "Päivitys saatavilla",

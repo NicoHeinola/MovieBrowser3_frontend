@@ -1,11 +1,11 @@
 import type { Show } from '@/interfaces/api/models/Show';
 import type { PaginatedResponse } from '@/interfaces/api/responses/PaginatedResponse';
 import type { LocationQueryRaw } from 'vue-router';
-import { refDebounced } from '@vueuse/core';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
+import { useDebouncedSearch } from '@/composables/search/useDebouncedSearch';
 import { showSortOptions } from '@/data/show/showSortOptions';
 import { ShowQueryKey } from '@/enums/query/showQueryKey';
 import { showService } from '@/services/show/showService';
@@ -19,14 +19,10 @@ const suggestionCount = 8;
  * `openSearchPage`.
  */
 export const useShowSearchMenu = () => {
-  const search = ref<string>('');
-  const debouncedSearch = refDebounced(search, 300);
+  const { search, term, debouncedTerm, isWaiting } = useDebouncedSearch();
 
   const route = useRoute();
   const router = useRouter();
-
-  const term = computed<string>(() => (search.value ?? '').trim());
-  const debouncedTerm = computed<string>(() => (debouncedSearch.value ?? '').trim());
 
   const showsQuery = useAPIQuery<PaginatedResponse<Show>>({
     queryKey: [ShowQueryKey.NavigationSearchShows, debouncedTerm],
@@ -44,9 +40,7 @@ export const useShowSearchMenu = () => {
   const shows = computed<Show[]>(() => showsQuery.data.value?.data ?? []);
   const totalResults = computed<number>(() => showsQuery.data.value?.meta.total ?? 0);
   /** A cleared field closes the menu, so it never shows the skeleton while the menu fades out. */
-  const isLoading = computed<boolean>(
-    () => term.value !== '' && (term.value !== debouncedTerm.value || showsQuery.isFetching.value),
-  );
+  const isLoading = computed<boolean>(() => term.value !== '' && (isWaiting.value || showsQuery.isFetching.value));
 
   /**
    * Opens the search page with the typed term and clears the field. Already on the search page, its filters and sort

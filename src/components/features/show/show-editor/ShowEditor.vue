@@ -1,14 +1,20 @@
 <script setup lang="ts">
+import type { ShowEditorDownload } from './ShowEditorDownload';
 import type { ShowEditorSection } from './ShowEditorSection';
+import type { Download } from '@/interfaces/api/models/Download';
 import type { Show } from '@/interfaces/api/models/Show';
-import { computed, nextTick, ref, useTemplateRef } from 'vue';
+import { computed, nextTick, provide, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { BaseForm } from '@/components/common/base-form';
 import { FormCard } from '@/components/common/form-card';
 import { SectionLabel } from '@/components/common/section-label';
 import { TitledSection } from '@/components/common/titled-section';
+import { DownloadStatusChip } from '@/components/features/download/download-status-chip';
 import { useScrollSpy } from '@/composables/scroll/useScrollSpy';
+import { DownloadStatus } from '@/enums/download/DownloadStatus';
+import { getPickedDownloadFileIndexes } from '@/utils/download/getPickedDownloadFileIndexes';
+import { showEditorDownloadKey } from './showEditorDownloadKey';
 import ShowEditorSectionNav from './ShowEditorSectionNav.vue';
 import ShowEntriesFormPart from './ShowEntriesFormPart.vue';
 import ShowGeneralFormPart from './ShowGeneralFormPart.vue';
@@ -20,6 +26,11 @@ import ShowUiFormPart from './ShowUiFormPart.vue';
  * the fixed 64px navigation bar, with a 24px gap.
  */
 const STICKY_TOP = 88;
+
+const { download = null } = defineProps<{
+  /** A torrent whose files can be picked for episodes, from the link the editor was opened with. */
+  download?: Download | null;
+}>();
 
 const show = defineModel<Show>('show', { required: true });
 
@@ -79,6 +90,23 @@ const sections = computed<ShowEditorSection[]>(() => [
   },
 ]);
 
+/**
+ * The attached torrent with its files still free to pick: not picked anywhere in this show, nor by another show.
+ * Provided to the episode parts, so the parts in between don't pass it on.
+ */
+const editorDownload = computed<ShowEditorDownload>(() => {
+  if (!download) {
+    return { download: null, availableFiles: [] };
+  }
+
+  const pickedIndexes = getPickedDownloadFileIndexes(show.value.entries ?? [], download.id);
+  const availableFiles = download.files.filter(
+    (file) => !pickedIndexes.has(file.index) && (file.show_id === null || file.show_id === show.value.id),
+  );
+
+  return { download, availableFiles };
+});
+
 /** The sections by key, so the template can place each one's heading next to its own form. */
 const sectionsByKey = computed(() => {
   const [general, media, entries, links] = sections.value;
@@ -107,6 +135,8 @@ const validate = async (): Promise<boolean> => {
 };
 
 defineExpose({ validate });
+
+provide(showEditorDownloadKey, editorDownload);
 </script>
 
 <template>
@@ -158,6 +188,31 @@ defineExpose({ validate });
           :title="sectionsByKey.entries.title"
           id="show-editor-entries"
         >
+          <!-- The attached torrent, like the settings page's status cards. The icon outside says how to pick its files,
+               or why it failed. -->
+          <div class="d-flex align-center ga-4 mb-4" v-if="download">
+            <v-icon
+              :icon="download.status === DownloadStatus.Failed ? 'mdi-alert-circle' : 'mdi-help-circle'"
+              v-tooltip:bottom="
+                download.status === DownloadStatus.Failed
+                  ? t(`download.errorCodes.${download.error_code}`)
+                  : t('download.pickFilesHint')
+              "
+            />
+            <v-sheet border="sm" class="d-flex align-center ga-4 pa-4 flex-1-1" color="transparent" rounded="lg">
+              <v-avatar
+                :color="download.status === DownloadStatus.Failed ? 'error' : 'primary'"
+                icon="mdi-magnet"
+                rounded="lg"
+                variant="tonal"
+              />
+              <span class="text-body-large font-weight-medium text-truncate flex-1-1" v-tooltip:bottom="download.name">
+                {{ download.name }}
+              </span>
+              <download-status-chip :status="download.status" />
+            </v-sheet>
+          </div>
+
           <form-card>
             <base-form v-model:is-valid="validity.entries" id="show-entries-form" ref="entriesForm">
               <show-entries-form-part v-model:show="show" />
