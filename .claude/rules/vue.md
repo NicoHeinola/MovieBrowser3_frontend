@@ -253,6 +253,7 @@ const save = async (): Promise<void> => {
 
 - **Do not declare named TypeScript interfaces or types inside `.vue` files.**
 - For small single-use prop or emit shapes, prefer inline Vue macro generics directly in the `.vue` file, for example `defineProps<{ foo: string }>()`.
+- Props that extend another type (a dialog's `DialogComponentProps<T>` plus its own props) get a sibling `<component>Props.ts` interface (`malSearchDialogProps.ts`), not an intersection inside `defineProps<...>`, which some editors' Vue tooling can't parse.
 - Extract a named sibling `.ts` type only when the shape is reused across files or is large enough that the inline macro becomes hard to read.
 - Name the sibling `.ts` file after what it represents (e.g. `navigationLinkItem.ts`, not `types.ts`).
 
@@ -278,7 +279,10 @@ components/
 - A button next to an input sits beside it in a `d-flex ga-2` row, not in the input's `#append` slot.
 - A full-width button at the bottom of a strongly rounded card (`rounded="xl"` or rounder, such as the show search menu) is `rounded="pill"`, so its shape follows the card's.
 - Show an image or video together with its URL field or link in `media-preview-card`.
-- Empty and info `v-alert`s shrink to their content with `class="flex-0-1"`; never let them stretch across the row.
+- Empty and info `v-alert`s shrink to their content with `class="flex-0-1"`; never let them stretch across the row. Empty results ("nothing matches") are such an alert, also inside lists and dialogs, never a disabled `v-list-item`.
+- A field's explanation is a `mdi-help-circle` icon in its `#prepend` slot with `v-tooltip:bottom` (the settings page), not a persistent `hint`, which pushes the buttons beside the field out of line.
+- A success snackbar is one short sentence. Anything the user should act on (genres without a category) goes in its own `showWarningSnackbar`.
+- A common component does one thing: to group or place several, add a container component (`floating-container` around `floating-action-button`s) instead of a slot on one of them.
 - `v-icon` uses a named size (`x-small`, `small`, `default`, `large`, `x-large`); ESLint blocks pixel sizes. Named sizes scale with the font, so icons that must match sit outside `text-*` classes.
 - Never use "·" as a separator in UI copy (`messages.test.ts` checks the locale files). Write it out ("Version 1.0.0, released 1.11.2026") or split it into separate elements.
 - Typography uses Vuetify 4's MD3 scale (`text-body-*`, `text-label-*`, `text-title-*`). MD2 classes such as `text-caption`, `text-body-1` and `text-h6` no longer exist, and ESLint rejects them. Style single-class text with plain utilities (`text-medium-emphasis`, `text-truncate`). Use `heading-text` for a heading with a muted subtitle, `highlight-text` for colored bold words inside a sentence and `media-placeholder` for an icon-and-text stand-in where an image or video is missing.
