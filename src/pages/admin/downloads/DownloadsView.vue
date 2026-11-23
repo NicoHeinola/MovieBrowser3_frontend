@@ -14,6 +14,7 @@ import { DownloadStatus } from '@/enums/download/DownloadStatus';
 import { DownloadQueryKey } from '@/enums/query/downloadQueryKey';
 import { downloadService } from '@/services/download/downloadService';
 import { isDownloadActive } from '@/utils/download/isDownloadActive';
+import { getPollInterval } from '@/utils/query/getPollInterval';
 
 /** How often the list is read again while a download moves, so its progress does too. */
 const POLL_INTERVAL_MS = 3000;
@@ -27,7 +28,11 @@ const downloadsQuery = useAPIQuery<Download[]>({
   queryFn: async () => await downloadService.list(),
   // Progress lives in qBittorrent: read it again while something moves, and fresh on every visit
   refetchInterval: (query) =>
-    query.state.data?.some((download) => isDownloadActive(download.status)) ? POLL_INTERVAL_MS : false,
+    getPollInterval(
+      query.state,
+      (downloads) => downloads.some((download) => isDownloadActive(download.status)),
+      POLL_INTERVAL_MS,
+    ),
   staleTime: 0,
 });
 

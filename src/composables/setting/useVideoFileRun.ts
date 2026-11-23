@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/vue-query';
 import { computed, watch } from 'vue';
 
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
+import { getPollInterval } from '@/utils/query/getPollInterval';
 import { getVideoFileRunOutcome } from '@/utils/show/video-file/getVideoFileRunOutcome';
 
 /** How `useVideoFileRun` reads a run and what it does when one ends. */
@@ -31,10 +32,8 @@ export const useVideoFileRun = <T extends VideoFileRunStatus>(options: VideoFile
     queryFn: options.queryFn,
     // A run can start or end while this page is closed, so read it on each visit.
     staleTime: 0,
-    // Poll only during a run, so an idle page sends no requests. A failed read stops it too: each failure shows a
-    // snackbar, and a window refocus or the next start reads the status again.
-    refetchInterval: (current) =>
-      current.state.data?.running && current.state.status !== 'error' ? options.pollIntervalMs : false,
+    // Poll only during a run, so an idle page sends no requests
+    refetchInterval: (current) => getPollInterval(current.state, (status) => status.running, options.pollIntervalMs),
   });
 
   /** The status the next one is compared with. Starts from a cached status, so a run seen going on an earlier visit

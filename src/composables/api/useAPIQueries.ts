@@ -7,7 +7,7 @@ import { useCommonSnackbar } from '../snackbar/useCommonSnackbar';
 
 /**
  * `useAPIQuery` for a list of queries that changes with its inputs, such as one per id: each failure shows the same
- * error snackbar once.
+ * error snackbar.
  * @param queries - Builds the queries' options, read again whenever what it uses changes.
  * @returns The queries' results, in the same order.
  */
@@ -21,7 +21,8 @@ export const useAPIQueries = <TData = unknown>(
     queries: queries as Parameters<typeof useQueries>[0]['queries'],
   }) as Readonly<Ref<QueryObserverResult<TData>[]>>;
 
-  // Only an error that wasn't there before, so a query failing again on its next poll doesn't repeat the snackbar
+  // Only the errors that weren't there before: any query's change runs this again. A failed refetch is a new error
+  // though, so a query that polls must stop once it fails (`getPollInterval`).
   watch(
     () => results.value.map((result) => result.error),
     (errors, previousErrors) => {

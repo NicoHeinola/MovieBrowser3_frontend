@@ -28,9 +28,13 @@ import { DownloadQueryKey } from '@/enums/query/downloadQueryKey';
 import { downloadService } from '@/services/download/downloadService';
 import { getUnfinishedDownloadIds } from '@/utils/download/getUnfinishedDownloadIds';
 import { isDownloadActive } from '@/utils/download/isDownloadActive';
+import { getPollInterval } from '@/utils/query/getPollInterval';
 import { getQueryString } from '@/utils/route/getQueryString';
 import { getQueryStrings } from '@/utils/route/getQueryStrings';
 import { hasPendingVideoUploads } from '@/utils/show/video-file/hasPendingVideoUploads';
+
+/** How often a torrent is read again while it moves. */
+const DOWNLOAD_POLL_INTERVAL_MS = 2000;
 
 const editor = useTemplateRef<InstanceType<typeof ShowEditor>>('editor');
 
@@ -84,7 +88,8 @@ const downloadQueries = useAPIQueries<Download>(() =>
     queryKey: [DownloadQueryKey.ShowEditorDownload, id],
     queryFn: async () => await downloadService.get(id),
     // Follow each while it moves: a magnet's file list comes from peers first, then files download and import
-    refetchInterval: (query) => (query.state.data && isDownloadActive(query.state.data.status) ? 2000 : false),
+    refetchInterval: (query) =>
+      getPollInterval(query.state, (download) => isDownloadActive(download.status), DOWNLOAD_POLL_INTERVAL_MS),
     staleTime: 0,
   })),
 );
