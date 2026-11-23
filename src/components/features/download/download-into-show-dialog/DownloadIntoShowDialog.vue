@@ -32,7 +32,7 @@ const target = ref<number | 'new' | null>(null);
 
 const router = useRouter();
 const { search, term, debouncedTerm, isWaiting } = useDebouncedSearch();
-const { create, errorMessage, isCreating } = useDownloadCreate();
+const { create, isCreating } = useDownloadCreate();
 const { locale, t } = useI18n();
 
 /** The list's selection: at most the one picked target. */
@@ -68,7 +68,7 @@ const getCategoryNames = (show: Show): string => (show.categories ?? []).map((ca
 
 /**
  * Hands the torrent to qBittorrent and opens the picked show's editor with it, where its files are picked. A failure
- * keeps the dialog open with the reason, to retry once qBittorrent is fixed.
+ * keeps the dialog open, to retry once qBittorrent is fixed.
  * @returns Nothing.
  */
 const start = async (): Promise<void> => {
@@ -158,8 +158,6 @@ watch(shows, (current) => {
             :key="show.id"
           />
         </search-result-list>
-
-        <v-alert type="error" v-if="errorMessage">{{ errorMessage }}</v-alert>
       </div>
     </template>
 

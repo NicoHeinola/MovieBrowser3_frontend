@@ -7,8 +7,8 @@ import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { DownloadStatus } from '@/enums/download/DownloadStatus';
 
 /**
- * Cancels downloads through the cancel dialog, wherever a download shows: the dialog asks first and shows a failure in
- * place, and a done cancel gets its snackbar here.
+ * Cancels downloads through the cancel dialog, wherever a download shows: the dialog asks first and stays open
+ * on a failure, and a done cancel gets its snackbar here.
  * @returns `cancel`.
  */
 export const useDownloadCancel = () => {

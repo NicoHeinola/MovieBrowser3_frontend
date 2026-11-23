@@ -6,9 +6,9 @@ import { useI18n } from 'vue-i18n';
 
 import { BaseDialog } from '@/components/common/base-dialog';
 import { DownloadCard } from '@/components/features/download/download-card';
+import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { DownloadStatus } from '@/enums/download/DownloadStatus';
 import { downloadService } from '@/services/download/downloadService';
-import { getApiErrorMessage } from '@/utils/api/getApiErrorMessage';
 import { getDownloadProgress } from '@/utils/download/getDownloadProgress';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 
@@ -19,8 +19,8 @@ const isDialogVisible = defineModel<boolean>({ required: true });
 /** Episodes made for the download are of no use without it, so removing them is the default. */
 const removeEpisodes = ref<boolean>(true);
 const isCancelling = ref<boolean>(false);
-const errorMessage = ref<string | null>(null);
 
+const { showAPIErrorSnackbar } = useCommonSnackbar();
 const { t } = useI18n();
 
 const waitingEpisodeCount = computed<number>(() => props.download.waiting_episode_count ?? 0);
@@ -38,18 +38,17 @@ const details = computed<string>(() => {
 });
 
 /**
- * Cancels the download. A failure keeps the dialog open with the reason, such as qBittorrent being closed.
+ * Cancels the download. A failure keeps the dialog open to try again, such as once qBittorrent runs.
  * @returns Nothing.
  */
 const cancel = async (): Promise<void> => {
   isCancelling.value = true;
-  errorMessage.value = null;
 
   try {
     await downloadService.remove(props.download.id, removeEpisodes.value && waitingEpisodeCount.value > 0);
     props.close(true);
   } catch (error: unknown) {
-    errorMessage.value = getApiErrorMessage(error);
+    showAPIErrorSnackbar(error);
   } finally {
     isCancelling.value = false;
   }
@@ -82,8 +81,6 @@ const cancel = async (): Promise<void> => {
             </template>
           </v-list-item>
         </v-sheet>
-
-        <v-alert type="error" v-if="errorMessage">{{ errorMessage }}</v-alert>
       </div>
     </template>
 

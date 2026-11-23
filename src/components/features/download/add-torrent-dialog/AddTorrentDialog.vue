@@ -21,12 +21,12 @@ const isDialogVisible = defineModel<boolean>({ required: true });
 const magnetUrl = ref<string>('');
 const isValid = ref<boolean>(false);
 
-const { create, errorMessage, isCreating } = useDownloadCreate();
+const { create, isCreating } = useDownloadCreate();
 const { t } = useI18n();
 const rules = getRules();
 
 /**
- * Hands the pasted torrent to qBittorrent. A failure keeps the dialog open with the reason.
+ * Hands the pasted torrent to qBittorrent. A failure keeps the dialog open to try again.
  * @returns Nothing.
  */
 const add = async (): Promise<void> => {
@@ -62,8 +62,6 @@ const add = async (): Promise<void> => {
             autofocus
           />
         </base-form>
-
-        <v-alert type="error" v-if="errorMessage">{{ errorMessage }}</v-alert>
       </div>
     </template>
 
