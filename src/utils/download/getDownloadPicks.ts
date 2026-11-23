@@ -1,9 +1,4 @@
-import type { EpisodeDownload } from '@/interfaces/api/models/EpisodeDownload';
-
-/** An entry as the editor holds it: only the episode fields that tell which torrent file it waits for. */
-interface EntryWithEpisodePicks {
-  episodes?: { id?: number; download?: EpisodeDownload | null }[];
-}
+import type { EntryWithEpisodeDownloads } from '@/interfaces/download/EntryWithEpisodeDownloads';
 
 /** One torrent file picked for a saved episode, as the backend takes it. */
 export interface DownloadPick {
@@ -17,7 +12,7 @@ export interface DownloadPick {
  * @param entries - The show's entries.
  * @returns The picks by download id, each list ordered by file index.
  */
-export const getDownloadPicks = (entries: EntryWithEpisodePicks[]): Map<number, DownloadPick[]> => {
+export const getDownloadPicks = (entries: EntryWithEpisodeDownloads[]): Map<number, DownloadPick[]> => {
   const picks = new Map<number, DownloadPick[]>();
 
   for (const episode of entries.flatMap((entry) => entry.episodes ?? [])) {

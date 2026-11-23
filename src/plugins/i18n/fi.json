@@ -156,7 +156,9 @@
       "episode_not_in_show": "Valittu jakso kuuluu toiseen sarjaan.",
       "episode_already_downloading": "Jakso odottaa jo tiedostoa toisesta torrentista.",
       "not_enough_disk_space": "Valitut tiedostot vievät {needed_bytes}, mutta latauslevyllä on vapaana vain {free_bytes}.",
-      "file_already_picked": "Valittu tiedosto kuuluu jo toisen sarjan jaksolle."
+      "file_already_picked": "Valittu tiedosto kuuluu jo toisen sarjan jaksolle.",
+      "download_not_retryable": "Vain latauksen, jonka tiedostojen kopiointi epäonnistui, voi yrittää uudelleen.",
+      "download_import_running": "Sen tiedostoja kopioidaan jaksoihin. Peruuta, kun ne ovat paikallaan."
     }
   },
   "rules": {
@@ -852,7 +854,10 @@
     "searchShows": "Hae sarjoja",
     "pickFromTorrent": "Valitse tiedosto torrentista",
     "errorCodes": {
-      "client_lost_torrent": "qBittorrentilla ei ole enää tätä torrentia. Lisää se uudelleen Torrentit-sivulta tai Lisää torrent -painikkeella."
+      "client_lost_torrent": "qBittorrentilla ei ole enää tätä torrentia. Lisää se uudelleen Torrentit-sivulta tai Lisää torrent -painikkeella.",
+      "file_missing": "Valmis tiedosto ei ole enää latauskansiossa. Palauta se ja yritä uudelleen.",
+      "not_enough_disk_space": "Videolevy on täynnä. Vapauta tilaa ja yritä uudelleen.",
+      "import_failed": "Valmiin tiedoston kopiointi videokansioon epäonnistui. Tarkista, että videolevy on kytketty, ja yritä uudelleen."
     },
     "pickFileTitle": "Valitse tiedosto: {target}",
     "useFile": "Käytä tätä tiedostoa",
@@ -863,6 +868,7 @@
     "bytesOf": "{downloaded} / {size}",
     "speed": "Nopeus",
     "timeLeft": "Aikaa jäljellä",
+    "torrent": "Torrentti",
     "added": "Lisätty",
     "perSecond": "{size}/s",
     "openShow": "Avaa sarja",
@@ -872,8 +878,15 @@
     "cancelText": "qBittorrent pysäyttää sen ja poistaa ladatut tiedostot. Jaksot, joilla on jo video, pitävät sen.",
     "removeWaitingEpisodes": "Poista sitä odottava jakso | Poista sitä odottavat {count} jaksoa",
     "cancelled": "Lataus peruttu.",
+    "saveBeforeCancel": "Tallenna tai hylkää muutoksesi ennen torrentin peruuttamista.",
     "none": "Ei vielä latauksia. Lähetä torrent sarjaan Torrentit-sivulta tai sarjan muokkauksen Lisää torrent -painikkeella.",
-    "waitingEpisodesHint": "Sillä ei ole videota, ja se odottaa vain tätä latausta. | Niillä ei ole videota, ja ne odottavat vain tätä latausta."
+    "waitingEpisodesHint": "Sillä ei ole videota, ja se odottaa vain tätä latausta. | Niillä ei ole videota, ja ne odottavat vain tätä latausta.",
+    "retry": "Yritä uudelleen",
+    "retryStarted": "Sitä yritetään uudelleen minuutin sisällä.",
+    "remove": "Poista listalta",
+    "removeTitle": "Poistetaanko tämä lataus listalta?",
+    "removeText": "Jaksot pitävät videonsa. Jos qBittorrent vielä jakaa sitä, torrent ja sen tiedostot poistuvat myös sieltä.",
+    "removed": "Lataus poistettu."
   },
   "update": {
     "available": "Päivitys saatavilla",

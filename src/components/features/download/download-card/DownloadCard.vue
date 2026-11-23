@@ -16,6 +16,11 @@ const props = defineProps<{
   isOneLine?: boolean;
 }>();
 
+defineSlots<{
+  /** Buttons after the status, such as cancel. */
+  actions?: () => unknown;
+}>();
+
 const isFailed = computed<boolean>(() => props.status === DownloadStatus.Failed);
 </script>
 
@@ -27,8 +32,9 @@ const isFailed = computed<boolean>(() => props.status === DownloadStatus.Failed)
     :title="props.name"
     icon="mdi-magnet"
   >
-    <template #append v-if="props.status">
-      <download-status-chip :status="props.status" />
+    <template #append v-if="props.status || $slots.actions">
+      <download-status-chip :status="props.status" v-if="props.status" />
+      <slot name="actions" />
     </template>
   </icon-card>
 </template>

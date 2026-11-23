@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ShowEditorDownload } from './ShowEditorDownload';
+import type { ShowEditorDownloads, ShowEditorTorrent } from './ShowEditorDownloads';
 import type { ShowEditorSection } from './ShowEditorSection';
 import type { Download } from '@/interfaces/api/models/Download';
 import type { Show } from '@/interfaces/api/models/Show';
@@ -14,7 +14,7 @@ import { DownloadCard } from '@/components/features/download/download-card';
 import { useScrollSpy } from '@/composables/scroll/useScrollSpy';
 import { DownloadStatus } from '@/enums/download/DownloadStatus';
 import { getPickedDownloadFileIndexes } from '@/utils/download/getPickedDownloadFileIndexes';
-import { showEditorDownloadKey } from './showEditorDownloadKey';
+import { showEditorDownloadsKey } from './showEditorDownloadsKey';
 import ShowEditorSectionNav from './ShowEditorSectionNav.vue';
 import ShowEntriesFormPart from './ShowEntriesFormPart.vue';
 import ShowGeneralFormPart from './ShowGeneralFormPart.vue';
@@ -27,12 +27,17 @@ import ShowUiFormPart from './ShowUiFormPart.vue';
  */
 const STICKY_TOP = 88;
 
-const { download = null } = defineProps<{
-  /** A torrent whose files can be picked for episodes, from the link the editor was opened with. */
-  download?: Download | null;
+const { downloads = [] } = defineProps<{
+  /** The torrents whose files can be picked for episodes or whose progress the episodes show, newest first. */
+  downloads?: Download[];
 }>();
 
 const show = defineModel<Show>('show', { required: true });
+
+defineSlots<{
+  /** Buttons on each torrent's card above the entries, such as cancel. */
+  'torrent-actions'?: (scope: { download: Download }) => unknown;
+}>();
 
 /** Each section's form validity; only `false` marks a section, as Vuetify reports null for unchecked fields. */
 const validity = ref<Record<'general' | 'media' | 'entries' | 'links', boolean>>({
@@ -91,21 +96,35 @@ const sections = computed<ShowEditorSection[]>(() => [
 ]);
 
 /**
- * The attached torrent with its files still free to pick: not picked anywhere in this show, nor by another show.
- * Provided to the episode parts, so the parts in between don't pass it on.
+ * The torrents with their files still free to pick: not picked anywhere in this show, nor by another show. Provided to
+ * the episode parts, so the parts in between don't pass them on.
  */
-const editorDownload = computed<ShowEditorDownload>(() => {
-  if (!download) {
-    return { download: null, availableFiles: [] };
-  }
+const editorDownloads = computed<ShowEditorDownloads>(() => {
+  const torrents = downloads.map((download): ShowEditorTorrent => {
+    if (download.status === DownloadStatus.Completed) {
+      return { download, canPick: false, availableFiles: [] };
+    }
 
-  const pickedIndexes = getPickedDownloadFileIndexes(show.value.entries ?? [], download.id);
-  const availableFiles = (download.files ?? []).filter(
-    (file) => !pickedIndexes.has(file.index) && (file.show_id === null || file.show_id === show.value.id),
+    const pickedIndexes = getPickedDownloadFileIndexes(show.value.entries ?? [], download.id);
+    const availableFiles = (download.files ?? []).filter(
+      (file) => !pickedIndexes.has(file.index) && (file.show_id === null || file.show_id === show.value.id),
+    );
+
+    return { download, canPick: true, availableFiles };
+  });
+
+  // A magnet's file list comes from peers first, so it has nothing to pick until then
+  const pickable = torrents.filter(
+    (torrent) => torrent.download.status !== DownloadStatus.FetchingMetadata && torrent.availableFiles.length > 0,
   );
 
-  return { download, availableFiles };
+  return { torrents, pickable };
 });
+
+/** The torrents shown above the entries: a completed one has nothing left to do here. */
+const openTorrents = computed<ShowEditorTorrent[]>(() =>
+  editorDownloads.value.torrents.filter((torrent) => torrent.canPick),
+);
 
 /** The sections by key, so the template can place each one's heading next to its own form. */
 const sectionsByKey = computed(() => {
@@ -136,7 +155,7 @@ const validate = async (): Promise<boolean> => {
 
 defineExpose({ validate });
 
-provide(showEditorDownloadKey, editorDownload);
+provide(showEditorDownloadsKey, editorDownloads);
 </script>
 
 <template>
@@ -188,9 +207,9 @@ provide(showEditorDownloadKey, editorDownload);
           :title="sectionsByKey.entries.title"
           id="show-editor-entries"
         >
-          <!-- The attached torrent, like the settings page's status cards. The icon outside says how to pick its files,
-               or why it failed. -->
-          <div class="d-flex align-center ga-4 mb-4" v-if="download">
+          <!-- The torrents still in use, like the settings page's status cards. The icon outside says how to pick their
+               files, or why one failed. -->
+          <div v-for="{ download } in openTorrents" class="d-flex align-center ga-4 mb-4" :key="download.id">
             <v-icon
               :icon="download.status === DownloadStatus.Failed ? 'mdi-alert-circle' : 'mdi-help-circle'"
               v-tooltip:bottom="
@@ -199,7 +218,11 @@ provide(showEditorDownloadKey, editorDownload);
                   : t('download.pickFilesHint')
               "
             />
-            <download-card :name="download.name" :status="download.status" class="flex-1-1" is-one-line />
+            <download-card :name="download.name" :status="download.status" class="flex-1-1" is-one-line>
+              <template #actions v-if="$slots['torrent-actions']">
+                <slot :download="download" name="torrent-actions" />
+              </template>
+            </download-card>
           </div>
 
           <form-card>

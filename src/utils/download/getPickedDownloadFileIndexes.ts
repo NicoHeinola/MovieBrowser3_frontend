@@ -1,9 +1,4 @@
-import type { EpisodeDownload } from '@/interfaces/api/models/EpisodeDownload';
-
-/** An entry as the editor holds it: only the episode fields that tell which torrent file it waits for. */
-interface EntryWithEpisodeDownloads {
-  episodes?: { download?: EpisodeDownload | null }[];
-}
+import type { EntryWithEpisodeDownloads } from '@/interfaces/download/EntryWithEpisodeDownloads';
 
 /**
  * The files of one download that some episode already waits for, saved or not, so they aren't offered twice.

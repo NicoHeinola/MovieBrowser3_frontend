@@ -46,7 +46,7 @@ const withoutWatchData = (show: Show): Show => {
  * Loads a show into an editable draft and saves the draft with all its titles, categories, entries, episodes and
  * links. A background refetch replaces the draft only while it has no unsaved changes, so edits are never lost.
  * @param showId - The id of the show to edit, or null to add a new show.
- * @returns The draft, its load and save state, and the save, delete, discard and apply-template actions.
+ * @returns The draft, its load and save state, and the save, delete, discard, reload and apply-template actions.
  */
 export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
   const queryClient = useQueryClient();
@@ -207,6 +207,24 @@ export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
   };
 
   /**
+   * Loads the show again and starts the draft over from it, after a change made outside the draft, such as a cancelled
+   * download removing episodes. Only call it without unsaved changes: they would be lost.
+   * @returns Nothing.
+   */
+  const reload = async (): Promise<void> => {
+    // A new show isn't on the backend yet, so there's nothing to load
+    if (showId.value === null) {
+      return;
+    }
+
+    const { data } = await showQuery.refetch();
+
+    if (data) {
+      reset(data);
+    }
+  };
+
+  /**
    * Throws away unsaved changes and goes back to the last loaded or saved show.
    * @returns Nothing.
    */
@@ -239,6 +257,7 @@ export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
     save,
     remove,
     discard,
+    reload,
     applyTemplate,
   };
 };

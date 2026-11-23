@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { EpisodeFormData } from './EpisodeFormData';
 import type { ShowEntryFormData } from './ShowEntryFormData';
-import type { DownloadFile } from '@/interfaces/api/models/DownloadFile';
+import type {
+  DownloadFilePickerInput,
+  PickedDownloadFiles,
+} from '@/components/features/download/download-file-picker-dialog';
 import { computed, ref, useTemplateRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { FormItemList } from '@/components/common/form-item-list';
@@ -11,7 +14,6 @@ import { useDialog } from '@/components/layouts/dialog-provider';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
 import { useSortableItems } from '@/composables/sortable/useSortableItems';
-import { DownloadStatus } from '@/enums/download/DownloadStatus';
 import { getDownloadFileName } from '@/utils/download/getDownloadFileName';
 import { episodeVideoFileExtensions } from '@/utils/show/video-file/episodeVideoFileExtensions';
 import { getEpisodeNameFromFilename } from '@/utils/show/video-file/getEpisodeNameFromFilename';
@@ -19,7 +21,7 @@ import { sortFilesByName } from '@/utils/show/video-file/sortFilesByName';
 import { getUnsavedRowKey } from '@/utils/sortable/getUnsavedRowKey';
 import { renumberItems } from '@/utils/sortable/renumberItems';
 
-import { injectShowEditorDownload } from './injectShowEditorDownload';
+import { injectShowEditorDownloads } from './injectShowEditorDownloads';
 import ShowEpisodeExpansionPanel from './ShowEpisodeExpansionPanel.vue';
 
 const entry = defineModel<ShowEntryFormData>('entry', { required: true });
@@ -42,17 +44,13 @@ const episodeZoneRef = useTemplateRef<HTMLElement>('episodeZone');
 const expandedEpisodeKeys = ref<string[]>([]);
 
 const dialog = useDialog();
-const editorDownload = injectShowEditorDownload();
+const editorDownloads = injectShowEditorDownloads();
 const { confirm } = useConfirmDialog();
 const { showSuccessSnackbar, showWarningSnackbar } = useCommonSnackbar();
 const { t } = useI18n();
 
-/** Whether the torrent has files to pick now: its list is fetched, and some are left. */
-const canAddFromDownload = computed<boolean>(
-  () =>
-    editorDownload.value.download?.status !== DownloadStatus.FetchingMetadata &&
-    editorDownload.value.availableFiles.length > 0,
-);
+/** Whether a torrent can still take picks, so the button shows, though it may have no files to offer right now. */
+const hasOpenTorrent = computed<boolean>(() => editorDownloads.value.torrents.some((torrent) => torrent.canPick));
 
 const syncEpisodeSequenceNumbers = (): void => {
   renumberItems(entry.value.episodes ?? [], 'sequence_number');
@@ -179,25 +177,19 @@ const addEpisodesFromFiles = async (): Promise<void> => {
  * @returns Nothing.
  */
 const addEpisodesFromDownload = async (): Promise<void> => {
-  const { download, availableFiles } = editorDownload.value;
-
-  if (!download) {
-    return;
-  }
-
-  const files = await dialog.showDialog<DownloadFile[], { files: DownloadFile[]; targetName: string }>({
+  const picked = await dialog.showDialog<PickedDownloadFiles, DownloadFilePickerInput>({
     component: DownloadFilePickerDialog,
-    props: { files: availableFiles, targetName: entry.value.name },
+    props: { sources: editorDownloads.value.pickable, targetName: entry.value.name },
   });
 
-  if (!files?.length) {
+  if (!picked?.files.length) {
     return;
   }
 
   const episodes = (entry.value.episodes ??= []);
-  const nextEpisodes: EpisodeFormData[] = files.map((file, index) => ({
+  const nextEpisodes: EpisodeFormData[] = picked.files.map((file, index) => ({
     name: getEpisodeNameFromFilename(getDownloadFileName(file.path)),
-    download: { id: download.id, file_index: file.index, path: file.path },
+    download: { id: picked.download.id, file_index: file.index, path: file.path },
     sequence_number: episodes.length + index,
   }));
 
@@ -307,13 +299,13 @@ const draftEpisodes = useSortableItems<EpisodeFormData>(episodeZoneRef, {
       <v-btn size="small" variant="text" @click="addEpisode"> {{ t('show.addEpisode') }} </v-btn>
       <v-btn size="small" variant="text" @click="addEpisodesFromFiles"> {{ t('show.addEpisodesFromFiles') }} </v-btn>
       <v-btn
-        :disabled="!canAddFromDownload"
+        :disabled="editorDownloads.pickable.length === 0"
         color="primary"
         prepend-icon="mdi-download-box-outline"
         size="small"
         variant="text"
         @click="void addEpisodesFromDownload()"
-        v-if="editorDownload.download"
+        v-if="hasOpenTorrent"
       >
         {{ t('download.addFromTorrent') }}
       </v-btn>

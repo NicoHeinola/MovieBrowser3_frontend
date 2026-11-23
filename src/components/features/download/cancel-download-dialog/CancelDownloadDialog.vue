@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import { BaseDialog } from '@/components/common/base-dialog';
 import { DownloadCard } from '@/components/features/download/download-card';
+import { DownloadStatus } from '@/enums/download/DownloadStatus';
 import { downloadService } from '@/services/download/downloadService';
 import { getApiErrorMessage } from '@/utils/api/getApiErrorMessage';
 import { getDownloadProgress } from '@/utils/download/getDownloadProgress';
@@ -23,6 +24,9 @@ const errorMessage = ref<string | null>(null);
 const { t } = useI18n();
 
 const waitingEpisodeCount = computed<number>(() => props.download.waiting_episode_count ?? 0);
+
+/** A finished download only leaves the list: its episodes have their videos, and qBittorrent may still seed it. */
+const isFinished = computed<boolean>(() => props.download.status === DownloadStatus.Completed);
 
 /** Its show and how far it got, under its name. */
 const details = computed<string>(() => {
@@ -54,14 +58,15 @@ const cancel = async (): Promise<void> => {
 
 <template>
   <base-dialog v-model="isDialogVisible" max-width="600px">
-    <template #title> {{ t('download.cancelTitle') }} </template>
+    <template #title> {{ isFinished ? t('download.removeTitle') : t('download.cancelTitle') }} </template>
 
     <template #default>
       <div class="d-flex flex-column ga-4">
         <!-- The torrent, like the download dialog shows it -->
         <download-card :details="details" :name="props.download.name" :status="props.download.status" />
 
-        <v-alert class="flex-0-1" type="warning" variant="tonal">{{ t('download.cancelText') }}</v-alert>
+        <v-alert class="flex-0-1" type="info" variant="tonal" v-if="isFinished">{{ t('download.removeText') }}</v-alert>
+        <v-alert class="flex-0-1" type="warning" variant="tonal" v-else>{{ t('download.cancelText') }}</v-alert>
 
         <!-- A choice about the episodes, apart from the cancel itself -->
         <v-sheet border="sm" rounded="lg" v-if="waitingEpisodeCount > 0">
@@ -86,7 +91,7 @@ const cancel = async (): Promise<void> => {
       <v-spacer />
       <v-btn :disabled="isCancelling" variant="text" @click="props.close()"> {{ t('download.keep') }} </v-btn>
       <v-btn :loading="isCancelling" color="error" variant="flat" @click="void cancel()">
-        {{ t('download.cancel') }}
+        {{ isFinished ? t('download.remove') : t('download.cancel') }}
       </v-btn>
     </template>
   </base-dialog>

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import type { EpisodeFormData } from './EpisodeFormData';
-import type { DownloadFile } from '@/interfaces/api/models/DownloadFile';
+import type {
+  DownloadFilePickerInput,
+  PickedDownloadFiles,
+} from '@/components/features/download/download-file-picker-dialog';
+import type { DownloadStatus } from '@/enums/download/DownloadStatus';
 import type { ComponentPublicInstance } from 'vue';
 import { makeDroppable } from '@vue-dnd-kit/core';
 import { computed, useTemplateRef } from 'vue';
@@ -10,11 +14,12 @@ import { DownloadStatusChip } from '@/components/features/download/download-stat
 import { MissingVideoFileChip } from '@/components/features/show/missing-video-file-chip';
 import { useDialog } from '@/components/layouts/dialog-provider';
 import { getDownloadFileName } from '@/utils/download/getDownloadFileName';
+import { getDownloadFileStatus } from '@/utils/download/getDownloadFileStatus';
 import { formatFileSize } from '@/utils/file/formatFileSize';
 import { isEpisodeVideoMissing } from '@/utils/show/video-file/isEpisodeVideoMissing';
 import { formatDuration } from '@/utils/time/formatDuration';
 
-import { injectShowEditorDownload } from './injectShowEditorDownload';
+import { injectShowEditorDownloads } from './injectShowEditorDownloads';
 import { getRules } from './showEntriesFormRules';
 
 const { t, locale } = useI18n();
@@ -25,7 +30,7 @@ const expanded = defineModel<boolean>('expanded', { default: false });
 const fileInput = useTemplateRef<ComponentPublicInstance>('fileInput');
 
 const dialog = useDialog();
-const editorDownload = injectShowEditorDownload();
+const editorDownloads = injectShowEditorDownloads();
 
 const rules = computed(() => getRules(null));
 
@@ -33,6 +38,19 @@ const rules = computed(() => getRules(null));
 const isWaitingForDownload = computed<boolean>(
   () => !episode.value.file && Boolean(episode.value.download) && !episode.value.download?.imported_at,
 );
+
+/**
+ * Where the episode's file stands: its own progress while the editor follows its torrent (each file finishes and is
+ * copied on its own), otherwise the saved download status. An unsaved pick has none yet.
+ */
+const downloadStatus = computed<DownloadStatus | undefined>(() => {
+  const pick = episode.value.download;
+  const download = editorDownloads.value.torrents.find((torrent) => torrent.download.id === pick?.id)?.download;
+  // Only a saved pick has its file claimed for this episode
+  const file = download?.files?.find((item) => item.index === pick?.file_index && item.episode_id === episode.value.id);
+
+  return download && file ? getDownloadFileStatus(download, file) : pick?.status;
+});
 
 /**
  * The picked file's name, the torrent file's, or the saved one. An unsaved episode's filename is only left over from a
@@ -52,20 +70,14 @@ const filename = computed<string | undefined>(() => {
  * @returns Nothing.
  */
 const pickDownloadFile = async (): Promise<void> => {
-  const { download, availableFiles } = editorDownload.value;
+  const picked = await dialog.showDialog<PickedDownloadFiles, DownloadFilePickerInput>({
+    component: DownloadFilePickerDialog,
+    props: { sources: editorDownloads.value.pickable, targetName: episode.value.name, isSingle: true },
+  });
+  const file = picked?.files[0];
 
-  if (!download) {
-    return;
-  }
-
-  const [file] =
-    (await dialog.showDialog<DownloadFile[], { files: DownloadFile[]; targetName: string; isSingle: boolean }>({
-      component: DownloadFilePickerDialog,
-      props: { files: availableFiles, targetName: episode.value.name, isSingle: true },
-    })) ?? [];
-
-  if (file) {
-    episode.value.download = { id: download.id, file_index: file.index, path: file.path };
+  if (picked && file) {
+    episode.value.download = { id: picked.download.id, file_index: file.index, path: file.path };
     // The torrent file takes the place of a picked one, which would otherwise upload too
     episode.value.file = undefined;
   }
@@ -123,7 +135,7 @@ makeDroppable(() => fileInput.value?.$el as HTMLElement | undefined, {
           <span class="text-medium-emphasis text-body-small text-no-wrap" v-if="episode.video_file_size">
             {{ formatFileSize(episode.video_file_size, locale) }}
           </span>
-          <download-status-chip :status="episode.download?.status" v-if="isWaitingForDownload" />
+          <download-status-chip :status="downloadStatus" v-if="isWaitingForDownload" />
           <missing-video-file-chip v-else-if="isEpisodeVideoMissing(episode)" />
         </div>
       </template>
@@ -164,7 +176,7 @@ makeDroppable(() => fileInput.value?.$el as HTMLElement | undefined, {
                 variant="text"
                 @click="void pickDownloadFile()"
                 v-tooltip:bottom="t('download.pickFromTorrent')"
-                v-if="editorDownload.download && editorDownload.availableFiles.length > 0"
+                v-if="editorDownloads.pickable.length > 0"
               />
             </div>
           </v-col>

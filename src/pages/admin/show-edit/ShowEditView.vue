@@ -17,16 +17,19 @@ import {
 } from '@/components/features/show/show-editor';
 import { ShowTemplateDialog } from '@/components/features/show/show-template-dialog';
 import { useDialog } from '@/components/layouts/dialog-provider';
-import { useAPIQuery } from '@/composables/api/useAPIQuery';
+import { useAPIQueries } from '@/composables/api/useAPIQueries';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
+import { useDownloadCancel } from '@/composables/download/useDownloadCancel';
 import { useVideoDurationScan } from '@/composables/setting/useVideoDurationScan';
 import { useShowEditor } from '@/composables/show/useShowEditor';
 import { useShowTemplate } from '@/composables/show/useShowTemplate';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
-import { DownloadStatus } from '@/enums/download/DownloadStatus';
 import { DownloadQueryKey } from '@/enums/query/downloadQueryKey';
 import { downloadService } from '@/services/download/downloadService';
+import { getUnfinishedDownloadIds } from '@/utils/download/getUnfinishedDownloadIds';
+import { isDownloadActive } from '@/utils/download/isDownloadActive';
 import { getQueryString } from '@/utils/route/getQueryString';
+import { getQueryStrings } from '@/utils/route/getQueryStrings';
 import { hasPendingVideoUploads } from '@/utils/show/video-file/hasPendingVideoUploads';
 
 const editor = useTemplateRef<InstanceType<typeof ShowEditor>>('editor');
@@ -57,25 +60,36 @@ const {
   save,
   remove,
   discard,
+  reload,
   applyTemplate,
 } = useShowEditor(showId);
+const { cancel: cancelDownload } = useDownloadCancel();
 const { isLoading: isLoadingTemplate, loadTemplate } = useShowTemplate();
 
-/** The download the editor was opened with (a torrent's "Add to show"), whose files can be picked for episodes. */
-const downloadId = computed<number | null>(() => {
-  const id = Number(getQueryString(route.query.download));
+/**
+ * The torrents whose files can be picked for episodes, newest first: those the editor was opened with or that were
+ * added in it (kept in the link), and those the show's episodes still wait for, so they show their files' progress.
+ */
+const downloadIds = computed<number[]>(() => {
+  const linkedIds = getQueryStrings(route.query.download)
+    .map(Number)
+    .filter((id) => Number.isInteger(id) && id > 0);
+  const waitedIds = getUnfinishedDownloadIds(show.value?.entries ?? []);
 
-  return Number.isInteger(id) && id > 0 ? id : null;
+  return [...new Set([...linkedIds, ...waitedIds])].toSorted((a, b) => b - a);
 });
 
-const downloadQuery = useAPIQuery<Download>({
-  queryKey: computed(() => [DownloadQueryKey.ShowEditorDownload, downloadId.value]),
-  queryFn: async () => await downloadService.get(downloadId.value!),
-  enabled: computed(() => downloadId.value !== null),
-  // A magnet's file list comes from peers first, so look again until qBittorrent has it
-  refetchInterval: (query) => (query.state.data?.status === DownloadStatus.FetchingMetadata ? 2000 : false),
-  staleTime: 0,
-});
+const downloadQueries = useAPIQueries<Download>(() =>
+  downloadIds.value.map((id) => ({
+    queryKey: [DownloadQueryKey.ShowEditorDownload, id],
+    queryFn: async () => await downloadService.get(id),
+    // Follow each while it moves: a magnet's file list comes from peers first, then files download and import
+    refetchInterval: (query) => (query.state.data && isDownloadActive(query.state.data.status) ? 2000 : false),
+    staleTime: 0,
+  })),
+);
+
+const downloads = computed<Download[]>(() => downloadQueries.value.flatMap((query) => query.data ?? []));
 
 const {
   isRunning: isReadingLengths,
@@ -123,12 +137,14 @@ const saveShow = async (): Promise<void> => {
     void followLengthScan();
   }
 
-  // The download's status follows its picks, which the save just sent
-  if (savedId !== null && downloadId.value !== null) {
-    void downloadQuery.refetch();
+  // A download's status follows its picks, which the save just sent
+  if (savedId !== null) {
+    for (const query of downloadQueries.value) {
+      void query.refetch();
+    }
   }
 
-  // The download stays in the URL, so more of its files can still be picked
+  // The downloads stay in the URL, so more of their files can still be picked
   if (savedId !== null && wasNew) {
     const query = route.query.download ? { download: route.query.download } : {};
 
@@ -210,16 +226,40 @@ const openTemplateDialog = async (): Promise<void> => {
 };
 
 /**
- * Adds a torrent pasted as a magnet link, such as one from nyaa, and attaches it to the editor so its files can be
- * picked for episodes. It replaces the attached one; picks already made stay with their episodes.
+ * Adds a torrent pasted as a magnet link, such as one from nyaa, next to the editor's others, so its files can be
+ * picked for episodes.
  * @returns Nothing.
  */
 const addTorrent = async (): Promise<void> => {
   const addedId = await dialog.showDialog<number>({ component: AddTorrentDialog });
 
   if (addedId !== undefined) {
-    await router.replace({ query: { ...route.query, download: String(addedId) } });
+    const download = [...getQueryStrings(route.query.download), String(addedId)];
+
+    await router.replace({ query: { ...route.query, download } });
   }
+};
+
+/**
+ * Cancels one of the editor's torrents, such as one added by mistake. Cancelling can remove the episodes made for it,
+ * so the show loads again afterwards, which needs the draft saved first.
+ * @param download - The torrent.
+ * @returns Nothing.
+ */
+const cancelTorrent = async (download: Download): Promise<void> => {
+  if (hasChanges.value) {
+    showWarningSnackbar(t('download.saveBeforeCancel'));
+    return;
+  }
+
+  if (!(await cancelDownload(download))) {
+    return;
+  }
+
+  // Out of the link, so the editor stops following it
+  const remainingIds = getQueryStrings(route.query.download).filter((id) => id !== String(download.id));
+  await router.replace({ query: { ...route.query, download: remainingIds } });
+  await reload();
 };
 
 /**
@@ -348,7 +388,18 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
             </v-btn>
           </template>
         </show-editor-hero>
-        <show-editor v-model:show="show" :download="downloadQuery.data.value ?? null" ref="editor" />
+        <show-editor v-model:show="show" :downloads="downloads" ref="editor">
+          <template #torrent-actions="{ download }">
+            <v-btn
+              color="error"
+              icon="mdi-trash-can"
+              size="small"
+              variant="text"
+              @click="void cancelTorrent(download)"
+              v-tooltip:bottom="t('download.cancel')"
+            />
+          </template>
+        </show-editor>
       </template>
     </div>
   </page-container>

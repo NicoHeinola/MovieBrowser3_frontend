@@ -156,7 +156,9 @@
       "episode_not_in_show": "A picked episode belongs to another show.",
       "episode_already_downloading": "An episode already waits for a file from another torrent.",
       "not_enough_disk_space": "The picked files need {needed_bytes}, but the download disk has only {free_bytes} free.",
-      "file_already_picked": "A picked file already belongs to an episode of another show."
+      "file_already_picked": "A picked file already belongs to an episode of another show.",
+      "download_not_retryable": "Only a download whose files failed to copy can be tried again.",
+      "download_import_running": "Its files are being copied into their episodes. Cancel once they're in place."
     }
   },
   "rules": {
@@ -852,7 +854,10 @@
     "searchShows": "Search shows",
     "pickFromTorrent": "Pick a file from the torrent",
     "errorCodes": {
-      "client_lost_torrent": "qBittorrent no longer has this torrent. Add it again from the Torrents page, or with Add torrent."
+      "client_lost_torrent": "qBittorrent no longer has this torrent. Add it again from the Torrents page, or with Add torrent.",
+      "file_missing": "A finished file isn't in the download folder any more. Put it back, then try again.",
+      "not_enough_disk_space": "The video disk is full. Free some space, then try again.",
+      "import_failed": "Copying a finished file into the video folder failed. Check that the video drive is connected, then try again."
     },
     "pickFileTitle": "Pick a file for {target}",
     "useFile": "Use this file",
@@ -863,6 +868,7 @@
     "bytesOf": "{downloaded} of {size}",
     "speed": "Speed",
     "timeLeft": "Time left",
+    "torrent": "Torrent",
     "added": "Added",
     "perSecond": "{size}/s",
     "openShow": "Open the show",
@@ -872,8 +878,15 @@
     "cancelText": "qBittorrent stops it and deletes what it downloaded. Episodes that already have their video keep it.",
     "removeWaitingEpisodes": "Remove its waiting episode | Remove its {count} waiting episodes",
     "cancelled": "Download cancelled.",
+    "saveBeforeCancel": "Save or discard your changes before cancelling a torrent.",
     "none": "No downloads yet. Send a torrent into a show from the Torrents page, or with Add torrent in the show editor.",
-    "waitingEpisodesHint": "It has no video and only waits for this download. | They have no video and only wait for this download."
+    "waitingEpisodesHint": "It has no video and only waits for this download. | They have no video and only wait for this download.",
+    "retry": "Try again",
+    "retryStarted": "It will be tried again within a minute.",
+    "remove": "Remove from the list",
+    "removeTitle": "Remove this download from the list?",
+    "removeText": "Its episodes keep their videos. If qBittorrent still seeds it, the torrent and its files there go too.",
+    "removed": "Download removed."
   },
   "update": {
     "available": "Update available",

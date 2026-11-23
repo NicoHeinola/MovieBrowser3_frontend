@@ -24,7 +24,8 @@ defineSlots<{
 </script>
 
 <template>
-  <v-sheet border="sm" class="d-flex flex-column ga-4 pa-4" color="transparent" rounded="lg">
+  <!-- min-width lets the card shrink inside a flex row, so a one-line title truncates instead of widening the page -->
+  <v-sheet border="sm" class="d-flex flex-column ga-4 pa-4" color="transparent" rounded="lg" style="min-width: 0">
     <div class="d-flex align-center ga-4">
       <v-avatar :color="props.color" rounded="lg" variant="tonal">
         <v-icon :icon="props.icon" />

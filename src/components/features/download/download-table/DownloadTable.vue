@@ -22,16 +22,31 @@ const props = defineProps<{
   isPending: boolean;
 }>();
 
-const emit = defineEmits<{
-  /** A download's cancel button was clicked. */
-  cancel: [download: Download];
+defineSlots<{
+  /** A row's buttons, after the link to its show, such as retry and cancel. */
+  actions?: (scope: { download: Download }) => unknown;
+  /** Shown when there are no downloads. */
+  'no-data'?: () => unknown;
 }>();
 
 const { locale, t } = useI18n();
 
-/** The downloads with their progress worked out once per row, not once per cell that shows it. */
-const rows = computed<(Download & { progressParts: DownloadProgress | null })[]>(() =>
-  props.downloads.map((download) => ({ ...download, progressParts: getDownloadProgress(download) })),
+/**
+ * The downloads with their progress worked out once per row, not once per cell that shows it. A finished download's
+ * torrent leaves qBittorrent once seeded, taking its sizes with it, so it simply reads as complete.
+ */
+const rows = computed<(Download & { progressParts: DownloadProgress | null; isFinished: boolean })[]>(() =>
+  props.downloads.map((download) => {
+    const isFinished = download.status === DownloadStatus.Completed;
+    const progressParts = getDownloadProgress(download);
+
+    return {
+      ...download,
+      isFinished,
+      progressParts:
+        isFinished && !progressParts ? { percent: t('download.percent', { percent: 100 }), bytes: '' } : progressParts,
+    };
+  }),
 );
 
 /** The list is short and comes newest first, so the columns are not sortable. */
@@ -42,7 +57,7 @@ const headers = computed<DataTableHeader[]>(() => [
   { title: t('download.speed'), key: 'download_speed', align: 'end', sortable: false, width: 120 },
   { title: t('download.timeLeft'), key: 'eta_seconds', align: 'end', sortable: false, width: 120 },
   { title: t('download.added'), key: 'created_at', align: 'end', sortable: false, width: 220 },
-  { title: '', key: 'actions', align: 'end', sortable: false, width: 104 },
+  { title: '', key: 'actions', align: 'end', sortable: false, width: 152 },
 ]);
 
 /**
@@ -82,12 +97,12 @@ const isDownloading = (download: Download): boolean => download.status === Downl
     <template #item.progress="{ item }">
       <!-- The bar takes its status's color, stripes while data moves, and runs without an end while its size is
            unknown, so a glance tells moving, done and stuck apart -->
-      <div class="d-flex flex-column" v-if="item.size_bytes > 0 || isDownloadActive(item.status)">
+      <div class="d-flex flex-column" v-if="item.size_bytes > 0 || item.isFinished || isDownloadActive(item.status)">
         <div class="d-flex align-center ga-2">
           <v-progress-linear
             :color="DOWNLOAD_STATUS_STYLES[item.status].color"
-            :indeterminate="item.size_bytes === 0 || item.status === DownloadStatus.Importing"
-            :model-value="item.progress * 100"
+            :indeterminate="(item.size_bytes === 0 && !item.isFinished) || item.status === DownloadStatus.Importing"
+            :model-value="item.isFinished ? 100 : item.progress * 100"
             :striped="item.status === DownloadStatus.Downloading"
             height="8"
             rounded
@@ -96,7 +111,7 @@ const isDownloading = (download: Download): boolean => download.status === Downl
             {{ item.progressParts.percent }}
           </span>
         </div>
-        <span class="text-medium-emphasis text-body-small">{{ item.progressParts?.bytes ?? '–' }}</span>
+        <span class="text-medium-emphasis text-body-small">{{ item.progressParts?.bytes || '–' }}</span>
       </div>
       <span class="text-medium-emphasis" v-else>–</span>
     </template>
@@ -128,14 +143,7 @@ const isDownloading = (download: Download): boolean => download.status === Downl
           v-tooltip:bottom="t('download.openShow')"
           v-if="item.show"
         />
-        <v-btn
-          color="error"
-          icon="mdi-trash-can"
-          size="small"
-          variant="text"
-          @click="emit('cancel', item)"
-          v-tooltip:bottom="t('download.cancel')"
-        />
+        <slot :download="item" name="actions" v-if="$slots.actions" />
       </div>
     </template>
 

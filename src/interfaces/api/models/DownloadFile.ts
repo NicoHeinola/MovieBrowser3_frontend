@@ -11,4 +11,6 @@ export interface DownloadFile {
   episode_id: number | null;
   /** That episode's show: one torrent can feed several shows, and each leaves the others' picks alone. */
   show_id: number | null;
+  /** When it became its episode's video; null until then. */
+  imported_at: string | null;
 }

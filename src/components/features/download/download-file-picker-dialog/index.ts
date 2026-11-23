@@ -1,2 +1,7 @@
 export { default as DownloadFilePickerDialog } from './DownloadFilePickerDialog.vue';
-export type { DownloadFilePickerDialogProps } from './downloadFilePickerDialogProps';
+export type {
+  DownloadFilePickerDialogProps,
+  DownloadFilePickerInput,
+  DownloadFilePickerSource,
+  PickedDownloadFiles,
+} from './downloadFilePickerDialogProps';

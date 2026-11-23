@@ -130,6 +130,10 @@ export enum ApiErrorCode {
   DownloadExists = 'download_exists',
   /** qBittorrent no longer has the download's torrent. */
   DownloadNotInClient = 'download_not_in_client',
+  /** Only a failed import can be tried again. */
+  DownloadNotRetryable = 'download_not_retryable',
+  /** A download's files are being copied into their episodes, so it can't be cancelled yet. */
+  DownloadImportRunning = 'download_import_running',
   /** A picked file isn't in the torrent. */
   FileIndexInvalid = 'file_index_invalid',
   /** A picked file already belongs to an episode of another show. */

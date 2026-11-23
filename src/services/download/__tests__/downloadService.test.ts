@@ -70,4 +70,12 @@ describe('downloadService', () => {
       ['downloads/5', { params: {} }],
     ]);
   });
+
+  it('retries a download', async () => {
+    vi.mocked(apiClient.post).mockResolvedValueOnce({ data: undefined });
+
+    await downloadService.retry(4);
+
+    expect(apiClient.post).toHaveBeenCalledWith('downloads/4/retry');
+  });
 });

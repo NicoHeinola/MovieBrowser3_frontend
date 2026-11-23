@@ -46,9 +46,19 @@ const remove = async (id: number, removeEpisodes: boolean): Promise<void> => {
   await apiClient.delete(`downloads/${id}`, { params: removeEpisodes ? { remove_episodes: 1 } : {} });
 };
 
+/**
+ * Tries a failed download's imports again; the next sync, within a minute, picks it up.
+ * @param id - The download's id.
+ * @returns Nothing.
+ */
+const retry = async (id: number): Promise<void> => {
+  await apiClient.post(`downloads/${id}/retry`);
+};
+
 export const downloadService = {
   list,
   create,
   get,
   remove,
+  retry,
 };
