@@ -160,9 +160,10 @@ makeDroppable(() => fileInput.value?.$el as HTMLElement | undefined, {
                 disabled
               />
               <v-btn
-                icon="mdi-close"
+                color="error"
+                icon="mdi-download-off"
                 size="small"
-                variant="text"
+                variant="tonal"
                 @click="removeDownload"
                 v-tooltip:bottom="t('download.removePick')"
               />
