@@ -1,41 +1,28 @@
 # MovieBrowser3 Frontend
 
-MovieBrowser3 Frontend is a Vue 3 + Vuetify app for browsing shows in a streaming-style interface.
-
-Right now the project is an early frontend scaffold with a public home page, reusable show components, and mock data for development.
+The web app of MovieBrowser3, a show and movie library that runs on your own PC. It covers browsing and search, watch status and progress, playback in VLC, torrent downloads and an admin area. It is built with Vue 3, Vuetify and TypeScript. The API lives in the `MovieBrowser3_backend` repo.
 
 ## Requirements
 
-- Node.js 24 or newer
-- npm
+- Node.js 24 or newer, and npm.
+- A running backend (see its README).
 
-## Quick Start
+## Setup
 
 ```bash
 npm install
-npm run dev
+cp .env.example .env
 ```
 
-The development server starts with Vite.
+In `.env`, `VITE_API_URL` points at the backend's API (`http://localhost:8765/api/v1` in dev) and `APP_PORT` sets the port the app runs on.
 
-If you want to choose a custom port, set `APP_PORT` before starting the app.
-
-Example:
-
-```bash
-APP_PORT=4173 npm run dev
-```
-
-## Available Commands
+## Commands
 
 ```bash
 npm run dev            # start the development server
 npm run build          # type-check and build for production
 npm run preview        # preview the production build
 npm run check          # types, lint, format and tests
-npm run check:types    # run TypeScript checks
-npm run check:lint     # run ESLint
-npm run check:format   # check formatting with Prettier
 npm run fix            # fix lint and formatting issues
 npm test               # run tests once
 npm run test:watch     # run tests in watch mode
@@ -51,34 +38,21 @@ Production runs on your own machine. The backend repo's install script clones th
 
 ## Project Structure
 
-- `src/pages` contains route-level pages
-- `src/components` contains reusable UI and feature components
-- `src/interfaces/api` contains backend-facing TypeScript interfaces
-- `src/plugins` contains app plugin setup such as Vuetify
-- `src/router` contains Vue Router setup
-- `src/utils` contains small tested helpers
+| Folder            | Holds                                                     |
+| ----------------- | --------------------------------------------------------- |
+| `src/pages`       | route pages, by access: `guest`, `authenticated`, `admin` |
+| `src/components`  | reusable UI (`common`), features and layouts              |
+| `src/composables` | reusable stateful logic (`useX`)                          |
+| `src/stores`      | Pinia stores for shared client state                      |
+| `src/services`    | API calls, one service per backend resource               |
+| `src/interfaces`  | TypeScript shapes; `api` holds the backend contracts      |
+| `src/enums`       | enums, including query keys                               |
+| `src/data`        | content that ships with the app, such as the changelog    |
+| `src/plugins`     | app setup: Vuetify theme, API client, query client, i18n  |
+| `src/router`      | routes and guards                                         |
+| `src/rules`       | form validation rules                                     |
+| `src/utils`       | small tested helpers                                      |
 
-## AI Assistants
+## AI Agent Guidance
 
-Agent guidance lives in `.claude/` and works for both Claude Code and Copilot:
-
-- `AGENTS.md`: repo-wide guidance. `CLAUDE.md` imports it, and `.github/copilot-instructions.md` is a symlink to it.
-- `.claude/rules/`: file-specific rules. Claude loads them through `paths`, Copilot through `applyTo`.
-- `.claude/skills/`: workflows. `.github/skills` is a symlink to it.
-- `.claude/agents/`: planner, researcher and reviewer agents.
-
-In VS Code, Copilot loads `AGENTS.md` by default (`chat.useAgentsMdFile`). If it doesn't pick up the rules, add `.claude/rules` to `chat.instructionsFilesLocations` in your user settings.
-
-## Tech Stack
-
-- Vue 3
-- TypeScript
-- Vite
-- Vuetify
-- Vue Router
-- Pinia
-- Vitest
-
-## Current Status
-
-The app currently ships with a home route and mock show content. Search, auth, admin features, and broader data integration are planned but not implemented yet.
+Claude Code reads `CLAUDE.md`, the file-specific rules in `.claude/rules/` and the workflows in `.claude/skills/`.
