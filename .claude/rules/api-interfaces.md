@@ -1,47 +1,29 @@
 ---
-description: API contract file rules for src/interfaces/api. Use when adding or changing backend-facing request, response, or model interfaces.
 paths:
   - 'src/interfaces/api/**/*.ts'
-applyTo: 'src/interfaces/api/**/*.ts'
 ---
 
 # API Interface Rules
 
 ## Source of Truth
 
-- These files represent backend contracts, so preserve backend field names exactly as they are received (e.g., use `updated_at`, not `updatedAt`).
-- Do not camelCase API fields in interface definitions unless a separate mapping layer converts the payload.
-- Do not repurpose API contract files for frontend-normalized lookup shapes such as keyed `Record`s; keep those mapped shapes outside `src/interfaces/api`, and prefer local aliases when they are small and only used in one place.
+- These files are backend contracts: keep the field names exactly as received (`updated_at`, not `updatedAt`).
+- Frontend-shaped data, such as a keyed `Record` built from a list, lives outside `src/interfaces/api`.
 
 ## File Shape
 
-- Keep one primary interface or type per file.
-- Name the file after the exported contract, such as `Show.ts` or `ShowTitle.ts`.
-- Do not create dedicated response files for simple arrays of models (e.g., use `Show[]` instead of `ShowsResponse.ts`).
-
-### Example: Model Interface
+- One primary interface or type per file, named after it (`Show.ts`, `ShowTitle.ts`).
+- A plain array of models gets no response file: the service returns `Show[]`, not a `ShowsResponse`. A paginated list is `PaginatedResponse<T>`; a named alias for one (`SettingsResponse = PaginatedResponse<Setting>`) is fine when several files use it. A response that is an object of its own gets its own file.
+- Nested contracts that several files use go in sibling files, not repeated anonymous object types.
 
 ```typescript
 // src/interfaces/api/models/Setting.ts
 export interface Setting {
-  value: unknown; // Use unknown for dynamic types
+  value: unknown; // Dynamic per key: see SettingValues
   type: string;
-  updated_at: string; // Match API's snake_case
+  updated_at: string; // The API's snake_case, as received
 }
 ```
-
-### Example: Avoiding Redundant Response Files
-
-```typescript
-// Good: Simple array in service
-const list = async (): Promise<Setting[]> => { ... }
-
-// Bad: Unnecessary wrapper interface
-// src/interfaces/api/responses/SettingsResponse.ts -> export type SettingsResponse = Setting[];
-```
-
-- Always create dedicated files for complex response objects (e.g., `SettingsResponse.ts`) even when they are simple `Record` or wrapper types, as long as they represent a distinct API contract.
-- Use sibling files for nested reusable contracts instead of inlining large anonymous object types repeatedly.
 
 ## User-Facing Text
 
@@ -50,6 +32,5 @@ const list = async (): Promise<Setting[]> => { ... }
 
 ## Safety
 
-- Represent nullable backend fields explicitly with `null` in the type.
-- Prefer exact optionality over broad escape hatches such as `Record<string, unknown>`.
+- A nullable backend field is `| null` in the type. Use exact optional fields, not `Record<string, unknown>`.
 - Setting keys are the `SettingKey` enum, never raw strings. `SettingValues` maps each key to its value type (values arrive as `unknown`), and the setting service and store take only those keys, so a new setting gets an enum member and a field there first. Shapes keyed by setting, such as `SetupChecks`, use the enum members as keys.

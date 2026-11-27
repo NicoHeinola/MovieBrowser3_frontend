@@ -1,5 +1,4 @@
 ---
-description: Source tree namespacing rules for namespaced files and folders under src. Use when creating a new namespace folder or deciding where a new source file should live.
 paths:
   - 'src/components/**'
   - 'src/composables/**'
@@ -13,91 +12,44 @@ paths:
   - 'src/services/**'
   - 'src/stores/**'
   - 'src/utils/**'
-applyTo: 'src/components/**,src/composables/**,src/data/**,src/enums/**,src/interfaces/**,src/pages/**,src/plugins/**,src/router/**,src/rules/**,src/services/**,src/stores/**,src/utils/**'
 ---
 
 # Naming and Structure Rules
 
-## Namespacing Requirement
+## Where a File Goes
 
-- New source files under `src/` should belong to a namespace folder that reflects one logical unit.
-- Do **not** place new implementation files directly under broad buckets such as `src/components`, `src/pages`, `src/utils`, `src/plugins`, or `src/services`.
-- Reuse an existing namespace when the new file clearly belongs to the same feature, component, page, or utility group.
-- Reuse an existing service namespace under `src/services/<domain>/` for backend or platform-facing service wrappers.
-- Split work into a new namespace when the file would otherwise introduce an unrelated responsibility.
+- Every new file under `src/` goes in a namespace folder for one logical unit, never straight into `src/components`, `src/pages`, `src/utils`, `src/plugins` or `src/services`. Reuse a namespace when the file belongs to it; start a new one for an unrelated job.
+- Component and page folders are kebab-case (`show-grid`, `top-navigation`). The primary component is PascalCase and matches the folder (`ShowGrid.vue`). No `types.ts`, `helpers.ts`, `utils.ts` or `common.ts`.
+- A component folder may hold private sibling `.vue` files that only its primary component uses (a dialog's tab panels, form sections). They get no folder of their own, are imported by relative path and are not exported. One that gets reused elsewhere moves to its own namespace.
 
 ## Layer Boundaries
 
 Dependencies point one way. ESLint (`layerBoundaries` in `eslint.config.js`) fails an import that goes the wrong way; tests may import anything.
 
-| Layer                       | Must not import                                                                                                 |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `interfaces`, `enums`       | anything but other interfaces and enums                                                                         |
-| `data`                      | components, pages, plugins, router, services, stores (a list that needs Vue code references a composable)       |
-| `utils`, `rules`            | components, composables, pages, router, services, stores                                                        |
-| `services`                  | components, composables, data, pages, router, stores                                                            |
-| `stores`                    | components, composables, pages, router                                                                          |
-| `plugins`                   | components, composables, pages, router, stores (only `plugins/index.ts`, the startup wiring, may import stores) |
-| `composables`, `components` | pages                                                                                                           |
+| Layer                       | Must not import                                                                                                                |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `interfaces`, `enums`       | anything but other interfaces and enums                                                                                        |
+| `data`                      | components, pages, plugins, router, services, stores (a list that needs Vue code references a composable)                      |
+| `utils`, `rules`            | components, composables, pages, router, services, stores                                                                       |
+| `services`                  | components, composables, data, pages, router, stores                                                                           |
+| `stores`                    | components, composables, pages, router                                                                                         |
+| `plugins`                   | components, composables, pages, router, stores (only `plugins/index.ts`, the startup wiring, may import stores and the router) |
+| `composables`, `components` | pages                                                                                                                          |
 
 A type that a lower layer needs lives in `src/interfaces`, not in the component or composable that first used it.
 
-## Folder and File Naming
+## Barrels (`index.ts`)
 
-- Component and page folders should use the existing kebab-case folder style (for example `show-grid`, `top-navigation`, `home`).
-- Primary component files should use PascalCase names that match the concept exported by that namespace (for example `ShowGrid.vue`, `TopNavigation.vue`).
-- Utility and support `.ts` files should be named after the single function, type, or concept they contain.
-- Avoid generic names such as `types.ts`, `helpers.ts`, or `utils.ts` inside a namespace when a more specific name is possible.
-
-## Private Sub-Components
-
-- A component namespace folder may contain private sibling `.vue` files that exist solely to support the primary component (for example, dialog-specific tab panels or form sections).
-- These siblings do not need their own namespace folder and should not be exported from the namespace `index.ts`.
-- Import them directly by relative path from within the same namespace folder.
-- If a sibling grows large enough to be reused outside the namespace, extract it into its own namespace at that point.
-
-## Barrel Files
-
-- Use `index.ts` only when a namespace intentionally exposes a small public surface for external imports.
-- Component namespaces under `src/components/common`, `src/components/features`, and `src/components/layouts` should expose a small `index.ts` barrel when they are consumed outside their own folder.
-- Keep those component barrels focused on the namespace's primary component and closely related public types only.
-- Do **not** add `index.ts` barrel files to utility namespaces; import utility files directly.
+- A component namespace under `src/components/common`, `features` or `layouts` that is used outside its folder has an `index.ts`. It re-exports the primary component and closely related public types only. Imports from outside go through the folder, never the `.vue` file. Create or update the `index.ts` in the same change as the namespace.
+- Utilities, enums, services and composables get no barrels: import each file directly. Code outside a composables folder imports one `useX` file at a time, so a barrel would only alias them, and barrels inside one layer invite import cycles.
+- Anywhere else, add a barrel only for a deliberate public surface that several namespaces import.
 
 ## Enums
 
-- Keep shared enum files inside a namespaced folder under `src/enums` that reflects the concern they support.
-- Name each enum file after the single enum it exports, such as `settingQueryKey.ts`.
-- Do not add `index.ts` barrels to enum namespaces.
+- Shared enums live in a folder under `src/enums` named for their concern, one enum per file, named after it (`settingQueryKey.ts`).
 
 ## Static Data
 
 - Content that ships with the frontend instead of coming from the backend lives in `src/data/<domain>/`, one exported constant per file (`src/data/changelog/changelogEntries.ts`). Shared configuration lists count too: sort options and search filter definitions (`src/data/show/showSortOptions.ts`). Data holds no Vue code; a definition that needs some references a composable.
 - A list that changes without code changes, such as the nyaa mirrors, comes from a `VITE_*` key read with `getEnvArray` (`src/utils/env`), listed in `.env.example` and `.env.production`. Tests get the production value through `test.env` in `vite.config.mts`.
 - Type it with interfaces in `src/interfaces/<domain>/`, not `src/interfaces/api`, and cover its invariants (order, uniqueness, formats) in an adjacent `__tests__` file.
-
-## Utilities
-
-- Utility files should keep a single clear export responsibility.
-- Closely related utilities may share a namespace folder, such as `env/` or `youtube/`, but unrelated helpers should not.
-- Example structure:
-
-```
-src/
-  components/
-    MyButton/
-      MyButton.vue
-  utils/
-    formatDate/
-      formatDate.ts
-    env/
-      getEnvString.ts
-      getEnvNumber.ts
-      getEnvArray.ts
-      getEnvBoolean.ts
-    youtube/
-      isYouTubeUrl.ts
-      getYouTubeVideoId.ts
-  services/
-    auth/
-      authService.ts
-```

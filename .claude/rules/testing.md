@@ -1,33 +1,14 @@
 ---
-description: Test file structure rules for Vitest and JSDOM suites under src. Use when editing files in __tests__ folders.
 paths:
   - 'src/**/__tests__/*.test.ts'
-applyTo: 'src/**/__tests__/*.test.ts'
 ---
 
-# Test File Structure
+# Test File Rules
 
-## Placement and Naming
-
-- Place each test file in a `__tests__` folder adjacent to the implementation namespace it verifies.
-- Name test files `[implementation-name].test.ts`.
-- Utility namespaces should keep one test file per utility implementation file.
-
-Example:
-
-```
-src/utils/css/
-  parseCssNumeric.ts
-  __tests__/
-    parseCssNumeric.test.ts
-```
-
-## Test Shape
-
-- Use Vitest APIs for assertions, stubs, and mocks.
-- Keep test setup local to the file unless the same helper is reused across multiple sibling tests.
-- Mock only the external edges needed to isolate the behavior under test: `apiClient`, router, Vuetify display state, browser APIs, `import.meta.env`.
+- A test file sits in a `__tests__` folder next to the code it tests and is named `<implementation>.test.ts`, one per implementation file.
 - Start from the closest existing test in the nearest `__tests__` folder (services: `src/services/show/__tests__/showLinkService.test.ts`).
+- Keep setup local to the file unless sibling tests reuse the same helper.
+- Mock only the edges: `apiClient`, router, Vuetify display state, browser APIs, `import.meta.env`. Stub `import.meta.env` in the test file, never rely on the ambient environment.
 
 ## Service Tests
 
@@ -45,8 +26,3 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 ```
-
-## Environment Edges
-
-- DOM-oriented tests may rely on JSDOM.
-- When a test depends on `import.meta.env`, stub that edge explicitly in the test file instead of coupling the test to ambient process state.

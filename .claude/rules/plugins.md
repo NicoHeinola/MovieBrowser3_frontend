@@ -1,43 +1,29 @@
 ---
-description: Plugin namespace rules for application setup files under src/plugins. Use when editing app registration, configured plugin instances, API client setup, or plugin support modules.
 paths:
   - 'src/plugins/**/*.ts'
-applyTo: 'src/plugins/**/*.ts'
 ---
 
 # Plugin Namespace Rules
 
-## Ownership
-
-- Keep application-wide framework setup and integration wiring inside `src/plugins`.
-- Use subnamespaces for distinct integration areas such as API setup or Vuetify setup.
-- Keep `src/plugins/index.ts` as the small entry point that registers the plugin stack with the app.
-
-## File Shape
-
-- Name each plugin file after the configured instance, setup function, or option type it owns.
-- Keep top-level registration files focused on wiring plugins together in a clear order.
-- Keep plugin-local types and support constants beside the plugin file that owns them.
-
-## Boundaries
-
-- Do not move page markup, component rendering, or feature-specific state into plugin files.
-- Keep plugin files focused on application setup, configured instances, and integration boundaries.
-- Register heavy libraries used by a single lazy route from the component that needs them, not from `registerPlugins`, so they stay out of the main bundle. ECharts is one: the chart component calls `registerECharts()`.
+- `src/plugins` holds app-wide setup only, one subfolder per integration (`api`, `vuetify`, `query`, `i18n`). No page markup, rendering or feature state.
+- `src/plugins/index.ts` (`registerPlugins`) is the app's startup wiring: it creates Pinia, registers the plugins in order, sets up the API client's auth (logout and a redirect to `guest-auth` on a 401), and loads the settings whenever a token appears. Only this file may import stores and the router.
+- A heavy library that only one lazy route uses is registered by the component that needs it, not in `registerPlugins`, so it stays out of the main bundle. ECharts is one: the chart component calls `registerECharts()`.
 
 ## TanStack Query
 
-- Expose the shared `QueryClient` from `src/plugins/query/index.ts` and register it via `VueQueryPlugin` in `registerPlugins`.
-- Configure `defaultOptions` (e.g. `staleTime`, `retry`) centrally in the plugin file, not per call-site.
-- Import `queryClient` in the plugin entry when explicit cache access is needed outside a component tree.
-
-Example:
+- The shared `QueryClient` lives in `src/plugins/query/index.ts` and is registered with `VueQueryPlugin` in `registerPlugins`.
+- `defaultOptions` (`staleTime`, `retry`) are set there, not per call site.
+- Code outside a component tree that needs the cache imports `queryClient` from there.
 
 ```ts
 export const registerPlugins = (app: App) => {
+  const pinia = createPinia();
+
   app.use(vuetify);
   app.use(pinia);
+  app.use(i18n);
   app.use(VueQueryPlugin, { queryClient });
+  // ... API client auth and the settings watcher ...
   app.use(router);
 };
 ```

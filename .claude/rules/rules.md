@@ -1,9 +1,7 @@
 ---
-description: Validation rule file rules for reusable form rules under src/rules and the feature-level *Rules.ts files that combine them. Use when creating or editing rule functions, rule signatures, or a form's getRules().
 paths:
   - 'src/rules/**/*.ts'
   - 'src/components/**/*Rules.ts'
-applyTo: 'src/rules/**/*.ts,src/components/**/*Rules.ts'
 ---
 
 # Validation Rule File Rules

@@ -1,6 +1,6 @@
 ---
 name: feature-review
-description: What to check when reviewing a frontend change in this repo (local edits, staged changes, a diff, a branch or a PR). Use when asked to review changes or judge whether a change is safe to merge. Report with the `clear-review` format when it is available.
+description: Lists what to check when reviewing a frontend change in this repo (local edits, staged changes, a diff, a branch or a PR). Use with the global `review-changes` skill when asked to review changes or judge whether a change is safe to merge: this skill adds the repo's high-risk areas, `review-changes` gives the steps and the report. Not for backend changes.
 ---
 
 # Feature Review
@@ -20,7 +20,7 @@ Review the changed files first; read further only as far as the affected boundar
    - Theme colors or spacing hard-coded instead of the Vuetify plugin and utilities.
    - UI copy missing from `en.json` or `fi.json`, or a user-facing change without a changelog line.
    - New utilities or services without tests.
-5. Report findings, most severe first, each with a concrete scenario, file reference and fix. Without `clear-review`, use the same order and say what could not be checked.
+5. Report findings, most severe first, each with a concrete scenario, file reference and fix. Without `review-changes`, use the same order and say what could not be checked.
 
 ## Done when
 

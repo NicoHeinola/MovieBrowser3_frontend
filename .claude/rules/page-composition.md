@@ -1,35 +1,21 @@
 ---
-description: Page composition rules for Vue pages under src/pages. Use when editing route-level page components or splitting page logic into reusable features.
 paths:
   - 'src/pages/**/*.vue'
-applyTo: 'src/pages/**/*.vue'
 ---
 
 # Page Composition Rules
 
-## Ownership
-
-- Pages are route-level composition units.
-- Keep pages focused on assembling sections, wiring route concerns, and connecting page state to child components.
-- Do not let pages become the long-term home for reusable cards, banners, navigation blocks, or repeated feature markup.
-
 ## Layout
 
 - Pages live at `src/pages/<access>/<name>/<Name>View.vue`, where access is `guest`, `authenticated` or `admin`.
+- Pages assemble sections and wire route state. Reusable cards, banners, navigation blocks and repeated markup go in namespaced components under `src/components`.
 - Start with `<page-background />` and `<page-container>`, then lay out `titled-section`s in `v-row` and `v-col`. Pages without navigation (login, setup) use `<movie-background />` instead of `<page-background />`, so their `glass-panel` cards have something to show through.
 - A page split into tabs must not jump when they switch. Give every tab's `v-row` the same `gap`, because Vuetify uses a row's own gap as the margin above it, and keep the section header buttons one size (a round icon button is taller than a text button).
 - A tab that should reopen next time uses `useStoredTab` (`src/composables/tab`).
 
-## File Boundaries
+## Data
 
-- Reusable sections belong in namespaced components under `src/components`; pages compose those sections rather than permanently hosting shared markup.
 - Mutations that take several requests, recover from errors or keep state while they run belong in a composable (`useShowSections` saves the section order), or in a store under `src/stores` when the state outlives the page. A single service call after a dialog or button stays in the component.
-- Page-local read-only server state may use `useAPIQuery` directly in the page instead of a store when the data is not shared across routes.
-
-## Boundaries
-
-- Route registration belongs in `src/router`, not inside page files.
-- Backend contracts belong in `src/interfaces/api`, not inline in page components unless the type is trivial and page-local.
 
 ## Search Pages
 
@@ -39,19 +25,3 @@ applyTo: 'src/pages/**/*.vue'
 - Every search page keeps its state in the URL query: the `use<Domain>Search` composable passes `routeQuery` to `usePaginatedSearch` (`q`, `sort` and `page`, plus the filter params from `createSearchFilters`). Only one search per page can do this. Changes use `router.replace`, so a `temporary` drawer that edits them needs `disable-route-watcher`.
 - A search that opens on another site instead of listing results (the nyaa tab) keeps the same look: `search-toolbar` with its `submit` event (Enter) and `append` slot for the open button, and `search-filter-drawer` with `apply-text` in place of the result count.
 - The empty state is an info alert. It offers "Clear filters" only when filters are active. Adding items goes through the page's floating action button, not the alert.
-
-## Loading States
-
-- Pages should pass loading state into child sections and render it with Vuetify built-in `loading` props or `v-skeleton-loader`.
-- Do not build page-level custom loaders, ad hoc empty-shell placeholders, or bespoke spinner layouts.
-
-Example:
-
-```vue
-<template>
-  <v-container>
-    <show-banner />
-    <show-grid />
-  </v-container>
-</template>
-```

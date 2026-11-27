@@ -1,128 +1,62 @@
 ---
-description: General Vue single-file component structure rules for src .vue files. Use when editing component or page SFC files.
 paths:
   - 'src/**/*.vue'
-applyTo: 'src/**/*.vue'
 ---
 
-# Vue File Structure and Ordering
+# Vue File Rules
 
-## General Order
+## Script Order
 
-- **Use `<script setup lang="ts">` by default.**
-- **Script section first, template section last.**
-- **Order inside `<script setup>` or `<script>`:**
-  1. Imports: `import type` lines first, then value imports. External packages before `@/` aliases, `@/` aliases before `./` siblings. Import components from their namespace barrel (`@/components/common/base-form`), not the `.vue` file.
-  2. Define props
-  3. Define v-model bindings
-  4. Local refs and plain state
-  5. Composable calls and injected dependencies
-  6. Computed values
-  7. Functions (methods)
-  8. Watchers
-  9. Lifecycle hooks (onMounted, etc.)
-  10. Other code (e.g., event listeners, side effects)
-- **Template section** should be at the end of the file.
-
-## Good Script Order
-
-- Keep `ref(...)` declarations together before derived state.
-- Place composable results such as `useDisplay()`, `useRoute()`, `useRouter()`, or snackbar/dialog APIs after local refs so dependencies are visible before computed state.
-- Put `computed(...)` values after the refs and composables they depend on.
-- Declare async loaders, event handlers, and helper methods before `watch(...)` and `onMounted(...)`.
-- Keep `watch(...)` close to the state it synchronizes, but still below computed values and methods.
-- Keep `onMounted(...)` and other lifecycle hooks near the end of the script block.
+`<script setup lang="ts">` first, template last. Inside the script, in this order:
 
 ```vue
 <script setup lang="ts">
+// 1. Imports (components from their namespace barrel, such as `@/components/common/base-form`)
 import { computed, onMounted, ref, watch } from 'vue';
-import { useDisplay } from 'vuetify';
 
-import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { MyComponent } from '@/components/common/my-component';
 
-const shows = ref<Show[]>([]);
-const selectedShow = ref<Show | null>(null);
+// 2. Props
+defineProps<{ foo: string }>();
 
-const { showAPIErrorSnackbar } = useCommonSnackbar();
-const { xxl, xlAndUp, lgAndUp, smAndUp } = useDisplay();
+// 3. v-model
+defineModel<string>('bar');
 
-const continueWatchingCols = computed<number>(() => {
-  if (xxl.value) return 5;
-  if (xlAndUp.value) return 4;
-  if (lgAndUp.value) return 3;
-  if (smAndUp.value) return 2;
-  return 1;
-});
+// 4. Local refs and plain state
+const count = ref<number>(0);
 
-const loadShows = async (): Promise<void> => {
-  try {
-    // ...
-  } catch (error: unknown) {
-    showAPIErrorSnackbar(error);
-  }
+// 5. Composables and injected dependencies (useDisplay, useRoute, snackbar and dialog APIs)
+
+// 6. Computed
+const doubled = computed<number>(() => count.value * 2);
+
+// 7. Functions: loaders, handlers, helpers
+const increment = (): void => {
+  count.value++;
 };
 
-watch(selectedShow, () => {
+// 8. Watchers
+watch(count, () => {
   // ...
 });
 
+// 9. Lifecycle hooks
 onMounted(() => {
-  void loadShows();
+  // ...
 });
+
+// 10. Other code (event listeners, side effects)
 </script>
+
+<template>
+  <!-- ... -->
+</template>
 ```
 
-```vue
-<script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+## Template
 
-const loadShows = async (): Promise<void> => {
-  // Avoid putting methods before the state they depend on.
-};
-
-const shows = ref<Show[]>([]);
-
-watch(shows, () => {
-  // Avoid placing watchers before computed values and methods.
-});
-
-const totalShows = computed<number>(() => shows.value.length);
-
-onMounted(() => {
-  void loadShows();
-});
-</script>
-```
-
-## Template Conventions
-
-- **Always use kebab-case for custom component names in templates**, not PascalCase or camelCase.
-
-```vue
-<!-- correct -->
-<show-banner :selected-show="show" />
-
-<!-- incorrect -->
-<showBanner :selected-show="show" />
-<ShowBanner :selected-show="show" />
-```
-
-- **Attribute order** (ESLint-enforced, alphabetical within each group): `v-for` → `v-model` → `:bound` → static → boolean → `@events` → `:key` / `ref` → `v-if` / `v-else` **last**.
-
-```vue
-<v-text-field
-  v-model="category.name"
-  :rules="rules.name"
-  class="required"
-  label="Name"
-  clearable
-  @blur="validate"
-  ref="nameField"
-  v-if="isEditing"
-/>
-```
-
-- When an element's text doesn't fit on one line, put `{{ ... }}` on a line of its own between the tags. Don't split it as `>{{` newline `t('key')` newline `}}<`, which is hard to read. Prettier keeps the readable form as long as there is whitespace inside the tag.
+- Custom components are kebab-case in templates: `<show-banner :selected-show="show" />`, never `<ShowBanner>` or `<showBanner>`.
+- When an element's text doesn't fit on one line, put `{{ ... }}` on a line of its own between the tags. Don't split it as `>{{` newline `t('key')` newline `}}<`. Prettier keeps the readable form as long as there is whitespace inside the tag.
 
 ```vue
 <span class="text-medium-emphasis">
@@ -130,85 +64,26 @@ onMounted(() => {
 </span>
 ```
 
-- **Never use `.value` for refs in templates.** Vue automatically unwraps refs in templates. Using `.value` will cause incorrect behavior or errors.
+## Forms
 
-```vue
-<!-- correct -->
-<div>{{ count }}</div>
-
-<!-- incorrect -->
-<div>{{ count.value }}</div>
-```
-
-## Form Wrappers
-
-- When a feature form component uses `BaseForm` as its root node, do not add a local `submit` emit just to forward the event.
-- Let the submit listener pass through to the root `BaseForm`, and let submit buttons target the form via the form `id` and native `type="submit"`.
-- Only declare a component `submit` emit when the wrapper is intentionally transforming payloads or exposing a different event contract than the root form.
-
-```vue
-<script setup lang="ts">
-import { BaseForm } from '@/components/common/base-form';
-
-const props = defineProps<{
-  id: string;
-}>();
-
-const isValid = defineModel<boolean>('isValid', {
-  default: false,
-});
-</script>
-
-<template>
-  <base-form v-model:is-valid="isValid" :id="props.id">
-    <slot />
-  </base-form>
-</template>
-```
-
-```vue
-<script setup lang="ts">
-import { BaseForm } from '@/components/common/base-form';
-
-const props = defineProps<{
-  id: string;
-}>();
-
-const isValid = defineModel<boolean>('isValid', {
-  default: false,
-});
-
-const emit = defineEmits<{
-  submit: [];
-}>();
-
-const handleSubmit = (): void => {
-  emit('submit');
-};
-</script>
-
-<template>
-  <base-form v-model:is-valid="isValid" @submit="handleSubmit" :id="props.id">
-    <slot />
-  </base-form>
-</template>
-```
+- A `*-form` component only shows fields: `v-model:request`, `v-model:isValid` and props for what it displays (saved state, check results). It never calls services or stores. Its caller checks and saves: the page or dialog, or a composable when several screens share the save (`useDownloadClientSettings` for Settings and the setup wizard).
+- A form whose root is `base-form` declares no `submit` emit just to forward it: the listener falls through to `base-form`, and the submit button targets the form by `id` with `type="submit"`. Declare `submit` only when the form changes the payload or the event contract.
 
 ```vue
 <template>
-  <default-background-form v-model:is-valid="isValid" v-model:request="request" :id="formId" @submit="handleSubmit" />
+  <default-background-form v-model:is-valid="isValid" v-model:request="request" @submit="handleSubmit" :id="formId" />
 
   <v-btn :disabled="!isValid" :form="formId" color="primary" type="submit"> Save </v-btn>
 </template>
 ```
 
-- A `*-form` component only shows fields: `v-model:request`, `v-model:isValid` and props for what it displays (saved state, check results). It never calls services or stores. Its caller checks and saves: the page or dialog, or a composable when several screens share the save (`useDownloadClientSettings` for Settings and the setup wizard).
 - Mark required inputs with `class="required"`.
 - Validation rules come from the sibling `<feature>Rules.ts`: `const rules = getRules();`, then `:rules="rules.name"`.
 
 ## Mutations
 
 - There is no `useMutation`. Call the service directly, show errors with the snackbar and reset the saving flag in `finally`. Then `refetch()` the query, or let the dialog result trigger it.
+- Confirm a delete with `useConfirmDialog().confirm({...})` before calling the service.
 
 ```ts
 const save = async (): Promise<void> => {
@@ -225,7 +100,9 @@ const save = async (): Promise<void> => {
 };
 ```
 
-- Confirm a delete with `useConfirmDialog().confirm({...})` before calling the service.
+## Dialogs
+
+- Open application dialogs with `useDialog().showDialog(...)`, through the dialog provider (`src/components/layouts/dialog-provider`), and keep dialog components compatible with it. Never mount a feature dialog inline in a page or template.
 
 ## Sortable Lists
 
@@ -251,32 +128,24 @@ const save = async (): Promise<void> => {
 
 ## Component Interfaces
 
-- **Do not declare named TypeScript interfaces or types inside `.vue` files.**
-- For small single-use prop or emit shapes, prefer inline Vue macro generics directly in the `.vue` file, for example `defineProps<{ foo: string }>()`.
+- No named TypeScript interfaces or types inside `.vue` files. Small single-use prop or emit shapes are inline macro generics: `defineProps<{ foo: string }>()`.
 - Props that extend another type (a dialog's `DialogComponentProps<T>` plus its own props) get a sibling `<component>Props.ts` interface (`malSearchDialogProps.ts`), not an intersection inside `defineProps<...>`, which some editors' Vue tooling can't parse.
-- Extract a named sibling `.ts` type only when the shape is reused across files or is large enough that the inline macro becomes hard to read.
-- Name the sibling `.ts` file after what it represents (e.g. `navigationLinkItem.ts`, not `types.ts`).
-
-```
-components/
-  layouts/
-    top-navigation/
-      TopNavigation.vue
-      navigationLinkItem.ts   ✓ reused or substantial named type lives here
-```
-
+- A shape reused across files, or too large to read inline, gets a sibling `.ts` file named after what it is (`navigationLinkItem.ts`, not `types.ts`).
 - State that a feature's root shares with parts several levels down, which the parts in between never use, goes through `provide` with a typed `InjectionKey` in the root's folder plus a small `inject…` helper that returns a safe default (the show editor's torrents: `showEditorDownloadsKey`, `injectShowEditorDownloads`). A prop or v-model that every level uses, such as the show draft, stays a prop.
 - There is one show drawer, mounted in `App.vue`. Open a show in it with `useShowDrawerStore().open(showId)`, from any page or component; never mount another `selected-show-drawer`. A button that belongs only to the caller goes in as `open(showId, { action: SomeButton })`, a component that wires up itself.
 - Action buttons that only emit back to the parent go in a named slot that the parent fills and wires up itself, such as `show-editor-hero`'s `#actions`. Otherwise every new action adds an emit to the child, plus props like `isDeleting` that exist only to pass the button's state through. The child keeps the placement, and uses `defineSlots` with `v-if="$slots.actions"` around the slot.
 
+## Comments
+
+- JSDoc (`/** ... */`) goes on props, emits, functions and top-level `<script setup>` state, with `@param` and `@returns` on functions. `//` goes inside logic: statements, callback and watcher bodies, and option keys.
+
 ## Styling
 
-- Keep styles `scoped` unless the component is intentionally providing global styling.
-- Comments: JSDoc (`/** ... */`) goes on props, emits, functions and top-level `<script setup>` state, with `@param` and `@returns` on functions. `//` goes inside logic: statements, callback and watcher bodies, and option keys.
-- Prefer moving reusable visual tokens to shared styles or the Vuetify theme instead of hard-coding them per component.
+- Style with Vuetify props, utility classes and built-in transitions first, then inline `style` or `:style`. Add a `scoped` `<style>` block or a named class only when those can't express it cleanly. A reusable visual helper may keep a small local class.
+- Decorative helpers (page backgrounds, overlays) are standalone sibling components inside a `position-relative` container, not slot wrappers that also own the page content.
+- Reusable visual tokens go in the Vuetify theme or shared styles. Recurring defaults such as `density` live in `src/plugins/vuetify/ComponentDefaults.ts`; don't repeat them in feature components.
 - A primary button that finishes what the user is in (dialog Save, wizard Next, filter drawer results, login) is `variant="flat"`. Primary buttons that are just available on a page stay tonal, the app default. Inside `v-card-actions` and `card-action-bar` buttons default to `text`, so always set a variant there.
-- Do not repeat local `density` or similar shared visual props in feature components. Recurring defaults live in `src/plugins/vuetify/ComponentDefaults.ts`.
-- Spacing utilities (margin, padding and gap, such as `pa-*`, `mt-*`, `ga-*`) use even steps such as 2 and 4, plus 5 (20px), which matches Vuetify's dialog and toolbar insets (`base-dialog` uses `pa-5`). Never use 1, 3, 7 or other odd steps. ESLint enforces this with `vue/no-restricted-class`.
+- Spacing utilities (`pa-*`, `mt-*`, `ga-*`) use even steps such as 2 and 4, plus 5 (20px), which matches Vuetify's dialog and toolbar insets (`base-dialog` uses `pa-5`). ESLint blocks 1, 3, 7 and other odd steps.
 - Space siblings with a flex container and gap (`d-flex ga-2 align-center`), not margins on a child (`ml-2`, `mr-4`). Use margins only when there is no shared parent to flex.
 - A button next to an input sits beside it in a `d-flex ga-2` row, not in the input's `#append` slot.
 - A full-width button at the bottom of a strongly rounded card (`rounded="xl"` or rounder, such as the show search menu) is `rounded="pill"`, so its shape follows the card's.
@@ -287,62 +156,4 @@ components/
 - A common component does one thing: to group or place several, add a container component (`floating-container` around `floating-action-button`s) instead of a slot on one of them.
 - `v-icon` uses a named size (`x-small`, `small`, `default`, `large`, `x-large`); ESLint blocks pixel sizes. Named sizes scale with the font, so icons that must match sit outside `text-*` classes.
 - Never use "·" as a separator in UI copy (`messages.test.ts` checks the locale files). Write it out ("Version 1.0.0, released 1.11.2026") or split it into separate elements.
-- Typography uses Vuetify 4's MD3 scale (`text-body-*`, `text-label-*`, `text-title-*`). MD2 classes such as `text-caption`, `text-body-1` and `text-h6` no longer exist, and ESLint rejects them. Style single-class text with plain utilities (`text-medium-emphasis`, `text-truncate`). Use `heading-text` for a heading with a muted subtitle, `highlight-text` for colored bold words inside a sentence and `media-placeholder` for an icon-and-text stand-in where an image or video is missing.
-- For async loading UI, use a Vuetify component's built-in `loading` prop when available; otherwise use `v-skeleton-loader`.
-- `src/styles/main.scss` delays every `v-skeleton-loader` globally so fast loads show nothing. Do not add per-component delays.
-- Exception: the route-change loader in `App.vue` uses `v-progress-linear`, because it belongs to no component with a `loading` prop.
-- Do not introduce any other loading treatment in Vue components or pages, including custom spinner components, custom shimmer markup, standalone progress indicators, or bespoke overlays.
-- Prefer existing Vuetify utility classes, component props, and built-in transitions before adding custom SCSS in Vue components.
-- Do not add local `<style>` blocks or named CSS classes in Vue files unless Vuetify props, existing utility classes, and inline `style` or `:style` bindings cannot express the requirement cleanly.
-- For simple decorative or layout helpers such as page backgrounds and overlays, prefer standalone sibling components inside a `position-relative` container rather than slot wrappers that also own page content.
-- Avoid introducing custom CSS classes for one-off backgrounds, overlays, positioning, sizing, or z-index management in Vue files. Prefer Vuetify utility classes and inline `style` or `:style` bindings first.
-- Reusable visual helper components may use a small local class or modifier when that keeps decorative styling clearer than a large inline style object.
-- For small one-off component adjustments, prefer inline styles over introducing a new `<style>` block.
-- Add a component `<style>` block only when the layout or styling is too specific or too complex to express cleanly with Vuetify utilities and inline styles.
-
-## Example
-
-```vue
-<script setup lang="ts">
-// 1. Imports
-import { computed, onMounted, ref, watch } from 'vue';
-
-import { MyComponent } from '@/components/common/my-component';
-
-// 2. Props
-defineProps<{ foo: string }>();
-
-// 3. v-model
-defineModel<string>('bar');
-
-// 4. Local state
-const count = ref<number>(0);
-
-// 5. Composables / injected dependencies
-
-// 6. Computed
-const doubled = computed<number>(() => count.value * 2);
-
-// 7. Functions
-const increment = (): void => {
-  count.value++;
-};
-
-// 8. Watchers
-watch(count, (newVal) => {
-  // ...
-});
-
-// 9. Lifecycle hooks
-onMounted(() => {
-  // ...
-});
-
-// 10. Other
-// ...
-</script>
-
-<template>
-  <!-- ... -->
-</template>
-```
+- Typography uses Vuetify 4's MD3 scale (`text-body-*`, `text-label-*`, `text-title-*`); ESLint rejects MD2 classes such as `text-caption`. Style single-class text with plain utilities (`text-medium-emphasis`, `text-truncate`). Use `heading-text` for a heading with a muted subtitle, `highlight-text` for colored bold words inside a sentence and `media-placeholder` for an icon-and-text stand-in where an image or video is missing.

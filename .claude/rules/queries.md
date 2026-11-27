@@ -1,5 +1,4 @@
 ---
-description: TanStack Query usage rules for query keys, useAPIQuery calls, list query params and cache updates. Use when reading server data, adding a query key, or invalidating or patching cached queries.
 paths:
   - 'src/components/**/*.vue'
   - 'src/components/**/*.ts'
@@ -7,7 +6,6 @@ paths:
   - 'src/composables/**/*.ts'
   - 'src/enums/query/**/*.ts'
   - 'src/utils/query/**/*.ts'
-applyTo: 'src/components/**/*.vue,src/components/**/*.ts,src/pages/**/*.vue,src/composables/**/*.ts,src/enums/query/**/*.ts,src/utils/query/**/*.ts'
 ---
 
 # Query Rules

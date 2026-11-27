@@ -1,6 +1,6 @@
 ---
 name: resource-slice
-description: Add or extend a backend resource end-to-end in MovieBrowser3 — API contracts, service, service test, query key, admin page or edit dialog, route and nav link. Use when the user asks to add CRUD/admin management for a new backend entity, wire a new endpoint family into the UI, or "add X like categories".
+description: Adds or extends a backend resource end-to-end in the MovieBrowser3 frontend: API contracts, service, service test, query key, admin page or edit dialog, route and nav link. Use when the user asks to add CRUD/admin management for a new backend entity, wire a new endpoint family into the UI, or "add X like categories". Not for features that aren't CRUD (`feature-slice`).
 ---
 
 # Resource Slice

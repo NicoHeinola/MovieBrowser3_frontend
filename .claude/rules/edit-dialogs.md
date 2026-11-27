@@ -1,9 +1,7 @@
 ---
-description: Edit dialog rules for entity create/edit/delete dialogs and the composables that open them. Use when creating or editing an *-edit-dialog component or a use*EditDialog composable.
 paths:
   - 'src/components/features/**/*-edit-dialog/**'
   - 'src/composables/**/use*EditDialog.ts'
-applyTo: 'src/components/features/**/*-edit-dialog/**,src/composables/**/use*EditDialog.ts'
 ---
 
 # Edit Dialog Rules
@@ -16,7 +14,6 @@ applyTo: 'src/components/features/**/*-edit-dialog/**,src/composables/**/use*Edi
 - Wrap the content in `base-dialog` with `#title`, `#default` and `#actions` slots.
 - Snapshot the original in `onMounted` with `deepClone`. On save, skip the update when `getChangedObject(original, entity)` returns `undefined`.
 - Close with `props.close(true)` after a save or delete, so the caller knows to refetch.
-- Confirm a delete with `useConfirmDialog().confirm({...})`.
 
 ```ts
 const props = defineProps<DialogComponentProps<boolean>>();

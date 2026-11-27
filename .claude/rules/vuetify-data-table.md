@@ -1,32 +1,18 @@
 ---
-description: Vuetify data table structure rules for table components. Use when creating or editing Vue table components that end with Table, v-data-table UIs, or thin table wrapper components.
 paths:
   - 'src/components/**/*Table.vue'
-applyTo: 'src/components/**/*Table.vue'
 ---
 
 # Vuetify Data Table Rules
 
-## When To Prefer A Table
-
-- Prefer a table when the user needs to scan many rows quickly, the content is mostly structured text, and row actions are secondary to comparison.
-- When a card list becomes too long for efficient scanning, prefer a thin feature wrapper around `v-data-table` instead of rebuilding table setup inline in a page.
-
-## Table Setup
-
+- Use a table when the user scans many rows of mostly structured text and row actions are secondary. A card list that grows too long becomes a thin `*Table.vue` wrapper around `v-data-table`, not table setup inside a page.
 - A `*Table.vue` wrapper renders only the table (plus its `v-skeleton-loader` placeholder). Search fields, toolbars and the `v-row`/`v-col` layout belong to the page.
 - Tables display; they never fetch. A paginated list's search term, filters, sort, page, page size and query live in its `use<Domain>Search` (built on `usePaginatedSearch`), which the parent calls and hands to the table as rows plus `v-model:sort`. Paging is the parent's `floating-pagination`, like every search page, so the table hides its footer. Single actions on a row (rename, delete) stay in the table.
 - Use `v-data-table-server` whenever the backend sorts or pages the rows, whichever component runs the query: a plain `v-data-table` sorts and pages its items again in the browser.
-- Type headers explicitly with `DataTableHeader`.
 - A server-sorted table binds `v-model:sort-by` through `useDataTableSort(sort, { columnKey: 'backendField' })`, so the rest of the code keeps one backend sort string such as `-size`.
-- Map store or API arrays into row objects with a `computed(...)` value before passing them to the table.
-- Use the table's built-in `loading` prop for in-place loading states, or `v-skeleton-loader` for initial placeholder rendering around the table region.
-- Do not add any other loading treatment for table data, including custom row shimmers, standalone spinners, or bespoke loading overlays.
-- Use `item.*` slots for richer cells such as thumbnails, preview media, icons, and action buttons.
-- Always provide a `no-data` slot instead of leaving the empty state implicit.
+- Type headers with `DataTableHeader`, and map store or API arrays into row objects with a `computed(...)` before passing them in.
+- Use `item.*` slots for richer cells (thumbnails, previews, icons, action buttons), and always fill the `no-data` slot.
 - When a table mixes previews with long URLs or other long text, lock the inner table to a fixed layout in scoped styles.
-
-## Example
 
 ```vue
 <script setup lang="ts">
@@ -37,23 +23,9 @@ import { computed, ref } from 'vue';
 const urls = ref<string[]>([]);
 
 const headers: Array<DataTableHeader> = [
-  {
-    title: 'Preview',
-    key: 'preview',
-    width: 116,
-    sortable: false,
-  },
-  {
-    title: 'URL',
-    key: 'url',
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    align: 'end',
-    sortable: false,
-    width: 72,
-  },
+  { title: 'Preview', key: 'preview', width: 116, sortable: false },
+  { title: 'URL', key: 'url' },
+  { title: 'Actions', key: 'actions', align: 'end', sortable: false, width: 72 },
 ];
 
 const items = computed<Array<{ url: string }>>(() => {
@@ -64,11 +36,7 @@ const items = computed<Array<{ url: string }>>(() => {
 <template>
   <v-data-table :headers="headers" :items="items" class="media-table">
     <template #item.preview="{ item }">
-      <v-img :src="item.url" cover height="80" />
-    </template>
-
-    <template #item.url="{ value }">
-      <p class="text-truncate">{{ value }}</p>
+      <v-img :src="item.url" height="80" cover />
     </template>
 
     <template #item.actions="{ item }">
