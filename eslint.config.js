@@ -3,6 +3,8 @@ import prettier from 'eslint-config-prettier';
 import vuetify from 'eslint-config-vuetify';
 import pluginVue from 'eslint-plugin-vue';
 
+import { noRelativeLayerExit } from './eslint/rules/noRelativeLayerExit.js';
+
 /** Matches an export of a value (constant, function, class, enum); type and interface exports don't count. */
 const valueDeclaration = 'VariableDeclaration|FunctionDeclaration|ClassDeclaration|TSEnumDeclaration';
 const valueNamedExport = `ExportNamedDeclaration[declaration.type=/^(${valueDeclaration})$/]`;
@@ -111,6 +113,14 @@ const layerBoundaries = [
     ],
   },
 }));
+
+/** Runs `noRelativeLayerExit` on all source files. Tests may import anything, so it skips them. */
+const layerFolderImports = {
+  files: ['src/**'],
+  ignores: ['src/**/__tests__/**'],
+  plugins: { local: { rules: { 'no-relative-layer-exit': noRelativeLayerExit } } },
+  rules: { 'local/no-relative-layer-exit': 'error' },
+};
 
 export default [
   ...(await vuetify()),
@@ -223,4 +233,5 @@ export default [
     },
   },
   ...layerBoundaries,
+  layerFolderImports,
 ];

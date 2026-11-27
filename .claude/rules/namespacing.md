@@ -26,6 +26,9 @@ paths:
 
 Dependencies point one way. ESLint (`layerBoundaries` in `eslint.config.js`) fails an import that goes the wrong way; tests may import anything.
 
+- Import another layer with `@/` (`@/router`, not `../router`). The `layerBoundaries` patterns only see `@/` paths.
+- Relative imports stay inside the top-level `src/<layer>` folder of the importing file. The `local/no-relative-layer-exit` rule (`eslint/rules/noRelativeLayerExit.js`) fails one that leaves it, and `npm run fix:lint` rewrites it to `@/`.
+
 | Layer                       | Must not import                                                                                                                |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | `interfaces`, `enums`       | anything but other interfaces and enums                                                                                        |

@@ -6,10 +6,10 @@ import { watch } from 'vue';
 import { configureApiClientAuth } from '@/plugins/api/configureApiClientAuth';
 import { i18n } from '@/plugins/i18n';
 import { queryClient } from '@/plugins/query';
+import router from '@/router';
 import { useAuthStore } from '@/stores/auth/useAuthStore';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
-import router from '../router';
 import vuetify from './vuetify';
 
 export const registerPlugins = (app: App) => {
