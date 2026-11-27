@@ -43,7 +43,7 @@ const mountStep = (path: string, save: (path: string) => Promise<void>) =>
       path,
       rules: [],
       save,
-      settingKey: SettingKey.VideoBasePath,
+      settingKey: SettingKey.VideoBaseFolder,
     },
     global: {
       plugins: [createVuetify()],
@@ -56,12 +56,12 @@ describe('SetupPathStep', () => {
     setActivePinia(createPinia());
     vi.resetAllMocks();
     useSettingStore().settings = {
-      video_base_path: { key: 'video_base_path', value: SAVED_PATH, type: 'string', updated_at: null },
+      video_base_folder: { key: 'video_base_folder', value: SAVED_PATH, type: 'string', updated_at: null },
     };
   });
 
   it('saves a changed path that passes its check, then moves on', async () => {
-    vi.mocked(setupService.check).mockResolvedValue({ video_base_path: { ok: true, code: null, params: {} } });
+    vi.mocked(setupService.check).mockResolvedValue({ video_base_folder: { ok: true, code: null, params: {} } });
     const save = vi.fn().mockResolvedValue(undefined);
     const wrapper = mountStep(' /mnt/h/Videos ', save);
 
@@ -73,7 +73,7 @@ describe('SetupPathStep', () => {
   });
 
   it('moves on without saving a path that has not changed', async () => {
-    vi.mocked(setupService.check).mockResolvedValue({ video_base_path: { ok: true, code: null, params: {} } });
+    vi.mocked(setupService.check).mockResolvedValue({ video_base_folder: { ok: true, code: null, params: {} } });
     const save = vi.fn();
     const wrapper = mountStep(SAVED_PATH, save);
 
@@ -86,7 +86,7 @@ describe('SetupPathStep', () => {
 
   it('never saves a path that fails its check, and says why', async () => {
     vi.mocked(setupService.check).mockResolvedValue({
-      video_base_path: { ok: false, code: SetupCheckCode.PathNotAbsolute, params: {} },
+      video_base_folder: { ok: false, code: SetupCheckCode.PathNotAbsolute, params: {} },
     });
     const save = vi.fn();
     const wrapper = mountStep(String.raw`G:\Videos`, save);
@@ -100,7 +100,7 @@ describe('SetupPathStep', () => {
   });
 
   it('stays on the step and shows the error when the save is turned down', async () => {
-    vi.mocked(setupService.check).mockResolvedValue({ video_base_path: { ok: true, code: null, params: {} } });
+    vi.mocked(setupService.check).mockResolvedValue({ video_base_folder: { ok: true, code: null, params: {} } });
     const error = new Error('busy');
     const wrapper = mountStep('/mnt/h/Videos', vi.fn().mockRejectedValue(error));
 

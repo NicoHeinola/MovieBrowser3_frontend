@@ -2,7 +2,7 @@ import type { SettingKey } from '@/enums/setting/SettingKey';
 
 /** The setup values to check, keyed by the setting each is for. */
 export interface SetupCheckRequest {
-  [SettingKey.VideoBasePath]?: string;
+  [SettingKey.VideoBaseFolder]?: string;
   [SettingKey.VlcMediaPlayerPath]?: string;
   /** Sending the address checks the qBittorrent login with the username and password next to it. */
   [SettingKey.QBittorrentUrl]?: string;

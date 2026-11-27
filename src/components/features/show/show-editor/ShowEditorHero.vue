@@ -36,7 +36,7 @@ const episodeCount = computed<number>(() =>
 /** The saved video files; picked but unsaved files are not measured yet. */
 const videoBytes = computed<number>(() => getShowVideoBytes(props.show));
 
-/** The saved episodes' known lengths; a new file's length is read in the background after saving. */
+/** The saved episodes' known lengths; a new file's length is read when it's saved. */
 const videoSeconds = computed<number>(() => getShowVideoSeconds(props.show));
 </script>
 

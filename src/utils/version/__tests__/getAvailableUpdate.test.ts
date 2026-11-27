@@ -21,7 +21,6 @@ const createAppVersion = (
 ): AppVersion => ({
   backend: { current: backendCurrent, latest: backendLatest, release_url: backendLatest ? BACKEND_URL : null },
   frontend: { latest: frontendLatest, release_url: frontendLatest ? FRONTEND_URL : null },
-  checked_at: '2026-11-03T10:00:00.000000Z',
 });
 
 describe('getAvailableUpdate', () => {

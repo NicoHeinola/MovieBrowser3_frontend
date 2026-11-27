@@ -1,7 +1,6 @@
 import type { Episode } from '@/interfaces/api/models/Episode';
 import type { Show } from '@/interfaces/api/models/Show';
 import type { ShowEditorEpisodeProgress } from '@/interfaces/show/ShowEditorEpisodeProgress';
-import type { DownloadPick } from '@/utils/download/getDownloadPicks';
 import type { UnwrapRef } from 'vue';
 
 import { ref } from 'vue';
@@ -158,7 +157,6 @@ const saveEpisodes = async (
       episode.filename = savedEpisode.filename;
       episode.has_video_file = savedEpisode.has_video_file;
       episode.video_file_size = savedEpisode.video_file_size;
-      // Null until the background length scan reads the new file
       episode.video_duration_seconds = savedEpisode.video_duration_seconds;
       delete episode.file;
     }
@@ -189,10 +187,12 @@ const saveEpisodes = async (
           const index = savedEntry.episodes?.findIndex((saved) => saved.id === id) ?? -1;
 
           if (index !== -1) {
-            savedEntry.episodes?.splice(index, 1);
+            const [moved] = savedEntry.episodes?.splice(index, 1) ?? [];
+            // The picked torrent file isn't saved yet: that's done with the download's picks
+            savedEpisodes.push({ ...episode, show_entry_id: entry.id, download: moved?.download });
+            break;
           }
         }
-        savedEpisodes.push({ ...episode, show_entry_id: entry.id });
       },
     });
   }
@@ -206,36 +206,27 @@ const saveEpisodes = async (
 };
 
 /**
- * Tells each download which torrent files its episodes wait for, when that changed: picked, dropped, or their episode
- * deleted. Runs after the episodes are saved, so new ones have ids, and sends a download's whole list each time.
+ * Tells each download which torrent files its episodes wait for, when that changed. Runs after the episodes are saved,
+ * so new ones have ids and deleted ones are gone: the backend has let go of their files already. Sends a download's
+ * whole list, and an episode picked for one download leaves the one it had.
  * @param draft - The show being saved.
- * @param savedPicks - The picks the backend held when the save started. Read then, because deleting an episode drops
- * it from the saved show, and its download must still hear that the episode's file is no longer wanted.
+ * @param savedShow - What the backend holds, or null for a show not created yet.
  * @returns Nothing.
  */
-const saveDownloadPicks = async (draft: ShowDraft, savedPicks: Map<number, DownloadPick[]>): Promise<void> => {
+const saveDownloadPicks = async (draft: ShowDraft, savedShow: ShowDraft | null): Promise<void> => {
   const draftPicks = getDownloadPicks(draft.entries ?? []);
+  const savedPicks = getDownloadPicks(savedShow?.entries ?? []);
 
-  const changedIds = [...new Set([...draftPicks.keys(), ...savedPicks.keys()])].filter(
-    (id) => JSON.stringify(draftPicks.get(id) ?? []) !== JSON.stringify(savedPicks.get(id) ?? []),
-  );
+  const downloadIds = new Set([...draftPicks.keys(), ...savedPicks.keys()]);
 
-  // Which download each episode waited for, to tell which downloads take an episode over from another
-  const savedDownloadIds = new Map(
-    [...savedPicks].flatMap(([id, picks]) => picks.map((pick) => [pick.episode_id, id] as const)),
-  );
+  for (const downloadId of downloadIds) {
+    const draftFiles = draftPicks.get(downloadId) ?? [];
+    const savedFiles = savedPicks.get(downloadId) ?? [];
+    const areFilesChanged = JSON.stringify(draftFiles) !== JSON.stringify(savedFiles);
 
-  /**
-   * Whether a download takes over an episode that waited for another one.
-   * @param id - The download's id.
-   * @returns True when one of its picked episodes did.
-   */
-  const isTakingOver = (id: number): boolean =>
-    (draftPicks.get(id) ?? []).some((pick) => (savedDownloadIds.get(pick.episode_id) ?? id) !== id);
-
-  // Those last: an episode waits for one download at most, so the other one has to let go of it first
-  for (const id of changedIds.toSorted((a, b) => Number(isTakingOver(a)) - Number(isTakingOver(b)))) {
-    await downloadFileService.update(id, { show_id: draft.id, files: draftPicks.get(id) ?? [] });
+    if (areFilesChanged) {
+      await downloadFileService.update(downloadId, { show_id: draft.id, files: draftFiles });
+    }
   }
 };
 
@@ -249,7 +240,7 @@ const saveDownloadPicks = async (draft: ShowDraft, savedPicks: Map<number, Downl
  * - torrent file picks go after the episodes, which need ids to be picked for.
  *
  * @returns `episodeProgress`, how many episodes a running save has done (null when none runs, as uploads can take a
- * while), and `save`.
+ * while), and `saveDraft`.
  */
 export const useShowDraftSave = () => {
   const episodeProgress = ref<ShowEditorEpisodeProgress | null>(null);
@@ -262,12 +253,10 @@ export const useShowDraftSave = () => {
    * @param savedShow - What the backend holds, or null for a show not created yet, so every item is created.
    * @returns Nothing. A new show's id is on the draft afterwards.
    */
-  const save = async (draft: ShowDraft, savedShow: ShowDraft | null): Promise<void> => {
+  const saveDraft = async (draft: ShowDraft, savedShow: ShowDraft | null): Promise<void> => {
     const onEpisodeProgress = (progress: ShowEditorEpisodeProgress): void => {
       episodeProgress.value = progress;
     };
-
-    const savedPicks = getDownloadPicks(savedShow?.entries ?? []);
 
     try {
       await saveShowFields(draft, savedShow);
@@ -293,7 +282,7 @@ export const useShowDraftSave = () => {
       await deleteRemovedItems(draft.entries ?? [], savedEntries, {
         delete: (id) => showEntryService.remove(id),
       });
-      await saveDownloadPicks(draft, savedPicks);
+      await saveDownloadPicks(draft, savedShow);
 
       await syncItems(draft.outgoing_links ?? [], savedShow?.outgoing_links ?? [], {
         create: (link) => showLinkService.create(draft.id, link),
@@ -307,5 +296,5 @@ export const useShowDraftSave = () => {
     }
   };
 
-  return { episodeProgress, save };
+  return { episodeProgress, saveDraft };
 };

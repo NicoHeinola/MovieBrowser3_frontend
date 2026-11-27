@@ -32,7 +32,7 @@ const target = ref<number | 'new' | null>(null);
 
 const router = useRouter();
 const { search, term, debouncedTerm, isWaiting } = useDebouncedSearch();
-const { create, isCreating } = useDownloadCreate();
+const { createDownload, isCreating } = useDownloadCreate();
 const { locale, t } = useI18n();
 
 /** The list's selection: at most the one picked target. */
@@ -71,12 +71,12 @@ const getCategoryNames = (show: Show): string => (show.categories ?? []).map((ca
  * keeps the dialog open, to retry once qBittorrent is fixed.
  * @returns Nothing.
  */
-const start = async (): Promise<void> => {
+const startDownload = async (): Promise<void> => {
   if (target.value === null || isCreating.value) {
     return;
   }
 
-  const downloadId = await create({
+  const downloadId = await createDownload({
     magnet_url: props.torrent.magnet_url,
     torrent_url: props.torrent.torrent_url,
     name: props.torrent.title,
@@ -164,7 +164,13 @@ watch(shows, (current) => {
     <template #actions>
       <v-spacer />
       <v-btn :disabled="isCreating" variant="text" @click="props.close()"> {{ t('common.cancel') }} </v-btn>
-      <v-btn :disabled="target === null" :loading="isCreating" color="primary" variant="flat" @click="void start()">
+      <v-btn
+        :disabled="target === null"
+        :loading="isCreating"
+        color="primary"
+        variant="flat"
+        @click="void startDownload()"
+      >
         {{ t('download.continue') }}
       </v-btn>
     </template>

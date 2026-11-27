@@ -56,8 +56,8 @@ export const useSetupStore = defineStore('setup', () => {
   };
 
   /**
-   * Checks a setup path without saving it. The caller saves a path that passed, because the video folder moves through
-   * a relocation while other paths are plain settings.
+   * Checks a setup path without saving it. The caller saves a path that passed, because the video base folder moves through
+   * a folder move while other paths are plain settings.
    * @param key - The setting the path is for; the backend checks it under the same key.
    * @param path - The path to check.
    * @returns The check's result, or `null` when the backend didn't check this key.

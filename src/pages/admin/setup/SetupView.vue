@@ -28,7 +28,7 @@ const { t } = useI18n();
 const load = async (): Promise<void> => {
   hasLoadFailed.value = false;
   try {
-    // Fresh settings, like the status: a video folder move may have changed them since they were cached.
+    // Fresh settings, like the status: a video base folder move may have changed them since they were cached.
     await Promise.all([settingStore.reloadSettings(), setupStore.fetchStatus()]);
     isReady.value = true;
   } catch (error: unknown) {

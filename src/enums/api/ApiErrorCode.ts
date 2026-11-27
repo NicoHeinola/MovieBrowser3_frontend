@@ -19,14 +19,14 @@ export enum ApiErrorCode {
   VlcNotFound = 'vlc_not_found',
   /** The file at the VLC path isn't VLC. Params: `path`. */
   VlcWrongBinary = 'vlc_wrong_binary',
-  /** The VLC bridge didn't answer. Params: `url`. */
-  VlcBridgeUnreachable = 'vlc_bridge_unreachable',
-  /** The VLC bridge is too old. */
-  VlcBridgeOutdated = 'vlc_bridge_outdated',
-  /** The VLC bridge refused the request. Params: `status`. */
-  VlcBridgeUnauthorized = 'vlc_bridge_unauthorized',
-  /** The VLC bridge rejected the request without saying why. */
-  VlcBridgeRejected = 'vlc_bridge_rejected',
+  /** The host bridge didn't answer. Params: `url`. */
+  HostBridgeUnreachable = 'host_bridge_unreachable',
+  /** The host bridge is too old. */
+  HostBridgeOutdated = 'host_bridge_outdated',
+  /** The host bridge refused the request. Params: `status`. */
+  HostBridgeUnauthorized = 'host_bridge_unauthorized',
+  /** The host bridge rejected the request without saying why. */
+  HostBridgeRejected = 'host_bridge_rejected',
 
   /** A checkbox-style value must be accepted. */
   Accepted = 'accepted',
@@ -86,24 +86,20 @@ export enum ApiErrorCode {
   InvalidCredentials = 'invalid_credentials',
   /** The episode has no video file. */
   NoVideoFile = 'no_video_file',
-  /** The video folder can't be reached or is empty, so video files can't be checked. */
-  VideoBasePathUnavailable = 'video_base_path_unavailable',
+  /** The video base folder can't be reached or is empty, so video files can't be checked. */
+  VideoBaseFolderUnavailable = 'video_base_folder_unavailable',
   /** A video file check is already running, so a new one wasn't started. */
   VideoFileCheckRunning = 'video_file_check_running',
   /** The last video file check crashed, so its results may be partial. */
   VideoFileCheckFailed = 'video_file_check_failed',
-  /** An episode length scan is reading the video files, so they can't be moved now. */
-  VideoDurationScanRunning = 'video_duration_scan_running',
-  /** The last episode length scan stopped on an error. */
-  VideoDurationScanFailed = 'video_duration_scan_failed',
-  /** The video folder can only change through a relocation, which moves the videos with it. */
-  VideoBasePathNeedsRelocation = 'video_base_path_needs_relocation',
-  /** The video folder is being moved, so this change has to wait for the move to end. */
-  VideoRelocationRunning = 'video_relocation_running',
-  /** Moving the video folder failed and the files were moved back. */
-  VideoRelocationFailed = 'video_relocation_failed',
-  /** Moving the video folder failed and moving the files back failed too, so some may be in the new folder. */
-  VideoRelocationRevertFailed = 'video_relocation_revert_failed',
+  /** The video base folder can only change through a folder move, which moves the videos with it. */
+  VideoBaseFolderNeedsMove = 'video_base_folder_needs_move',
+  /** The video base folder is being moved, so this change has to wait for the move to end. */
+  VideoBaseFolderMoveRunning = 'video_base_folder_move_running',
+  /** Moving the video base folder failed and the files were moved back. */
+  VideoBaseFolderMoveFailed = 'video_base_folder_move_failed',
+  /** Moving the video base folder failed and moving the files back failed too, so some may be in the new folder. */
+  VideoBaseFolderMoveRevertFailed = 'video_base_folder_move_revert_failed',
   /** A torrent site didn't answer the search, or answered with an error; `site` tells which, such as `nekobt`. */
   TorrentSiteUnavailable = 'torrent_site_unavailable',
   /** A show template link points at no show on its site, such as a mistyped id. */
@@ -130,19 +126,13 @@ export enum ApiErrorCode {
   DownloadExists = 'download_exists',
   /** qBittorrent no longer has the download's torrent. */
   DownloadNotInClient = 'download_not_in_client',
-  /** Only a failed import can be tried again. */
-  DownloadNotRetryable = 'download_not_retryable',
-  /** A download's files are being copied into their episodes, so it can't be cancelled yet. */
-  DownloadImportRunning = 'download_import_running',
   /** A picked file isn't in the torrent. */
   FileIndexInvalid = 'file_index_invalid',
   /** A picked file already belongs to an episode of another show. */
   FileAlreadyPicked = 'file_already_picked',
   /** A picked episode belongs to another show. */
   EpisodeNotInShow = 'episode_not_in_show',
-  /** A picked episode already waits for another download. */
-  EpisodeAlreadyDownloading = 'episode_already_downloading',
-  /** The picked files don't fit on the download disk. Params: `needed_bytes`, `free_bytes`. */
+  /** Something doesn't fit on the disk it goes to. Params: `needed_bytes`, `free_bytes`. */
   NotEnoughDiskSpace = 'not_enough_disk_space',
   /** Catch-all for any validation rule without its own code. */
   Invalid = 'invalid',

@@ -8,19 +8,20 @@ import { PageContainer } from '@/components/common/page-container';
 import { DownloadTable } from '@/components/features/download/download-table';
 import { useAPIQuery } from '@/composables/api/useAPIQuery';
 import { useDownloadCancel } from '@/composables/download/useDownloadCancel';
-import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
-import { DownloadErrorCode } from '@/enums/download/DownloadErrorCode';
+import { useDownloadRetry } from '@/composables/download/useDownloadRetry';
 import { DownloadStatus } from '@/enums/download/DownloadStatus';
 import { DownloadQueryKey } from '@/enums/query/downloadQueryKey';
 import { downloadService } from '@/services/download/downloadService';
 import { isDownloadActive } from '@/utils/download/isDownloadActive';
+import { isDownloadCompleted } from '@/utils/download/isDownloadCompleted';
+import { isDownloadRetryable } from '@/utils/download/isDownloadRetryable';
 import { getPollInterval } from '@/utils/query/getPollInterval';
 
 /** How often the list is read again while a download moves, so its progress does too. */
 const POLL_INTERVAL_MS = 3000;
 
-const { cancel } = useDownloadCancel();
-const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
+const { cancelDownload } = useDownloadCancel();
+const { retryDownload } = useDownloadRetry();
 const { t } = useI18n();
 
 const downloadsQuery = useAPIQuery<Download[]>({
@@ -35,47 +36,6 @@ const downloadsQuery = useAPIQuery<Download[]>({
     ),
   staleTime: 0,
 });
-
-/**
- * Asks before cancelling a download, then reads the list again.
- * @param download - The download.
- * @returns Nothing.
- */
-const cancelDownload = async (download: Download): Promise<void> => {
-  if (await cancel(download)) {
-    await downloadsQuery.refetch();
-  }
-};
-
-/**
- * Whether a download is done, so its trash button only removes it from the list rather than cancelling it.
- * @param download - The download.
- * @returns True once completed.
- */
-const isFinished = (download: Download): boolean => download.status === DownloadStatus.Completed;
-
-/**
- * Whether a failed download can be tried again: a failed copy can, a torrent qBittorrent lost can't.
- * @param download - The download.
- * @returns True for a failed import.
- */
-const canRetry = (download: Download): boolean =>
-  download.status === DownloadStatus.Failed && download.error_code !== DownloadErrorCode.ClientLostTorrent;
-
-/**
- * Tries a failed download's imports again, then reads the list, which polls again while it runs.
- * @param download - The download.
- * @returns Nothing.
- */
-const retryDownload = async (download: Download): Promise<void> => {
-  try {
-    await downloadService.retry(download.id);
-    showSuccessSnackbar(t('download.retryStarted'));
-    await downloadsQuery.refetch();
-  } catch (error: unknown) {
-    showAPIErrorSnackbar(error);
-  }
-};
 </script>
 
 <template>
@@ -90,9 +50,9 @@ const retryDownload = async (download: Download): Promise<void> => {
               icon="mdi-refresh"
               size="small"
               variant="text"
-              @click="void retryDownload(download)"
-              v-tooltip:bottom="t('download.retry')"
-              v-if="canRetry(download)"
+              @click="void retryDownload(download.id, t('download.retryStarted'))"
+              v-tooltip:bottom="download.status === DownloadStatus.Failed ? t('download.retry') : t('download.recheck')"
+              v-if="isDownloadRetryable(download)"
             />
             <v-btn
               color="error"
@@ -100,7 +60,7 @@ const retryDownload = async (download: Download): Promise<void> => {
               size="small"
               variant="text"
               @click="void cancelDownload(download)"
-              v-tooltip:bottom="isFinished(download) ? t('download.remove') : t('download.cancel')"
+              v-tooltip:bottom="isDownloadCompleted(download.status) ? t('download.remove') : t('download.cancel')"
             />
           </template>
 

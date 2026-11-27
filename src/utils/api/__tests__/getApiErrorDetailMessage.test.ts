@@ -17,7 +17,7 @@ describe('getApiErrorDetailMessage', () => {
         code: ApiErrorCode.NotEnoughDiskSpace,
         params: { needed_bytes: '3221225472', free_bytes: '1073741824' },
       }),
-    ).toBe('The picked files need 3.0 GB, but the download disk has only 1.0 GB free.');
+    ).toBe('This needs 3.0 GB, with some space left over, but the disk has only 1.0 GB free.');
   });
 
   it('falls back to the generic message for an unknown code', () => {

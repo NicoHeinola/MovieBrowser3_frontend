@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n';
 
 import { TaskStatusCard } from '@/components/common/task-status-card';
 import { TitledSection } from '@/components/common/titled-section';
-import { useVideoFileCheck } from '@/composables/setting/useVideoFileCheck';
+import { useVideoFileCheck } from '@/composables/video-file-check/useVideoFileCheck';
 
 const { isPending, isRunning, isStarting, startCheck, statusCard } = useVideoFileCheck();
 const { t } = useI18n();

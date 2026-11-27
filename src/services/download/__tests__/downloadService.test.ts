@@ -67,7 +67,7 @@ describe('downloadService', () => {
 
     expect(vi.mocked(apiClient.delete).mock.calls).toEqual([
       ['downloads/4', { params: { remove_episodes: 1 } }],
-      ['downloads/5', { params: {} }],
+      ['downloads/5', { params: { remove_episodes: 0 } }],
     ]);
   });
 

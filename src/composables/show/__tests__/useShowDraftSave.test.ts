@@ -96,7 +96,7 @@ describe('useShowDraftSave', () => {
     const movedEpisode = draft.entries![0]!.episodes![1]!;
     const movie = { name: 'Movie', type: ShowEntryType.Movie, sort_order: 0, episodes: [movedEpisode] };
     draft.entries = [movie as never];
-    await useShowDraftSave().save(draft, savedShow);
+    await useShowDraftSave().saveDraft(draft, savedShow);
 
     expect(calls).toEqual(['update episode 43 in 50', 'remove entry 41', 'remove entry 44']);
   });
@@ -110,7 +110,7 @@ describe('useShowDraftSave', () => {
     const [season, movie] = draft.entries!;
     season!.episodes = [season!.episodes![0]!];
     movie!.episodes = [{ name: 'Movie', sequence_number: 0 } as never];
-    await useShowDraftSave().save(draft, savedShow);
+    await useShowDraftSave().saveDraft(draft, savedShow);
 
     expect(calls).toEqual(['create episode in 44', 'remove episode 43']);
   });
@@ -128,19 +128,19 @@ describe('useShowDraftSave', () => {
     const [season, movieEntry] = draft.entries!;
     const movedEpisode = season!.episodes!.pop()!;
     movieEntry!.episodes = [{ ...movedEpisode, sequence_number: 0 }];
-    await expect(useShowDraftSave().save(draft, savedShow)).rejects.toThrow('fail');
+    await expect(useShowDraftSave().saveDraft(draft, savedShow)).rejects.toThrow('fail');
 
     // The user moves it back to where it was and saves again.
     movieEntry!.episodes = [];
     season!.episodes!.push({ ...movedEpisode, sequence_number: 1 });
-    await useShowDraftSave().save(draft, savedShow);
+    await useShowDraftSave().saveDraft(draft, savedShow);
 
     expect(calls).toEqual(['update episode 43 in 44', 'update episode 43 in 41']);
   });
 
   it('counts episode progress while it saves, and clears it afterwards', async () => {
     recordCalls();
-    const { episodeProgress, save } = useShowDraftSave();
+    const { episodeProgress, saveDraft } = useShowDraftSave();
     const progress: unknown[] = [];
     // Each request sees the progress of the ones before it.
     vi.mocked(showEpisodeService.update).mockImplementation(async () => {
@@ -155,7 +155,7 @@ describe('useShowDraftSave', () => {
 
     draft.entries![0]!.episodes![0]!.name = 'One, renamed';
     draft.entries![0]!.episodes!.pop();
-    await save(draft, savedShow);
+    await saveDraft(draft, savedShow);
 
     expect(progress).toEqual([
       { done: 0, total: 2, bytesTotal: 0, bytesLeft: 0, bytesCurrent: 0 },
@@ -166,7 +166,7 @@ describe('useShowDraftSave', () => {
 
   it('counts down the video bytes left as each file finishes uploading', async () => {
     recordCalls();
-    const { episodeProgress, save } = useShowDraftSave();
+    const { episodeProgress, saveDraft } = useShowDraftSave();
     const progress: unknown[] = [];
     // Each request sees the bytes left before it.
     vi.mocked(showEpisodeService.create).mockImplementation(async () => {
@@ -184,7 +184,7 @@ describe('useShowDraftSave', () => {
     Object.assign(draft.entries![0]!.episodes![0]!, { file: new File(['a'.repeat(1000)], 'one.mkv') });
     const movieFile = new File(['b'.repeat(400)], 'movie.mkv');
     draft.entries![1]!.episodes = [{ name: 'Movie', sequence_number: 0, file: movieFile } as never];
-    await save(draft, savedShow);
+    await saveDraft(draft, savedShow);
 
     expect(progress).toEqual([1400, 400]);
     expect(episodeProgress.value).toBeNull();
@@ -214,10 +214,10 @@ describe('useShowDraftSave', () => {
       (name, index) => ({ name, sequence_number: index, file: new File(['x'], `${name}.mkv`) }) as never,
     );
 
-    await expect(useShowDraftSave().save(draft, savedShow)).rejects.toThrow('fail');
+    await expect(useShowDraftSave().saveDraft(draft, savedShow)).rejects.toThrow('fail');
     // The uploaded episodes show the stored file instead of the pick.
     expect(draft.entries![1]!.episodes![0]).toMatchObject({ filename: 'A.mkv', has_video_file: true });
-    await useShowDraftSave().save(draft, savedShow);
+    await useShowDraftSave().saveDraft(draft, savedShow);
 
     expect(calls).toEqual([
       'create A with file true',
@@ -242,7 +242,7 @@ describe('useShowDraftSave', () => {
       const newEpisode = { name: 'Two', sequence_number: 2, download: { id: 9, file_index: 1, path: 'Batch/02.mkv' } };
       season!.episodes!.push(newEpisode as never);
 
-      await useShowDraftSave().save(draft, savedShow);
+      await useShowDraftSave().saveDraft(draft, savedShow);
 
       expect(calls).toEqual([
         'create episode in 41',
@@ -250,7 +250,7 @@ describe('useShowDraftSave', () => {
       ]);
     });
 
-    it('sends an empty list when every pick of a download is dropped or its episode deleted', async () => {
+    it('sends an empty list when every pick of a download is dropped, and nothing for a deleted episode', async () => {
       recordCalls();
       const savedShow = createShow();
       const [first, second] = savedShow.entries![0]!.episodes!;
@@ -260,12 +260,9 @@ describe('useShowDraftSave', () => {
       draft.entries![0]!.episodes![0]!.download = null;
       draft.entries![0]!.episodes!.splice(1, 1);
 
-      await useShowDraftSave().save(draft, savedShow);
+      await useShowDraftSave().saveDraft(draft, savedShow);
 
-      expect(vi.mocked(downloadFileService.update).mock.calls).toEqual([
-        [9, { show_id: 4, files: [] }],
-        [7, { show_id: 4, files: [] }],
-      ]);
+      expect(vi.mocked(downloadFileService.update).mock.calls).toEqual([[9, { show_id: 4, files: [] }]]);
     });
 
     it('sends nothing when a deleted or replaced episode already had its file', async () => {
@@ -280,26 +277,43 @@ describe('useShowDraftSave', () => {
       draft.entries![0]!.episodes![0]!.download = { id: 12, file_index: 0, path: 'b.mkv' };
       draft.entries![0]!.episodes!.splice(1, 1);
 
-      await useShowDraftSave().save(draft, savedShow);
+      await useShowDraftSave().saveDraft(draft, savedShow);
 
       expect(vi.mocked(downloadFileService.update).mock.calls).toEqual([
         [12, { show_id: 4, files: [{ index: 0, episode_id: 42 }] }],
       ]);
     });
 
-    it('lets a torrent go of an episode before another one takes it', async () => {
+    it('sends both downloads when two episodes swap their files', async () => {
       recordCalls();
       const savedShow = createShow();
-      const [first] = savedShow.entries![0]!.episodes!;
+      const [first, second] = savedShow.entries![0]!.episodes!;
       first!.download = { id: 9, file_index: 2, path: 'a.mkv', status: DownloadStatus.Downloading };
+      second!.download = { id: 12, file_index: 0, path: 'b.mkv', status: DownloadStatus.Downloading };
       const draft = deepClone(savedShow);
-      draft.entries![0]!.episodes![0]!.download = { id: 12, file_index: 0, path: 'b.mkv' };
+      const [draftFirst, draftSecond] = draft.entries![0]!.episodes!;
+      [draftFirst!.download, draftSecond!.download] = [draftSecond!.download, draftFirst!.download];
 
-      await useShowDraftSave().save(draft, savedShow);
+      await useShowDraftSave().saveDraft(draft, savedShow);
 
       expect(vi.mocked(downloadFileService.update).mock.calls).toEqual([
-        [9, { show_id: 4, files: [] }],
         [12, { show_id: 4, files: [{ index: 0, episode_id: 42 }] }],
+        [9, { show_id: 4, files: [{ index: 2, episode_id: 43 }] }],
+      ]);
+    });
+
+    it('sends the pick of an episode that also moved to another entry', async () => {
+      recordCalls();
+      const savedShow = createShow();
+      const draft = deepClone(savedShow);
+      const [season, movie] = draft.entries!;
+      const [moved] = season!.episodes!.splice(1, 1);
+      movie!.episodes!.push({ ...moved!, download: { id: 9, file_index: 2, path: 'a.mkv' } });
+
+      await useShowDraftSave().saveDraft(draft, savedShow);
+
+      expect(vi.mocked(downloadFileService.update).mock.calls).toEqual([
+        [9, { show_id: 4, files: [{ index: 2, episode_id: 43 }] }],
       ]);
     });
 
@@ -311,7 +325,7 @@ describe('useShowDraftSave', () => {
       const draft = deepClone(savedShow);
       draft.entries![0]!.episodes![0]!.name = 'Renamed';
 
-      await useShowDraftSave().save(draft, savedShow);
+      await useShowDraftSave().saveDraft(draft, savedShow);
 
       expect(downloadFileService.update).not.toHaveBeenCalled();
     });

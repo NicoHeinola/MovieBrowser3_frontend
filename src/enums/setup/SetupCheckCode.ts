@@ -1,6 +1,6 @@
 /** Why a setup value failed its check. Messages live under `setup.checkCodes` in i18n. */
 export enum SetupCheckCode {
-  /** No video folder was entered. */
+  /** No video base folder was entered. */
   PathRequired = 'path_required',
   /** The path doesn't start with `/`, such as a Windows path. */
   PathNotAbsolute = 'path_not_absolute',
@@ -18,14 +18,14 @@ export enum SetupCheckCode {
   VlcNotFound = 'vlc_not_found',
   /** The file at the VLC path isn't VLC. Params: `path`. */
   VlcWrongBinary = 'vlc_wrong_binary',
-  /** The VLC bridge didn't answer. Params: `url`. */
-  VlcBridgeUnreachable = 'vlc_bridge_unreachable',
-  /** The VLC bridge is too old to check VLC. */
-  VlcBridgeOutdated = 'vlc_bridge_outdated',
-  /** The VLC bridge refused the request. Params: `status`. */
-  VlcBridgeUnauthorized = 'vlc_bridge_unauthorized',
-  /** The VLC bridge rejected the path without saying why. */
-  VlcBridgeRejected = 'vlc_bridge_rejected',
+  /** The host bridge didn't answer. Params: `url`. */
+  HostBridgeUnreachable = 'host_bridge_unreachable',
+  /** The host bridge is too old to check VLC. */
+  HostBridgeOutdated = 'host_bridge_outdated',
+  /** The host bridge refused the request. Params: `status`. */
+  HostBridgeUnauthorized = 'host_bridge_unauthorized',
+  /** The host bridge rejected the path without saying why. */
+  HostBridgeRejected = 'host_bridge_rejected',
   /** No qBittorrent address was entered. */
   UrlRequired = 'url_required',
   /** qBittorrent didn't answer at the address. */

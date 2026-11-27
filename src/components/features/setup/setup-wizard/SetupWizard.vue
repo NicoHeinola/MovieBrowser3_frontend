@@ -9,14 +9,14 @@ import { HeadingText } from '@/components/common/heading-text';
 import { TaskStatusCard } from '@/components/common/task-status-card';
 import { DownloadClientForm } from '@/components/features/setting/download-client-form';
 import { useDownloadClientSettings } from '@/composables/setting/useDownloadClientSettings';
-import { useVideoRelocation } from '@/composables/setting/useVideoRelocation';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { useVideoBaseFolderMove } from '@/composables/video-base-folder-move/useVideoBaseFolderMove';
 import { SettingKey } from '@/enums/setting/SettingKey';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
 import { getDownloadFolderSuggestions } from './getDownloadFolderSuggestions';
-import { getInitialVideoBasePath } from './getInitialVideoBasePath';
-import { getVideoFolderSuggestions } from './getVideoFolderSuggestions';
+import { getInitialVideoBaseFolder } from './getInitialVideoBaseFolder';
+import { getVideoBaseFolderSuggestions } from './getVideoBaseFolderSuggestions';
 import SetupHighlightText from './SetupHighlightText.vue';
 import SetupPathStep from './SetupPathStep.vue';
 import { getRules } from './setupWizardRules';
@@ -25,18 +25,18 @@ const VLC_DOWNLOAD_URL = 'https://www.videolan.org/vlc/';
 
 /** What the welcome step says is coming, as icons and i18n keys. */
 const WELCOME_ITEMS = [
-  { icon: 'mdi-folder-play-outline', textKey: 'setup.welcomeVideoFolder' },
+  { icon: 'mdi-folder-play-outline', textKey: 'setup.welcomeVideoBaseFolder' },
   { icon: 'mdi-play-circle-outline', textKey: 'setup.welcomeVlc' },
   { icon: 'mdi-download-outline', textKey: 'setup.welcomeDownloads' },
 ];
 
-const VIDEO_FOLDER_FORM_ID = 'setup-video-folder-form';
+const VIDEO_BASE_FOLDER_FORM_ID = 'setup-video-base-folder-form';
 const VLC_FORM_ID = 'setup-vlc-form';
 const DOWNLOADS_FORM_ID = 'setup-downloads-form';
 
 /** The form of each step that has one, keyed by step number, so the footer's Next button submits the step on screen. */
 const STEP_FORM_IDS: Record<number, string> = {
-  2: VIDEO_FOLDER_FORM_ID,
+  2: VIDEO_BASE_FOLDER_FORM_ID,
   3: VLC_FORM_ID,
   4: DOWNLOADS_FORM_ID,
 };
@@ -60,7 +60,7 @@ const isSubmittingPath = ref<boolean>(false);
 
 const settingStore = useSettingStore();
 const { t } = useI18n();
-const { isRunning: isRelocating, startRelocation, statusCard: relocationCard } = useVideoRelocation();
+const { isRunning: isMovingFolder, startFolderMove, statusCard: folderMoveCard } = useVideoBaseFolderMove();
 const {
   checks: downloadClientChecks,
   isPasswordSaved: isDownloadPasswordSaved,
@@ -74,7 +74,7 @@ const rules = getRules();
 
 const stepTitles = computed<string[]>(() => [
   t('setup.welcomeStep'),
-  t('setup.videoFolderStep'),
+  t('setup.videoBaseFolderStep'),
   t('setup.vlcStep'),
   t('setup.downloadsStep'),
   t('setup.doneStep'),
@@ -90,11 +90,11 @@ const mediaFolders = computed<string[]>(() =>
   props.status.media_folders.map((folder: string) => folder.replace(/[\\/]+$/, '')),
 );
 
-const videoFolderSuggestions = computed<string[]>(() => getVideoFolderSuggestions(mediaFolders.value));
+const videoBaseFolderSuggestions = computed<string[]>(() => getVideoBaseFolderSuggestions(mediaFolders.value));
 const downloadFolderSuggestions = computed<string[]>(() => getDownloadFolderSuggestions(mediaFolders.value));
 
-const videoBasePath = ref<string>(
-  getInitialVideoBasePath(settingStore.getSetting(SettingKey.VideoBasePath) ?? '', mediaFolders.value),
+const videoBaseFolder = ref<string>(
+  getInitialVideoBaseFolder(settingStore.getSetting(SettingKey.VideoBaseFolder) ?? '', mediaFolders.value),
 );
 // A path the admin already saved wins over the detected one.
 const vlcMediaPlayerPath = ref<string>(
@@ -181,25 +181,28 @@ const saveVlcPath = async (path: string): Promise<void> => {
         <setup-path-step
           v-model:is-submitting="isSubmittingPath"
           v-model:is-valid="validSteps[2]"
-          v-model:path="videoBasePath"
-          :form-id="VIDEO_FOLDER_FORM_ID"
-          :label="t('settings.videoBasePath')"
-          :rules="rules.videoBasePath"
-          :save="startRelocation"
-          :setting-key="SettingKey.VideoBasePath"
-          :suggestions="videoFolderSuggestions"
+          v-model:path="videoBaseFolder"
+          :form-id="VIDEO_BASE_FOLDER_FORM_ID"
+          :label="t('settings.videoBaseFolder')"
+          :rules="rules.videoBaseFolder"
+          :save="startFolderMove"
+          :setting-key="SettingKey.VideoBaseFolder"
+          :suggestions="videoBaseFolderSuggestions"
           @saved="step = 3"
         >
-          <heading-text :level="2" :title="t('setup.videoFolderTitle')">
+          <heading-text :level="2" :title="t('setup.videoBaseFolderTitle')">
             <template #subtitle>
-              <setup-highlight-text highlight-key="setup.videoFolderHighlight" keypath="setup.videoFolderSubtitle" />
+              <setup-highlight-text
+                highlight-key="setup.videoBaseFolderHighlight"
+                keypath="setup.videoBaseFolderSubtitle"
+              />
             </template>
           </heading-text>
 
           <template #changed="{ savedPath }">
             <!-- While a move runs its progress already says where the videos go. -->
-            <v-alert class="mt-4" type="info" variant="tonal" v-if="!isRelocating">
-              {{ t('setup.videoFolderMoveWarning', { path: savedPath }) }}
+            <v-alert class="mt-4" type="info" variant="tonal" v-if="!isMovingFolder">
+              {{ t('setup.videoBaseFolderMoveWarning', { path: savedPath }) }}
             </v-alert>
           </template>
         </setup-path-step>
@@ -280,8 +283,8 @@ const saveVlcPath = async (path: string): Promise<void> => {
     </v-stepper-window>
 
     <!-- A move can take hours, so the admin goes on through the steps and its progress follows them on every one. -->
-    <div class="px-8 pb-6" v-if="relocationCard">
-      <task-status-card v-bind="relocationCard" />
+    <div class="px-8 pb-6" v-if="folderMoveCard">
+      <task-status-card v-bind="folderMoveCard" />
     </div>
 
     <card-action-bar>

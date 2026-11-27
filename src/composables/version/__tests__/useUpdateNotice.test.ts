@@ -29,7 +29,6 @@ const scopes: EffectScope[] = [];
 const createAppVersion = (latest: string | null): AppVersion => ({
   backend: { current: '1.1.0', latest, release_url: latest ? `https://example.com/v${latest}` : null },
   frontend: { latest: null, release_url: null },
-  checked_at: null,
 });
 
 /**

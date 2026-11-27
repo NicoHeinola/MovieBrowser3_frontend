@@ -6,6 +6,6 @@ export enum DownloadErrorCode {
   FileMissing = 'file_missing',
   /** The video disk has too little room for a finished file. */
   NotEnoughDiskSpace = 'not_enough_disk_space',
-  /** Copying a finished file into the video folder failed. */
+  /** Copying a finished file into the video base folder failed. */
   ImportFailed = 'import_failed',
 }

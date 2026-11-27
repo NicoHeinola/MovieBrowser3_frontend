@@ -8,7 +8,73 @@ import { ChangelogChangeType } from '@/enums/changelog/ChangelogChangeType';
  * version get the "What's new" popup on their next visit.
  */
 export const changelogEntries: ChangelogEntry[] = [
-  { version: '2.4.1', date: null, changes: [] },
+  {
+    version: '3.0.0',
+    date: null,
+    changes: [
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Downloads can be checked again at any time.',
+        details: [
+          'A button on the Downloads page checks which files are really there, and starts what is missing.',
+          'Adding a torrent that was added before does the same, instead of only opening it.',
+        ],
+      },
+      {
+        type: ChangelogChangeType.Added,
+        text: 'Importing downloads show how many of their files are in place.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Downloaded files reach their episodes much faster, and at once when both folders are on the same drive.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'Moving the video base folder to another drive is much faster.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The folder that holds all videos is now called the video base folder.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'A download can be cancelled while its files are imported.',
+      },
+      {
+        type: ChangelogChangeType.Changed,
+        text: 'The video file check also reads missing episode lengths, so there is no scan of its own for them.',
+        details: [
+          'Lengths are kept while a drive is away, instead of being forgotten.',
+          'The show editor checks the video files of one show and says what it found.',
+          'It is called a check everywhere now, instead of a scan.',
+        ],
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'Importing many downloads no longer holds up watch progress, new downloads and checks.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'An upload while the video drive is not connected is refused, instead of saving it in the wrong place.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'An import cut off by a restart starts over, instead of failing every time after.',
+      },
+      {
+        type: ChangelogChangeType.Fixed,
+        text: 'One file that fails to import no longer holds back the other files of its torrent.',
+      },
+      {
+        type: ChangelogChangeType.Removed,
+        text: 'The import of shows from MovieBrowser2.',
+      },
+      {
+        type: ChangelogChangeType.Removed,
+        text: 'Reading every episode length again. A replaced file is still read again on its own.',
+      },
+    ],
+  },
   {
     version: '2.4.0',
     date: '2026-11-23',

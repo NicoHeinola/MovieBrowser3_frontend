@@ -12,8 +12,8 @@ const settingStore = reactive({
   getSetting: (key: string): string | undefined => settingStore.values[key],
   updateSetting: vi.fn(),
 });
-const isRelocating = ref<boolean>(false);
-const startRelocation = vi.fn();
+const isMovingFolder = ref<boolean>(false);
+const startFolderMove = vi.fn();
 const showDialog = vi.fn();
 const snackbar = { showAPIErrorSnackbar: vi.fn(), showSuccessSnackbar: vi.fn() };
 
@@ -26,11 +26,11 @@ vi.mock('@/stores/setting/useSettingStore', () => ({ useSettingStore: () => sett
 vi.mock('@/composables/snackbar/useCommonSnackbar', () => ({ useCommonSnackbar: () => snackbar }));
 vi.mock('@/components/layouts/dialog-provider', () => ({ useDialog: () => ({ showDialog }) }));
 
-vi.mock('@/composables/setting/useVideoRelocation', () => ({
-  useVideoRelocation: () => ({
-    isRunning: isRelocating,
+vi.mock('@/composables/video-base-folder-move/useVideoBaseFolderMove', () => ({
+  useVideoBaseFolderMove: () => ({
+    isRunning: isMovingFolder,
     isStarting: ref(false),
-    startRelocation,
+    startFolderMove,
     statusCard: computed(() => null),
   }),
 }));
@@ -67,7 +67,7 @@ const submitPaths = async (paths: { folder?: string; vlc?: string }): Promise<vo
   await flushPromises();
 
   if (paths.folder !== undefined) {
-    await wrapper.find('[name="settings.videoBasePath"]').setValue(paths.folder);
+    await wrapper.find('[name="settings.videoBaseFolder"]').setValue(paths.folder);
   }
 
   if (paths.vlc !== undefined) {
@@ -81,15 +81,15 @@ const submitPaths = async (paths: { folder?: string; vlc?: string }): Promise<vo
 describe('VideoSettings', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    isRelocating.value = false;
-    settingStore.values = { [SettingKey.VideoBasePath]: '/old', [SettingKey.VlcMediaPlayerPath]: '/vlc' };
+    isMovingFolder.value = false;
+    settingStore.values = { [SettingKey.VideoBaseFolder]: '/old', [SettingKey.VlcMediaPlayerPath]: '/vlc' };
   });
 
   it('saves nothing without a change', async () => {
     await submitPaths({});
 
     expect(settingStore.updateSetting).not.toHaveBeenCalled();
-    expect(startRelocation).not.toHaveBeenCalled();
+    expect(startFolderMove).not.toHaveBeenCalled();
   });
 
   it('saves only the VLC path when only it changed', async () => {
@@ -97,7 +97,7 @@ describe('VideoSettings', () => {
 
     expect(settingStore.updateSetting).toHaveBeenCalledWith(SettingKey.VlcMediaPlayerPath, '/new-vlc');
     expect(showDialog).not.toHaveBeenCalled();
-    expect(startRelocation).not.toHaveBeenCalled();
+    expect(startFolderMove).not.toHaveBeenCalled();
   });
 
   it('saves the VLC path and moves the videos when both changed', async () => {
@@ -106,7 +106,7 @@ describe('VideoSettings', () => {
     await submitPaths({ folder: '/new', vlc: '/new-vlc' });
 
     expect(settingStore.updateSetting).toHaveBeenCalledOnce();
-    expect(startRelocation).toHaveBeenCalledWith('/new');
+    expect(startFolderMove).toHaveBeenCalledWith('/new');
   });
 
   it('keeps the VLC path saved when the move is turned down', async () => {
@@ -115,7 +115,7 @@ describe('VideoSettings', () => {
     await submitPaths({ folder: '/new', vlc: '/new-vlc' });
 
     expect(settingStore.updateSetting).toHaveBeenCalledOnce();
-    expect(startRelocation).not.toHaveBeenCalled();
+    expect(startFolderMove).not.toHaveBeenCalled();
   });
 
   it('moves nothing when the VLC path fails to save', async () => {
@@ -126,16 +126,16 @@ describe('VideoSettings', () => {
 
     expect(snackbar.showAPIErrorSnackbar).toHaveBeenCalledWith(error);
     expect(showDialog).not.toHaveBeenCalled();
-    expect(startRelocation).not.toHaveBeenCalled();
+    expect(startFolderMove).not.toHaveBeenCalled();
   });
 
   it('starts no second move while one runs, but still saves the VLC path', async () => {
-    isRelocating.value = true;
+    isMovingFolder.value = true;
 
     await submitPaths({ folder: '/new', vlc: '/new-vlc' });
 
     expect(settingStore.updateSetting).toHaveBeenCalledOnce();
-    expect(startRelocation).not.toHaveBeenCalled();
+    expect(startFolderMove).not.toHaveBeenCalled();
   });
 
   it('saves a first folder without asking', async () => {
@@ -144,6 +144,6 @@ describe('VideoSettings', () => {
     await submitPaths({ folder: '/new' });
 
     expect(showDialog).not.toHaveBeenCalled();
-    expect(startRelocation).toHaveBeenCalledWith('/new');
+    expect(startFolderMove).toHaveBeenCalledWith('/new');
   });
 });

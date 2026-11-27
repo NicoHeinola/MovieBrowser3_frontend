@@ -12,6 +12,8 @@ export interface Download {
   status: DownloadStatus;
   /** Why it failed, or null. */
   error_code: DownloadErrorCode | null;
+  /** When qBittorrent removed the torrent after it seeded, `null` while it has it. Its sizes are then gone too. */
+  client_removed_at: string | null;
   /** 0 to 1, over the picked files. */
   progress: number;
   /** The size of the picked files. */
@@ -25,7 +27,11 @@ export interface Download {
   show: Show | null;
   /** Every file of the torrent, empty until qBittorrent knows them; left out of the list of downloads. */
   files?: DownloadFile[];
-  /** Episodes made for it that have no video and still wait for it; only in the list of downloads. */
-  waiting_episode_count?: number;
+  /** How many of its files are picked for episodes. */
+  picked_file_count: number;
+  /** How many of those are their episode's video by now. */
+  imported_file_count: number;
+  /** Episodes made for it that have no video and still wait for it. */
+  waiting_episode_count: number;
   created_at: string;
 }

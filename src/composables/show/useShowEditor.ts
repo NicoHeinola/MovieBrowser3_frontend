@@ -53,7 +53,7 @@ export const useShowEditor = (showId: Readonly<Ref<number | null>>) => {
   const { confirm } = useConfirmDialog();
   const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
   const { t } = useI18n();
-  const { episodeProgress, save: saveDraft } = useShowDraftSave();
+  const { episodeProgress, saveDraft } = useShowDraftSave();
 
   /** The show being edited; form parts change it in place. */
   const show = ref<Show | null>(showId.value === null ? createEmptyShow() : null);

@@ -39,15 +39,16 @@ const get = async (id: number): Promise<Download> => {
 /**
  * Cancels a download: removes the torrent and what it downloaded from qBittorrent.
  * @param id - The download's id.
- * @param removeEpisodes - Also remove the episodes made for it that still wait for their file.
+ * @param shouldRemoveEpisodes - Also remove the episodes made for it that still wait for their file.
  * @returns Nothing.
  */
-const remove = async (id: number, removeEpisodes: boolean): Promise<void> => {
-  await apiClient.delete(`downloads/${id}`, { params: removeEpisodes ? { remove_episodes: 1 } : {} });
+const remove = async (id: number, shouldRemoveEpisodes: boolean): Promise<void> => {
+  await apiClient.delete(`downloads/${id}`, { params: { remove_episodes: Number(shouldRemoveEpisodes) } });
 };
 
 /**
- * Tries a failed download's imports again; the next sync, within a minute, picks it up.
+ * Checks a download again: the backend finds which of its files are really there. Missing files start again within a
+ * minute.
  * @param id - The download's id.
  * @returns Nothing.
  */

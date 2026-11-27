@@ -45,7 +45,7 @@ describe('useSettingStore', () => {
 
   it('has loaded once the first settings arrive, and forgets that on clear', async () => {
     const settingStore = useSettingStore();
-    vi.mocked(settingService.list).mockResolvedValue(createSettingsResponse({ video_base_path: '/videos' }));
+    vi.mocked(settingService.list).mockResolvedValue(createSettingsResponse({ video_base_folder: '/videos' }));
 
     expect(settingStore.hasLoaded).toBe(false);
 

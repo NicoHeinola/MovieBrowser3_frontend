@@ -14,6 +14,7 @@ import { DownloadCard } from '@/components/features/download/download-card';
 import { useScrollSpy } from '@/composables/scroll/useScrollSpy';
 import { DownloadStatus } from '@/enums/download/DownloadStatus';
 import { getPickedDownloadFileIndexes } from '@/utils/download/getPickedDownloadFileIndexes';
+import { isDownloadCompleted } from '@/utils/download/isDownloadCompleted';
 import { showEditorDownloadsKey } from './showEditorDownloadsKey';
 import ShowEditorSectionNav from './ShowEditorSectionNav.vue';
 import ShowEntriesFormPart from './ShowEntriesFormPart.vue';
@@ -101,7 +102,7 @@ const sections = computed<ShowEditorSection[]>(() => [
  */
 const editorDownloads = computed<ShowEditorDownloads>(() => {
   const torrents = downloads.map((download): ShowEditorTorrent => {
-    if (download.status === DownloadStatus.Completed) {
+    if (isDownloadCompleted(download.status)) {
       return { download, canPick: false, availableFiles: [] };
     }
 

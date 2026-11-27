@@ -21,7 +21,7 @@ const isDialogVisible = defineModel<boolean>({ required: true });
 const magnetUrl = ref<string>('');
 const isValid = ref<boolean>(false);
 
-const { create, isCreating } = useDownloadCreate();
+const { createDownload, isCreating } = useDownloadCreate();
 const { t } = useI18n();
 const rules = getRules();
 
@@ -29,14 +29,14 @@ const rules = getRules();
  * Hands the pasted torrent to qBittorrent. A failure keeps the dialog open to try again.
  * @returns Nothing.
  */
-const add = async (): Promise<void> => {
+const addTorrent = async (): Promise<void> => {
   if (!isValid.value || isCreating.value) {
     return;
   }
 
   const url = magnetUrl.value.trim();
   // A magnet without a name gets qBittorrent's name for the torrent
-  const downloadId = await create({ magnet_url: url, name: getMagnetName(url) });
+  const downloadId = await createDownload({ magnet_url: url, name: getMagnetName(url) });
 
   if (downloadId !== null) {
     props.close(downloadId);
@@ -52,7 +52,7 @@ const add = async (): Promise<void> => {
       <div class="d-flex flex-column ga-4">
         <span class="text-medium-emphasis text-body-small">{{ t('download.addTorrentHint') }}</span>
 
-        <base-form v-model:is-valid="isValid" @submit="add" :id="FORM_ID">
+        <base-form v-model:is-valid="isValid" @submit="addTorrent" :id="FORM_ID">
           <v-text-field
             v-model="magnetUrl"
             :label="t('download.magnetLink')"

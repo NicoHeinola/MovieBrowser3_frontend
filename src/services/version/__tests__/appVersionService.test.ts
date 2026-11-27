@@ -23,7 +23,6 @@ describe('appVersionService', () => {
     const appVersion: AppVersion = {
       backend: { current: '1.1.0', latest: '1.2.0', release_url: 'https://example.com/backend' },
       frontend: { latest: null, release_url: null },
-      checked_at: '2026-11-03T10:00:00.000000Z',
     };
     vi.mocked(apiClient.get).mockResolvedValue(createResponse(appVersion));
 

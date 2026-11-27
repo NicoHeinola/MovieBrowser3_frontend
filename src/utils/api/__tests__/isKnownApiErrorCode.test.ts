@@ -6,7 +6,7 @@ import { isKnownApiErrorCode } from '../isKnownApiErrorCode';
 
 describe('isKnownApiErrorCode', () => {
   it('knows the codes in ApiErrorCode', () => {
-    expect(isKnownApiErrorCode(ApiErrorCode.VideoRelocationRunning)).toBe(true);
+    expect(isKnownApiErrorCode(ApiErrorCode.VideoBaseFolderMoveRunning)).toBe(true);
   });
 
   it('does not know new codes, object members or non-strings', () => {

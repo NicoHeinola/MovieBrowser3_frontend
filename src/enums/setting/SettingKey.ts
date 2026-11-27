@@ -1,7 +1,7 @@
 /** The backend settings the frontend reads or writes. Value types live in `SettingValues`. */
 export enum SettingKey {
-  /** The folder videos are stored in and played from. Changes only through a video relocation. */
-  VideoBasePath = 'video_base_path',
+  /** The folder videos are stored in and played from. Changes only through a video base folder move. */
+  VideoBaseFolder = 'video_base_folder',
   /** VLC's full path, `vlc` to start it from the PATH, or empty when not set. */
   VlcMediaPlayerPath = 'vlc_media_player_path',
   /** YouTube URLs the home banner plays when no show has a video. */

@@ -7,7 +7,6 @@ import { PageContainer } from '@/components/common/page-container';
 import { BackupManager } from '@/components/features/backup/backup-manager';
 import { DefaultMediaSection } from '@/components/features/setting/default-media-section';
 import { DownloadClientSettings } from '@/components/features/setting/download-client-settings';
-import { VideoDurationScan } from '@/components/features/setting/video-duration-scan';
 import { VideoFileCheck } from '@/components/features/setting/video-file-check';
 import { VideoSettings } from '@/components/features/setting/video-settings';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
@@ -29,7 +28,7 @@ const tab = useStoredTab<SettingsTab>('settingsTab', [
 
 const loadSettings = async (): Promise<void> => {
   try {
-    // Fresh on every visit: a video folder move or another tab may have changed them since they were cached.
+    // Fresh on every visit: a video base folder move or another tab may have changed them since they were cached.
     await settingStore.reloadSettings();
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
@@ -67,10 +66,7 @@ onMounted(() => {
         <video-settings />
       </v-col>
       <v-col cols="12" lg="6">
-        <v-row gap="48">
-          <video-file-check />
-          <video-duration-scan />
-        </v-row>
+        <video-file-check />
       </v-col>
     </v-row>
 

@@ -96,10 +96,10 @@ describe('useSetupStore', () => {
     it("returns the path's check result", async () => {
       const result = { ok: false, code: SetupCheckCode.PathNotAbsolute, params: {} };
 
-      vi.mocked(setupService.check).mockResolvedValue({ video_base_path: result });
+      vi.mocked(setupService.check).mockResolvedValue({ video_base_folder: result });
 
-      await expect(useSetupStore().checkPath(SettingKey.VideoBasePath, PATH)).resolves.toEqual(result);
-      expect(setupService.check).toHaveBeenCalledWith({ video_base_path: PATH });
+      await expect(useSetupStore().checkPath(SettingKey.VideoBaseFolder, PATH)).resolves.toEqual(result);
+      expect(setupService.check).toHaveBeenCalledWith({ video_base_folder: PATH });
     });
 
     it('returns null when the backend did not check the key', async () => {
@@ -111,7 +111,7 @@ describe('useSetupStore', () => {
     it('passes a failed check request on to the caller', async () => {
       vi.mocked(setupService.check).mockRejectedValue(new Error('Network Error'));
 
-      await expect(useSetupStore().checkPath(SettingKey.VideoBasePath, PATH)).rejects.toThrow('Network Error');
+      await expect(useSetupStore().checkPath(SettingKey.VideoBaseFolder, PATH)).rejects.toThrow('Network Error');
     });
   });
 

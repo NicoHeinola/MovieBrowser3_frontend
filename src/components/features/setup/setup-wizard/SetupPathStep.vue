@@ -46,16 +46,20 @@ const trimmedPath = computed<string>(() => path.value.trim());
 const isChangingSavedPath = computed<boolean>(() => savedPath.value !== '' && trimmedPath.value !== savedPath.value);
 
 /** Why the last check failed, or `null` while there is nothing to report. */
-const checkFailedMessage = computed<string | null>(() =>
-  checkResult.value?.ok === false ? t(`setup.checkCodes.${checkResult.value.code}`, checkResult.value.params) : null,
-);
+const checkFailedMessage = computed<string | null>(() => {
+  if (!checkResult.value || checkResult.value.ok) {
+    return null;
+  }
+
+  return t(`setup.checkCodes.${checkResult.value.code}`, checkResult.value.params);
+});
 
 /**
  * Checks the path, saves it when it passes and moves on. Every submit checks again, so the admin can retry after
- * fixing what the check complained about outside the app, such as a stopped VLC bridge.
+ * fixing what the check complained about outside the app, such as a stopped host bridge.
  * @returns Nothing.
  */
-const submit = async (): Promise<void> => {
+const submitPath = async (): Promise<void> => {
   // Enter still submits while the button shows as loading, and a second run would save the path twice.
   if (!isValid.value || isSubmitting.value) {
     return;
@@ -96,7 +100,7 @@ watch(path, () => {
     </v-col>
 
     <v-col cols="12">
-      <base-form v-model:is-valid="isValid" @submit="submit" :id="props.formId">
+      <base-form v-model:is-valid="isValid" @submit="submitPath" :id="props.formId">
         <v-text-field
           v-model="path"
           :label="props.label"

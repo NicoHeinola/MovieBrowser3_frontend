@@ -20,10 +20,10 @@ import { useDialog } from '@/components/layouts/dialog-provider';
 import { useAPIQueries } from '@/composables/api/useAPIQueries';
 import { useConfirmDialog } from '@/composables/dialog/useConfirmDialog';
 import { useDownloadCancel } from '@/composables/download/useDownloadCancel';
-import { useVideoDurationScan } from '@/composables/setting/useVideoDurationScan';
 import { useShowEditor } from '@/composables/show/useShowEditor';
 import { useShowTemplate } from '@/composables/show/useShowTemplate';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { useShowVideoFileCheck } from '@/composables/video-file-check/useShowVideoFileCheck';
 import { DownloadQueryKey } from '@/enums/query/downloadQueryKey';
 import { downloadService } from '@/services/download/downloadService';
 import { getUnfinishedDownloadIds } from '@/utils/download/getUnfinishedDownloadIds';
@@ -31,7 +31,6 @@ import { isDownloadActive } from '@/utils/download/isDownloadActive';
 import { getPollInterval } from '@/utils/query/getPollInterval';
 import { getQueryString } from '@/utils/route/getQueryString';
 import { getQueryStrings } from '@/utils/route/getQueryStrings';
-import { hasPendingVideoUploads } from '@/utils/show/video-file/hasPendingVideoUploads';
 
 /** How often a torrent is read again while it moves. */
 const DOWNLOAD_POLL_INTERVAL_MS = 2000;
@@ -51,7 +50,13 @@ const { showSuccessSnackbar, showWarningSnackbar } = useCommonSnackbar();
 const { t } = useI18n();
 
 /** The edited show's id from the URL, or null on the page for adding a show. */
-const showId = computed<number | null>(() => (route.name === 'admin-show-edit' ? Number(route.params.showId) : null));
+const showId = computed<number | null>(() => {
+  if (route.name !== 'admin-show-edit') {
+    return null;
+  }
+
+  return Number(route.params.showId);
+});
 
 const {
   show,
@@ -67,7 +72,7 @@ const {
   reload,
   applyTemplate,
 } = useShowEditor(showId);
-const { cancel: cancelDownload } = useDownloadCancel();
+const { cancelDownload } = useDownloadCancel();
 const { isLoading: isLoadingTemplate, loadTemplate } = useShowTemplate();
 
 /**
@@ -96,12 +101,7 @@ const downloadQueries = useAPIQueries<Download>(() =>
 
 const downloads = computed<Download[]>(() => downloadQueries.value.flatMap((query) => query.data ?? []));
 
-const {
-  isRunning: isReadingLengths,
-  isStarting: isStartingLengthScan,
-  followQueuedScan: followLengthScan,
-  startScan: startLengthScan,
-} = useVideoDurationScan();
+const { isChecking: isCheckingVideoFiles, checkShow } = useShowVideoFileCheck();
 
 /**
  * Returns to the page the editor was opened from, such as the show list with its filters, or to the show list when
@@ -127,43 +127,30 @@ const saveShow = async (): Promise<void> => {
     return;
   }
 
-  if (!(await editor.value?.validate())) {
+  const isValid = await editor.value?.validate();
+
+  if (!isValid) {
     showWarningSnackbar(t('showEditor.fixErrors'));
     return;
   }
 
   const wasNew = showId.value === null;
-  // Read before saving: a save clears the picked files once they're uploaded
-  const hasUploads = show.value !== null && hasPendingVideoUploads(show.value);
   const savedId = await save();
 
-  // Uploaded files queue a length scan on the backend; follow it so their lengths show once read
-  if (savedId !== null && hasUploads) {
-    void followLengthScan();
+  if (savedId === null) {
+    return;
   }
 
   // A download's status follows its picks, which the save just sent
-  if (savedId !== null) {
-    for (const query of downloadQueries.value) {
-      void query.refetch();
-    }
+  for (const downloadQuery of downloadQueries.value) {
+    void downloadQuery.refetch();
   }
 
   // The downloads stay in the URL, so more of their files can still be picked
-  if (savedId !== null && wasNew) {
-    const query = route.query.download ? { download: route.query.download } : {};
+  if (wasNew) {
+    const query = { download: route.query.download };
 
     await router.replace({ name: 'admin-show-edit', params: { showId: savedId }, query });
-  }
-};
-
-/**
- * Queues this show's episodes for a length read in the background; the hero shows the scan while it runs.
- * @returns Nothing.
- */
-const readLengths = async (): Promise<void> => {
-  if (show.value?.id) {
-    await startLengthScan({ showIds: [show.value.id] });
   }
 };
 
@@ -246,18 +233,20 @@ const addTorrent = async (): Promise<void> => {
 };
 
 /**
- * Cancels one of the editor's torrents, such as one added by mistake. Cancelling can remove the episodes made for it,
+ * Cancels one of the show's downloads, such as one added by mistake. Cancelling can remove the episodes made for it,
  * so the show loads again afterwards, which needs the draft saved first.
- * @param download - The torrent.
+ * @param download - The download.
  * @returns Nothing.
  */
-const cancelTorrent = async (download: Download): Promise<void> => {
+const cancelShowDownload = async (download: Download): Promise<void> => {
   if (hasChanges.value) {
     showWarningSnackbar(t('download.saveBeforeCancel'));
     return;
   }
 
-  if (!(await cancelDownload(download))) {
+  const isCancelled = await cancelDownload(download);
+
+  if (!isCancelled) {
     return;
   }
 
@@ -358,14 +347,14 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
               {{ t('download.addTorrent') }}
             </v-btn>
             <v-btn
-              :disabled="isSaving || isDeleting || isReadingLengths"
-              :loading="isStartingLengthScan || isReadingLengths"
+              :disabled="isSaving || isDeleting"
+              :loading="isCheckingVideoFiles"
               class="glass-panel"
-              prepend-icon="mdi-timer-sand"
+              prepend-icon="mdi-file-search-outline"
               variant="tonal"
-              @click="void readLengths()"
+              @click="void checkShow(show.id)"
             >
-              {{ t('showEditor.readLengths') }}
+              {{ t('showEditor.checkVideoFiles') }}
             </v-btn>
             <v-btn
               :disabled="isSaving || isDeleting"
@@ -400,7 +389,7 @@ useEventListener(window, 'keydown', (event: KeyboardEvent) => {
               icon="mdi-trash-can"
               size="small"
               variant="text"
-              @click="void cancelTorrent(download)"
+              @click="void cancelShowDownload(download)"
               v-tooltip:bottom="t('download.cancel')"
             />
           </template>

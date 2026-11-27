@@ -31,7 +31,7 @@ export const getStorageRings = (stats: DashboardStatsResponse, shows: Show[]): S
     return { disk: null, shows: showSlices };
   }
 
-  // Video sizes are stored at upload or scan time, so a file deleted or replaced since then can push the video
+  // Video sizes are stored at upload or check time, so a file deleted or replaced since then can push the video
   // total past what the disk reports as used. Clamp so "other files" never goes negative.
   const freeBytes = Math.min(stats.disk_free_bytes, stats.disk_total_bytes);
   const otherFileBytes = Math.max(0, stats.disk_total_bytes - freeBytes - videoBytes);

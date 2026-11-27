@@ -6,10 +6,10 @@ import { BaseForm } from '@/components/common/base-form';
 import { FormCard } from '@/components/common/form-card';
 import { TaskStatusCard } from '@/components/common/task-status-card';
 import { TitledSection } from '@/components/common/titled-section';
-import { VideoRelocationConfirmDialog } from '@/components/features/setting/video-relocation-confirm-dialog';
+import { VideoBaseFolderMoveConfirmDialog } from '@/components/features/setting/video-base-folder-move-confirm-dialog';
 import { useDialog } from '@/components/layouts/dialog-provider';
-import { useVideoRelocation } from '@/composables/setting/useVideoRelocation';
 import { useCommonSnackbar } from '@/composables/snackbar/useCommonSnackbar';
+import { useVideoBaseFolderMove } from '@/composables/video-base-folder-move/useVideoBaseFolderMove';
 import { SettingKey } from '@/enums/setting/SettingKey';
 import { useSettingStore } from '@/stores/setting/useSettingStore';
 
@@ -18,7 +18,7 @@ import { getRules } from './videoSettingsRules';
 const FORM_ID = 'video-settings-form';
 
 /** Local drafts so unsaved edits never leak into the store and missing keys don't break rendering. */
-const videoBasePath = ref<string>('');
+const videoBaseFolder = ref<string>('');
 const vlcMediaPlayerPath = ref<string>('');
 const isValid = ref<boolean>(false);
 const isSavingVlcPath = ref<boolean>(false);
@@ -29,19 +29,24 @@ const { showAPIErrorSnackbar, showSuccessSnackbar } = useCommonSnackbar();
 const settingStore = useSettingStore();
 const dialog = useDialog();
 const { t } = useI18n();
-const { isRunning: isRelocating, isStarting: isStartingRelocation, startRelocation, statusCard } = useVideoRelocation();
+const {
+  isRunning: isMovingFolder,
+  isStarting: isStartingFolderMove,
+  startFolderMove,
+  statusCard,
+} = useVideoBaseFolderMove();
 
-const savedVideoBasePath = computed<string>(() => settingStore.getSetting(SettingKey.VideoBasePath) ?? '');
+const savedVideoBaseFolder = computed<string>(() => settingStore.getSetting(SettingKey.VideoBaseFolder) ?? '');
 const savedVlcMediaPlayerPath = computed<string>(() => settingStore.getSetting(SettingKey.VlcMediaPlayerPath) ?? '');
 
-const isVideoBasePathChanged = computed<boolean>(() => videoBasePath.value.trim() !== savedVideoBasePath.value);
+const isVideoBaseFolderChanged = computed<boolean>(() => videoBaseFolder.value.trim() !== savedVideoBaseFolder.value);
 const isVlcPathChanged = computed<boolean>(() => vlcMediaPlayerPath.value.trim() !== savedVlcMediaPlayerPath.value);
 
 /** The folder draft stays changed until its move ends, so a running move must not start another. */
-const canRelocate = computed<boolean>(() => isVideoBasePathChanged.value && !isRelocating.value);
-const isSaving = computed<boolean>(() => isSavingVlcPath.value || isStartingRelocation.value);
+const canMoveFolder = computed<boolean>(() => isVideoBaseFolderChanged.value && !isMovingFolder.value);
+const isSaving = computed<boolean>(() => isSavingVlcPath.value || isStartingFolderMove.value);
 /** Saving unchanged paths would do nothing, so Save waits for an edit. */
-const canSave = computed<boolean>(() => isValid.value && (canRelocate.value || isVlcPathChanged.value));
+const canSave = computed<boolean>(() => isValid.value && (canMoveFolder.value || isVlcPathChanged.value));
 
 /**
  * Saves the VLC path as a plain setting.
@@ -68,15 +73,15 @@ const saveVlcPath = async (): Promise<boolean> => {
  * Moves the videos into the new folder. The folder setting changes only once the move ends, and the move reports that.
  * @returns Nothing.
  */
-const relocateVideos = async (): Promise<void> => {
-  const path = videoBasePath.value.trim();
+const moveVideoBaseFolder = async (): Promise<void> => {
+  const path = videoBaseFolder.value.trim();
 
-  // Moving every video can take hours and holds up editing and playback, so ask first. A first folder has nothing to
-  // move, so it just saves.
-  if (savedVideoBasePath.value !== '') {
+  // A move of all videos can take hours and blocks editing and playback, so ask first. A first folder has no videos to
+  // move, so it skips the question.
+  if (savedVideoBaseFolder.value !== '') {
     const isConfirmed = await dialog.showDialog<boolean, { from: string; to: string }>({
-      component: VideoRelocationConfirmDialog,
-      props: { from: savedVideoBasePath.value, to: path },
+      component: VideoBaseFolderMoveConfirmDialog,
+      props: { from: savedVideoBaseFolder.value, to: path },
     });
 
     if (!isConfirmed) {
@@ -85,7 +90,7 @@ const relocateVideos = async (): Promise<void> => {
   }
 
   try {
-    await startRelocation(path);
+    await startFolderMove(path);
   } catch (error: unknown) {
     showAPIErrorSnackbar(error);
   }
@@ -107,16 +112,16 @@ const save = async (): Promise<void> => {
   }
 
   // Checked only now: the VLC save reloads the settings, and the folder may have changed elsewhere since.
-  if (canRelocate.value) {
-    await relocateVideos();
+  if (canMoveFolder.value) {
+    await moveVideoBaseFolder();
   }
 };
 
 // Each draft follows only its own saved value, so a reload after a move doesn't wipe an unsaved VLC path edit.
 watch(
-  savedVideoBasePath,
+  savedVideoBaseFolder,
   (path: string) => {
-    videoBasePath.value = path;
+    videoBaseFolder.value = path;
   },
   { immediate: true },
 );
@@ -144,14 +149,14 @@ watch(
           <v-row>
             <v-col cols="12">
               <v-text-field
-                v-model="videoBasePath"
-                :label="t('settings.videoBasePath')"
-                :readonly="isRelocating"
-                :rules="rules.videoBasePath"
+                v-model="videoBaseFolder"
+                :label="t('settings.videoBaseFolder')"
+                :readonly="isMovingFolder"
+                :rules="rules.videoBaseFolder"
                 class="required"
               >
                 <template #prepend>
-                  <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.videoBasePathHint')" />
+                  <v-icon icon="mdi-help-circle" v-tooltip:bottom="t('settings.videoBaseFolderHint')" />
                 </template>
               </v-text-field>
             </v-col>

@@ -189,7 +189,7 @@ router.beforeEach(async (to) => {
     return { name: 'authenticated-home' };
   }
 
-  // Videos can't play until an admin sets the video folder and VLC, so admins go to the setup wizard first.
+  // Videos can't play until an admin sets the video base folder and VLC, so admins go to the setup wizard first.
   if (authStore.isAdmin && to.name !== 'admin-setup' && (await isSetupDue())) {
     return { name: 'admin-setup' };
   }
