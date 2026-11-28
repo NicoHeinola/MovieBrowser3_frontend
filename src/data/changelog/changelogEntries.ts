@@ -25,6 +25,10 @@ export const changelogEntries: ChangelogEntry[] = [
         text: 'Importing downloads show how many of their files are in place.',
       },
       {
+        type: ChangelogChangeType.Added,
+        text: 'The show editor shows how far its torrents have downloaded, with their speed and time left.',
+      },
+      {
         type: ChangelogChangeType.Changed,
         text: 'Downloaded files reach their episodes much faster, and at once when both folders are on the same drive.',
       },

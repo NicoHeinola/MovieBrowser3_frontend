@@ -854,6 +854,7 @@
     "torrent": "Torrent",
     "added": "Added",
     "perSecond": "{size}/s",
+    "speedAndTimeLeft": "{speed}, {duration} left",
     "openShow": "Open the show",
     "cancel": "Cancel download",
     "keep": "Keep it",

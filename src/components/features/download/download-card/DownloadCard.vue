@@ -19,6 +19,8 @@ const props = defineProps<{
 defineSlots<{
   /** Buttons after the status, such as cancel. */
   actions?: () => unknown;
+  /** Under the row, such as its progress. */
+  default?: () => unknown;
 }>();
 
 const isFailed = computed<boolean>(() => props.status === DownloadStatus.Failed);
@@ -36,5 +38,7 @@ const isFailed = computed<boolean>(() => props.status === DownloadStatus.Failed)
       <download-status-chip :status="props.status" v-if="props.status" />
       <slot name="actions" />
     </template>
+
+    <slot />
   </icon-card>
 </template>

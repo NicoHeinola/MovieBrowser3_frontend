@@ -11,9 +11,12 @@ import { FormCard } from '@/components/common/form-card';
 import { SectionLabel } from '@/components/common/section-label';
 import { TitledSection } from '@/components/common/titled-section';
 import { DownloadCard } from '@/components/features/download/download-card';
+import { DownloadProgress } from '@/components/features/download/download-progress';
 import { useScrollSpy } from '@/composables/scroll/useScrollSpy';
 import { DownloadStatus } from '@/enums/download/DownloadStatus';
+import { getDownloadRate } from '@/utils/download/getDownloadRate';
 import { getPickedDownloadFileIndexes } from '@/utils/download/getPickedDownloadFileIndexes';
+import { hasDownloadProgress } from '@/utils/download/hasDownloadProgress';
 import { isDownloadCompleted } from '@/utils/download/isDownloadCompleted';
 import { showEditorDownloadsKey } from './showEditorDownloadsKey';
 import ShowEditorSectionNav from './ShowEditorSectionNav.vue';
@@ -154,6 +157,22 @@ const validate = async (): Promise<boolean> => {
   return false;
 };
 
+/**
+ * The line under a torrent's name while it downloads, like the Downloads page's speed and time left columns.
+ * @param download - The torrent.
+ * @returns Such as "2.0 MB/s, 5:00 left", only the speed while qBittorrent can't tell the time, or nothing while it
+ * doesn't download.
+ */
+const getTorrentDetails = (download: Download): string | undefined => {
+  const rate = getDownloadRate(download);
+
+  if (!rate?.timeLeft) {
+    return rate?.speed;
+  }
+
+  return t('download.speedAndTimeLeft', { speed: rate.speed, duration: rate.timeLeft });
+};
+
 defineExpose({ validate });
 
 provide(showEditorDownloadsKey, editorDownloads);
@@ -208,8 +227,8 @@ provide(showEditorDownloadsKey, editorDownloads);
           :title="sectionsByKey.entries.title"
           id="show-editor-entries"
         >
-          <!-- The torrents still in use, like the settings page's status cards. The icon outside says how to pick their
-               files, or why one failed. -->
+          <!-- The torrents still in use, like the settings page's status cards, with their progress like the Downloads
+               page. The icon outside says how to pick their files, or why one failed. -->
           <div v-for="{ download } in openTorrents" class="d-flex align-center ga-4 mb-4" :key="download.id">
             <v-icon
               :icon="download.status === DownloadStatus.Failed ? 'mdi-alert-circle' : 'mdi-help-circle'"
@@ -219,10 +238,18 @@ provide(showEditorDownloadsKey, editorDownloads);
                   : t('download.pickFilesHint')
               "
             />
-            <download-card :name="download.name" :status="download.status" class="flex-1-1" is-one-line>
+            <download-card
+              :details="getTorrentDetails(download)"
+              :name="download.name"
+              :status="download.status"
+              class="flex-1-1"
+              is-one-line
+            >
               <template #actions v-if="$slots['torrent-actions']">
                 <slot :download="download" name="torrent-actions" />
               </template>
+
+              <download-progress :download="download" v-if="hasDownloadProgress(download)" />
             </download-card>
           </div>
 

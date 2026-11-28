@@ -1,27 +1,16 @@
 <script setup lang="ts">
 import type { Download } from '@/interfaces/api/models/Download';
-import type { DownloadProgress } from '@/utils/download/getDownloadProgress';
 import type { DataTableHeader } from 'vuetify';
 
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { DownloadProgress } from '@/components/features/download/download-progress';
 import { DownloadStatusChip } from '@/components/features/download/download-status-chip';
-import { DownloadStatus } from '@/enums/download/DownloadStatus';
-import { DOWNLOAD_STATUS_STYLES } from '@/utils/download/downloadStatusStyles';
-import { getDownloadProgress } from '@/utils/download/getDownloadProgress';
-import { isDownloadActive } from '@/utils/download/isDownloadActive';
-import { isDownloadCompleted } from '@/utils/download/isDownloadCompleted';
-import { formatFileSize } from '@/utils/file/formatFileSize';
+import { getDownloadRate } from '@/utils/download/getDownloadRate';
+import { hasDownloadProgress } from '@/utils/download/hasDownloadProgress';
 import { getPrimaryTitle } from '@/utils/show/getPrimaryTitle';
 import { formatDateTime } from '@/utils/time/formatDateTime';
-import { formatDuration } from '@/utils/time/formatDuration';
-
-/** A download as the table shows it. */
-interface DownloadRow extends Download {
-  progressParts: DownloadProgress | null;
-  isCompleted: boolean;
-}
 
 const props = defineProps<{
   downloads: Download[];
@@ -38,39 +27,6 @@ defineSlots<{
 
 const { locale, t } = useI18n();
 
-/**
- * The downloads with their progress worked out once per row, not once per cell that shows it. A finished download's
- * torrent leaves qBittorrent once seeded, taking its sizes with it, so it simply reads as complete.
- */
-const rows = computed<DownloadRow[]>(() =>
-  props.downloads.map((download) => {
-    const isCompleted = isDownloadCompleted(download.status);
-    let progressParts = getDownloadProgress(download);
-
-    if (isCompleted) {
-      progressParts ??= { percent: t('download.percent', { percent: 100 }), bytes: '' };
-    }
-
-    return { ...download, isCompleted, progressParts };
-  }),
-);
-
-/**
- * What's under a download's progress bar. Once its finished files are on their way to their episodes, all bytes are
- * downloaded and say nothing, so it's how many files arrived.
- * @param row - The download's row.
- * @returns Such as "3 of 25 files in place" or "1.0 GB of 4.0 GB".
- */
-const getProgressText = (row: DownloadRow): string => {
-  if (row.status === DownloadStatus.Importing) {
-    const counts = { done: row.imported_file_count, count: row.picked_file_count };
-
-    return t('download.filesInPlace', counts, row.picked_file_count);
-  }
-
-  return row.progressParts?.bytes || '–';
-};
-
 /** The list is short and comes newest first, so the columns are not sortable. */
 const headers = computed<DataTableHeader[]>(() => [
   { title: t('download.name'), key: 'name', sortable: false },
@@ -84,36 +40,24 @@ const headers = computed<DataTableHeader[]>(() => [
 
 /**
  * How fast a download goes.
- * @param row - The download's row.
+ * @param download - The download.
  * @returns Such as "2.0 MB/s", or a dash while it moves no data.
  */
-const getSpeedText = (row: DownloadRow): string => {
-  if (row.status !== DownloadStatus.Downloading) {
-    return '–';
-  }
-
-  return t('download.perSecond', { size: formatFileSize(row.download_speed, locale.value) });
-};
+const getSpeedText = (download: Download): string => getDownloadRate(download)?.speed ?? '–';
 
 /**
  * How long a download still takes.
- * @param row - The download's row.
- * @returns Such as "5 min", or a dash while it moves no data or can't tell.
+ * @param download - The download.
+ * @returns Such as "5:00", or a dash while it moves no data or can't tell.
  */
-const getTimeLeftText = (row: DownloadRow): string => {
-  if (row.status !== DownloadStatus.Downloading || row.eta_seconds === null) {
-    return '–';
-  }
-
-  return formatDuration(row.eta_seconds);
-};
+const getTimeLeftText = (download: Download): string => getDownloadRate(download)?.timeLeft ?? '–';
 </script>
 
 <template>
   <v-skeleton-loader type="table-tbody" v-if="props.isPending" />
   <v-data-table
     :headers="headers"
-    :items="rows"
+    :items="props.downloads"
     :items-per-page="-1"
     class="download-table"
     hide-default-footer
@@ -136,24 +80,7 @@ const getTimeLeftText = (row: DownloadRow): string => {
     </template>
 
     <template #item.progress="{ item }">
-      <!-- The bar takes its status's color, stripes while data moves, and runs without an end while its size is
-           unknown, so a glance tells moving, done and stuck apart -->
-      <div class="d-flex flex-column" v-if="item.size_bytes > 0 || item.isCompleted || isDownloadActive(item.status)">
-        <div class="d-flex align-center ga-2">
-          <v-progress-linear
-            :color="DOWNLOAD_STATUS_STYLES[item.status].color"
-            :indeterminate="(item.size_bytes === 0 && !item.isCompleted) || item.status === DownloadStatus.Importing"
-            :model-value="item.isCompleted ? 100 : item.progress * 100"
-            :striped="item.status === DownloadStatus.Downloading"
-            height="8"
-            rounded
-          />
-          <span class="text-body-small font-weight-medium text-no-wrap" v-if="item.progressParts">
-            {{ item.progressParts.percent }}
-          </span>
-        </div>
-        <span class="text-medium-emphasis text-body-small">{{ getProgressText(item) }}</span>
-      </div>
+      <download-progress :download="item" v-if="hasDownloadProgress(item)" />
       <span class="text-medium-emphasis" v-else>–</span>
     </template>
 

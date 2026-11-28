@@ -854,6 +854,7 @@
     "torrent": "Torrentti",
     "added": "Lisätty",
     "perSecond": "{size}/s",
+    "speedAndTimeLeft": "{speed}, {duration} jäljellä",
     "openShow": "Avaa sarja",
     "cancel": "Peru lataus",
     "keep": "Pidä",
